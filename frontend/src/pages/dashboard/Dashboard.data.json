@@ -1,0 +1,34 @@
+{
+  "title": "Dashboard",
+  "subtitle": "Welcome back, Admin 👋",
+
+  "stats": [
+    {
+      "title": "Total Workers",
+      "value": "120",
+      "icon": "👷"
+    },
+    {
+      "title": "Present Today",
+      "value": "95",
+      "icon": "✅"
+    },
+    {
+      "title": "Active Sites",
+      "value": "8",
+      "icon": "🏢"
+    },
+    {
+      "title": "Pending Wages",
+      "value": "₹45K",
+      "icon": "💰"
+    }
+  ],
+
+  "activities": [
+    "New worker added",
+    "Attendance marked",
+    "Salary generated",
+    "New site assigned"
+  ]
+}
