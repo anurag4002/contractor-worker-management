@@ -1,0 +1,46 @@
+{
+  "menu": [
+    {
+      "id": 1,
+      "title": "Dashboard",
+      "path": "/dashboard",
+      "icon": "FiHome"
+    },
+    {
+      "id": 2,
+      "title": "Workers",
+      "path": "/workers",
+      "icon": "FiUsers"
+    },
+    {
+      "id": 3,
+      "title": "Attendance",
+      "path": "/attendance",
+      "icon": "FiCalendar"
+    },
+    {
+      "id": 4,
+      "title": "Salary",
+      "path": "/salary",
+      "icon": "FiDollarSign"
+    },
+    {
+      "id": 5,
+      "title": "Sites",
+      "path": "/sites",
+      "icon": "FiMapPin"
+    },
+    {
+      "id": 6,
+      "title": "Reports",
+      "path": "/reports",
+      "icon": "FiBarChart2"
+    },
+    {
+      "id": 7,
+      "title": "Settings",
+      "path": "/settings",
+      "icon": "FiSettings"
+    }
+  ]
+}

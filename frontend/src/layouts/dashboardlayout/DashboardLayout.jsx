@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { Outlet } from "react-router-dom";
+
 import Sidebar from "../sidebar/Sidebar";
 import Header from "../header/Header";
 
@@ -7,18 +10,30 @@ import {
   MainContent,
 } from "./DashboardLayout.style";
 
-const DashboardLayout = ({ children }) => {
+const DashboardLayout = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const toggleSidebar = () => {
+    setSidebarOpen((prev) => !prev);
+  };
+
   return (
     <LayoutWrapper>
-      <Sidebar />
 
-      <ContentWrapper>
-        <Header />
+      <Sidebar sidebarOpen={sidebarOpen} />
+
+      <ContentWrapper sidebarOpen={sidebarOpen}>
+
+        <Header toggleSidebar={toggleSidebar} />
 
         <MainContent>
-          {children}
+
+          <Outlet />
+
         </MainContent>
+
       </ContentWrapper>
+
     </LayoutWrapper>
   );
 };

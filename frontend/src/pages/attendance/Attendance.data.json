@@ -1,0 +1,41 @@
+{
+  "title": "Attendance Management",
+  "description": "Track daily attendance of workers across all construction sites.",
+  "attendance": [
+    {
+      "id": "CW001",
+      "name": "Rahul Sharma",
+      "site": "Site A",
+      "date": "2026-06-27",
+      "status": "Present"
+    },
+    {
+      "id": "CW002",
+      "name": "Amit Kumar",
+      "site": "Site B",
+      "date": "2026-06-27",
+      "status": "Absent"
+    },
+    {
+      "id": "CW003",
+      "name": "Rohit Singh",
+      "site": "Site A",
+      "date": "2026-06-27",
+      "status": "Leave"
+    },
+    {
+      "id": "CW004",
+      "name": "Sandeep Yadav",
+      "site": "Site C",
+      "date": "2026-06-27",
+      "status": "Present"
+    },
+    {
+      "id": "CW005",
+      "name": "Vikas Gupta",
+      "site": "Site B",
+      "date": "2026-06-27",
+      "status": "Present"
+    }
+  ]
+}

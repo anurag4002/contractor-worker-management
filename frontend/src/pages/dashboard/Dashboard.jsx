@@ -1,83 +1,91 @@
-import DashboardLayout from "../../layouts/dashboardlayout/DashboardLayout";
+import React from "react";
 
-import data from "./Dashboard.data.json";
+import { FiCalendar, FiUsers } from "react-icons/fi";
+
+import dashboardData from "./Dashboard.data.json";
+
+import StatCard from "../../components/statcard/StatCard";
+
+import Attendance from "../attendance/Attendance";
+import Workers from "../workers/Workers";
 
 import {
-  DashboardWrapper,
+  DashboardContainer,
   HeroSection,
-  Title,
-  Subtitle,
+  HeroContent,
+  HeroInfo,
+  HeroImage,
+  InfoCard,
   StatsGrid,
-  StatCard,
-  CardIcon,
-  CardTitle,
-  CardValue,
-  BottomGrid,
-  AttendanceCard,
-  ChartPlaceholder,
-  ActivityCard,
-  ActivityItem,
 } from "./Dashboard.style";
 
 const Dashboard = () => {
+  const today = new Date().toLocaleDateString("en-IN", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
   return (
-    <DashboardLayout>
-      <DashboardWrapper>
-        <HeroSection>
-          <Title>
-            {data.title}
-          </Title>
+    <DashboardContainer>
+      {/* ================= Hero Banner ================= */}
 
-          <Subtitle>
-            {data.subtitle}
-          </Subtitle>
-        </HeroSection>
+      <HeroSection>
+        <HeroContent>
+          <h5>👋 Welcome Back</h5>
 
-        <StatsGrid>
-          {data.stats.map((item, index) => (
-            <StatCard key={index}>
-              <CardIcon>
-                {item.icon}
-              </CardIcon>
+          <h1>
+            Contractor Worker
+            <br />
+            Management System
+          </h1>
 
-              <CardTitle>
-                {item.title}
-              </CardTitle>
+          <p>
+            Manage workers, attendance, salaries,
+            sites and reports from one centralized dashboard.
+          </p>
 
-              <CardValue>
-                {item.value}
-              </CardValue>
-            </StatCard>
-          ))}
-        </StatsGrid>
+          <HeroInfo>
+            <InfoCard>
+              <FiCalendar />
 
-        <BottomGrid>
-          <AttendanceCard>
-            <h3>
-              Attendance Overview
-            </h3>
+              <span>{today}</span>
+            </InfoCard>
 
-            <ChartPlaceholder />
-          </AttendanceCard>
+            <InfoCard>
+              <FiUsers />
 
-          <ActivityCard>
-            <h3>
-              Recent Activities
-            </h3>
+              <span>158 Active Workers</span>
+            </InfoCard>
+          </HeroInfo>
+        </HeroContent>
 
-            {data.activities.map(
-              (activity, index) => (
-                <ActivityItem
-                  key={index}
-                >
-                  {activity}
-                </ActivityItem>
-              )
-            )}
-          </ActivityCard>
-        </BottomGrid>
-      </DashboardWrapper>
-    </DashboardLayout>
+        <HeroImage>👷</HeroImage>
+      </HeroSection>
+
+      {/* ================= Statistics ================= */}
+
+      <StatsGrid>
+        {dashboardData.stats.map((item, index) => (
+          <StatCard
+            key={index}
+            title={item.title}
+            value={item.value}
+            change={item.change}
+            icon={item.icon}
+          />
+        ))}
+      </StatsGrid>
+
+      {/* ================= Attendance ================= */}
+
+      <Attendance />
+
+      {/* ================= Workers ================= */}
+
+      <Workers />
+    </DashboardContainer>
   );
 };
 

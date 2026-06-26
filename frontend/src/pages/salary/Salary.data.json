@@ -1,0 +1,47 @@
+{
+  "title": "Salary Management",
+  "description": "Manage worker wages, advances and payment history.",
+
+  "salary": [
+    {
+      "id": "CW001",
+      "name": "Rahul Sharma",
+      "site": "Site A",
+      "dailyWage": 800,
+      "daysWorked": 26,
+      "advance": 5000,
+      "paid": 10000,
+      "status": "Pending"
+    },
+    {
+      "id": "CW002",
+      "name": "Amit Kumar",
+      "site": "Site B",
+      "dailyWage": 750,
+      "daysWorked": 24,
+      "advance": 3000,
+      "paid": 9000,
+      "status": "Paid"
+    },
+    {
+      "id": "CW003",
+      "name": "Rohit Singh",
+      "site": "Site C",
+      "dailyWage": 900,
+      "daysWorked": 25,
+      "advance": 4000,
+      "paid": 12000,
+      "status": "Pending"
+    },
+    {
+      "id": "CW004",
+      "name": "Sandeep Yadav",
+      "site": "Site A",
+      "dailyWage": 850,
+      "daysWorked": 27,
+      "advance": 2500,
+      "paid": 15000,
+      "status": "Paid"
+    }
+  ]
+}

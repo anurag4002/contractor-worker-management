@@ -1,0 +1,43 @@
+ {
+  "title": "Site Management",
+  "description": "Manage construction sites and assign workers.",
+
+  "sites": [
+    {
+      "id": "S001",
+      "name": "Metro Station Project",
+      "location": "Noida Sector 62",
+      "supervisor": "Rahul Sharma",
+      "workers": 42,
+      "progress": 78,
+      "status": "Active"
+    },
+    {
+      "id": "S002",
+      "name": "Residential Tower",
+      "location": "Greater Noida",
+      "supervisor": "Amit Kumar",
+      "workers": 31,
+      "progress": 56,
+      "status": "Active"
+    },
+    {
+      "id": "S003",
+      "name": "Shopping Mall",
+      "location": "Delhi",
+      "supervisor": "Deepak Singh",
+      "workers": 54,
+      "progress": 95,
+      "status": "Completed"
+    },
+    {
+      "id": "S004",
+      "name": "Industrial Plant",
+      "location": "Ghaziabad",
+      "supervisor": "Vikas Verma",
+      "workers": 26,
+      "progress": 34,
+      "status": "Active"
+    }
+  ]
+}

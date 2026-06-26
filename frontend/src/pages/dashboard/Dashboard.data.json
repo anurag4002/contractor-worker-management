@@ -1,34 +1,28 @@
 {
-  "title": "Dashboard",
-  "subtitle": "Welcome back, Admin 👋",
-
   "stats": [
     {
       "title": "Total Workers",
-      "value": "120",
-      "icon": "👷"
+      "value": "158",
+      "change": "+12%",
+      "icon": "FiUsers"
     },
     {
       "title": "Present Today",
-      "value": "95",
-      "icon": "✅"
+      "value": "142",
+      "change": "+5%",
+      "icon": "FiUserCheck"
+    },
+    {
+      "title": "Salary Paid",
+      "value": "₹12.5L",
+      "change": "+18%",
+      "icon": "FiDollarSign"
     },
     {
       "title": "Active Sites",
-      "value": "8",
-      "icon": "🏢"
-    },
-    {
-      "title": "Pending Wages",
-      "value": "₹45K",
-      "icon": "💰"
+      "value": "08",
+      "change": "+2",
+      "icon": "FiMapPin"
     }
-  ],
-
-  "activities": [
-    "New worker added",
-    "Attendance marked",
-    "Salary generated",
-    "New site assigned"
   ]
 }

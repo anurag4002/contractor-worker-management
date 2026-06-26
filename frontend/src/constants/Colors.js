@@ -15,5 +15,5 @@ export const COLORS = {
 
   border: "rgba(226,232,240,1)",
 
-  sidebar: "rgba(15,23,42,1)"
+  sidebar: "rgb(13, 16, 25)"
 };

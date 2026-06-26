@@ -1,130 +1,135 @@
 import styled from "styled-components";
-import { COLORS } from "../../constants/Colors";
 
-export const DashboardWrapper = styled.div`
+export const DashboardContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
 `;
 
-export const HeroSection = styled.div`
-  background: linear-gradient(
-    135deg,
-    rgba(20,184,166,1),
-    rgba(13,148,136,1)
-  );
+export const HeroSection = styled.section`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-  border-radius: 24px;
+  padding: 2.5rem;
 
-  padding: 2rem;
+  border-radius: 1.5rem;
+
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
 
   color: white;
+
+  overflow: hidden;
+
+  @media (max-width: 992px) {
+    flex-direction: column;
+    gap: 2rem;
+    text-align: center;
+  }
 `;
 
-export const Title = styled.h1`
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
+export const HeroContent = styled.div`
+  max-width: 38rem;
+
+  h5 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  h1 {
+    margin: 1rem 0;
+    font-size: 2.5rem;
+    line-height: 1.2;
+  }
+
+  p {
+    line-height: 1.8;
+  }
 `;
 
-export const Subtitle = styled.p`
-  opacity: 0.9;
+export const HeroInfo = styled.div`
+  margin-top: 2rem;
+
+  display: flex;
+  gap: 1rem;
+
+  flex-wrap: wrap;
+`;
+
+export const InfoCard = styled.div`
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+
+  padding: .9rem 1.2rem;
+
+  border-radius: .8rem;
+
+  background: rgba(255,255,255,.15);
+
+  backdrop-filter: blur(10px);
+`;
+
+export const HeroImage = styled.div`
+  width: 18rem;
+  height: 18rem;
+
+  border-radius: 50%;
+
+  background: rgba(255,255,255,.15);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 6rem;
 `;
 
 export const StatsGrid = styled.div`
   display: grid;
 
-  grid-template-columns:
-    repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(4,1fr);
 
   gap: 1.5rem;
-`;
 
-export const StatCard = styled.div`
-  background: white;
+  @media(max-width:1100px){
+    grid-template-columns:repeat(2,1fr);
+  }
 
-  border-radius: 20px;
-
-  padding: 1.5rem;
-
-  border: 1px solid ${COLORS.border};
-
-  box-shadow:
-    0 8px 24px rgba(15,23,42,.06);
-
-  transition: 0.3s;
-
-  &:hover {
-    transform: translateY(-4px);
+  @media(max-width:768px){
+    grid-template-columns:1fr;
   }
 `;
 
-export const CardIcon = styled.div`
-  font-size: 2rem;
-  margin-bottom: 1rem;
-`;
-
-export const CardTitle = styled.p`
-  color: ${COLORS.text};
-`;
-
-export const CardValue = styled.h2`
-  margin-top: 0.5rem;
-  color: ${COLORS.heading};
-`;
-
-export const BottomGrid = styled.div`
+export const ChartSection = styled.section`
   display: grid;
 
   grid-template-columns: 2fr 1fr;
 
   gap: 1.5rem;
 
-  @media (max-width: 992px) {
-    grid-template-columns: 1fr;
+  @media(max-width:1100px){
+    grid-template-columns:1fr;
   }
 `;
 
-export const AttendanceCard = styled.div`
+export const ChartCard = styled.div`
   background: white;
 
-  border-radius: 20px;
+  border-radius: 1.25rem;
 
-  padding: 2rem;
+  padding: 1.5rem;
 
-  border: 1px solid ${COLORS.border};
+  border: 1px solid #e2e8f0;
+
+  box-shadow: 0 10px 30px rgba(15,23,42,.05);
 `;
 
-export const ChartPlaceholder = styled.div`
-  height: 250px;
+export const CardTitle = styled.h3`
+  margin: 0 0 1.5rem;
 
-  margin-top: 1rem;
+  color: #0f172a;
 
-  border-radius: 16px;
-
-  background: linear-gradient(
-    180deg,
-    rgba(20,184,166,.15),
-    rgba(20,184,166,.03)
-  );
-`;
-
-export const ActivityCard = styled.div`
-  background: white;
-
-  border-radius: 20px;
-
-  padding: 2rem;
-
-  border: 1px solid ${COLORS.border};
-`;
-
-export const ActivityItem = styled.div`
-  padding: 1rem 0;
-
-  border-bottom:
-    1px solid ${COLORS.border};
-
-  &:last-child {
-    border-bottom: none;
-  }
+  font-size: 1.1rem;
 `;
