@@ -1,6 +1,10 @@
 import User from '../models/User.js';
 import Role from '../models/Role.js';
+import { v4 as uuidv4 } from 'uuid';
 
+import { generateRandomToken } from '../common/utils/token.util.js';
+
+import { hashPassword } from '../common/utils/password.util.js';
 class AuthRepository {
   /**
    * Find user by email
@@ -231,6 +235,27 @@ class AuthRepository {
     );
   }
 
+  /**
+ * Find User By Password Reset Token Id
+ */
+  async findUserByPasswordResetTokenId(
+    passwordResetTokenId
+  ) {
+    return await User.findOne({
+      passwordResetTokenId,
+      passwordResetTokenExpires: {
+        $gt: new Date(),
+      },
+      isDeleted: false,
+    })
+      .select('+passwordResetTokenHash')
+      .populate({
+        path: 'role',
+        populate: {
+          path: 'permissions',
+        },
+      });
+  }
   /** 
    * Unlock account
   */
@@ -286,16 +311,92 @@ class AuthRepository {
   /**
  * Find User By Password Reset Token
  */
-  async findUserByPasswordResetToken() {
-    return await User.findOne({
-      passwordResetToken: {
-        $ne: null,
+  // async findUserByPasswordResetToken() {
+  //   return await User.findOne({
+  //     passwordResetToken: {
+  //       $ne: null,
+  //     },
+  //     passwordResetTokenExpires: {
+  //       $gt: new Date(),
+  //     },
+  //   }).select('+passwordResetToken');
+  // }
+
+  /**
+ * Save Password Reset Token
+ */
+  async savePasswordResetToken(
+    userId,
+    passwordResetTokenId,
+    passwordResetTokenHash,
+    passwordResetTokenExpires
+  ) {
+    return await User.findByIdAndUpdate(
+      userId,
+      {
+        passwordResetTokenId,
+        passwordResetTokenHash,
+        passwordResetTokenExpires,
       },
-      passwordResetTokenExpires: {
-        $gt: new Date(),
-      },
-    }).select('+passwordResetToken');
+      {
+        new: true,
+      }
+    );
   }
+  /**
+ * Clear Password Reset Token
+ */
+  async clearPasswordResetToken(userId) {
+    return await User.findByIdAndUpdate(
+      userId,
+      {
+        passwordResetTokenId: null,
+        passwordResetTokenHash: null,
+        passwordResetTokenExpires: null,
+        refreshTokenHash: null,
+      },
+      {
+        new: true,
+      }
+    );
+  }
+  /**
+ * Update Password And Clear Refresh Token
+ */
+  async updatePasswordAndClearRefreshToken(
+    userId,
+    hashedPassword
+  ) {
+    return await User.findByIdAndUpdate(
+      userId,
+      {
+        password: hashedPassword,
+        passwordChangedAt: new Date(),
+        refreshTokenHash: null,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+  }
+
+  /**
+ * Find User By Id With Password
+ */
+async findUserByIdWithPassword(userId) {
+  return await User.findOne({
+    _id: userId,
+    isDeleted: false,
+  })
+    .select('+password')
+    .populate({
+      path: 'role',
+      populate: {
+        path: 'permissions',
+      },
+    });
+}
 }
 
 export default new AuthRepository();

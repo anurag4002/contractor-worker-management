@@ -39,6 +39,13 @@ const AUTH_MESSAGES = {
     EXPIRED: 'Token has expired.',
     REFRESH_REQUIRED: 'Refresh token is required.',
   },
+  PASSWORD: {
+    INVALID: 'Invalid password.',
+    CHANGED: 'Password changed successfully.',
+    RESET_SUCCESS: 'Password reset successfully.',
+    SAME_AS_OLD:
+        'New password must be different from old password.',
+}
 };
 
 export default AUTH_MESSAGES;
