@@ -47,3 +47,4 @@ temp/
 
 # Misc
 *.tgz
+logs/

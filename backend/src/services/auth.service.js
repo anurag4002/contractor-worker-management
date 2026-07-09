@@ -4,7 +4,7 @@ import authRepository from '../repositories/auth.repository.js';
 
 import ApiError from '../common/errors/ApiError.js';
 
-import { hashPassword } from '../common/utils/password.util.js';
+import logger from '../common/logger/logger.js';
 
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken, } from '../common/utils/jwt.util.js';
 
@@ -395,7 +395,7 @@ class AuthService {
         );
       }
     } else if (process.env.NODE_ENV !== 'production') {
-      console.info('Password reset email:', emailPayload);
+      logger.info(emailPayload);
     }
 
     return {
