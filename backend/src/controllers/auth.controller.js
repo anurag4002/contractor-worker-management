@@ -76,11 +76,11 @@ const forgotPassword = asyncHandler(async (req, res) => {
  * Reset Password
  */
 const resetPassword = asyncHandler(async (req, res) => {
-    const { resetToken, newPassword } = req.body;
+    const { token, password } = req.body;
 
     const result = await authService.resetPassword(
-        resetToken,
-        newPassword
+        token,
+        password
     );
 
     return ApiResponse.success(
