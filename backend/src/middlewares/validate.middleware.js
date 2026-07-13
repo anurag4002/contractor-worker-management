@@ -25,7 +25,13 @@ const validate = (schema, property = 'body') => {
       );
     }
 
-    req[property] = value;
+    if (property === 'body') {
+      req.body = value;
+    } else if (property === 'params') {
+      req.params = value;
+    } else if (property === 'query') {
+      Object.assign(req.query, value);
+    }
 
     next();
   };

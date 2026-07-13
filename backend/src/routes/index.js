@@ -2,6 +2,8 @@ import { Router } from 'express';
 
 import authRoutes from './auth.routes.js';
 
+import userRoutes from './user.routes.js';
+
 const router = Router();
 
 /*
@@ -25,6 +27,13 @@ router.get('/health', (req, res) => {
 */
 
 router.use('/auth', authRoutes);
+
+/*
+|--------------------------------------------------------------------------
+| user Routes
+|--------------------------------------------------------------------------
+*/
+router.use('/users', userRoutes);
 
 /*
 |--------------------------------------------------------------------------
