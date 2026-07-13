@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { FiCalendar, FiDownload } from "react-icons/fi";
 
 import useWorkers from "../../hooks/useWorkers";
@@ -24,6 +25,8 @@ import {
 } from "./Dashboard.style";
 
 const Dashboard = () => {
+
+  const navigate = useNavigate();
 
   const {
     workers = [],
@@ -53,6 +56,7 @@ const Dashboard = () => {
       description: "Registered Workers",
       icon: "FiUsers",
       progress: 100,
+      route: "/workers",
     },
     {
       title: "Present Today",
@@ -61,6 +65,7 @@ const Dashboard = () => {
       icon: "FiUserCheck",
       progress:
         attendanceSummary.attendancePercentage || 0,
+      route: "/attendance",
     },
     {
       title: "Active Sites",
@@ -68,6 +73,7 @@ const Dashboard = () => {
       description: "Running Projects",
       icon: "FiCreditCard",
       progress: 100,
+      route: "/sites",
     },
     {
       title: "Pending Salary",
@@ -77,20 +83,36 @@ const Dashboard = () => {
       description: "Remaining Balance",
       icon: "FiDollarSign",
       progress: 100,
+      route: "/salary",
     },
   ];
 
+  const handleExport = () => {
+
+    alert(
+      "PDF Export will be connected in next step."
+    );
+
+  };
+
   return (
+
     <DashboardContainer>
 
       <DashboardHeader>
 
         <HeaderLeft>
 
-          <h2>Dashboard</h2>
+          <h2>
+
+            Dashboard
+
+          </h2>
 
           <p>
+
             Contractor Worker Management System
+
           </p>
 
         </HeaderLeft>
@@ -101,7 +123,9 @@ const Dashboard = () => {
 
           <span>{today}</span>
 
-          <ExportButton>
+          <ExportButton
+            onClick={handleExport}
+          >
 
             <FiDownload />
 
@@ -115,18 +139,33 @@ const Dashboard = () => {
 
       <StatsGrid>
 
-        {stats.map((item) => (
+        {
 
-          <StatCard
-            key={item.title}
-            title={item.title}
-            value={item.value}
-            description={item.description}
-            icon={item.icon}
-            progress={item.progress}
-          />
+          stats.map((item) => (
 
-        ))}
+            <div
+              key={item.title}
+              onClick={() =>
+                navigate(item.route)
+              }
+              style={{
+                cursor: "pointer",
+              }}
+            >
+
+              <StatCard
+                title={item.title}
+                value={item.value}
+                description={item.description}
+                icon={item.icon}
+                progress={item.progress}
+              />
+
+            </div>
+
+          ))
+
+        }
 
       </StatsGrid>
 
@@ -142,35 +181,83 @@ const Dashboard = () => {
 
           <QuickActions>
 
-            <ActionCard>
+            <ActionCard
+              onClick={() =>
+                navigate("/workers")
+              }
+            >
 
-              <ActionIcon>👷</ActionIcon>
+              <ActionIcon>
 
-              <ActionTitle>Add Worker</ActionTitle>
+                👷
 
-            </ActionCard>
+              </ActionIcon>
 
-            <ActionCard>
+              <ActionTitle>
 
-              <ActionIcon>📅</ActionIcon>
+                Add Worker
 
-              <ActionTitle>Attendance</ActionTitle>
-
-            </ActionCard>
-
-            <ActionCard>
-
-              <ActionIcon>💰</ActionIcon>
-
-              <ActionTitle>Salary</ActionTitle>
+              </ActionTitle>
 
             </ActionCard>
 
-            <ActionCard>
+            <ActionCard
+              onClick={() =>
+                navigate("/attendance")
+              }
+            >
 
-              <ActionIcon>🏗</ActionIcon>
+              <ActionIcon>
 
-              <ActionTitle>Sites</ActionTitle>
+                📅
+
+              </ActionIcon>
+
+              <ActionTitle>
+
+                Attendance
+
+              </ActionTitle>
+
+            </ActionCard>
+
+            <ActionCard
+              onClick={() =>
+                navigate("/salary")
+              }
+            >
+
+              <ActionIcon>
+
+                💰
+
+              </ActionIcon>
+
+              <ActionTitle>
+
+                Salary
+
+              </ActionTitle>
+
+            </ActionCard>
+
+            <ActionCard
+              onClick={() =>
+                navigate("/sites")
+              }
+            >
+
+              <ActionIcon>
+
+                🏗
+
+              </ActionIcon>
+
+              <ActionTitle>
+
+                Sites
+
+              </ActionTitle>
 
             </ActionCard>
 
@@ -188,9 +275,17 @@ const Dashboard = () => {
 
           <List>
 
-            <ListItem>
+            <ListItem
+              onClick={() =>
+                navigate("/attendance")
+              }
+            >
 
-              <span>Present</span>
+              <span>
+
+                Present
+
+              </span>
 
               <Badge success>
 
@@ -200,9 +295,17 @@ const Dashboard = () => {
 
             </ListItem>
 
-            <ListItem>
+            <ListItem
+              onClick={() =>
+                navigate("/attendance")
+              }
+            >
 
-              <span>Absent</span>
+              <span>
+
+                Absent
+
+              </span>
 
               <Badge danger>
 
@@ -212,9 +315,17 @@ const Dashboard = () => {
 
             </ListItem>
 
-            <ListItem>
+            <ListItem
+              onClick={() =>
+                navigate("/attendance")
+              }
+            >
 
-              <span>Leave</span>
+              <span>
+
+                Leave
+
+              </span>
 
               <Badge warning>
 
@@ -240,7 +351,11 @@ const Dashboard = () => {
 
             <ListItem>
 
-              <span>Gross Salary</span>
+              <span>
+
+                Gross Salary
+
+              </span>
 
               <strong>
 
@@ -254,7 +369,11 @@ const Dashboard = () => {
 
             <ListItem>
 
-              <span>Advance Paid</span>
+              <span>
+
+                Advance Paid
+
+              </span>
 
               <strong>
 
@@ -268,7 +387,11 @@ const Dashboard = () => {
 
             <ListItem>
 
-              <span>Salary Paid</span>
+              <span>
+
+                Salary Paid
+
+              </span>
 
               <strong>
 
@@ -282,7 +405,11 @@ const Dashboard = () => {
 
             <ListItem>
 
-              <span>Pending</span>
+              <span>
+
+                Pending
+
+              </span>
 
               <strong>
 
@@ -308,27 +435,36 @@ const Dashboard = () => {
 
           <List>
 
-            {activeSites.length === 0 ? (
+            {
 
-              <ListItem>
+              activeSites.length === 0 ? (
 
-                No Active Site
+                <ListItem>
 
-              </ListItem>
-
-            ) : (
-
-              activeSites.map((site) => (
-
-                <ListItem key={site.id}>
-
-                  {site.name}
+                  No Active Site
 
                 </ListItem>
 
-              ))
+              ) : (
 
-            )}
+                activeSites.map((site) => (
+
+                  <ListItem
+                    key={site.id}
+                    onClick={() =>
+                      navigate("/sites")
+                    }
+                  >
+
+                    {site.name}
+
+                  </ListItem>
+
+                ))
+
+              )
+
+            }
 
           </List>
 
@@ -337,6 +473,7 @@ const Dashboard = () => {
       </DashboardGrid>
 
     </DashboardContainer>
+
   );
 
 };
