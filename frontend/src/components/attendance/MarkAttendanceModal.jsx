@@ -1,6 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from "react";
 
-import Modal from "../modal/Modal";
+import {
+  Overlay,
+  Modal,
+  Header,
+  Title,
+  CloseButton,
+  Form,
+  FormGroup,
+  Label,
+  Select,
+  TextArea,
+  Footer,
+  CancelButton,
+  SaveButton,
+} from "./MarkAttendanceModal.style";
 
 const MarkAttendanceModal = ({
   open,
@@ -9,42 +26,63 @@ const MarkAttendanceModal = ({
   onSave,
 }) => {
 
-  const [attendance, setAttendance] = useState({
-    date: "",
-    status: "Present",
-    site: "",
-    remarks: "",
-  });
+  const [status, setStatus] =
+    useState("Present");
+
+  const [remark, setRemark] =
+    useState("");
+
+  const [workingHours, setWorkingHours] =
+    useState("8");
+
+  const [overtime, setOvertime] =
+    useState("0");
 
   useEffect(() => {
 
     if (worker) {
 
-      setAttendance({
-        date: new Date().toISOString().split("T")[0],
-        status: worker.status || "Present",
-        site: worker.site || "",
-        remarks: "",
-      });
+      setStatus(worker.status || "Present");
+
+      setRemark(worker.remark || "");
+
+      setWorkingHours(
+        worker.workingHours || "8"
+      );
+
+      setOvertime(
+        worker.overtime || "0"
+      );
 
     }
 
   }, [worker]);
 
-  if (!worker) return null;
+  if (!open || !worker) return null;
 
-  const handleChange = (field, value) => {
+  const handleSubmit = (e) => {
 
-    setAttendance((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    e.preventDefault();
 
-  };
+    onSave(worker.id, {
 
-  const handleSubmit = () => {
+      status,
 
-    onSave(worker.id, attendance);
+      remark,
+
+      workingHours: Number(
+        workingHours
+      ),
+
+      overtime: Number(
+        overtime
+      ),
+
+      date: new Date()
+        .toISOString()
+        .split("T")[0],
+
+    });
 
     onClose();
 
@@ -52,175 +90,303 @@ const MarkAttendanceModal = ({
 
   return (
 
-    <Modal
-      open={open}
-      title="Mark Attendance"
-      submitText="Save Attendance"
-      onClose={onClose}
-      onSubmit={handleSubmit}
-    >
+    <Overlay>
 
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "1rem",
-        }}
-      >
+      <Modal>
 
-        <div>
+        <Header>
 
-          <label
-            style={{
-              display: "block",
-              marginBottom: ".4rem",
-              fontWeight: "600",
-            }}
-          >
-            Worker
-          </label>
+          <Title>
 
-          <input
-            value={worker.name}
-            disabled
-            style={{
-              width: "100%",
-              padding: ".85rem",
-              border: "1px solid #CBD5E1",
-              borderRadius: ".7rem",
-            }}
-          />
+            Mark Attendance
 
-        </div>
+          </Title>
 
-        <div>
-
-          <label
-            style={{
-              display: "block",
-              marginBottom: ".4rem",
-              fontWeight: "600",
-            }}
-          >
-            Date
-          </label>
-
-          <input
-            type="date"
-            value={attendance.date}
-            onChange={(e) =>
-              handleChange("date", e.target.value)
-            }
-            style={{
-              width: "100%",
-              padding: ".85rem",
-              border: "1px solid #CBD5E1",
-              borderRadius: ".7rem",
-            }}
-          />
-
-        </div>
-
-        <div>
-
-          <label
-            style={{
-              display: "block",
-              marginBottom: ".4rem",
-              fontWeight: "600",
-            }}
-          >
-            Site
-          </label>
-
-          <input
-            value={attendance.site}
-            onChange={(e) =>
-              handleChange("site", e.target.value)
-            }
-            style={{
-              width: "100%",
-              padding: ".85rem",
-              border: "1px solid #CBD5E1",
-              borderRadius: ".7rem",
-            }}
-          />
-
-        </div>
-
-        <div>
-
-          <label
-            style={{
-              display: "block",
-              marginBottom: ".4rem",
-              fontWeight: "600",
-            }}
-          >
-            Status
-          </label>
-
-          <select
-            value={attendance.status}
-            onChange={(e) =>
-              handleChange("status", e.target.value)
-            }
-            style={{
-              width: "100%",
-              padding: ".85rem",
-              border: "1px solid #CBD5E1",
-              borderRadius: ".7rem",
-            }}
+          <CloseButton
+            onClick={onClose}
           >
 
-            <option value="Present">
-              Present
-            </option>
+            ×
 
-            <option value="Absent">
-              Absent
-            </option>
+          </CloseButton>
 
-            <option value="Leave">
-              Leave
-            </option>
+        </Header>
 
-          </select>
+        <Form
+          onSubmit={handleSubmit}
+        >
 
-        </div>
+          <FormGroup>
 
-        <div>
+            <Label>
 
-          <label
-            style={{
-              display: "block",
-              marginBottom: ".4rem",
-              fontWeight: "600",
-            }}
-          >
-            Remarks
-          </label>
+              Worker Name
 
-          <textarea
-            rows="4"
-            value={attendance.remarks}
-            onChange={(e) =>
-              handleChange("remarks", e.target.value)
-            }
-            style={{
-              width: "100%",
-              resize: "none",
-              padding: ".85rem",
-              border: "1px solid #CBD5E1",
-              borderRadius: ".7rem",
-            }}
-          />
+            </Label>
 
-        </div>
+            <Select disabled>
 
-      </div>
+              <option>
 
-    </Modal>
+                {worker.name}
+
+              </option>
+
+            </Select>
+
+          </FormGroup>
+
+          <FormGroup>
+
+            <Label>
+
+              Worker ID
+
+            </Label>
+
+            <Select disabled>
+
+              <option>
+
+                {worker.id}
+
+              </option>
+
+            </Select>
+
+          </FormGroup>
+
+          <FormGroup>
+
+            <Label>
+
+              Site
+
+            </Label>
+
+            <Select disabled>
+
+              <option>
+
+                {worker.site}
+
+              </option>
+
+            </Select>
+
+          </FormGroup>
+
+          <FormGroup>
+
+            <Label>
+
+              Attendance Date
+
+            </Label>
+
+            <Select disabled>
+
+              <option>
+
+                {
+
+                  new Date()
+
+                    .toLocaleDateString("en-IN")
+
+                }
+
+              </option>
+
+            </Select>
+
+          </FormGroup>
+
+          <FormGroup>
+
+            <Label>
+
+              Attendance Status
+
+            </Label>
+
+            <Select
+
+              value={status}
+
+              onChange={(e) =>
+
+                setStatus(e.target.value)
+
+              }
+
+            >
+
+              <option value="Present">
+
+                Present
+
+              </option>
+
+              <option value="Absent">
+
+                Absent
+
+              </option>
+
+              <option value="Leave">
+
+                Leave
+
+              </option>
+
+            </Select>
+
+          </FormGroup>
+
+          <FormGroup>
+
+            <Label>
+
+              Working Hours
+
+            </Label>
+
+            <Select
+
+              value={workingHours}
+
+              onChange={(e) =>
+
+                setWorkingHours(
+                  e.target.value
+                )
+
+              }
+
+            >
+
+              {[
+
+                ...Array(13),
+
+              ].map((_, i) => (
+
+                <option
+                  key={i}
+                  value={i}
+                >
+
+                  {i} Hours
+
+                </option>
+
+              ))}
+
+            </Select>
+
+          </FormGroup>
+
+          <FormGroup>
+
+            <Label>
+
+              Overtime Hours
+
+            </Label>
+
+            <Select
+
+              value={overtime}
+
+              onChange={(e) =>
+
+                setOvertime(
+                  e.target.value
+                )
+
+              }
+
+            >
+
+              {[
+
+                ...Array(9),
+
+              ].map((_, i) => (
+
+                <option
+                  key={i}
+                  value={i}
+                >
+
+                  {i} Hours
+
+                </option>
+
+              ))}
+
+            </Select>
+
+          </FormGroup>
+
+          <FormGroup>
+
+            <Label>
+
+              Remark
+
+            </Label>
+
+            <TextArea
+
+              rows="4"
+
+              placeholder="Optional Remark"
+
+              value={remark}
+
+              onChange={(e) =>
+
+                setRemark(e.target.value)
+
+              }
+
+            />
+
+          </FormGroup>
+
+          <Footer>
+
+            <CancelButton
+
+              type="button"
+
+              onClick={onClose}
+
+            >
+
+              Cancel
+
+            </CancelButton>
+
+            <SaveButton
+
+              type="submit"
+
+            >
+
+              Save Attendance
+
+            </SaveButton>
+
+          </Footer>
+
+        </Form>
+
+      </Modal>
+
+    </Overlay>
 
   );
 

@@ -1,28 +1,115 @@
 {
+  "title": "Dashboard",
+  "subtitle": "Contractor Worker Management System",
+
+ 
   "stats": [
     {
       "title": "Total Workers",
       "value": "158",
-      "change": "+12%",
-      "icon": "FiUsers"
+      "change": "+12",
+      "icon": "FiUsers",
+      "description": "Registered Workers",
+      "progress": "95%"
     },
     {
-      "title": "Present Today",
+      "title": "Present Workers Today",
       "value": "142",
-      "change": "+5%",
-      "icon": "FiUserCheck"
+      "change": "+5",
+      "icon": "FiUserCheck",
+      "description": "Today's Attendance",
+      "progress": "89%"
     },
     {
-      "title": "Salary Paid",
-      "value": "₹12.5L",
-      "change": "+18%",
-      "icon": "FiDollarSign"
+      "title": "Total Wages Due",
+      "value": "₹2.85 L",
+      "change": "Pending",
+      "icon": "FiCreditCard",
+      "description": "Pending Payments",
+      "progress": "65%"
     },
     {
-      "title": "Active Sites",
-      "value": "08",
-      "change": "+2",
-      "icon": "FiMapPin"
+      "title": "Total Wages Paid",
+      "value": "₹12.50 L",
+      "change": "This Month",
+      "icon": "FiDollarSign",
+      "description": "Paid This Month",
+      "progress": "92%"
+    }
+  ],
+
+
+  "quickActions": [
+    {
+      "id": 1,
+      "title": "Add Worker",
+      "icon": "👷"
+    },
+    {
+      "id": 2,
+      "title": "Attendance",
+      "icon": "📅"
+    },
+    {
+      "id": 3,
+      "title": "Salary",
+      "icon": "💰"
+    },
+    {
+      "id": 4,
+      "title": "Sites",
+      "icon": "📍"
+    }
+  ],
+
+  "attendance": {
+    "present": 142,
+    "absent": 12,
+    "leave": 4,
+    "halfDay": 2
+  },
+
+  "salary": {
+    "paid": "₹12.5L",
+    "pending": "₹2.85L",
+    "advance": "₹1.20L"
+  },
+
+  "sites": [
+    {
+      "name": "Metro Project",
+      "workers": 35,
+      "status": "Active"
+    },
+    {
+      "name": "Hospital Building",
+      "workers": 28,
+      "status": "Running"
+    },
+    {
+      "name": "Mall Construction",
+      "workers": 18,
+      "status": "Active"
+    }
+  ],
+  
+
+  "activities": [
+    {
+      "title": "Rahul marked Present",
+      "time": "09:15 AM"
+    },
+    {
+      "title": "Salary generated for Site A",
+      "time": "10:20 AM"
+    },
+    {
+      "title": "New worker added",
+      "time": "11:40 AM"
+    },
+    {
+      "title": "Hospital Site updated",
+      "time": "12:10 PM"
     }
   ]
 }

@@ -1,16 +1,37 @@
-import React, { useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from "react";
 
-import Modal from "../modal/Modal";
-import WorkerForm from "../workerform/WorkerForm";
+import {
+  Overlay,
+  Modal,
+  Header,
+  Title,
+  CloseButton,
+  Form,
+  Grid,
+  FormGroup,
+  Label,
+  Input,
+  Select,
+  Footer,
+  CancelButton,
+  SaveButton,
+} from "./WorkerModal.style";
 
-const defaultWorker = {
+const initialState = {
   name: "",
-  phone: "",
-  skill: "Helper",
-  dailyWage: "",
-  site: "",
-  joiningDate: "",
+  mobile: "",
   photo: "",
+  skill: "",
+  workType: "",
+  wageType: "Daily",
+  dailyWage: "",
+  monthlySalary: "",
+  joiningDate: "",
+  site: "Site A",
+  status: "Active",
 };
 
 const AddWorkerModal = ({
@@ -18,53 +39,440 @@ const AddWorkerModal = ({
   onClose,
   onAddWorker,
 }) => {
-  const [worker, setWorker] = useState(defaultWorker);
 
-  const handleChange = (field, value) => {
-    setWorker((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+  const [form, setForm] =
+    useState(initialState);
 
-  const handleSubmit = () => {
-    if (
-      !worker.name ||
-      !worker.phone ||
-      !worker.skill ||
-      !worker.dailyWage ||
-      !worker.site
-    ) {
-      alert("Please fill all required fields.");
-      return;
+  useEffect(() => {
+
+    if (open) {
+
+      setForm(initialState);
+
     }
 
-    onAddWorker({
-      ...worker,
-      id: Date.now(),
-      status: "Present",
-      salary: `₹${worker.dailyWage}`,
-    });
+  }, [open]);
 
-    setWorker(defaultWorker);
+  if (!open) return null;
+
+  const handleChange = (e) => {
+
+    const { name, value } = e.target;
+
+    setForm((prev) => ({
+
+      ...prev,
+
+      [name]: value,
+
+    }));
+
+  };
+
+  const handleSubmit = (e) => {
+
+    e.preventDefault();
+
+    if (
+      form.name.trim() === "" ||
+      form.mobile.trim() === "" ||
+      form.skill.trim() === "" ||
+      form.workType.trim() === ""
+    ) {
+
+      alert("Please fill all required fields.");
+
+      return;
+
+    }
+
+    if (!/^[6-9]\d{9}$/.test(form.mobile)) {
+
+      alert("Enter valid mobile number.");
+
+      return;
+
+    }
+
+    const worker = {
+
+      id: `CW${Date.now()
+        .toString()
+        .slice(-5)}`,
+
+      ...form,
+
+      dailyWage:
+        form.wageType === "Daily"
+          ? Number(form.dailyWage)
+          : 0,
+
+      monthlySalary:
+        form.wageType === "Monthly"
+          ? Number(form.monthlySalary)
+          : 0,
+
+    };
+
+    onAddWorker(worker);
+
+    setForm(initialState);
 
     onClose();
+
   };
 
   return (
-    <Modal
-      open={open}
-      title="Add New Worker"
-      submitText="Add Worker"
-      onClose={onClose}
-      onSubmit={handleSubmit}
-    >
-      <WorkerForm
-        initialValues={worker}
-        onChange={handleChange}
-      />
-    </Modal>
+
+    <Overlay>
+
+      <Modal>
+
+        <Header>
+
+          <Title>
+
+            Add New Worker
+
+          </Title>
+
+          <CloseButton
+            onClick={onClose}
+          >
+
+            ×
+
+          </CloseButton>
+
+        </Header>
+
+        <Form
+          onSubmit={handleSubmit}
+        >
+
+          <Grid>
+
+            <FormGroup>
+
+              <Label>
+
+                Worker Name *
+
+              </Label>
+
+              <Input
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                placeholder="Enter worker name"
+                required
+              />
+
+            </FormGroup>
+
+            <FormGroup>
+
+              <Label>
+
+                Mobile Number *
+
+              </Label>
+
+              <Input
+                type="tel"
+                maxLength={10}
+                name="mobile"
+                value={form.mobile}
+                onChange={handleChange}
+                placeholder="9876543210"
+                required
+              />
+
+            </FormGroup>
+
+            <FormGroup>
+
+              <Label>
+
+                Photo URL
+
+              </Label>
+
+              <Input
+                name="photo"
+                value={form.photo}
+                onChange={handleChange}
+                placeholder="https://image-url"
+              />
+
+            </FormGroup>
+
+            <FormGroup>
+
+              <Label>
+
+                Skill
+
+              </Label>
+
+              <Input
+                name="skill"
+                value={form.skill}
+                onChange={handleChange}
+                placeholder="Electrician"
+                required
+              />
+
+            </FormGroup>
+
+            <FormGroup>
+
+              <Label>
+
+                Work Type
+
+              </Label>
+
+              <Input
+                name="workType"
+                value={form.workType}
+                onChange={handleChange}
+                placeholder="Electrical Work"
+                required
+              />
+
+            </FormGroup>
+
+            <FormGroup>
+
+              <Label>
+
+                Wage Type
+
+              </Label>
+
+              <Select
+                name="wageType"
+                value={form.wageType}
+                onChange={handleChange}
+              >
+
+                <option value="Daily">
+
+                  Daily
+
+                </option>
+
+                <option value="Monthly">
+
+                  Monthly
+
+                </option>
+
+              </Select>
+
+            </FormGroup>
+
+            {
+
+              form.wageType === "Daily"
+
+              ? (
+
+                <FormGroup>
+
+                  <Label>
+
+                    Daily Wage
+
+                  </Label>
+
+                  <Input
+                    type="number"
+                    name="dailyWage"
+                    value={form.dailyWage}
+                    onChange={handleChange}
+                    required
+                  />
+
+                </FormGroup>
+
+              )
+
+              : (
+
+                <FormGroup>
+
+                  <Label>
+
+                    Monthly Salary
+
+                  </Label>
+
+                  <Input
+                    type="number"
+                    name="monthlySalary"
+                    value={form.monthlySalary}
+                    onChange={handleChange}
+                    required
+                  />
+
+                </FormGroup>
+
+              )
+
+            }
+
+            <FormGroup>
+
+              <Label>
+
+                Joining Date
+
+              </Label>
+
+              <Input
+                type="date"
+                name="joiningDate"
+                value={form.joiningDate}
+                onChange={handleChange}
+                required
+              />
+
+            </FormGroup>
+
+            <FormGroup>
+
+              <Label>
+
+                Site
+
+              </Label>
+
+              <Select
+                name="site"
+                value={form.site}
+                onChange={handleChange}
+              >
+
+                <option>
+
+                  Site A
+
+                </option>
+
+                <option>
+
+                  Site B
+
+                </option>
+
+                <option>
+
+                  Site C
+
+                </option>
+
+                <option>
+
+                  Site D
+
+                </option>
+
+              </Select>
+
+            </FormGroup>
+
+            <FormGroup>
+
+              <Label>
+
+                Status
+
+              </Label>
+
+              <Select
+                name="status"
+                value={form.status}
+                onChange={handleChange}
+              >
+
+                <option>
+
+                  Active
+
+                </option>
+
+                <option>
+
+                  Inactive
+
+                </option>
+
+              </Select>
+
+            </FormGroup>
+
+          </Grid>
+
+          {
+
+            form.photo && (
+
+              <div
+                style={{
+                  marginTop: "1rem",
+                  textAlign: "center",
+                }}
+              >
+
+                <img
+                  src={form.photo}
+                  alt="Preview"
+                  style={{
+                    width: "90px",
+                    height: "90px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    border: "2px solid #e2e8f0",
+                  }}
+                />
+
+              </div>
+
+            )
+
+          }
+
+          <Footer>
+
+            <CancelButton
+              type="button"
+              onClick={onClose}
+            >
+
+              Cancel
+
+            </CancelButton>
+
+            <SaveButton
+              type="submit"
+            >
+
+              Add Worker
+
+            </SaveButton>
+
+          </Footer>
+
+        </Form>
+
+      </Modal>
+
+    </Overlay>
+
   );
+
 };
 
 export default AddWorkerModal;

@@ -6,47 +6,72 @@
     {
       "id": "CW001",
       "name": "Rahul Sharma",
-      "phone": "+91 9876543210",
+      "mobile": "9876543210",
+      "photo": "",
       "skill": "Electrician",
+      "workType": "Electric Work",
+      "wageType": "Daily",
+      "dailyWage": 850,
+      "monthlySalary": 0,
+      "joiningDate": "2026-07-01",
       "site": "Site A",
-      "salary": "₹850/day",
-      "status": "Present"
+      "status": "Active"
     },
     {
       "id": "CW002",
       "name": "Amit Kumar",
-      "phone": "+91 9876543220",
+      "mobile": "9876543220",
+      "photo": "",
       "skill": "Plumber",
+      "workType": "Plumbing",
+      "wageType": "Daily",
+      "dailyWage": 900,
+      "monthlySalary": 0,
+      "joiningDate": "2026-07-03",
       "site": "Site B",
-      "salary": "₹900/day",
-      "status": "Present"
+      "status": "Active"
     },
     {
       "id": "CW003",
       "name": "Deepak Singh",
-      "phone": "+91 9876543230",
+      "mobile": "9876543230",
+      "photo": "",
       "skill": "Welder",
+      "workType": "Welding",
+      "wageType": "Monthly",
+      "dailyWage": 0,
+      "monthlySalary": 28000,
+      "joiningDate": "2026-06-25",
       "site": "Site C",
-      "salary": "₹950/day",
-      "status": "Absent"
+      "status": "Active"
     },
     {
       "id": "CW004",
       "name": "Vikas Kumar",
-      "phone": "+91 9876543240",
+      "mobile": "9876543240",
+      "photo": "",
       "skill": "Carpenter",
+      "workType": "Wood Work",
+      "wageType": "Daily",
+      "dailyWage": 850,
+      "monthlySalary": 0,
+      "joiningDate": "2026-07-05",
       "site": "Site A",
-      "salary": "₹850/day",
-      "status": "Present"
+      "status": "Active"
     },
     {
       "id": "CW005",
       "name": "Sanjay Verma",
-      "phone": "+91 9876543250",
+      "mobile": "9876543250",
+      "photo": "",
       "skill": "Mason",
+      "workType": "Construction",
+      "wageType": "Daily",
+      "dailyWage": 800,
+      "monthlySalary": 0,
+      "joiningDate": "2026-07-06",
       "site": "Site D",
-      "salary": "₹800/day",
-      "status": "Present"
+      "status": "Inactive"
     }
   ]
 }

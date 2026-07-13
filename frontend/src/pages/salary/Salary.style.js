@@ -9,195 +9,90 @@ export const SalaryContainer = styled.div`
 export const Header = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-
-  @media (max-width:768px){
-    flex-direction:column;
-    align-items:flex-start;
-  }
+  align-items: flex-end;
+  gap: 1.5rem;
+  flex-wrap: wrap;
 `;
 
 export const TitleSection = styled.div`
-  h2{
-    margin:0;
-    font-size:2rem;
-    color:#0F172A;
-    font-weight:700;
+  h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0f172a;
   }
 
-  p{
-    margin:.5rem 0 0;
-    color:#64748B;
+  p {
+    margin-top: 0.5rem;
+    color: #64748b;
+    font-size: 0.95rem;
   }
 `;
 
 export const ActionSection = styled.div`
-  display:flex;
-  gap:1rem;
-  flex-wrap:wrap;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
 `;
 
 export const SearchBox = styled.div`
-  width:20rem;
+  width: 22rem;
 
-  input{
-    width:100%;
-    padding:.9rem 1rem;
-    border:1px solid #CBD5E1;
-    border-radius:.8rem;
-    outline:none;
-    transition:.3s;
+  input {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.75rem;
+    font-size: 0.95rem;
+    outline: none;
+    transition: 0.3s;
 
-    &:focus{
-      border-color:#2563EB;
+    &:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
     }
   }
 
-  @media(max-width:768px){
-    width:100%;
+  @media (max-width: 768px) {
+    width: 100%;
   }
 `;
 
 export const Button = styled.button`
-  border:none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 
-  background:#2563EB;
+  padding: 0.9rem 1.4rem;
 
-  color:white;
+  border: none;
+  border-radius: 0.75rem;
 
-  padding:.9rem 1.4rem;
+  background: #2563eb;
+  color: #ffffff;
 
-  border-radius:.8rem;
+  font-size: 0.95rem;
+  font-weight: 600;
 
-  cursor:pointer;
+  cursor: pointer;
+  transition: 0.3s;
 
-  font-weight:600;
-
-  transition:.3s;
-
-  display:flex;
-  align-items:center;
-  gap:.5rem;
-
-  &:hover{
-    background:#1D4ED8;
+  &:hover {
+    background: #1d4ed8;
   }
 `;
 
-export const SummaryGrid = styled.div`
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:1.5rem;
+export const Section = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 `;
 
-export const SummaryCard = styled.div`
-  background:white;
-
-  border-radius:1rem;
-
-  padding:1.5rem;
-
-  border:1px solid #E2E8F0;
-
-  box-shadow:0 10px 25px rgba(15,23,42,.05);
-
-  h4{
-    margin:0;
-    color:#64748B;
-    font-size:.95rem;
-  }
-
-  h2{
-    margin:.75rem 0 0;
-    color:#0F172A;
-    font-size:1.8rem;
-  }
-`;
-
-export const TableCard = styled.div`
-  background:white;
-
-  border-radius:1rem;
-
-  overflow:hidden;
-
-  border:1px solid #E2E8F0;
-
-  box-shadow:0 10px 30px rgba(15,23,42,.05);
-`;
-
-export const Table = styled.table`
-  width:100%;
-  border-collapse:collapse;
-
-  thead{
-    background:#F8FAFC;
-  }
-
-  th{
-    padding:1rem;
-    text-align:left;
-    color:#475569;
-    font-size:.9rem;
-    border-bottom:1px solid #E2E8F0;
-  }
-
-  td{
-    padding:1rem;
-    color:#334155;
-    border-bottom:1px solid #E2E8F0;
-  }
-
-  tbody tr{
-    transition:.3s;
-  }
-
-  tbody tr:hover{
-    background:#F8FAFC;
-  }
-`;
-
-export const Status = styled.span`
-  display:inline-block;
-
-  padding:.4rem .9rem;
-
-  border-radius:999px;
-
-  font-size:.8rem;
-
-  font-weight:600;
-
-  background:${({status})=>
-    status==="Paid"
-      ? "#DCFCE7"
-      : "#FEF3C7"};
-
-  color:${({status})=>
-    status==="Paid"
-      ? "#15803D"
-      : "#B45309"};
-`;
-
-export const PaymentButton = styled.button`
-  border:none;
-
-  background:#16A34A;
-
-  color:white;
-
-  padding:.65rem 1rem;
-
-  border-radius:.65rem;
-
-  cursor:pointer;
-
-  font-weight:600;
-
-  transition:.3s;
-
-  &:hover{
-    background:#15803D;
-  }
+export const Card = styled.div`
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
 `;

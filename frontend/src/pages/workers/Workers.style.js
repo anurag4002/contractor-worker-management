@@ -2,8 +2,14 @@ import styled from "styled-components";
 
 export const WorkersContainer = styled.div`
   display: flex;
+
   flex-direction: column;
+
   gap: 2rem;
+
+  width: 100%;
+
+  overflow-x: hidden;
 `;
 
 export const Header = styled.div`

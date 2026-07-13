@@ -1,43 +1,74 @@
- {
+{
   "title": "Site Management",
-  "description": "Manage construction sites and assign workers.",
+  "description": "Manage construction sites, worker assignments and attendance.",
+
+  "summary": {
+    "totalSites": 8,
+    "activeSites": 6,
+    "totalWorkers": 158,
+    "attendance": "92%"
+  },
 
   "sites": [
     {
       "id": "S001",
-      "name": "Metro Station Project",
-      "location": "Noida Sector 62",
-      "supervisor": "Rahul Sharma",
-      "workers": 42,
-      "progress": 78,
-      "status": "Active"
+      "name": "Metro Project",
+      "location": "Greater Noida",
+      "supervisor": "Rakesh Kumar",
+      "workers": 32,
+      "present": 30,
+      "absent": 1,
+      "leave": 1,
+      "status": "Active",
+      "startDate": "2026-05-10"
     },
     {
       "id": "S002",
-      "name": "Residential Tower",
-      "location": "Greater Noida",
-      "supervisor": "Amit Kumar",
-      "workers": 31,
-      "progress": 56,
-      "status": "Active"
+      "name": "Hospital Building",
+      "location": "Noida",
+      "supervisor": "Amit Verma",
+      "workers": 28,
+      "present": 26,
+      "absent": 2,
+      "leave": 0,
+      "status": "Active",
+      "startDate": "2026-04-18"
     },
     {
       "id": "S003",
-      "name": "Shopping Mall",
-      "location": "Delhi",
+      "name": "Residential Tower",
+      "location": "Ghaziabad",
       "supervisor": "Deepak Singh",
-      "workers": 54,
-      "progress": 95,
-      "status": "Completed"
+      "workers": 24,
+      "present": 22,
+      "absent": 1,
+      "leave": 1,
+      "status": "Active",
+      "startDate": "2026-03-15"
     },
     {
       "id": "S004",
-      "name": "Industrial Plant",
-      "location": "Ghaziabad",
-      "supervisor": "Vikas Verma",
-      "workers": 26,
-      "progress": 34,
-      "status": "Active"
+      "name": "Shopping Mall",
+      "location": "Delhi",
+      "supervisor": "Vikas Kumar",
+      "workers": 18,
+      "present": 17,
+      "absent": 1,
+      "leave": 0,
+      "status": "Completed",
+      "startDate": "2026-01-20"
+    },
+    {
+      "id": "S005",
+      "name": "Warehouse Project",
+      "location": "Faridabad",
+      "supervisor": "Sanjay Verma",
+      "workers": 20,
+      "present": 18,
+      "absent": 1,
+      "leave": 1,
+      "status": "Active",
+      "startDate": "2026-06-01"
     }
   ]
 }

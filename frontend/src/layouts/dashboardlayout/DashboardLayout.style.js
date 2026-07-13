@@ -2,24 +2,27 @@ import styled from "styled-components";
 
 export const LayoutWrapper = styled.div`
   display: flex;
-
   min-height: 100vh;
-
   background: #f8fafc;
 `;
 
 export const ContentWrapper = styled.div`
   flex: 1;
 
+  min-width: 0;
+
   margin-left: ${({ sidebarOpen }) =>
     sidebarOpen ? "16rem" : "5rem"};
-  transition: margin-left 0.35s ease;
-  min-height: 100vh;
+
+  transition: margin-left .35s ease;
+
   display: flex;
   flex-direction: column;
 
-  @media (max-width: 768px) {
-    margin-left: 0;
+  overflow-x: hidden;
+
+  @media (max-width:768px){
+    margin-left:0;
   }
 `;
 
@@ -29,6 +32,8 @@ export const MainContent = styled.main`
   padding: 2rem;
 
   background: #f8fafc;
+
+  overflow-x: hidden;
 
   overflow-y: auto;
 `;

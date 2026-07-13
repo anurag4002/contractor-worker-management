@@ -1,26 +1,43 @@
 import React from "react";
 
 import {
-  FiDollarSign,
+  FiEye,
+  FiCreditCard,
   FiClock,
-  FiFileText,
-  FiEdit2,
 } from "react-icons/fi";
 
 import {
   TableCard,
   Table,
   Status,
-  PaymentButton,
-} from "../../pages/salary/Salary.style";
+  ActionButtons,
+  IconButton,
+} from "./SalaryTable.style";
 
 const SalaryTable = ({
-  workers,
-  onPaySalary,
+  workers = [],
+  onView,
   onAdvance,
   onHistory,
-  onEdit,
 }) => {
+
+  const getStatus = (worker) => {
+
+    if (worker.balance <= 0) {
+
+      return "Paid";
+
+    }
+
+    if (worker.paid > 0) {
+
+      return "Partial";
+
+    }
+
+    return "Pending";
+
+  };
 
   return (
 
@@ -32,21 +49,31 @@ const SalaryTable = ({
 
           <tr>
 
+            <th>#</th>
+
+            <th>Photo</th>
+
+            <th>ID</th>
+
             <th>Worker</th>
 
             <th>Site</th>
 
-            <th>Daily Wage</th>
+            <th>Work Type</th>
+
+            <th>Wage Type</th>
+
+            <th>Rate</th>
 
             <th>Days</th>
 
-            <th>Total Salary</th>
+            <th>Gross</th>
 
             <th>Advance</th>
 
             <th>Paid</th>
 
-            <th>Remaining</th>
+            <th>Balance</th>
 
             <th>Status</th>
 
@@ -60,191 +87,291 @@ const SalaryTable = ({
 
           {
 
-            workers.length === 0
+            workers.length === 0 ? (
 
-            ?
+              <tr>
 
-            <tr>
+                <td
 
-              <td
-                colSpan="10"
-                style={{
-                  textAlign:"center",
-                  padding:"2rem",
-                  color:"#64748B"
-                }}
-              >
+                  colSpan="15"
 
-                No Salary Records Found
+                  style={{
 
-              </td>
+                    textAlign: "center",
 
-            </tr>
+                    padding: "2rem",
 
-            :
+                    color: "#64748b",
 
-            workers.map((worker)=>{
+                  }}
 
-              const totalSalary =
-                worker.dailyWage *
-                worker.daysWorked;
+                >
 
-              const remaining =
-                totalSalary -
-                worker.advance -
-                worker.paid;
+                  No salary records found.
 
-              return(
+                </td>
 
-                <tr key={worker.id}>
+              </tr>
 
-                  <td>
+            ) : (
 
-                    <strong>
+              workers.map((worker, index) => {
 
-                      {worker.name}
+                const status = getStatus(worker);
 
-                    </strong>
+                return (
 
-                    <br/>
+                  <tr key={worker.id}>
 
-                    <small>
+                    <td>
 
-                      {worker.id}
+                      {index + 1}
 
-                    </small>
+                    </td>
 
-                  </td>
-
-                  <td>
-
-                    {worker.site}
-
-                  </td>
-
-                  <td>
-
-                    ₹{worker.dailyWage}
-
-                  </td>
-
-                  <td>
-
-                    {worker.daysWorked}
-
-                  </td>
-
-                  <td>
-
-                    ₹{totalSalary}
-
-                  </td>
-
-                  <td>
-
-                    ₹{worker.advance}
-
-                  </td>
-
-                  <td>
-
-                    ₹{worker.paid}
-
-                  </td>
-
-                  <td
-                    style={{
-                      color:
-                        remaining>0
-                        ? "#DC2626"
-                        : "#16A34A",
-                      fontWeight:"600"
-                    }}
-                  >
-
-                    ₹{remaining}
-
-                  </td>
-
-                  <td>
-
-                    <Status
-                      status={worker.status}
-                    >
-
-                      {worker.status}
-
-                    </Status>
-
-                  </td>
-
-                  <td>
-
-                    <div
-                      style={{
-                        display:"flex",
-                        gap:".5rem",
-                        flexWrap:"wrap"
-                      }}
-                    >
+                    <td>
 
                       {
 
-                        worker.status==="Pending"
+                        worker.photo ? (
 
-                        &&
+                          <img
 
-                        <PaymentButton
-                          onClick={()=>
-                            onPaySalary(worker)
-                          }
-                        >
+                            src={worker.photo}
 
-                          <FiDollarSign/>
+                            alt={worker.name}
 
-                        </PaymentButton>
+                            style={{
+
+                              width: "40px",
+
+                              height: "40px",
+
+                              borderRadius: "50%",
+
+                              objectFit: "cover",
+
+                            }}
+
+                          />
+
+                        ) : (
+
+                          <div
+
+                            style={{
+
+                              width: "40px",
+
+                              height: "40px",
+
+                              borderRadius: "50%",
+
+                              background: "#2563EB",
+
+                              color: "#fff",
+
+                              display: "flex",
+
+                              alignItems: "center",
+
+                              justifyContent: "center",
+
+                              fontWeight: 600,
+
+                            }}
+
+                          >
+
+                            {
+
+                              worker.name
+
+                                ?.charAt(0)
+
+                                ?.toUpperCase()
+
+                            }
+
+                          </div>
+
+                        )
 
                       }
 
-                      <PaymentButton
-                        onClick={()=>
-                          onAdvance(worker)
-                        }
-                      >
+                    </td>
 
-                        <FiClock/>
+                    <td>
 
-                      </PaymentButton>
+                      {worker.id}
 
-                      <PaymentButton
-                        onClick={()=>
-                          onHistory(worker)
-                        }
-                      >
+                    </td>
 
-                        <FiFileText/>
+                    <td>
 
-                      </PaymentButton>
+                      {worker.name}
 
-                      <PaymentButton
-                        onClick={()=>
-                          onEdit(worker)
-                        }
-                      >
+                    </td>
 
-                        <FiEdit2/>
+                    <td>
 
-                      </PaymentButton>
+                      {worker.site || "-"}
 
-                    </div>
+                    </td>
 
-                  </td>
+                    <td>
 
-                </tr>
+                      {worker.workType || "-"}
 
-              );
+                    </td>
 
-            })
+                    <td>
+
+                      {worker.wageType}
+
+                    </td>
+
+                    <td>
+
+                      {
+
+                        worker.wageType === "Monthly"
+
+                          ? `₹${Number(worker.monthlySalary || worker.dailyWage || 0).toLocaleString("en-IN")}/Month`
+
+                          : `₹${Number(worker.dailyWage || 0).toLocaleString("en-IN")}/Day`
+
+                      }
+
+                    </td>
+
+                    <td>
+
+                      {worker.daysWorked || 0}
+
+                    </td>
+
+                    <td>
+
+                      ₹{
+
+                        Number(worker.grossSalary || 0)
+
+                          .toLocaleString("en-IN")
+
+                      }
+
+                    </td>
+
+                    <td>
+
+                      ₹{
+
+                        Number(worker.advance || 0)
+
+                          .toLocaleString("en-IN")
+
+                      }
+
+                    </td>
+
+                    <td>
+
+                      ₹{
+
+                        Number(worker.paid || 0)
+
+                          .toLocaleString("en-IN")
+
+                      }
+
+                    </td>
+
+                    <td>
+
+                      ₹{
+
+                        Number(worker.balance || 0)
+
+                          .toLocaleString("en-IN")
+
+                      }
+
+                    </td>
+
+                    <td>
+
+                      <Status status={status}>
+
+                        {status}
+
+                      </Status>
+
+                    </td>
+
+                    <td>
+
+                      <ActionButtons>
+
+                        <IconButton
+
+                          title="Salary Slip"
+
+                          onClick={() =>
+
+                            onView(worker)
+
+                          }
+
+                        >
+
+                          <FiEye />
+
+                        </IconButton>
+
+                        <IconButton
+
+                          title="Advance Payment"
+
+                          onClick={() =>
+
+                            onAdvance(worker)
+
+                          }
+
+                        >
+
+                          <FiCreditCard />
+
+                        </IconButton>
+
+                        <IconButton
+
+                          title="Payment History"
+
+                          onClick={() =>
+
+                            onHistory(worker)
+
+                          }
+
+                        >
+
+                          <FiClock />
+
+                        </IconButton>
+
+                      </ActionButtons>
+
+                    </td>
+
+                  </tr>
+
+                );
+
+              })
+
+            )
 
           }
 

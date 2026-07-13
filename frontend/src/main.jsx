@@ -1,15 +1,26 @@
 import React from "react";
-import "@fontsource/inter";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 
 import App from "./App";
-import "./index.css";
+import { WorkerProvider } from "./context/WorkerContext";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+ReactDOM.createRoot(
+  document.getElementById("root")
+).render(
+
   <React.StrictMode>
+
     <BrowserRouter>
-      <App />
+
+      <WorkerProvider>
+
+        <App />
+
+      </WorkerProvider>
+
     </BrowserRouter>
+
   </React.StrictMode>
+
 );

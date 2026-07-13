@@ -1,11 +1,14 @@
-import React, { useMemo, useState } from "react";
-
-import workersData from "./Workers.data.json";
+import React, {
+  useMemo,
+  useState,
+} from "react";
 
 import {
   FiDownload,
   FiPlus,
 } from "react-icons/fi";
+
+import useWorkers from "../../hooks/useWorkers";
 
 import WorkerTable from "../../components/workertable/WorkerTable";
 import AddWorkerModal from "../../components/workermodal/AddWorkerModal";
@@ -24,11 +27,20 @@ import {
 
 const Workers = () => {
 
-  const [workers, setWorkers] = useState(
-    workersData.workers
-  );
+  const {
 
-  const [search, setSearch] = useState("");
+    workers = [],
+
+    addWorker,
+
+    updateWorker,
+
+    deleteWorker,
+
+  } = useWorkers();
+
+  const [search, setSearch] =
+    useState("");
 
   const [selectedWorker, setSelectedWorker] =
     useState(null);
@@ -47,88 +59,108 @@ const Workers = () => {
 
   const filteredWorkers = useMemo(() => {
 
+    const keyword =
+      search.trim().toLowerCase();
+
+    if (!keyword) {
+
+      return workers;
+
+    }
+
     return workers.filter((worker) => {
 
       return (
 
-        worker.name
+        String(worker.id || "")
           .toLowerCase()
-          .includes(search.toLowerCase())
+          .includes(keyword)
 
         ||
 
-        worker.skill
+        String(worker.name || "")
           .toLowerCase()
-          .includes(search.toLowerCase())
+          .includes(keyword)
 
         ||
 
-        worker.site
+        String(worker.mobile || "")
           .toLowerCase()
-          .includes(search.toLowerCase())
+          .includes(keyword)
+
+        ||
+
+        String(worker.skill || "")
+          .toLowerCase()
+          .includes(keyword)
+
+        ||
+
+        String(worker.workType || "")
+          .toLowerCase()
+          .includes(keyword)
+
+        ||
+
+        String(worker.site || "")
+          .toLowerCase()
+          .includes(keyword)
 
       );
 
     });
 
-  }, [workers, search]);
+  }, [
 
-  const addWorker = (worker) => {
+    workers,
 
-    setWorkers((prev) => [
+    search,
 
-      {
-        ...worker,
+  ]);
 
-        id: `CW${Date.now()}`,
+  const handleView = (worker) => {
 
-      },
+    setSelectedWorker(worker);
 
-      ...prev,
-
-    ]);
+    setViewModal(true);
 
   };
 
-  const updateWorker = (updatedWorker) => {
+  const handleEdit = (worker) => {
 
-    setWorkers((prev) =>
-      prev.map((worker) =>
+    setSelectedWorker(worker);
 
-        worker.id === updatedWorker.id
-
-          ? updatedWorker
-
-          : worker
-
-      )
-    );
+    setEditModal(true);
 
   };
 
-  const deleteWorker = (id) => {
+  const handleDelete = (worker) => {
 
-    setWorkers((prev) =>
-      prev.filter(
-        (worker) =>
-          worker.id !== id
-      )
-    );
+    setSelectedWorker(worker);
+
+    setDeleteModal(true);
 
   };
-    return (
+
+  return (
 
     <WorkersContainer>
-
-      {/* ================= Header ================= */}
 
       <Header>
 
         <TitleSection>
 
-          <h2>{workersData.title}</h2>
+          <h2>
 
-          <p>{workersData.description}</p>
+            Worker Management
+
+          </h2>
+
+          <p>
+
+            Manage contractor workers, profiles and records.
+
+          </p>
 
         </TitleSection>
 
@@ -137,17 +169,26 @@ const Workers = () => {
           <SearchBox>
 
             <input
+
               type="text"
-              placeholder="Search workers..."
+
+              placeholder="Search by ID, Name, Mobile, Skill, Site..."
+
               value={search}
-              onChange={(e) =>
+
+              onChange={(e)=>
+
                 setSearch(e.target.value)
+
               }
+
             />
 
           </SearchBox>
 
-          <Button>
+          <Button
+            type="button"
+          >
 
             <FiDownload />
 
@@ -156,9 +197,15 @@ const Workers = () => {
           </Button>
 
           <Button
-            onClick={() =>
+
+            type="button"
+
+            onClick={()=>
+
               setAddModal(true)
+
             }
+
           >
 
             <FiPlus />
@@ -171,53 +218,31 @@ const Workers = () => {
 
       </Header>
 
-      {/* ================= Worker Table ================= */}
-
       <WorkerTable
 
         workers={filteredWorkers}
 
-        onView={(worker) => {
+        onView={handleView}
 
-          setSelectedWorker(worker);
+        onEdit={handleEdit}
 
-          setViewModal(true);
-
-        }}
-
-        onEdit={(worker) => {
-
-          setSelectedWorker(worker);
-
-          setEditModal(true);
-
-        }}
-
-        onDelete={(worker) => {
-
-          setSelectedWorker(worker);
-
-          setDeleteModal(true);
-
-        }}
+        onDelete={handleDelete}
 
       />
-
-      {/* ================= Add Worker ================= */}
 
       <AddWorkerModal
 
         open={addModal}
 
-        onClose={() =>
+        onClose={()=>
+
           setAddModal(false)
+
         }
 
         onAddWorker={addWorker}
 
       />
-
-      {/* ================= Edit Worker ================= */}
 
       <EditWorkerModal
 
@@ -225,15 +250,25 @@ const Workers = () => {
 
         worker={selectedWorker}
 
-        onClose={() =>
+        onClose={()=>
+
           setEditModal(false)
+
         }
 
-        onUpdateWorker={updateWorker}
+        onUpdateWorker={(worker)=>
+
+          updateWorker(
+
+            worker.id,
+
+            worker
+
+          )
+
+        }
 
       />
-
-      {/* ================= Delete Worker ================= */}
 
       <DeleteWorkerModal
 
@@ -241,15 +276,15 @@ const Workers = () => {
 
         worker={selectedWorker}
 
-        onClose={() =>
+        onClose={()=>
+
           setDeleteModal(false)
+
         }
 
         onDeleteWorker={deleteWorker}
 
       />
-
-      {/* ================= View Worker ================= */}
 
       <WorkerProfileModal
 
@@ -257,8 +292,10 @@ const Workers = () => {
 
         worker={selectedWorker}
 
-        onClose={() =>
+        onClose={()=>
+
           setViewModal(false)
+
         }
 
       />

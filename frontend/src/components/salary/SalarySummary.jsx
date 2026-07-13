@@ -1,225 +1,135 @@
-import React, { useMemo } from "react";
+import React from "react";
 
 import {
   FiUsers,
   FiDollarSign,
+  FiCreditCard,
   FiTrendingUp,
-  FiAlertCircle,
 } from "react-icons/fi";
 
-import styled from "styled-components";
+import SalaryCard from "./SalaryCard";
 
-const Grid = styled.div`
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-  gap:1.5rem;
-`;
+import {
+  SummaryGrid,
+} from "./SalarySummary.style";
 
-const Card = styled.div`
-  background:#fff;
-  padding:1.5rem;
-  border-radius:1rem;
-  border:1px solid #E2E8F0;
-  box-shadow:0 10px 25px rgba(15,23,42,.05);
+const SalarySummary = ({
+  workers = [],
+}) => {
 
-  display:flex;
-  align-items:center;
-  gap:1rem;
+  const summary = workers.reduce(
 
-  transition:.3s;
+    (acc, worker) => {
 
-  &:hover{
-    transform:translateY(-4px);
-  }
-`;
+      acc.totalWorkers += 1;
 
-const IconBox = styled.div`
-  width:60px;
-  height:60px;
+      acc.totalDue += Number(worker.grossSalary || 0);
 
-  border-radius:15px;
+      acc.totalPaid += Number(worker.paid || 0);
 
-  display:flex;
-  justify-content:center;
-  align-items:center;
+      acc.totalAdvance += Number(worker.advance || 0);
 
-  font-size:1.6rem;
+      acc.totalBalance += Number(worker.balance || 0);
 
-  color:white;
+      return acc;
 
-  background:${({color})=>color};
-`;
+    },
 
-const Content = styled.div`
-  h2{
-    margin:0;
-    color:#0F172A;
-  }
+    {
 
-  p{
-    margin:.35rem 0 0;
-    color:#64748B;
-  }
-`;
+      totalWorkers: 0,
 
-const SalarySummary = ({ workers }) => {
+      totalDue: 0,
 
-  const summary = useMemo(()=>{
+      totalPaid: 0,
 
-    const totalWorkers = workers.length;
+      totalAdvance: 0,
 
-    const totalSalary = workers.reduce(
-      (sum,item)=>
-        sum + item.dailyWage * item.daysWorked,
-      0
-    );
+      totalBalance: 0,
 
-    const totalAdvance = workers.reduce(
-      (sum,item)=>
-        sum + item.advance,
-      0
-    );
+    }
 
-    const totalRemaining = workers.reduce(
-      (sum,item)=>
+  );
 
-        sum +
+  const cards = [
 
-        (
-          item.dailyWage *
-          item.daysWorked -
+    {
 
-          item.advance -
+      title: "Total Workers",
 
-          item.paid
-        ),
+      value: summary.totalWorkers,
 
-      0
-    );
+      icon: <FiUsers />,
 
-    return{
+      color: "#2563EB",
 
-      totalWorkers,
+    },
 
-      totalSalary,
+    {
 
-      totalAdvance,
+      title: "Total Wage Due",
 
-      totalRemaining,
+      value: `₹${summary.totalDue.toLocaleString("en-IN")}`,
 
-    };
+      icon: <FiDollarSign />,
 
-  },[workers]);
+      color: "#F59E0B",
 
-  return(
+    },
 
-    <Grid>
+    {
 
-      <Card>
+      title: "Salary Paid",
 
-        <IconBox color="#2563EB">
+      value: `₹${summary.totalPaid.toLocaleString("en-IN")}`,
 
-          <FiUsers/>
+      icon: <FiCreditCard />,
 
-        </IconBox>
+      color: "#16A34A",
 
-        <Content>
+    },
 
-          <h2>
+    {
 
-            {summary.totalWorkers}
+      title: "Remaining Balance",
 
-          </h2>
+      value: `₹${summary.totalBalance.toLocaleString("en-IN")}`,
 
-          <p>
+      icon: <FiTrendingUp />,
 
-            Total Workers
+      color: "#DC2626",
 
-          </p>
+    },
 
-        </Content>
+  ];
 
-      </Card>
+  return (
 
-      <Card>
+    <SummaryGrid>
 
-        <IconBox color="#16A34A">
+      {
 
-          <FiDollarSign/>
+        cards.map((card) => (
 
-        </IconBox>
+          <SalaryCard
 
-        <Content>
+            key={card.title}
 
-          <h2>
+            title={card.title}
 
-            ₹{summary.totalSalary.toLocaleString()}
+            value={card.value}
 
-          </h2>
+            icon={card.icon}
 
-          <p>
+            color={card.color}
 
-            Total Salary
+          />
 
-          </p>
+        ))
 
-        </Content>
+      }
 
-      </Card>
-
-      <Card>
-
-        <IconBox color="#F59E0B">
-
-          <FiTrendingUp/>
-
-        </IconBox>
-
-        <Content>
-
-          <h2>
-
-            ₹{summary.totalAdvance.toLocaleString()}
-
-          </h2>
-
-          <p>
-
-            Advance Paid
-
-          </p>
-
-        </Content>
-
-      </Card>
-
-      <Card>
-
-        <IconBox color="#DC2626">
-
-          <FiAlertCircle/>
-
-        </IconBox>
-
-        <Content>
-
-          <h2>
-
-            ₹{summary.totalRemaining.toLocaleString()}
-
-          </h2>
-
-          <p>
-
-            Remaining Salary
-
-          </p>
-
-        </Content>
-
-      </Card>
-
-    </Grid>
+    </SummaryGrid>
 
   );
 

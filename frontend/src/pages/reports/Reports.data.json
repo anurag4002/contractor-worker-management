@@ -1,3 +1,74 @@
 {
-  "title": "Reports"
+  "title": "Reports",
+  "description": "Generate attendance, salary and expense reports.",
+
+  "summary": {
+    "attendanceReports": 158,
+    "salaryReports": "₹12.50L",
+    "monthlyExpenses": "₹18.40L",
+    "generatedReports": 32
+  },
+
+  "reports": [
+    {
+      "id": "RPT001",
+      "workerId": "CW001",
+      "workerName": "Rahul Sharma",
+      "site": "Metro Project",
+      "month": "July 2026",
+      "present": 26,
+      "absent": 2,
+      "salary": "₹22,100",
+      "expense": "₹22,100",
+      "status": "Generated"
+    },
+    {
+      "id": "RPT002",
+      "workerId": "CW002",
+      "workerName": "Amit Kumar",
+      "site": "Hospital Building",
+      "month": "July 2026",
+      "present": 25,
+      "absent": 3,
+      "salary": "₹21,500",
+      "expense": "₹21,500",
+      "status": "Generated"
+    },
+    {
+      "id": "RPT003",
+      "workerId": "CW003",
+      "workerName": "Deepak Singh",
+      "site": "Residential Tower",
+      "month": "July 2026",
+      "present": 24,
+      "absent": 4,
+      "salary": "₹20,800",
+      "expense": "₹20,800",
+      "status": "Pending"
+    },
+    {
+      "id": "RPT004",
+      "workerId": "CW004",
+      "workerName": "Vikas Kumar",
+      "site": "Shopping Mall",
+      "month": "July 2026",
+      "present": 27,
+      "absent": 1,
+      "salary": "₹23,500",
+      "expense": "₹23,500",
+      "status": "Generated"
+    },
+    {
+      "id": "RPT005",
+      "workerId": "CW005",
+      "workerName": "Sanjay Verma",
+      "site": "Warehouse Project",
+      "month": "July 2026",
+      "present": 23,
+      "absent": 5,
+      "salary": "₹19,600",
+      "expense": "₹19,600",
+      "status": "Pending"
+    }
+  ]
 }

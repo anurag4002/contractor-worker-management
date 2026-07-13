@@ -1,13 +1,18 @@
-import React, { useMemo, useState } from "react";
+import React, {
+  useMemo,
+  useState,
+} from "react";
 
-import salaryData from "./Salary.data.json";
+import { FiDownload } from "react-icons/fi";
+
+import useWorkers from "../../hooks/useWorkers";
 
 import SalarySummary from "../../components/salary/SalarySummary";
 import SalaryFilter from "../../components/salary/SalaryFilter";
 import SalaryTable from "../../components/salary/SalaryTable";
+import SalarySlipModal from "../../components/salary/SalarySlipModal";
 import AdvancePaymentModal from "../../components/salary/AdvancePaymentModal";
 import PaymentHistoryModal from "../../components/salary/PaymentHistoryModal";
-import SalarySlipModal from "../../components/salary/SalarySlipModal";
 
 import {
   SalaryContainer,
@@ -19,18 +24,33 @@ import {
 
 const Salary = () => {
 
-  const [workers, setWorkers] = useState(
-    salaryData.salary
-  );
+  const {
 
-  const [search, setSearch] = useState("");
+    salarySummary,
 
-  const [site, setSite] = useState("All");
+    addAdvancePayment,
 
-  const [status, setStatus] = useState("All");
+    sites,
+
+  } = useWorkers();
+
+  const [search, setSearch] =
+    useState("");
+
+  const [site, setSite] =
+    useState("All");
+
+  const [wageType, setWageType] =
+    useState("All");
+
+  const [month, setMonth] =
+    useState("");
 
   const [selectedWorker, setSelectedWorker] =
     useState(null);
+
+  const [slipOpen, setSlipOpen] =
+    useState(false);
 
   const [advanceOpen, setAdvanceOpen] =
     useState(false);
@@ -38,152 +58,110 @@ const Salary = () => {
   const [historyOpen, setHistoryOpen] =
     useState(false);
 
-  const [slipOpen, setSlipOpen] =
-    useState(false);
-
-  const sites = [
-    "All",
-    ...new Set(
-      workers.map((item) => item.site)
-    ),
-  ];
-
   const filteredWorkers = useMemo(() => {
 
-    return workers.filter((worker) => {
+    return salarySummary.filter((worker) => {
+
+      const keyword =
+        search.toLowerCase();
 
       const searchMatch =
 
         worker.name
-          .toLowerCase()
-          .includes(search.toLowerCase())
+          ?.toLowerCase()
+          .includes(keyword)
 
         ||
 
         worker.id
-          .toLowerCase()
-          .includes(search.toLowerCase());
+          ?.toLowerCase()
+          .includes(keyword);
 
       const siteMatch =
+
         site === "All"
+
           ? true
+
           : worker.site === site;
 
-      const statusMatch =
-        status === "All"
+      const wageMatch =
+
+        wageType === "All"
+
           ? true
-          : worker.status === status;
+
+          : worker.wageType === wageType;
+
+      const monthMatch =
+
+        month === ""
+
+          ? true
+
+          : true;
 
       return (
+
         searchMatch &&
+
         siteMatch &&
-        statusMatch
+
+        wageMatch &&
+
+        monthMatch
+
       );
 
     });
 
   }, [
-    workers,
+
+    salarySummary,
+
     search,
+
     site,
-    status,
+
+    wageType,
+
+    month,
+
   ]);
 
-  const paySalary = (worker) => {
+  const handleAdvancePayment = (
 
-    setWorkers((prev)=>
-
-      prev.map((item)=>{
-
-        if(item.id===worker.id){
-
-          const totalSalary =
-            item.dailyWage *
-            item.daysWorked;
-
-          return{
-
-            ...item,
-
-            paid: totalSalary,
-
-            status:"Paid",
-
-          };
-
-        }
-
-        return item;
-
-      })
-
-    );
-
-  };
-
-  const updateAdvance = (
     id,
-    amount
+
+    amount,
+
+    method,
+
+    remark
+
   ) => {
 
-    setWorkers((prev)=>
+    addAdvancePayment(id, {
 
-      prev.map((item)=>
+      amount: Number(amount),
 
-        item.id===id
+      method,
 
-          ?{
+      remark,
 
-              ...item,
+      date: new Date()
 
-              advance:amount,
+        .toISOString()
 
-            }
+        .split("T")[0],
 
-          :item
-
-      )
-
-    );
+    });
 
   };
 
-  const openAdvance = (worker)=>{
-
-    setSelectedWorker(worker);
-
-    setAdvanceOpen(true);
-
-  };
-
-  const openHistory = (worker)=>{
-
-    setSelectedWorker(worker);
-
-    setHistoryOpen(true);
-
-  };
-
-  const openSlip = (worker)=>{
-
-    setSelectedWorker(worker);
-
-    setSlipOpen(true);
-
-  };
-
-  const editSalary = (worker)=>{
-
-    alert(
-      `Edit Salary of ${worker.name}`
-    );
-
-  };
-    return (
+  return (
 
     <SalaryContainer>
-
-      {/* ================= Header ================= */}
 
       <Header>
 
@@ -191,13 +169,13 @@ const Salary = () => {
 
           <h2>
 
-            {salaryData.title}
+            Salary Management
 
           </h2>
 
           <p>
 
-            {salaryData.description}
+            Daily wages, advances and salary records
 
           </p>
 
@@ -207,6 +185,8 @@ const Salary = () => {
 
           <Button>
 
+            <FiDownload />
+
             Export Report
 
           </Button>
@@ -215,13 +195,11 @@ const Salary = () => {
 
       </Header>
 
-      {/* ================= Summary ================= */}
-
       <SalarySummary
-        workers={workers}
-      />
 
-      {/* ================= Filters ================= */}
+        workers={filteredWorkers}
+
+      />
 
       <SalaryFilter
 
@@ -233,61 +211,57 @@ const Salary = () => {
 
         setSite={setSite}
 
-        status={status}
+        wageType={wageType}
 
-        setStatus={setStatus}
+        setWageType={setWageType}
 
-        sites={sites}
+        month={month}
+
+        setMonth={setMonth}
+
+        sites={[
+
+          "All",
+
+          ...sites.map(
+
+            (item) => item.name
+
+          ),
+
+        ]}
 
       />
-
-      {/* ================= Salary Table ================= */}
 
       <SalaryTable
 
         workers={filteredWorkers}
 
-        onPaySalary={paySalary}
+        onView={(worker) => {
 
-        onAdvance={openAdvance}
+          setSelectedWorker(worker);
 
-        onHistory={openHistory}
+          setSlipOpen(true);
 
-        onEdit={openSlip}
+        }}
 
-      />
+        onAdvance={(worker) => {
 
-      {/* ================= Advance Modal ================= */}
+          setSelectedWorker(worker);
 
-      <AdvancePaymentModal
+          setAdvanceOpen(true);
 
-        open={advanceOpen}
+        }}
 
-        worker={selectedWorker}
+        onHistory={(worker) => {
 
-        onClose={() =>
-          setAdvanceOpen(false)
-        }
+          setSelectedWorker(worker);
 
-        onSave={updateAdvance}
+          setHistoryOpen(true);
 
-      />
-
-      {/* ================= Payment History ================= */}
-
-      <PaymentHistoryModal
-
-        open={historyOpen}
-
-        worker={selectedWorker}
-
-        onClose={() =>
-          setHistoryOpen(false)
-        }
+        }}
 
       />
-
-      {/* ================= Salary Slip ================= */}
 
       <SalarySlipModal
 
@@ -296,7 +270,39 @@ const Salary = () => {
         worker={selectedWorker}
 
         onClose={() =>
+
           setSlipOpen(false)
+
+        }
+
+      />
+
+      <AdvancePaymentModal
+
+        open={advanceOpen}
+
+        worker={selectedWorker}
+
+        onClose={() =>
+
+          setAdvanceOpen(false)
+
+        }
+
+        onSave={handleAdvancePayment}
+
+      />
+
+      <PaymentHistoryModal
+
+        open={historyOpen}
+
+        worker={selectedWorker}
+
+        onClose={() =>
+
+          setHistoryOpen(false)
+
         }
 
       />
