@@ -1,264 +1,189 @@
-import React, { useMemo } from "react";
-
-import Modal from "../modal/Modal";
+import React from "react";
 
 import {
-  FiUser,
-  FiCalendar,
-  FiCheckCircle,
-  FiXCircle,
-  FiClock,
-} from "react-icons/fi";
-
-const cardStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))",
-  gap: "1rem",
-  marginBottom: "2rem",
-};
-
-const statCard = {
-  padding: "1rem",
-  border: "1px solid #E2E8F0",
-  borderRadius: "12px",
-  textAlign: "center",
-  background: "#F8FAFC",
-};
+  Overlay,
+  Modal,
+  Header,
+  Title,
+  CloseButton,
+  Table,
+  EmptyState,
+} from "./AttendanceHistoryModal.style";
 
 const AttendanceHistoryModal = ({
   open,
   worker,
-  history = [],
   onClose,
 }) => {
 
-  const summary = useMemo(() => {
+  if (!open || !worker) return null;
 
-    const present = history.filter(
-      (item) => item.status === "Present"
-    ).length;
-
-    const absent = history.filter(
-      (item) => item.status === "Absent"
-    ).length;
-
-    const leave = history.filter(
-      (item) => item.status === "Leave"
-    ).length;
-
-    const percentage =
-      history.length === 0
-        ? 0
-        : Math.round(
-            (present / history.length) * 100
-          );
-
-    return {
-      present,
-      absent,
-      leave,
-      percentage,
-    };
-
-  }, [history]);
-
-  if (!worker) return null;
+  const history = worker.history || [];
 
   return (
 
-    <Modal
-      open={open}
-      title="Attendance History"
-      submitText="Close"
-      onClose={onClose}
-      onSubmit={onClose}
-    >
+    <Overlay>
 
-      {/* Worker */}
+      <Modal>
 
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "1rem",
-          marginBottom: "2rem",
-        }}
-      >
+        <Header>
+
+          <Title>
+
+            Attendance History
+
+          </Title>
+
+          <CloseButton
+            onClick={onClose}
+          >
+
+            ×
+
+          </CloseButton>
+
+        </Header>
 
         <div
           style={{
-            width: "65px",
-            height: "65px",
-            borderRadius: "50%",
-            background: "#2563EB",
-            color: "#fff",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            fontSize: "1.5rem",
-            fontWeight: "700",
+            marginBottom: "1.5rem",
           }}
         >
-          {worker.name.charAt(0)}
-        </div>
 
-        <div>
-
-          <h2
+          <h3
             style={{
-              margin: 0,
-              color: "#0F172A",
+              marginBottom: ".25rem",
             }}
           >
+
             {worker.name}
-          </h2>
+
+          </h3>
 
           <p
             style={{
-              marginTop: ".3rem",
-              color: "#64748B",
+              color: "#64748b",
+              margin: 0,
             }}
           >
-            {worker.id}
+
+            Worker ID : {worker.id}
+
+          </p>
+
+          <p
+            style={{
+              color: "#64748b",
+              margin: ".25rem 0 0",
+            }}
+          >
+
+            Site : {worker.site || "-"}
+
           </p>
 
         </div>
 
-      </div>
+        {
 
-      {/* Summary */}
+          history.length > 0
 
-      <div style={cardStyle}>
+          ? (
 
-        <div style={statCard}>
-          <FiCheckCircle
-            color="#16A34A"
-            size={26}
-          />
-          <h3>{summary.present}</h3>
-          <p>Present</p>
-        </div>
+            <Table>
 
-        <div style={statCard}>
-          <FiXCircle
-            color="#DC2626"
-            size={26}
-          />
-          <h3>{summary.absent}</h3>
-          <p>Absent</p>
-        </div>
+              <thead>
 
-        <div style={statCard}>
-          <FiClock
-            color="#F59E0B"
-            size={26}
-          />
-          <h3>{summary.leave}</h3>
-          <p>Leave</p>
-        </div>
+                <tr>
 
-        <div style={statCard}>
-          <FiUser
-            color="#2563EB"
-            size={26}
-          />
-          <h3>{summary.percentage}%</h3>
-          <p>Attendance</p>
-        </div>
+                  <th>Date</th>
 
-      </div>
+                  <th>Status</th>
 
-      {/* History Table */}
+                  <th>Working Hours</th>
 
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-        }}
-      >
+                  <th>Overtime</th>
 
-        <thead>
+                  <th>Remark</th>
 
-          <tr
-            style={{
-              background: "#F8FAFC",
-            }}
-          >
+                </tr>
 
-            <th
-              style={{
-                padding: "12px",
-                textAlign: "left",
-              }}
-            >
-              <FiCalendar />
+              </thead>
 
-            </th>
+              <tbody>
 
-            <th>Date</th>
+                {
 
-            <th>Status</th>
+                  history.map((item, index) => (
 
-          </tr>
+                    <tr key={index}>
 
-        </thead>
+                      <td>
 
-        <tbody>
+                        {
 
-          {history.map((item, index) => (
+                          item.date
 
-            <tr key={index}>
+                            ? new Date(item.date)
+                                .toLocaleDateString("en-IN")
 
-              <td
-                style={{
-                  padding: "12px",
-                }}
-              >
-                {index + 1}
-              </td>
+                            : "-"
 
-              <td>{item.date}</td>
+                        }
 
-              <td>
+                      </td>
 
-                <span
-                  style={{
-                    padding: ".4rem .9rem",
-                    borderRadius: "999px",
-                    background:
-                      item.status === "Present"
-                        ? "#DCFCE7"
-                        : item.status === "Absent"
-                        ? "#FEE2E2"
-                        : "#FEF3C7",
+                      <td>
 
-                    color:
-                      item.status === "Present"
-                        ? "#15803D"
-                        : item.status === "Absent"
-                        ? "#DC2626"
-                        : "#B45309",
+                        {item.status}
 
-                    fontSize: ".8rem",
-                    fontWeight: "600",
-                  }}
-                >
+                      </td>
 
-                  {item.status}
+                      <td>
 
-                </span>
+                        {item.workingHours ?? 8} hrs
 
-              </td>
+                      </td>
 
-            </tr>
+                      <td>
 
-          ))}
+                        {item.overtime ?? 0} hrs
 
-        </tbody>
+                      </td>
 
-      </table>
+                      <td>
 
-    </Modal>
+                        {item.remark || "-"}
+
+                      </td>
+
+                    </tr>
+
+                  ))
+
+                }
+
+              </tbody>
+
+            </Table>
+
+          )
+
+          : (
+
+            <EmptyState>
+
+              No attendance history available for this worker.
+
+            </EmptyState>
+
+          )
+
+        }
+
+      </Modal>
+
+    </Overlay>
 
   );
 

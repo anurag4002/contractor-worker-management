@@ -12,228 +12,102 @@ export const Header = styled.div`
   align-items: center;
   gap: 1rem;
 
-  @media (max-width:768px){
+  @media (max-width: 768px) {
     flex-direction: column;
     align-items: flex-start;
   }
 `;
 
 export const TitleSection = styled.div`
-  h2{
-    margin:0;
-    font-size:2rem;
-    color:#0F172A;
-    font-weight:700;
+  h2 {
+    margin: 0;
+    font-size: 2rem;
+    color: #0f172a;
+    font-weight: 700;
   }
 
-  p{
-    margin:.4rem 0 0;
-    color:#64748B;
+  p {
+    margin-top: 0.5rem;
+    color: #64748b;
   }
 `;
 
 export const ActionSection = styled.div`
-  display:flex;
-  gap:1rem;
-  flex-wrap:wrap;
-`;
-
-export const SearchBox = styled.div`
-  width:20rem;
-  position:relative;
-
-  input{
-    width:100%;
-    padding:.9rem 1rem;
-    border:1px solid #CBD5E1;
-    border-radius:.8rem;
-    outline:none;
-    transition:.3s;
-
-    &:focus{
-      border-color:#2563EB;
-    }
-  }
-
-  @media(max-width:768px){
-    width:100%;
-  }
-`;
-
-export const Select = styled.select`
-  padding:.9rem 1rem;
-
-  border:1px solid #CBD5E1;
-
-  border-radius:.8rem;
-
-  outline:none;
-
-  cursor:pointer;
-
-  background:white;
-`;
-
-export const DateInput = styled.input`
-  padding:.9rem 1rem;
-
-  border:1px solid #CBD5E1;
-
-  border-radius:.8rem;
-
-  outline:none;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
 `;
 
 export const Button = styled.button`
-  border:none;
+  border: none;
+  outline: none;
+  cursor: pointer;
 
-  background:#2563EB;
+  padding: 0.9rem 1.6rem;
 
-  color:white;
+  border-radius: 0.8rem;
 
-  padding:.9rem 1.4rem;
+  background: #2563eb;
+  color: #fff;
 
-  border-radius:.8rem;
+  font-size: 0.95rem;
+  font-weight: 600;
 
-  cursor:pointer;
+  transition: 0.3s;
 
-  font-weight:600;
-
-  transition:.3s;
-
-  &:hover{
-    background:#1D4ED8;
+  &:hover {
+    background: #1d4ed8;
   }
 `;
 
-export const TableCard = styled.div`
-  background:white;
+export const Section = styled.section`
+  background: #ffffff;
 
-  border-radius:1rem;
+  border: 1px solid #e2e8f0;
 
-  overflow:hidden;
+  border-radius: 1rem;
 
-  border:1px solid #E2E8F0;
+  padding: 1.5rem;
 
-  box-shadow:0 10px 30px rgba(15,23,42,.05);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
 `;
 
-export const Table = styled.table`
-  width:100%;
+export const SectionHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-  border-collapse:collapse;
+  margin-bottom: 1.5rem;
 
-  thead{
-    background:#F8FAFC;
+  h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #0f172a;
   }
 
-  th{
-    padding:1rem;
-    text-align:left;
-    color:#475569;
-    font-size:.9rem;
-    border-bottom:1px solid #E2E8F0;
+  p {
+    margin-top: 0.35rem;
+    color: #64748b;
+    font-size: 0.9rem;
   }
 
-  td{
-    padding:1rem;
-    border-bottom:1px solid #E2E8F0;
-    color:#334155;
-  }
-
-  tbody tr{
-    transition:.25s;
-  }
-
-  tbody tr:hover{
-    background:#F8FAFC;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   }
 `;
 
-export const StatusBadge = styled.span`
-  display:inline-block;
+export const EmptyState = styled.div`
+  padding: 3rem;
 
-  padding:.4rem .9rem;
+  text-align: center;
 
-  border-radius:999px;
+  color: #64748b;
 
-  font-size:.8rem;
+  border: 2px dashed #cbd5e1;
 
-  font-weight:600;
+  border-radius: 1rem;
 
-  background:${({status})=>{
-
-    switch(status){
-
-      case "Present":
-        return "#DCFCE7";
-
-      case "Absent":
-        return "#FEE2E2";
-
-      default:
-        return "#FEF3C7";
-
-    }
-
-  }};
-
-  color:${({status})=>{
-
-    switch(status){
-
-      case "Present":
-        return "#15803D";
-
-      case "Absent":
-        return "#DC2626";
-
-      default:
-        return "#B45309";
-
-    }
-
-  }};
-`;
-
-export const ActionButtons = styled.div`
-  display:flex;
-  gap:.5rem;
-`;
-
-export const ActionButton = styled.button`
-  border:none;
-
-  padding:.55rem .9rem;
-
-  border-radius:.6rem;
-
-  cursor:pointer;
-
-  color:white;
-
-  font-size:.8rem;
-
-  background:${({type})=>{
-
-    switch(type){
-
-      case "present":
-        return "#16A34A";
-
-      case "absent":
-        return "#DC2626";
-
-      default:
-        return "#F59E0B";
-
-    }
-
-  }};
-
-  transition:.3s;
-
-  &:hover{
-    opacity:.9;
-  }
+  background: #f8fafc;
 `;

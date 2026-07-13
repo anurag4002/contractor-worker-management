@@ -1,47 +1,98 @@
 {
   "title": "Salary Management",
-  "description": "Manage worker wages, advances and payment history.",
+  "description": "Manage daily wages, payments and salary records.",
+
+  "summary": {
+    "totalWorkers": 158,
+    "wagesDue": "₹4,85,000",
+    "wagesPaid": "₹3,15,000",
+    "balance": "₹1,70,000"
+  },
 
   "salary": [
     {
       "id": "CW001",
       "name": "Rahul Sharma",
       "site": "Site A",
-      "dailyWage": 800,
-      "daysWorked": 26,
-      "advance": 5000,
-      "paid": 10000,
+      "workType": "Electrician",
+      "wageType": "Daily",
+      "dailyWage": 850,
+      "daysWorked": 24,
+      "grossSalary": 20400,
+      "advance": 3000,
+      "paid": 12000,
+      "balance": 5400,
       "status": "Pending"
     },
     {
       "id": "CW002",
       "name": "Amit Kumar",
       "site": "Site B",
-      "dailyWage": 750,
-      "daysWorked": 24,
-      "advance": 3000,
-      "paid": 9000,
-      "status": "Paid"
+      "workType": "Plumber",
+      "wageType": "Daily",
+      "dailyWage": 900,
+      "daysWorked": 25,
+      "grossSalary": 22500,
+      "advance": 2000,
+      "paid": 18000,
+      "balance": 2500,
+      "status": "Partial"
     },
     {
       "id": "CW003",
-      "name": "Rohit Singh",
+      "name": "Deepak Singh",
       "site": "Site C",
-      "dailyWage": 900,
-      "daysWorked": 25,
-      "advance": 4000,
-      "paid": 12000,
-      "status": "Pending"
+      "workType": "Welder",
+      "wageType": "Monthly",
+      "dailyWage": 28000,
+      "daysWorked": 30,
+      "grossSalary": 28000,
+      "advance": 5000,
+      "paid": 23000,
+      "balance": 0,
+      "status": "Paid"
     },
     {
       "id": "CW004",
-      "name": "Sandeep Yadav",
+      "name": "Vikas Kumar",
       "site": "Site A",
+      "workType": "Carpenter",
+      "wageType": "Daily",
       "dailyWage": 850,
-      "daysWorked": 27,
-      "advance": 2500,
+      "daysWorked": 22,
+      "grossSalary": 18700,
+      "advance": 1500,
+      "paid": 10000,
+      "balance": 7200,
+      "status": "Pending"
+    },
+    {
+      "id": "CW005",
+      "name": "Sanjay Verma",
+      "site": "Site D",
+      "workType": "Mason",
+      "wageType": "Daily",
+      "dailyWage": 800,
+      "daysWorked": 26,
+      "grossSalary": 20800,
+      "advance": 3000,
       "paid": 15000,
-      "status": "Paid"
+      "balance": 2800,
+      "status": "Partial"
     }
-  ]
+  ],
+  "paymentHistory": [
+  {
+    "date": "2026-07-02",
+    "amount": 5000,
+    "method": "Cash",
+    "remark": "Advance Payment"
+  },
+  {
+    "date": "2026-07-08",
+    "amount": 12000,
+    "method": "Bank Transfer",
+    "remark": "Salary Paid"
+  }
+]
 }

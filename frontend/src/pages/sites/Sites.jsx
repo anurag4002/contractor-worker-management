@@ -1,78 +1,147 @@
-import React, { useMemo, useState } from "react";
+import React, {
+  useMemo,
+  useState,
+} from "react";
 
 import {
-  FiSearch,
+  FiDownload,
   FiPlus,
-  FiMapPin,
-  FiUsers,
-  FiUser,
-  FiEye,
 } from "react-icons/fi";
 
-import sitesData from "./Sites.data.json";
+import useWorkers from "../../hooks/useWorkers";
+
+import SiteSummary from "../../components/sites/SiteSummary";
+import SiteFilter from "../../components/sites/SiteFilter";
+import SiteTable from "../../components/sites/SiteTable";
+
+import SiteDetailsModal from "../../components/sites/SiteDetailsModal";
+import AssignWorkerModal from "../../components/sites/AssignWorkerModal";
+import SiteAttendanceModal from "../../components/sites/SiteAttendanceModal";
 
 import {
   SitesContainer,
   Header,
   TitleSection,
   ActionSection,
-  SearchBox,
   Button,
-  SiteGrid,
-  SiteCard,
-  SiteHeader,
-  StatusBadge,
-  SiteInfo,
-  ProgressWrapper,
-  ProgressTop,
-  ProgressBar,
-  ProgressFill,
-  CardFooter,
-  WorkerCount,
-  ViewButton,
 } from "./Sites.style";
 
 const Sites = () => {
-  const [search, setSearch] = useState("");
+
+  const {
+
+    sites,
+
+    workers,
+
+    attendance,
+
+    assignWorkerToSite,
+
+  } = useWorkers();
+
+  const [search, setSearch] =
+    useState("");
+
+  const [status, setStatus] =
+    useState("All");
+
+  const [selectedSite, setSelectedSite] =
+    useState(null);
+
+  const [detailsOpen, setDetailsOpen] =
+    useState(false);
+
+  const [assignOpen, setAssignOpen] =
+    useState(false);
+
+  const [attendanceOpen, setAttendanceOpen] =
+    useState(false);
 
   const filteredSites = useMemo(() => {
-    return sitesData.sites.filter(
-      (site) =>
-        site.name.toLowerCase().includes(search.toLowerCase()) ||
-        site.location.toLowerCase().includes(search.toLowerCase()) ||
-        site.supervisor.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [search]);
+
+    return sites.filter((site) => {
+
+      const keyword =
+        search.toLowerCase();
+
+      const searchMatch =
+
+        site.name
+          ?.toLowerCase()
+          .includes(keyword)
+
+        ||
+
+        site.location
+          ?.toLowerCase()
+          .includes(keyword)
+
+        ||
+
+        site.supervisor
+          ?.toLowerCase()
+          .includes(keyword);
+
+      const statusMatch =
+
+        status === "All"
+
+          ? true
+
+          : site.status === status;
+
+      return (
+
+        searchMatch &&
+
+        statusMatch
+
+      );
+
+    });
+
+  }, [
+
+    sites,
+
+    search,
+
+    status,
+
+  ]);
 
   return (
-    <SitesContainer>
 
-      {/* Header */}
+    <SitesContainer>
 
       <Header>
 
         <TitleSection>
 
-          <h2>{sitesData.title}</h2>
+          <h2>
 
-          <p>{sitesData.description}</p>
+            Site Management
+
+          </h2>
+
+          <p>
+
+            Manage projects, supervisors and workers
+
+          </p>
 
         </TitleSection>
 
         <ActionSection>
 
-          <SearchBox>
+          <Button>
 
-            <FiSearch />
+            <FiDownload />
 
-            <input
-              type="text"
-              placeholder="Search Site..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+            Export
 
-          </SearchBox>
+          </Button>
 
           <Button>
 
@@ -86,100 +155,112 @@ const Sites = () => {
 
       </Header>
 
-      {/* Site Cards */}
+      <SiteSummary
 
-      <SiteGrid>
+        sites={sites}
 
-        {filteredSites.map((site) => (
+        workers={workers}
 
-          <SiteCard key={site.id}>
+      />
 
-            <SiteHeader>
+      <SiteFilter
 
-              <h3>{site.name}</h3>
+        search={search}
 
-              <StatusBadge status={site.status}>
+        setSearch={setSearch}
 
-                {site.status}
+        status={status}
 
-              </StatusBadge>
+        setStatus={setStatus}
 
-            </SiteHeader>
+      />
 
-            <SiteInfo>
+      <SiteTable
 
-              <p>
+        sites={filteredSites}
 
-                <FiMapPin />
+        onView={(site) => {
 
-                {site.location}
+          setSelectedSite(site);
 
-              </p>
+          setDetailsOpen(true);
 
-              <p>
+        }}
 
-                <FiUser />
+        onAssign={(site) => {
 
-                Supervisor : {site.supervisor}
+          setSelectedSite(site);
 
-              </p>
+          setAssignOpen(true);
 
-              <p>
+        }}
 
-                <FiUsers />
+        onAttendance={(site) => {
 
-                {site.workers} Workers
+          setSelectedSite(site);
 
-              </p>
+          setAttendanceOpen(true);
 
-            </SiteInfo>
+        }}
 
-            <ProgressWrapper>
+      />
 
-              <ProgressTop>
+      <SiteDetailsModal
 
-                <span>Project Progress</span>
+        open={detailsOpen}
 
-                <span>{site.progress}%</span>
+        site={selectedSite}
 
-              </ProgressTop>
+        workers={workers}
 
-              <ProgressBar>
+        attendance={attendance}
 
-                <ProgressFill progress={site.progress} />
+        onClose={() =>
 
-              </ProgressBar>
+          setDetailsOpen(false)
 
-            </ProgressWrapper>
+        }
 
-            <CardFooter>
+      />
 
-              <WorkerCount>
+      <AssignWorkerModal
 
-                {site.workers} Assigned
+        open={assignOpen}
 
-              </WorkerCount>
+        site={selectedSite}
 
-              <ViewButton>
+        workers={workers}
 
-                <FiEye />
+        onAssign={assignWorkerToSite}
 
-                &nbsp;
+        onClose={() =>
 
-                View
+          setAssignOpen(false)
 
-              </ViewButton>
+        }
 
-            </CardFooter>
+      />
 
-          </SiteCard>
+      <SiteAttendanceModal
 
-        ))}
+        open={attendanceOpen}
 
-      </SiteGrid>
+        site={selectedSite}
+
+        attendance={attendance}
+
+        onClose={() =>
+
+          setAttendanceOpen(false)
+
+        }
+
+      />
 
     </SitesContainer>
+
   );
+
 };
 
 export default Sites;

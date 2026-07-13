@@ -1,12 +1,17 @@
 import React from "react";
 
-import Modal from "../modal/Modal";
-
 import {
-  FiDollarSign,
-  FiClock,
-  FiCheckCircle,
-} from "react-icons/fi";
+  Overlay,
+  Modal,
+  Header,
+  Title,
+  CloseButton,
+  Body,
+  Table,
+  EmptyState,
+  Footer,
+  Button,
+} from "./PaymentHistoryModal.style";
 
 const PaymentHistoryModal = ({
   open,
@@ -14,220 +19,227 @@ const PaymentHistoryModal = ({
   onClose,
 }) => {
 
-  if (!worker) return null;
+  if (!open || !worker) return null;
 
-  const history = [
-
-    {
-      id: 1,
-      date: "01 Jun 2026",
-      type: "Advance",
-      amount: 3000,
-    },
-
-    {
-      id: 2,
-      date: "10 Jun 2026",
-      type: "Advance",
-      amount: 2000,
-    },
-
-    {
-      id: 3,
-      date: "30 Jun 2026",
-      type: "Salary Paid",
-      amount: worker.paid,
-    },
-
-  ];
+  const history = worker.paymentHistory || [];
 
   return (
 
-    <Modal
-      open={open}
-      title="Payment History"
-      submitText="Close"
-      onClose={onClose}
-      onSubmit={onClose}
-    >
+    <Overlay>
 
-      <div
-        style={{
-          display:"flex",
-          flexDirection:"column",
-          gap:"1rem",
-        }}
-      >
+      <Modal>
 
-        <div
-          style={{
-            padding:"1rem",
-            borderRadius:"12px",
-            background:"#EFF6FF",
-          }}
-        >
+        <Header>
 
-          <h3
+          <Title>
+
+            Payment History
+
+          </Title>
+
+          <CloseButton
+            onClick={onClose}
+          >
+
+            ×
+
+          </CloseButton>
+
+        </Header>
+
+        <Body>
+
+          <div
             style={{
-              margin:0,
-              color:"#0F172A",
+              marginBottom: "1.5rem",
             }}
           >
 
-            {worker.name}
-
-          </h3>
-
-          <p
-            style={{
-              marginTop:".4rem",
-              color:"#64748B",
-            }}
-          >
-
-            {worker.id}
-
-          </p>
-
-        </div>
-
-        {
-
-          history.map((item)=>(
-
-            <div
-
-              key={item.id}
-
+            <h3
               style={{
-                display:"flex",
-                justifyContent:"space-between",
-                alignItems:"center",
-                padding:"1rem",
-                border:"1px solid #E2E8F0",
-                borderRadius:"12px",
+                marginBottom: ".25rem",
               }}
-
             >
 
-              <div
-                style={{
-                  display:"flex",
-                  alignItems:"center",
-                  gap:"1rem",
-                }}
-              >
+              {worker.name}
 
-                <div
-                  style={{
-                    width:"45px",
-                    height:"45px",
-                    borderRadius:"50%",
-                    background:
-                      item.type==="Advance"
-                      ? "#FEF3C7"
-                      : "#DCFCE7",
+            </h3>
 
-                    display:"flex",
-                    justifyContent:"center",
-                    alignItems:"center",
-                  }}
-                >
+            <p
+              style={{
+                margin: 0,
+                color: "#64748B",
+              }}
+            >
+
+              Worker ID : {worker.id}
+
+            </p>
+
+            <p
+              style={{
+                margin: ".25rem 0 0",
+                color: "#64748B",
+              }}
+            >
+
+              Site : {worker.site || "-"}
+
+            </p>
+
+          </div>
+
+          {
+
+            history.length === 0 ? (
+
+              <EmptyState>
+
+                No payment history available.
+
+              </EmptyState>
+
+            ) : (
+
+              <Table>
+
+                <thead>
+
+                  <tr>
+
+                    <th>Payment ID</th>
+
+                    <th>Date</th>
+
+                    <th>Amount</th>
+
+                    <th>Method</th>
+
+                    <th>Transaction ID</th>
+
+                    <th>Remark</th>
+
+                  </tr>
+
+                </thead>
+
+                <tbody>
 
                   {
 
-                    item.type==="Advance"
+                    history.map((item, index) => (
 
-                    ?
+                      <tr
+                        key={
+                          item.paymentId ||
+                          item.id ||
+                          index
+                        }
+                      >
 
-                    <FiClock color="#D97706"/>
+                        <td>
 
-                    :
+                          {
 
-                    <FiCheckCircle color="#16A34A"/>
+                            item.paymentId ||
+
+                            item.id ||
+
+                            `PAY-${String(index + 1).padStart(4, "0")}`
+
+                          }
+
+                        </td>
+
+                        <td>
+
+                          {
+
+                            item.date
+
+                              ? new Date(
+                                  item.date
+                                ).toLocaleDateString("en-IN")
+
+                              : "-"
+
+                          }
+
+                        </td>
+
+                        <td>
+
+                          ₹{
+
+                            Number(
+                              item.amount || 0
+                            ).toLocaleString("en-IN")
+
+                          }
+
+                        </td>
+
+                        <td>
+
+                          {item.method || "-"}
+
+                        </td>
+
+                        <td>
+
+                          {
+
+                            item.transactionId ||
+
+                            "-"
+
+                          }
+
+                        </td>
+
+                        <td>
+
+                          {
+
+                            item.remark ||
+
+                            "-"
+
+                          }
+
+                        </td>
+
+                      </tr>
+
+                    ))
 
                   }
 
-                </div>
+                </tbody>
 
-                <div>
+              </Table>
 
-                  <strong>
+            )
 
-                    {item.type}
+          }
 
-                  </strong>
+        </Body>
 
-                  <br/>
+        <Footer>
 
-                  <small
-                    style={{
-                      color:"#64748B",
-                    }}
-                  >
+          <Button
+            onClick={onClose}
+          >
 
-                    {item.date}
+            Close
 
-                  </small>
+          </Button>
 
-                </div>
+        </Footer>
 
-              </div>
+      </Modal>
 
-              <div
-                style={{
-                  fontWeight:"700",
-                  color:"#2563EB",
-                }}
-              >
-
-                ₹{item.amount}
-
-              </div>
-
-            </div>
-
-          ))
-
-        }
-
-        <div
-          style={{
-            marginTop:"1rem",
-            padding:"1rem",
-            background:"#F8FAFC",
-            borderRadius:"12px",
-            display:"flex",
-            justifyContent:"space-between",
-            fontWeight:"700",
-          }}
-        >
-
-          <span>
-
-            Total Paid
-
-          </span>
-
-          <span>
-
-            ₹{
-
-              history.reduce(
-                (sum,item)=>
-                  sum+item.amount,
-                0
-              )
-
-            }
-
-          </span>
-
-        </div>
-
-      </div>
-
-    </Modal>
+    </Overlay>
 
   );
 

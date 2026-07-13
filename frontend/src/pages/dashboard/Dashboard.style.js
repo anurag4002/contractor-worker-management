@@ -6,92 +6,80 @@ export const DashboardContainer = styled.div`
   gap: 2rem;
 `;
 
-export const HeroSection = styled.section`
+export const DashboardHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
 
-  padding: 2.5rem;
+  background: #ffffff;
 
-  border-radius: 1.5rem;
+  padding: 1.5rem 2rem;
 
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  border-radius: 1rem;
 
-  color: white;
+  border: 1px solid #e2e8f0;
 
-  overflow: hidden;
+  box-shadow: 0 .25rem .75rem rgba(15,23,42,.05);
 
-  @media (max-width: 992px) {
+  @media (max-width:768px){
     flex-direction: column;
-    gap: 2rem;
-    text-align: center;
+    align-items: flex-start;
+    gap:1rem;
   }
 `;
 
-export const HeroContent = styled.div`
-  max-width: 38rem;
-
-  h5 {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 500;
+export const HeaderLeft = styled.div`
+  h2{
+    margin:0;
+    color:#0f172a;
+    font-size:2rem;
+    font-weight:700;
   }
 
-  h1 {
-    margin: 1rem 0;
-    font-size: 2.5rem;
-    line-height: 1.2;
-  }
-
-  p {
-    line-height: 1.8;
+  p{
+    margin-top:.5rem;
+    color:#64748b;
   }
 `;
 
-export const HeroInfo = styled.div`
-  margin-top: 2rem;
+export const HeaderRight = styled.div`
+  display:flex;
+  align-items:center;
+  gap:1rem;
 
-  display: flex;
-  gap: 1rem;
+  color:#64748b;
 
-  flex-wrap: wrap;
+  font-weight:500;
 `;
 
-export const InfoCard = styled.div`
-  display: flex;
-  align-items: center;
-  gap: .7rem;
+export const ExportButton = styled.button`
+  border:none;
 
-  padding: .9rem 1.2rem;
+  background:#2563eb;
 
-  border-radius: .8rem;
+  color:white;
 
-  background: rgba(255,255,255,.15);
+  padding:.8rem 1.3rem;
 
-  backdrop-filter: blur(10px);
-`;
+  border-radius:.7rem;
 
-export const HeroImage = styled.div`
-  width: 18rem;
-  height: 18rem;
+  cursor:pointer;
 
-  border-radius: 50%;
+  font-weight:600;
 
-  background: rgba(255,255,255,.15);
+  transition:.25s;
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  font-size: 6rem;
+  &:hover{
+    background:#1d4ed8;
+  }
 `;
 
 export const StatsGrid = styled.div`
-  display: grid;
+  display:grid;
 
-  grid-template-columns: repeat(4,1fr);
+  grid-template-columns:repeat(4,1fr);
 
-  gap: 1.5rem;
+  gap:1.5rem;
 
   @media(max-width:1100px){
     grid-template-columns:repeat(2,1fr);
@@ -102,34 +90,141 @@ export const StatsGrid = styled.div`
   }
 `;
 
-export const ChartSection = styled.section`
-  display: grid;
+export const DashboardGrid = styled.div`
+  display:grid;
 
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns:2fr 1fr;
 
-  gap: 1.5rem;
+  gap:1.5rem;
 
-  @media(max-width:1100px){
+  @media(max-width:992px){
     grid-template-columns:1fr;
   }
 `;
 
-export const ChartCard = styled.div`
-  background: white;
+export const Section = styled.div`
+  background:white;
 
-  border-radius: 1.25rem;
+  border-radius:1rem;
 
-  padding: 1.5rem;
+  border:1px solid #e2e8f0;
 
-  border: 1px solid #e2e8f0;
+  padding:1.5rem;
 
-  box-shadow: 0 10px 30px rgba(15,23,42,.05);
+  box-shadow:0 .25rem .75rem rgba(15,23,42,.05);
 `;
 
-export const CardTitle = styled.h3`
-  margin: 0 0 1.5rem;
+export const SectionTitle = styled.h3`
+  margin:0 0 1.25rem;
 
-  color: #0f172a;
+  color:#0f172a;
 
-  font-size: 1.1rem;
+  font-size:1.1rem;
+
+  font-weight:600;
+`;
+
+export const QuickActions = styled.div`
+  display:grid;
+
+  grid-template-columns:repeat(2,1fr);
+
+  gap:1rem;
+`;
+
+export const ActionCard = styled.button`
+  border:none;
+
+  background:#f8fafc;
+
+  border:1px solid #e2e8f0;
+
+  border-radius:.9rem;
+
+  padding:1.25rem;
+
+  cursor:pointer;
+
+  transition:.25s;
+
+  display:flex;
+
+  flex-direction:column;
+
+  align-items:center;
+
+  gap:.8rem;
+
+  &:hover{
+
+    background:#2563eb;
+
+    color:white;
+
+    transform:translateY(-2px);
+
+  }
+`;
+
+export const ActionIcon = styled.div`
+  font-size:1.5rem;
+`;
+
+export const ActionTitle = styled.span`
+  font-size:.95rem;
+
+  font-weight:600;
+`;
+
+export const List = styled.div`
+  display:flex;
+
+  flex-direction:column;
+
+  gap:1rem;
+`;
+
+export const ListItem = styled.div`
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  padding-bottom:.9rem;
+
+  border-bottom:1px solid #e2e8f0;
+
+  &:last-child{
+    border:none;
+    padding-bottom:0;
+  }
+`;
+
+export const Badge = styled.span`
+  padding:.3rem .75rem;
+
+  border-radius:999px;
+
+  font-size:.8rem;
+
+  font-weight:600;
+
+  background:${({ success, danger, warning }) =>
+    success
+      ? "#DCFCE7"
+      : danger
+      ? "#FEE2E2"
+      : warning
+      ? "#FEF3C7"
+      : "#E2E8F0"};
+
+  color:${({ success, danger, warning }) =>
+    success
+      ? "#15803D"
+      : danger
+      ? "#DC2626"
+      : warning
+      ? "#B45309"
+      : "#475569"};
 `;

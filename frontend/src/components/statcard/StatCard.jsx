@@ -3,8 +3,10 @@ import React from "react";
 import {
   FiUsers,
   FiUserCheck,
-  FiDollarSign,
   FiMapPin,
+  FiDollarSign,
+  FiTrendingUp,
+  FiCreditCard,
 } from "react-icons/fi";
 
 import {
@@ -21,40 +23,82 @@ import {
 } from "./StatCard.style";
 
 const iconMap = {
-  FiUsers: FiUsers,
-  FiUserCheck: FiUserCheck,
-  FiDollarSign: FiDollarSign,
-  FiMapPin: FiMapPin,
+  FiUsers,
+  FiUserCheck,
+  FiMapPin,
+  FiDollarSign,
+  FiTrendingUp,
+  FiCreditCard,
+
+  "Total Workers": FiUsers,
+  "Present Today": FiUserCheck,
+  "Active Sites": FiMapPin,
+  "Pending Salary": FiDollarSign,
+  "Gross Salary": FiTrendingUp,
+  "Salary Paid": FiCreditCard,
 };
 
-const colors = {
+const colorMap = {
   FiUsers: "#2563EB",
   FiUserCheck: "#16A34A",
-  FiDollarSign: "#F59E0B",
-  FiMapPin: "#8B5CF6",
+  FiMapPin: "#F97316",
+  FiDollarSign: "#8B5CF6",
+  FiTrendingUp: "#0EA5E9",
+  FiCreditCard: "#DC2626",
+
+  "Total Workers": "#2563EB",
+  "Present Today": "#16A34A",
+  "Active Sites": "#F97316",
+  "Pending Salary": "#8B5CF6",
+  "Gross Salary": "#0EA5E9",
+  "Salary Paid": "#DC2626",
 };
 
 const StatCard = ({
   title,
   value,
-  change,
+  description,
+  progress = 0,
   icon,
+  change,
+  onClick,
 }) => {
 
-  const Icon = iconMap[icon];
+  const Icon =
+    iconMap[icon] ||
+    iconMap[title] ||
+    FiUsers;
+
+  const color =
+    colorMap[icon] ||
+    colorMap[title] ||
+    "#2563EB";
+
+  const progressValue = Math.min(
+    Math.max(Number(progress) || 0, 0),
+    100
+  );
 
   return (
-    <Card>
+
+    <Card
+      onClick={onClick}
+      style={{
+        cursor: onClick ? "pointer" : "default",
+      }}
+    >
 
       <Top>
 
-        <IconBox color={colors[icon]}>
+        <IconBox color={color}>
+
           <Icon />
+
         </IconBox>
 
         <Badge>
 
-          {change}
+          {change || `${progressValue}%`}
 
         </Badge>
 
@@ -76,20 +120,24 @@ const StatCard = ({
 
         <Description>
 
-          Compared to last month
+          {description}
 
         </Description>
 
         <Progress>
 
-          <ProgressFill width="75%" />
+          <ProgressFill
+            width={`${progressValue}%`}
+          />
 
         </Progress>
 
       </Bottom>
 
     </Card>
+
   );
+
 };
 
 export default StatCard;

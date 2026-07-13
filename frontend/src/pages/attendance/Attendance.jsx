@@ -1,6 +1,11 @@
-import React, { useMemo, useState } from "react";
+import React, {
+  useMemo,
+  useState,
+} from "react";
 
-import attendanceData from "./Attendance.data.json";
+import { FiDownload } from "react-icons/fi";
+
+import useWorkers from "../../hooks/useWorkers";
 
 import AttendanceSummary from "../../components/attendance/AttendanceSummary";
 import AttendanceFilter from "../../components/attendance/AttendanceFilter";
@@ -18,17 +23,29 @@ import {
 
 const Attendance = () => {
 
-  const [workers, setWorkers] = useState(
-    attendanceData.attendance
-  );
+  const {
 
-  const [search, setSearch] = useState("");
+    attendance,
 
-  const [site, setSite] = useState("All");
+    markAttendance,
 
-  const [status, setStatus] = useState("All");
+    attendanceSummary,
 
-  const [date, setDate] = useState("");
+    sites,
+
+  } = useWorkers();
+
+  const [search, setSearch] =
+    useState("");
+
+  const [site, setSite] =
+    useState("All");
+
+  const [status, setStatus] =
+    useState("All");
+
+  const [month, setMonth] =
+    useState("");
 
   const [selectedWorker, setSelectedWorker] =
     useState(null);
@@ -39,88 +56,109 @@ const Attendance = () => {
   const [markOpen, setMarkOpen] =
     useState(false);
 
-  const sites = [
-    "All",
-    ...new Set(
-      workers.map((item) => item.site)
-    ),
-  ];
-
   const filteredWorkers = useMemo(() => {
 
-    return workers.filter((worker) => {
+    return attendance.filter((worker) => {
+
+      const keyword =
+        search.toLowerCase();
 
       const searchMatch =
-        worker.name
-          .toLowerCase()
-          .includes(search.toLowerCase()) ||
 
-        worker.id
+        String(worker.name || "")
           .toLowerCase()
-          .includes(search.toLowerCase());
+          .includes(keyword)
+
+        ||
+
+        String(worker.id || "")
+          .toLowerCase()
+          .includes(keyword);
 
       const siteMatch =
+
         site === "All"
+
           ? true
+
           : worker.site === site;
 
       const statusMatch =
+
         status === "All"
+
           ? true
+
           : worker.status === status;
 
-      const dateMatch =
-        date === ""
+      const monthMatch =
+
+        month === ""
+
           ? true
-          : worker.date === date;
+
+          : worker.date?.startsWith(month);
 
       return (
+
         searchMatch &&
+
         siteMatch &&
+
         statusMatch &&
-        dateMatch
+
+        monthMatch
+
       );
 
     });
 
   }, [
-    workers,
+
+    attendance,
+
     search,
+
     site,
+
     status,
-    date,
+
+    month,
+
   ]);
 
-  const updateStatus = (id, newStatus) => {
+  const handleAttendance = (
+    id,
+    values
+  ) => {
 
-    setWorkers((prev) =>
-      prev.map((worker) =>
-        worker.id === id
-          ? {
-              ...worker,
-              status: newStatus,
-            }
-          : worker
-      )
-    );
+    markAttendance({
+
+      workerId: id,
+
+      status: values.status,
+
+      remark: values.remark,
+
+      date: new Date()
+        .toISOString()
+        .split("T")[0],
+
+      site:
+        selectedWorker?.site || "",
+
+      name:
+        selectedWorker?.name || "",
+
+      id,
+
+    });
+
+    setMarkOpen(false);
 
   };
 
-  const saveAttendance = (id, data) => {
-
-    setWorkers((prev) =>
-      prev.map((worker) =>
-        worker.id === id
-          ? {
-              ...worker,
-              ...data,
-            }
-          : worker
-      )
-    );
-
-  };
-    return (
+  return (
 
     <AttendanceContainer>
 
@@ -129,11 +167,15 @@ const Attendance = () => {
         <TitleSection>
 
           <h2>
-            {attendanceData.title}
+
+            Attendance Management
+
           </h2>
 
           <p>
-            {attendanceData.description}
+
+            Daily attendance tracking for all workers
+
           </p>
 
         </TitleSection>
@@ -141,6 +183,8 @@ const Attendance = () => {
         <ActionSection>
 
           <Button>
+
+            <FiDownload />
 
             Export Report
 
@@ -150,13 +194,11 @@ const Attendance = () => {
 
       </Header>
 
-      {/* ================= Summary ================= */}
-
       <AttendanceSummary
-        workers={workers}
-      />
 
-      {/* ================= Filter ================= */}
+        workers={attendanceSummary}
+
+      />
 
       <AttendanceFilter
 
@@ -172,23 +214,29 @@ const Attendance = () => {
 
         setStatus={setStatus}
 
-        date={date}
+        month={month}
 
-        setDate={setDate}
+        setMonth={setMonth}
 
-        sites={sites}
+        sites={[
+
+          "All",
+
+          ...sites.map(
+
+            (item) => item.name
+
+          ),
+
+        ]}
 
       />
-
-      {/* ================= Table ================= */}
 
       <AttendanceTable
 
         workers={filteredWorkers}
 
-        onStatusChange={updateStatus}
-
-        onHistory={(worker)=>{
+        onHistory={(worker) => {
 
           setSelectedWorker(worker);
 
@@ -196,7 +244,7 @@ const Attendance = () => {
 
         }}
 
-        onMark={(worker)=>{
+        onMark={(worker) => {
 
           setSelectedWorker(worker);
 
@@ -206,30 +254,19 @@ const Attendance = () => {
 
       />
 
-      {/* ================= History ================= */}
-
       <AttendanceHistoryModal
 
         open={historyOpen}
 
         worker={selectedWorker}
 
-        history={
-          selectedWorker
-            ? workers.filter(
-                item =>
-                  item.id === selectedWorker.id
-              )
-            : []
-        }
+        onClose={() =>
 
-        onClose={()=>
           setHistoryOpen(false)
+
         }
 
       />
-
-      {/* ================= Mark Attendance ================= */}
 
       <MarkAttendanceModal
 
@@ -237,11 +274,13 @@ const Attendance = () => {
 
         worker={selectedWorker}
 
-        onClose={()=>
+        onClose={() =>
+
           setMarkOpen(false)
+
         }
 
-        onSave={saveAttendance}
+        onSave={handleAttendance}
 
       />
 

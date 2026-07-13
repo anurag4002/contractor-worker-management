@@ -1,6 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from "react";
 
-import Modal from "../modal/Modal";
+import {
+  Overlay,
+  Modal,
+  Header,
+  Title,
+  CloseButton,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Select,
+  TextArea,
+  Footer,
+  CancelButton,
+  SaveButton,
+} from "./AdvancePaymentModal.style";
 
 const AdvancePaymentModal = ({
   open,
@@ -8,217 +26,342 @@ const AdvancePaymentModal = ({
   onClose,
   onSave,
 }) => {
+
   const [amount, setAmount] = useState("");
 
+  const [method, setMethod] = useState("Cash");
+
+  const [transactionId, setTransactionId] =
+    useState("");
+
+  const [remark, setRemark] = useState("");
+
+  const [error, setError] = useState("");
+
   useEffect(() => {
-    if (worker) {
-      setAmount(worker.advance || 0);
+
+    if (open) {
+
+      setAmount("");
+
+      setMethod("Cash");
+
+      setTransactionId("");
+
+      setRemark("");
+
+      setError("");
+
     }
-  }, [worker]);
 
-  if (!worker) return null;
+  }, [open]);
 
-  const handleSubmit = () => {
-    if (Number(amount) < 0) {
-      alert("Advance amount cannot be negative.");
+  if (!open || !worker) return null;
+
+  const handleSubmit = (e) => {
+
+    e.preventDefault();
+
+    const paymentAmount = Number(amount);
+
+    if (!paymentAmount || paymentAmount <= 0) {
+
+      setError(
+        "Please enter a valid payment amount."
+      );
+
       return;
+
     }
 
-    onSave(worker.id, Number(amount));
+    if (paymentAmount > Number(worker.balance || 0)) {
+
+      setError(
+        "Payment amount cannot exceed remaining balance."
+      );
+
+      return;
+
+    }
+
+    onSave(worker.id, {
+
+      paymentId: `PAY-${Date.now()}`,
+
+      workerId: worker.id,
+
+      workerName: worker.name,
+
+      date: new Date()
+
+        .toISOString()
+
+        .split("T")[0],
+
+      amount: paymentAmount,
+
+      method,
+
+      transactionId,
+
+      remark,
+
+    });
+
+    onClose();
+
   };
 
-  const totalSalary =
-    worker.dailyWage * worker.daysWorked;
-
-  const remaining =
-    totalSalary -
-    Number(amount) -
-    worker.paid;
-
   return (
-    <Modal
-      open={open}
-      title="Advance Payment"
-      submitText="Save"
-      onClose={onClose}
-      onSubmit={handleSubmit}
-    >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "1.2rem",
-        }}
-      >
-        {/* Worker */}
 
-        <div>
-          <label
-            style={{
-              display: "block",
-              marginBottom: ".5rem",
-              fontWeight: "600",
-            }}
-          >
-            Worker Name
-          </label>
+    <Overlay>
 
-          <input
-            disabled
-            value={worker.name}
-            style={{
-              width: "100%",
-              padding: ".9rem",
-              border: "1px solid #CBD5E1",
-              borderRadius: ".75rem",
-              background: "#F8FAFC",
-            }}
-          />
-        </div>
+      <Modal>
 
-        {/* Daily Wage */}
+        <Header>
 
-        <div>
-          <label
-            style={{
-              display: "block",
-              marginBottom: ".5rem",
-              fontWeight: "600",
-            }}
-          >
-            Daily Wage
-          </label>
+          <Title>
 
-          <input
-            disabled
-            value={`₹${worker.dailyWage}`}
-            style={{
-              width: "100%",
-              padding: ".9rem",
-              border: "1px solid #CBD5E1",
-              borderRadius: ".75rem",
-              background: "#F8FAFC",
-            }}
-          />
-        </div>
+            Advance Payment
 
-        {/* Days */}
+          </Title>
 
-        <div>
-          <label
-            style={{
-              display: "block",
-              marginBottom: ".5rem",
-              fontWeight: "600",
-            }}
-          >
-            Days Worked
-          </label>
+          <CloseButton onClick={onClose}>
 
-          <input
-            disabled
-            value={worker.daysWorked}
-            style={{
-              width: "100%",
-              padding: ".9rem",
-              border: "1px solid #CBD5E1",
-              borderRadius: ".75rem",
-              background: "#F8FAFC",
-            }}
-          />
-        </div>
+            ×
 
-        {/* Total Salary */}
+          </CloseButton>
 
-        <div>
-          <label
-            style={{
-              display: "block",
-              marginBottom: ".5rem",
-              fontWeight: "600",
-            }}
-          >
-            Total Salary
-          </label>
+        </Header>
 
-          <input
-            disabled
-            value={`₹${totalSalary}`}
-            style={{
-              width: "100%",
-              padding: ".9rem",
-              border: "1px solid #CBD5E1",
-              borderRadius: ".75rem",
-              background: "#F8FAFC",
-            }}
-          />
-        </div>
+        <Form onSubmit={handleSubmit}>
 
-        {/* Advance */}
+          <FormGroup>
 
-        <div>
-          <label
-            style={{
-              display: "block",
-              marginBottom: ".5rem",
-              fontWeight: "600",
-            }}
-          >
-            Advance Amount
-          </label>
+            <Label>
 
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) =>
-              setAmount(e.target.value)
-            }
-            placeholder="Enter Advance Amount"
-            style={{
-              width: "100%",
-              padding: ".9rem",
-              border: "1px solid #CBD5E1",
-              borderRadius: ".75rem",
-              outline: "none",
-            }}
-          />
-        </div>
+              Worker
 
-        {/* Remaining */}
+            </Label>
 
-        <div
-          style={{
-            background: "#EFF6FF",
-            padding: "1rem",
-            borderRadius: ".8rem",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <span
-            style={{
-              fontWeight: "600",
-            }}
-          >
-            Remaining Salary
-          </span>
+            <Input
 
-          <strong
-            style={{
-              color:
-                remaining > 0
-                  ? "#DC2626"
-                  : "#16A34A",
-              fontSize: "1.1rem",
-            }}
-          >
-            ₹{remaining}
-          </strong>
-        </div>
-      </div>
-    </Modal>
+              value={worker.name}
+
+              disabled
+
+            />
+
+          </FormGroup>
+
+          <FormGroup>
+
+            <Label>
+
+              Worker ID
+
+            </Label>
+
+            <Input
+
+              value={worker.id}
+
+              disabled
+
+            />
+
+          </FormGroup>
+
+          <FormGroup>
+
+            <Label>
+
+              Gross Salary
+
+            </Label>
+
+            <Input
+
+              value={`₹${Number(worker.grossSalary || 0).toLocaleString("en-IN")}`}
+
+              disabled
+
+            />
+
+          </FormGroup>
+
+          <FormGroup>
+
+            <Label>
+
+              Remaining Balance
+
+            </Label>
+
+            <Input
+
+              value={`₹${Number(worker.balance || 0).toLocaleString("en-IN")}`}
+
+              disabled
+
+            />
+
+          </FormGroup>
+
+          <FormGroup>
+
+            <Label>
+
+              Advance Amount
+
+            </Label>
+
+            <Input
+
+              type="number"
+
+              placeholder="Enter Amount"
+
+              value={amount}
+
+              onChange={(e) =>
+                setAmount(e.target.value)
+              }
+
+              required
+
+            />
+
+          </FormGroup>
+
+          <FormGroup>
+
+            <Label>
+
+              Payment Method
+
+            </Label>
+
+            <Select
+
+              value={method}
+
+              onChange={(e) =>
+                setMethod(e.target.value)
+              }
+
+            >
+
+              <option>Cash</option>
+
+              <option>UPI</option>
+
+              <option>Bank Transfer</option>
+
+              <option>Cheque</option>
+
+            </Select>
+
+          </FormGroup>
+
+          <FormGroup>
+
+            <Label>
+
+              Transaction ID
+
+            </Label>
+
+            <Input
+
+              placeholder="Optional"
+
+              value={transactionId}
+
+              onChange={(e) =>
+                setTransactionId(
+                  e.target.value
+                )
+              }
+
+            />
+
+          </FormGroup>
+
+          <FormGroup>
+
+            <Label>
+
+              Remark
+
+            </Label>
+
+            <TextArea
+
+              rows="4"
+
+              placeholder="Remark"
+
+              value={remark}
+
+              onChange={(e) =>
+                setRemark(e.target.value)
+              }
+
+            />
+
+          </FormGroup>
+
+          {
+
+            error && (
+
+              <p
+                style={{
+                  color: "#DC2626",
+                  marginBottom: "1rem",
+                  fontSize: ".9rem",
+                }}
+              >
+
+                {error}
+
+              </p>
+
+            )
+
+          }
+
+          <Footer>
+
+            <CancelButton
+
+              type="button"
+
+              onClick={onClose}
+
+            >
+
+              Cancel
+
+            </CancelButton>
+
+            <SaveButton type="submit">
+
+              Save Payment
+
+            </SaveButton>
+
+          </Footer>
+
+        </Form>
+
+      </Modal>
+
+    </Overlay>
+
   );
+
 };
 
 export default AdvancePaymentModal;

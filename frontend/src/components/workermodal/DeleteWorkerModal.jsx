@@ -1,6 +1,20 @@
 import React from "react";
 
-import Modal from "../modal/Modal";
+import {
+  Overlay,
+  Modal,
+  Header,
+  Title,
+  CloseButton,
+  Footer,
+  CancelButton,
+  SaveButton,
+} from "./WorkerModal.style";
+
+import {
+  Message,
+  WorkerName,
+} from "./DeleteWorkerModal.style";
 
 const DeleteWorkerModal = ({
   open,
@@ -9,9 +23,9 @@ const DeleteWorkerModal = ({
   onDeleteWorker,
 }) => {
 
-  const handleDelete = () => {
+  if (!open || !worker) return null;
 
-    if (!worker) return;
+  const handleDelete = () => {
 
     onDeleteWorker(worker.id);
 
@@ -20,72 +34,122 @@ const DeleteWorkerModal = ({
   };
 
   return (
-    <Modal
-      open={open}
-      title="Delete Worker"
-      submitText="Delete"
-      onClose={onClose}
-      onSubmit={handleDelete}
-    >
 
-      <div
-        style={{
-          textAlign: "center",
-          padding: "1rem",
-        }}
-      >
+    <Overlay>
 
-        <div
-          style={{
-            width: "5rem",
-            height: "5rem",
-            margin: "0 auto 1rem",
-            borderRadius: "50%",
-            background: "#FEE2E2",
-            color: "#DC2626",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            fontSize: "2rem",
-            fontWeight: "700",
-          }}
-        >
-          !
-        </div>
+      <Modal>
 
-        <h3
-          style={{
-            marginBottom: ".75rem",
-            color: "#0F172A",
-          }}
-        >
-          Delete Worker
-        </h3>
+        <Header>
 
-        <p
-          style={{
-            color: "#64748B",
-            lineHeight: "1.7",
-          }}
-        >
-          Are you sure you want to delete
+          <Title>
+
+            Delete Worker
+
+          </Title>
+
+          <CloseButton
+            onClick={onClose}
+          >
+
+            ×
+
+          </CloseButton>
+
+        </Header>
+
+        <Message>
+
+          You are about to permanently delete the following worker.
+
+          <br />
+          <br />
+
+          <WorkerName>
+
+            {worker.name}
+
+          </WorkerName>
+
           <br />
 
           <strong>
-            {worker?.name}
+
+            Worker ID :
+
           </strong>
 
-          ?
+          {" "}
 
-          <br /><br />
+          {worker.id}
 
-          This action cannot be undone.
-        </p>
+          <br />
 
-      </div>
+          <strong>
 
-    </Modal>
+            Mobile :
+
+          </strong>
+
+          {" "}
+
+          {worker.mobile}
+
+          <br />
+
+          <strong>
+
+            Site :
+
+          </strong>
+
+          {" "}
+
+          {worker.site || "-"}
+
+          <br />
+          <br />
+
+          <span
+            style={{
+              color: "#DC2626",
+              fontWeight: 600,
+            }}
+          >
+
+            This action cannot be undone.
+
+          </span>
+
+        </Message>
+
+        <Footer>
+
+          <CancelButton
+            type="button"
+            onClick={onClose}
+          >
+
+            Cancel
+
+          </CancelButton>
+
+          <SaveButton
+            type="button"
+            onClick={handleDelete}
+          >
+
+            Yes, Delete Worker
+
+          </SaveButton>
+
+        </Footer>
+
+      </Modal>
+
+    </Overlay>
+
   );
+
 };
 
 export default DeleteWorkerModal;
