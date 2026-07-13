@@ -5,6 +5,7 @@ import logger from '../common/logger/logger.js';
 const permissionModules = [
   'auth',
   'user',
+  'role',
   'worker',
   'site',
   'attendance',

@@ -4,6 +4,8 @@ import authRoutes from './auth.routes.js';
 
 import userRoutes from './user.routes.js';
 
+import roleRoutes from './role.routes.js';
+
 const router = Router();
 
 /*
@@ -20,21 +22,11 @@ router.get('/health', (req, res) => {
   });
 });
 
-/*
-|--------------------------------------------------------------------------
-| Authentication Routes
-|--------------------------------------------------------------------------
-*/
-
 router.use('/auth', authRoutes);
 
-/*
-|--------------------------------------------------------------------------
-| user Routes
-|--------------------------------------------------------------------------
-*/
 router.use('/users', userRoutes);
 
+router.use('/roles', roleRoutes);
 /*
 |--------------------------------------------------------------------------
 | Future Modules

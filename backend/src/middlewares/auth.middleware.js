@@ -71,7 +71,6 @@ const authMiddleware = async (req, res, next) => {
       (permission) => permission.code
     ) || [],
 };
-
     next();
   } catch (error) {
     next(error);

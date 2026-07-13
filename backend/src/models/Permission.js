@@ -27,6 +27,7 @@ const permissionSchema = new mongoose.Schema(
       enum: [
         'auth',
         'user',
+        'role',
         'worker',
         'site',
         'attendance',
