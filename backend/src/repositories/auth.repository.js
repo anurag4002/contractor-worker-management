@@ -4,6 +4,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { generateRandomToken } from '../common/utils/token.util.js';
 
+import Permission from '../models/Permission.js';
+
 import { hashPassword } from '../common/utils/password.util.js';
 class AuthRepository {
   /**
@@ -133,16 +135,16 @@ class AuthRepository {
    * Save refresh token
    */
   async saveRefreshToken(userId, refreshTokenHash) {
-    return await User.findByIdAndUpdate(
-      userId,
-      {
-        refreshToken,
-      },
-      {
-        new: true,
-      }
-    );
-  }
+  return await User.findByIdAndUpdate(
+    userId,
+    {
+      refreshTokenHash,
+    },
+    {
+      returnDocument: 'after',
+    }
+  );
+}
 
   /**
    * Remove refresh token
@@ -156,7 +158,7 @@ class AuthRepository {
         failedLoginAttempts: 0,
       },
       {
-        new: true,
+         returnDocument: 'after',
       }
     );
   }
@@ -243,9 +245,6 @@ class AuthRepository {
   ) {
     return await User.findOne({
       passwordResetTokenId,
-      passwordResetTokenExpires: {
-        $gt: new Date(),
-      },
       isDeleted: false,
     })
       .select('+passwordResetTokenHash')
@@ -373,6 +372,9 @@ class AuthRepository {
         password: hashedPassword,
         passwordChangedAt: new Date(),
         refreshTokenHash: null,
+        passwordResetTokenId: null,
+        passwordResetTokenHash: null,
+        passwordResetTokenExpires: null,
       },
       {
         new: true,
@@ -388,14 +390,7 @@ async findUserByIdWithPassword(userId) {
   return await User.findOne({
     _id: userId,
     isDeleted: false,
-  })
-    .select('+password')
-    .populate({
-      path: 'role',
-      populate: {
-        path: 'permissions',
-      },
-    });
+  }).select('+password');
 }
 }
 

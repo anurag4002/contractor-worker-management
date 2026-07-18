@@ -4,7 +4,7 @@ import authRepository from '../repositories/auth.repository.js';
 
 import ApiError from '../common/errors/ApiError.js';
 
-import { hashPassword } from '../common/utils/password.util.js';
+import logger from '../common/logger/logger.js';
 
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken, } from '../common/utils/jwt.util.js';
 
@@ -16,6 +16,7 @@ import { generateRandomToken } from '../common/utils/token.util.js';
 
 import AUTH_CONSTANTS from '../common/constants/auth.constants.js';
 
+import AUTH_MESSAGES from '../common/constants/auth.messages.js';
 class AuthService {
   /**
    * Register User
@@ -227,6 +228,28 @@ class AuthService {
     };
   }
 
+    /**
+ * Logout User
+ */
+async logout(userId) {
+  // Find User
+  const user = await authRepository.findUserById(userId);
+
+  if (!user) {
+    throw new ApiError(
+      StatusCodes.NOT_FOUND,
+      AUTH_MESSAGES.USER.NOT_FOUND
+    );
+  }
+
+  // Remove Refresh Token
+  await authRepository.removeRefreshToken(userId);
+
+  return {
+    message: AUTH_MESSAGES.LOGOUT.SUCCESS,
+  };
+}
+
   /**
  * Refresh Access Token
  */
@@ -395,7 +418,7 @@ class AuthService {
         );
       }
     } else if (process.env.NODE_ENV !== 'production') {
-      console.info('Password reset email:', emailPayload);
+      logger.info(emailPayload);
     }
 
     return {
@@ -412,18 +435,25 @@ class AuthService {
  * Reset Password
  */
   async resetPassword(resetToken, newPassword) {
-    // Validate reset token
-    if (!resetToken) {
+    const normalizedResetToken =
+      typeof resetToken === 'string'
+        ? resetToken.trim()
+        : '';
+
+    if (!normalizedResetToken) {
       throw new ApiError(
         StatusCodes.BAD_REQUEST,
         AUTH_MESSAGES.TOKEN.INVALID
       );
     }
 
-    // Split token (tokenId.secret)
-    const tokenParts = resetToken.split('.');
+    const tokenParts = normalizedResetToken.split('.');
 
-    if (tokenParts.length !== 2) {
+    if (
+      tokenParts.length !== 2 ||
+      !tokenParts[0] ||
+      !tokenParts[1]
+    ) {
       throw new ApiError(
         StatusCodes.BAD_REQUEST,
         AUTH_MESSAGES.TOKEN.INVALID
@@ -432,20 +462,36 @@ class AuthService {
 
     const [tokenId, secret] = tokenParts;
 
-    // Find user
     const user =
       await authRepository.findUserByPasswordResetTokenId(
         tokenId
       );
 
-    if (!user) {
+    if (
+      !user ||
+      !user.passwordResetTokenHash ||
+      !user.passwordResetTokenExpires
+    ) {
       throw new ApiError(
         StatusCodes.BAD_REQUEST,
         AUTH_MESSAGES.TOKEN.INVALID
       );
     }
 
-    // Compare secret
+    if (
+      user.passwordResetTokenExpires.getTime() <=
+      Date.now()
+    ) {
+      await authRepository.clearPasswordResetToken(
+        user._id
+      );
+
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        AUTH_MESSAGES.TOKEN.EXPIRED
+      );
+    }
+
     const isValidToken =
       await comparePassword(
         secret,
@@ -459,19 +505,12 @@ class AuthService {
       );
     }
 
-    // Hash new password
     const hashedPassword =
       await hashPassword(newPassword);
 
-    // Update password
-    await authRepository.updatePassword(
+    await authRepository.updatePasswordAndClearRefreshToken(
       user._id,
       hashedPassword
-    );
-
-    // Clear reset token & refresh token
-    await authRepository.clearPasswordResetToken(
-      user._id
     );
 
     return {
@@ -490,7 +529,7 @@ class AuthService {
   ) {
     // Find User
     const user =
-      await authRepository.findUserByIdWithPassword(userId);;
+      await authRepository.findUserByIdWithPassword(userId);
 
     if (!user) {
       throw new ApiError(

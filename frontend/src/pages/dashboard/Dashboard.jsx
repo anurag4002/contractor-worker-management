@@ -1,9 +1,9 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { FiCalendar, FiDownload } from "react-icons/fi";
 
 import useWorkers from "../../hooks/useWorkers";
 import StatCard from "../../components/statcard/StatCard";
+import exportDashboardPDF from "../../utils/exportDashboardPDF";
 
 import {
   DashboardContainer,
@@ -25,7 +25,6 @@ import {
 } from "./Dashboard.style";
 
 const Dashboard = () => {
-
   const navigate = useNavigate();
 
   const {
@@ -88,394 +87,201 @@ const Dashboard = () => {
   ];
 
   const handleExport = () => {
-
-    alert(
-      "PDF Export will be connected in next step."
-    );
-
+    exportDashboardPDF({
+      workers,
+      attendanceSummary,
+      expenseReport,
+      activeSites,
+    });
   };
 
   return (
-
     <DashboardContainer>
-
       <DashboardHeader>
-
         <HeaderLeft>
-
-          <h2>
-
-            Dashboard
-
-          </h2>
-
+          <h2>Dashboard</h2>
           <p>
-
             Contractor Worker Management System
-
           </p>
-
         </HeaderLeft>
 
         <HeaderRight>
-
           <FiCalendar />
-
           <span>{today}</span>
 
           <ExportButton
+            type="button"
             onClick={handleExport}
           >
-
             <FiDownload />
-
             Export Report
-
           </ExportButton>
-
         </HeaderRight>
-
       </DashboardHeader>
 
       <StatsGrid>
-
-        {
-
-          stats.map((item) => (
-
-            <div
-              key={item.title}
-              onClick={() =>
-                navigate(item.route)
-              }
-              style={{
-                cursor: "pointer",
-              }}
-            >
-
-              <StatCard
-                title={item.title}
-                value={item.value}
-                description={item.description}
-                icon={item.icon}
-                progress={item.progress}
-              />
-
-            </div>
-
-          ))
-
-        }
-
+        {stats.map((item) => (
+          <StatCard
+            key={item.title}
+            title={item.title}
+            value={item.value}
+            description={item.description}
+            icon={item.icon}
+            progress={item.progress}
+            onClick={() => navigate(item.route)}
+          />
+        ))}
       </StatsGrid>
 
       <DashboardGrid>
-
         <Section>
-
           <SectionTitle>
-
             Quick Actions
-
           </SectionTitle>
 
           <QuickActions>
-
             <ActionCard
-              onClick={() =>
-                navigate("/workers")
-              }
+              type="button"
+              onClick={() => navigate("/workers")}
             >
-
-              <ActionIcon>
-
-                👷
-
-              </ActionIcon>
-
-              <ActionTitle>
-
-                Add Worker
-
-              </ActionTitle>
-
+              <ActionIcon>👷</ActionIcon>
+              <ActionTitle>Add Worker</ActionTitle>
             </ActionCard>
 
             <ActionCard
-              onClick={() =>
-                navigate("/attendance")
-              }
+              type="button"
+              onClick={() => navigate("/attendance")}
             >
-
-              <ActionIcon>
-
-                📅
-
-              </ActionIcon>
-
-              <ActionTitle>
-
-                Attendance
-
-              </ActionTitle>
-
+              <ActionIcon>📅</ActionIcon>
+              <ActionTitle>Attendance</ActionTitle>
             </ActionCard>
 
             <ActionCard
-              onClick={() =>
-                navigate("/salary")
-              }
+              type="button"
+              onClick={() => navigate("/salary")}
             >
-
-              <ActionIcon>
-
-                💰
-
-              </ActionIcon>
-
-              <ActionTitle>
-
-                Salary
-
-              </ActionTitle>
-
+              <ActionIcon>💰</ActionIcon>
+              <ActionTitle>Salary</ActionTitle>
             </ActionCard>
 
             <ActionCard
-              onClick={() =>
-                navigate("/sites")
-              }
+              type="button"
+              onClick={() => navigate("/sites")}
             >
-
-              <ActionIcon>
-
-                🏗
-
-              </ActionIcon>
-
-              <ActionTitle>
-
-                Sites
-
-              </ActionTitle>
-
+              <ActionIcon>🏗</ActionIcon>
+              <ActionTitle>Sites</ActionTitle>
             </ActionCard>
-
           </QuickActions>
-
         </Section>
 
         <Section>
-
           <SectionTitle>
-
             Today's Attendance
-
           </SectionTitle>
 
           <List>
-
             <ListItem
-              onClick={() =>
-                navigate("/attendance")
-              }
+              onClick={() => navigate("/attendance")}
             >
-
-              <span>
-
-                Present
-
-              </span>
-
+              <span>Present</span>
               <Badge success>
-
                 {attendanceSummary.present || 0}
-
               </Badge>
-
             </ListItem>
 
             <ListItem
-              onClick={() =>
-                navigate("/attendance")
-              }
+              onClick={() => navigate("/attendance")}
             >
-
-              <span>
-
-                Absent
-
-              </span>
-
+              <span>Absent</span>
               <Badge danger>
-
                 {attendanceSummary.absent || 0}
-
               </Badge>
-
             </ListItem>
 
             <ListItem
-              onClick={() =>
-                navigate("/attendance")
-              }
+              onClick={() => navigate("/attendance")}
             >
-
-              <span>
-
-                Leave
-
-              </span>
-
+              <span>Leave</span>
               <Badge warning>
-
                 {attendanceSummary.leave || 0}
-
               </Badge>
-
             </ListItem>
-
           </List>
-
         </Section>
 
         <Section>
-
           <SectionTitle>
-
             Salary Overview
-
           </SectionTitle>
 
           <List>
-
             <ListItem>
-
-              <span>
-
-                Gross Salary
-
-              </span>
-
+              <span>Gross Salary</span>
               <strong>
-
                 ₹{Number(
                   expenseReport.totalGross || 0
                 ).toLocaleString("en-IN")}
-
               </strong>
-
             </ListItem>
 
             <ListItem>
-
-              <span>
-
-                Advance Paid
-
-              </span>
-
+              <span>Advance Paid</span>
               <strong>
-
                 ₹{Number(
                   expenseReport.totalAdvance || 0
                 ).toLocaleString("en-IN")}
-
               </strong>
-
             </ListItem>
 
             <ListItem>
-
-              <span>
-
-                Salary Paid
-
-              </span>
-
+              <span>Salary Paid</span>
               <strong>
-
                 ₹{Number(
                   expenseReport.totalPaid || 0
                 ).toLocaleString("en-IN")}
-
               </strong>
-
             </ListItem>
 
             <ListItem>
-
-              <span>
-
-                Pending
-
-              </span>
-
+              <span>Pending</span>
               <strong>
-
                 ₹{Number(
                   expenseReport.totalBalance || 0
                 ).toLocaleString("en-IN")}
-
               </strong>
-
             </ListItem>
-
           </List>
-
         </Section>
 
         <Section>
-
           <SectionTitle>
-
             Active Sites
-
           </SectionTitle>
 
           <List>
-
-            {
-
-              activeSites.length === 0 ? (
-
-                <ListItem>
-
-                  No Active Site
-
+            {activeSites.length === 0 ? (
+              <ListItem>
+                No Active Site
+              </ListItem>
+            ) : (
+              activeSites.map((site) => (
+                <ListItem
+                  key={
+                    site.id ||
+                    site._id ||
+                    site.name
+                  }
+                  onClick={() => navigate("/sites")}
+                >
+                  {site.name}
                 </ListItem>
-
-              ) : (
-
-                activeSites.map((site) => (
-
-                  <ListItem
-                    key={site.id}
-                    onClick={() =>
-                      navigate("/sites")
-                    }
-                  >
-
-                    {site.name}
-
-                  </ListItem>
-
-                ))
-
-              )
-
-            }
-
+              ))
+            )}
           </List>
-
         </Section>
-
       </DashboardGrid>
-
     </DashboardContainer>
-
   );
-
 };
 
 export default Dashboard;

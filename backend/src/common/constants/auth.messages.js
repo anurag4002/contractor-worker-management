@@ -44,8 +44,22 @@ const AUTH_MESSAGES = {
     CHANGED: 'Password changed successfully.',
     RESET_SUCCESS: 'Password reset successfully.',
     SAME_AS_OLD:
-        'New password must be different from old password.',
-}
+      'New password must be different from old password.',
+  },
+  TOKEN: {
+    INVALID: 'Invalid token.',
+    EXPIRED: 'Token has expired.',
+    REFRESH_REQUIRED: 'Refresh token is required.',
+    REFRESH_SUCCESS: 'Access token refreshed successfully.',
+  },
+  PROFILE: {
+    FETCH_SUCCESS: 'Profile fetched successfully.',
+    UPDATE_SUCCESS: 'Profile updated successfully.',
+  },
+UNAUTHORIZED: 'Authentication is required.',
+
+FORBIDDEN:
+  'You do not have permission to perform this action.',
 };
 
 export default AUTH_MESSAGES;

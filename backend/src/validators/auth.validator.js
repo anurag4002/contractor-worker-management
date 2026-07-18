@@ -5,19 +5,35 @@ import Joi from 'joi';
  */
 export const registerSchema = Joi.object({
   fullName: Joi.string()
-    .trim()
-    .min(2)
-    .max(100)
-    .required(),
+  .trim()
+  .min(2)
+  .max(100)
+  .required()
+  .messages({
+    'string.empty': 'Full name is required.',
+    'any.required': 'Full name is required.',
+    'string.min': 'Full name must contain at least 2 characters.',
+    'string.max': 'Full name cannot exceed 100 characters.',
+  }),
 
   email: Joi.string()
-    .email()
-    .lowercase()
-    .required(),
+  .email()
+  .required()
+  .messages({
+    'string.empty': 'Email is required.',
+    'any.required': 'Email is required.',
+    'string.email': 'Please enter a valid email address.',
+  }),
 
   mobileNumber: Joi.string()
-    .pattern(/^[6-9]\d{9}$/)
-    .required(),
+  .pattern(/^[6-9]\d{9}$/)
+  .required()
+  .messages({
+    'string.empty': 'Mobile number is required.',
+    'any.required': 'Mobile number is required.',
+    'string.pattern.base':
+      'Please enter a valid 10-digit Indian mobile number.',
+  }),
 
   username: Joi.string()
     .trim()
@@ -49,8 +65,13 @@ export const registerSchema = Joi.object({
  */
 export const loginSchema = Joi.object({
   email: Joi.string()
-    .email()
-    .required(),
+  .email()
+  .required()
+  .messages({
+    'string.empty': 'Email is required.',
+    'any.required': 'Email is required.',
+    'string.email': 'Please enter a valid email address.',
+  }),
 
   password: Joi.string()
     .required(),
@@ -112,3 +133,39 @@ export const changePasswordSchema = Joi.object({
         'Password must contain uppercase, lowercase, number and special character.',
     }),
 });
+export const updateProfileSchema = Joi.object({
+  fullName: Joi.string()
+    .trim()
+    .min(2)
+    .max(100)
+    .messages({
+      'string.base': 'Full name must be a string.',
+      'string.empty': 'Full name is required.',
+      'string.min': 'Full name must contain at least 2 characters.',
+      'string.max': 'Full name cannot exceed 100 characters.',
+    }),
+
+  mobileNumber: Joi.string()
+    .pattern(/^[6-9]\d{9}$/)
+    .messages({
+      'string.pattern.base':
+        'Please enter a valid 10-digit Indian mobile number.',
+    }),
+
+  username: Joi.string()
+    .trim()
+    .min(3)
+    .max(30)
+    .lowercase()
+    .messages({
+      'string.min':
+        'Username must contain at least 3 characters.',
+      'string.max':
+        'Username cannot exceed 30 characters.',
+    }),
+})
+  .min(1)
+  .messages({
+    'object.min':
+      'At least one field is required to update the profile.',
+  });
