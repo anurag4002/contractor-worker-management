@@ -16,6 +16,12 @@ import payrollRoutes from './payroll.routes.js';
 
 import dashboardRoutes from './dashboard.routes.js';
 
+import reportRoutes from './report.routes.js';
+
+import exportRoutes from './export.routes.js';
+
+import notificationRoutes from './notification.routes.js';
+
 const router = Router();
 
 /*
@@ -47,6 +53,12 @@ router.use('/attendance', attendanceRoutes);
 router.use('/payroll', payrollRoutes);
 
 router.use('/dashboard', dashboardRoutes);
+
+router.use('/reports', reportRoutes);
+
+router.use('/export', exportRoutes);
+
+router.use('/notifications',notificationRoutes);
 
 /*
 |--------------------------------------------------------------------------
