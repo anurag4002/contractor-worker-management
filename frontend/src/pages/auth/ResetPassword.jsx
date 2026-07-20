@@ -1,165 +1,108 @@
-import React, {
-  useState,
-} from "react";
+import { useState } from "react";
 
 import {
-  useNavigate,
-} from "react-router-dom";
-
-import {
-  FiLock,
+  FiArrowLeft,
   FiEye,
   FiEyeOff,
+  FiLock,
 } from "react-icons/fi";
 
+import { Link } from "react-router-dom";
+
 import {
-  ResetContainer,
-  ResetCard,
-  Logo,
+  Page,
+  Card,
   Title,
   Subtitle,
   Form,
-  FormGroup,
-  Label,
-  InputWrapper,
+  InputGroup,
+  Icon,
   Input,
   ToggleButton,
   PasswordStrength,
   ErrorMessage,
-  SuccessMessage,
-  SubmitButton,
-  BackButton,
+  Button,
+  Footer,
 } from "./ResetPassword.style";
 
 const ResetPassword = () => {
 
-  const navigate =
-    useNavigate();
+  const [showPassword, setShowPassword] =
+    useState(false);
+
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState(false);
 
   const [password, setPassword] =
     useState("");
 
-  const [
-    confirmPassword,
-    setConfirmPassword,
-  ] = useState("");
+  const [confirmPassword, setConfirmPassword] =
+    useState("");
 
-  const [
-    showPassword,
-    setShowPassword,
-  ] = useState(false);
-
-  const [
-    showConfirmPassword,
-    setShowConfirmPassword,
-  ] = useState(false);
-
-  const [loading, setLoading] =
-    useState(false);
-
-  const [success, setSuccess] =
-    useState(false);
-
-  const [errors, setErrors] =
-    useState({});
+  const [error, setError] =
+    useState("");
 
   const getStrength = () => {
 
     if (password.length < 6) {
 
-      return "Weak";
+      return {
+        text: "Weak",
+        color: "#DC2626",
+      };
 
     }
 
     if (password.length < 10) {
 
-      return "Medium";
+      return {
+        text: "Medium",
+        color: "#F59E0B",
+      };
 
     }
 
-    return "Strong";
+    return {
+      text: "Strong",
+      color: "#16A34A",
+    };
 
   };
 
-  const validate = () => {
-
-    const newErrors = {};
-
-    if (!password.trim()) {
-
-      newErrors.password =
-        "Password is required.";
-
-    } else if (
-      password.length < 6
-    ) {
-
-      newErrors.password =
-        "Minimum 6 characters required.";
-
-    }
-
-    if (!confirmPassword.trim()) {
-
-      newErrors.confirmPassword =
-        "Confirm password is required.";
-
-    } else if (
-      password !== confirmPassword
-    ) {
-
-      newErrors.confirmPassword =
-        "Passwords do not match.";
-
-    }
-
-    setErrors(newErrors);
-
-    return (
-      Object.keys(newErrors).length === 0
-    );
-
-  };
+  const strength =
+    getStrength();
 
   const handleSubmit = (e) => {
 
     e.preventDefault();
 
-    if (!validate()) {
+    if (
+      password !==
+      confirmPassword
+    ) {
+
+      setError(
+        "Passwords do not match."
+      );
 
       return;
 
     }
 
-    setLoading(true);
+    setError("");
 
-    setTimeout(() => {
+    alert(
+      "Password Reset Successfully"
+    );
 
-      setLoading(false);
-
-      setSuccess(true);
-
-      setTimeout(() => {
-
-        navigate("/login");
-
-      }, 2000);
-
-    }, 1500);
-
+    // Backend API
   };
 
   return (
 
-    <ResetContainer>
+    <Page>
 
-      <ResetCard>
-
-        <Logo>
-
-          <FiLock />
-
-        </Logo>
+      <Card>
 
         <Title>
 
@@ -169,251 +112,185 @@ const ResetPassword = () => {
 
         <Subtitle>
 
-          Create a new secure password.
+          Create your new password.
 
         </Subtitle>
 
-        {
+        <Form
+          onSubmit={handleSubmit}
+        >
 
-          success ? (
+          <InputGroup>
 
-            <>
+            <Icon>
 
-              <SuccessMessage>
+              <FiLock />
 
-                Password updated successfully.
+            </Icon>
 
-                <br />
+            <Input
 
-                Redirecting to login...
+              type={
+                showPassword
+                  ? "text"
+                  : "password"
+              }
 
-              </SuccessMessage>
+              placeholder="New Password"
 
-            </>
+              value={password}
 
-          ) : (
+              onChange={(e)=>
 
-            <Form
-              onSubmit={handleSubmit}
+                setPassword(
+                  e.target.value
+                )
+
+              }
+
+              required
+
+            />
+
+            <ToggleButton
+              type="button"
+              onClick={()=>
+
+                setShowPassword(
+
+                  !showPassword
+
+                )
+
+              }
             >
 
-              <FormGroup>
+              {
 
-                <Label>
+                showPassword
 
-                  New Password
+                  ? <FiEyeOff />
 
-                </Label>
+                  : <FiEye />
 
-                <InputWrapper>
+              }
 
-                  <Input
+            </ToggleButton>
 
-                    type={
-                      showPassword
-                        ? "text"
-                        : "password"
-                    }
+          </InputGroup>
 
-                    placeholder="Enter new password"
+          <PasswordStrength
+            color={strength.color}
+          >
 
-                    value={password}
+            Password Strength :
 
-                    onChange={(e)=>
+            {" "}
 
-                      setPassword(
-                        e.target.value
-                      )
+            {strength.text}
 
-                    }
+          </PasswordStrength>
 
-                  />
+          <InputGroup>
 
-                  <ToggleButton
+            <Icon>
 
-                    type="button"
+              <FiLock />
 
-                    onClick={()=>
+            </Icon>
 
-                      setShowPassword(
+            <Input
 
-                        !showPassword
+              type={
+                showConfirmPassword
+                  ? "text"
+                  : "password"
+              }
 
-                      )
+              placeholder="Confirm Password"
 
-                    }
+              value={confirmPassword}
 
-                  >
+              onChange={(e)=>
 
-                    {
+                setConfirmPassword(
 
-                      showPassword
+                  e.target.value
 
-                        ? <FiEyeOff />
+                )
 
-                        : <FiEye />
+              }
 
-                    }
+              required
 
-                  </ToggleButton>
+            />
 
-                </InputWrapper>
+            <ToggleButton
+              type="button"
+              onClick={()=>
 
-                <PasswordStrength
-                  strength={getStrength()}
-                >
+                setShowConfirmPassword(
 
-                  Strength :
+                  !showConfirmPassword
 
-                  {" "}
+                )
 
-                  {getStrength()}
+              }
+            >
 
-                </PasswordStrength>
+              {
 
-                {
+                showConfirmPassword
 
-                  errors.password && (
+                  ? <FiEyeOff />
 
-                    <ErrorMessage>
+                  : <FiEye />
 
-                      {errors.password}
+              }
 
-                    </ErrorMessage>
+            </ToggleButton>
 
-                  )
+          </InputGroup>
 
-                }
+          {
 
-              </FormGroup>
+            error && (
 
-              <FormGroup>
+              <ErrorMessage>
 
-                <Label>
+                {error}
 
-                  Confirm Password
+              </ErrorMessage>
 
-                </Label>
+            )
 
-                <InputWrapper>
+          }
 
-                  <Input
+          <Button>
 
-                    type={
-                      showConfirmPassword
-                        ? "text"
-                        : "password"
-                    }
+            Reset Password
 
-                    placeholder="Confirm password"
+          </Button>
 
-                    value={confirmPassword}
+        </Form>
 
-                    onChange={(e)=>
+        <Footer>
 
-                      setConfirmPassword(
-                        e.target.value
-                      )
+          <Link
+            to="/login"
+          >
 
-                    }
+            <FiArrowLeft />
 
-                  />
+            Back to Login
 
-                  <ToggleButton
+          </Link>
 
-                    type="button"
+        </Footer>
 
-                    onClick={()=>
+      </Card>
 
-                      setShowConfirmPassword(
-
-                        !showConfirmPassword
-
-                      )
-
-                    }
-
-                  >
-
-                    {
-
-                      showConfirmPassword
-
-                        ? <FiEyeOff />
-
-                        : <FiEye />
-
-                    }
-
-                  </ToggleButton>
-
-                </InputWrapper>
-
-                {
-
-                  errors.confirmPassword && (
-
-                    <ErrorMessage>
-
-                      {
-
-                        errors.confirmPassword
-
-                      }
-
-                    </ErrorMessage>
-
-                  )
-
-                }
-
-              </FormGroup>
-
-              <SubmitButton
-
-                type="submit"
-
-                disabled={loading}
-
-              >
-
-                {
-
-                  loading
-
-                    ? "Updating..."
-
-                    : "Reset Password"
-
-                }
-
-              </SubmitButton>
-
-              <BackButton
-
-                type="button"
-
-                onClick={()=>
-
-                  navigate("/login")
-
-                }
-
-              >
-
-                ← Back to Login
-
-              </BackButton>
-
-            </Form>
-
-          )
-
-        }
-
-      </ResetCard>
-
-    </ResetContainer>
+    </Page>
 
   );
 

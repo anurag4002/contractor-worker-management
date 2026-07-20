@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const ForgotContainer = styled.div`
+export const Page = styled.div`
   min-height: 100vh;
 
   display: flex;
@@ -13,12 +13,12 @@ export const ForgotContainer = styled.div`
 
   background: linear-gradient(
     135deg,
-    #eff6ff 0%,
-    #dbeafe 100%
+    #2563EB,
+    #1E3A8A
   );
 `;
 
-export const ForgotCard = styled.div`
+export const Card = styled.div`
   width: 100%;
 
   max-width: 28rem;
@@ -29,175 +29,173 @@ export const ForgotCard = styled.div`
 
   padding: 2.5rem;
 
-  border: 1px solid #e2e8f0;
+  box-shadow: 0 20px 50px rgba(15,23,42,.18);
 
-  box-shadow: 0 20px 50px rgba(15,23,42,.12);
-`;
+  animation: popup .3s ease;
 
-export const Logo = styled.div`
-  width: 4.5rem;
+  @keyframes popup {
 
-  height: 4.5rem;
+    from{
+      opacity:0;
+      transform:translateY(20px);
+    }
 
-  margin: 0 auto 1.5rem;
+    to{
+      opacity:1;
+      transform:translateY(0);
+    }
 
-  border-radius: 50%;
-
-  background: #2563EB;
-
-  color: #ffffff;
-
-  display: flex;
-
-  justify-content: center;
-
-  align-items: center;
-
-  font-size: 2rem;
+  }
 `;
 
 export const Title = styled.h2`
-  margin: 0;
+  margin:0;
 
-  text-align: center;
+  text-align:center;
 
-  color: #0F172A;
+  color:#0F172A;
 
-  font-size: 1.7rem;
+  font-size:2rem;
 
-  font-weight: 700;
+  font-weight:700;
 `;
 
 export const Subtitle = styled.p`
-  margin: .8rem 0 2rem;
+  margin:1rem 0 2rem;
 
-  text-align: center;
+  text-align:center;
 
-  color: #64748B;
+  color:#64748B;
 
-  line-height: 1.6;
-`;
-
-export const Form = styled.form`
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 1.3rem;
-`;
-
-export const FormGroup = styled.div`
-  display: flex;
-
-  flex-direction: column;
-
-  gap: .5rem;
-`;
-
-export const Label = styled.label`
-  font-size: .9rem;
-
-  font-weight: 600;
-
-  color: #334155;
-`;
-
-export const Input = styled.input`
-  width: 100%;
-
-  padding: .95rem 1rem;
-
-  border: 1px solid #CBD5E1;
-
-  border-radius: .75rem;
-
-  outline: none;
-
-  font-size: .95rem;
-
-  transition: .25s;
-
-  &:focus{
-
-    border-color: #2563EB;
-
-    box-shadow: 0 0 0 3px rgba(37,99,235,.12);
-
-  }
-`;
-
-export const ErrorMessage = styled.span`
-  color: #DC2626;
-
-  font-size: .85rem;
+  line-height:1.6;
 `;
 
 export const SuccessMessage = styled.div`
-  background: #DCFCE7;
+  margin-bottom:1.5rem;
 
-  color: #166534;
+  padding:1rem;
 
-  padding: 1rem;
+  border-radius:.75rem;
 
-  border-radius: .75rem;
+  background:#DCFCE7;
 
-  text-align: center;
+  color:#15803D;
 
-  font-size: .9rem;
+  text-align:center;
+
+  font-size:.9rem;
+
+  font-weight:600;
 `;
 
-export const SubmitButton = styled.button`
-  border: none;
+export const Form = styled.form`
+  display:flex;
 
-  background: #2563EB;
+  flex-direction:column;
 
-  color: #ffffff;
+  gap:1.25rem;
+`;
 
-  padding: 1rem;
+export const InputGroup = styled.div`
+  position:relative;
 
-  border-radius: .75rem;
+  display:flex;
 
-  cursor: pointer;
+  align-items:center;
+`;
 
-  font-size: 1rem;
+export const Icon = styled.div`
+  position:absolute;
 
-  font-weight: 600;
+  left:1rem;
 
-  transition: .25s;
+  color:#64748B;
+
+  font-size:1rem;
+`;
+
+export const Input = styled.input`
+  width:100%;
+
+  padding:1rem 1rem 1rem 3rem;
+
+  border:1px solid #CBD5E1;
+
+  border-radius:.8rem;
+
+  outline:none;
+
+  font-size:.95rem;
+
+  transition:.25s;
+
+  &:focus{
+
+    border-color:#2563EB;
+
+    box-shadow:0 0 0 3px rgba(37,99,235,.15);
+
+  }
+`;
+
+export const Button = styled.button`
+  border:none;
+
+  background:#2563EB;
+
+  color:#ffffff;
+
+  padding:1rem;
+
+  border-radius:.8rem;
+
+  font-size:1rem;
+
+  font-weight:600;
+
+  cursor:pointer;
+
+  transition:.25s;
 
   &:hover{
 
-    background: #1D4ED8;
+    background:#1D4ED8;
 
   }
 
-  &:disabled{
+  &:active{
 
-    background: #94A3B8;
-
-    cursor: not-allowed;
+    transform:scale(.98);
 
   }
 `;
 
-export const BackButton = styled.button`
-  border: none;
+export const Footer = styled.div`
+  margin-top:2rem;
 
-  background: transparent;
+  text-align:center;
 
-  color: #2563EB;
+  a{
 
-  cursor: pointer;
+    display:inline-flex;
 
-  font-size: .95rem;
+    align-items:center;
 
-  font-weight: 600;
+    gap:.5rem;
 
-  margin-top: 1rem;
+    color:#2563EB;
 
-  &:hover{
+    text-decoration:none;
 
-    text-decoration: underline;
+    font-weight:600;
+
+    transition:.25s;
+
+  }
+
+  a:hover{
+
+    color:#1D4ED8;
 
   }
 `;

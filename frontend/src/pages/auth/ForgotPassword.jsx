@@ -1,117 +1,51 @@
-import React, {
-  useState,
-} from "react";
+import { useState } from "react";
 
 import {
-  useNavigate,
-} from "react-router-dom";
-
-import {
+  FiArrowLeft,
   FiMail,
 } from "react-icons/fi";
 
+import { Link } from "react-router-dom";
+
 import {
-  ForgotContainer,
-  ForgotCard,
-  Logo,
+  Page,
+  Card,
   Title,
   Subtitle,
   Form,
-  FormGroup,
-  Label,
+  InputGroup,
+  Icon,
   Input,
-  ErrorMessage,
+  Button,
+  Footer,
   SuccessMessage,
-  SubmitButton,
-  BackButton,
 } from "./ForgotPassword.style";
 
 const ForgotPassword = () => {
 
-  const navigate =
-    useNavigate();
-
   const [email, setEmail] =
     useState("");
 
-  const [loading, setLoading] =
-    useState(false);
-
   const [success, setSuccess] =
     useState(false);
-
-  const [error, setError] =
-    useState("");
-
-  const validateEmail = () => {
-
-    if (!email.trim()) {
-
-      setError(
-        "Email is required."
-      );
-
-      return false;
-
-    }
-
-    const emailRegex =
-
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (
-
-      !emailRegex.test(email)
-
-    ) {
-
-      setError(
-        "Please enter a valid email."
-      );
-
-      return false;
-
-    }
-
-    setError("");
-
-    return true;
-
-  };
 
   const handleSubmit = (e) => {
 
     e.preventDefault();
 
-    if (!validateEmail()) {
+    if (!email) return;
 
-      return;
+    // Backend API
 
-    }
-
-    setLoading(true);
-
-    setTimeout(() => {
-
-      setLoading(false);
-
-      setSuccess(true);
-
-    }, 1500);
+    setSuccess(true);
 
   };
 
   return (
 
-    <ForgotContainer>
+    <Page>
 
-      <ForgotCard>
-
-        <Logo>
-
-          <FiMail />
-
-        </Logo>
+      <Card>
 
         <Title>
 
@@ -122,132 +56,78 @@ const ForgotPassword = () => {
         <Subtitle>
 
           Enter your registered email address.
-          We'll send you a password reset link.
 
         </Subtitle>
 
         {
 
-          success ? (
+          success && (
 
-            <>
+            <SuccessMessage>
 
-              <SuccessMessage>
+              Reset password link has been sent to your email.
 
-                Password reset link has been
-                sent successfully.
-
-              </SuccessMessage>
-
-              <BackButton
-
-                onClick={()=>
-
-                  navigate("/login")
-
-                }
-
-              >
-
-                ← Back to Login
-
-              </BackButton>
-
-            </>
-
-          ) : (
-
-            <Form
-              onSubmit={handleSubmit}
-            >
-
-              <FormGroup>
-
-                <Label>
-
-                  Email Address
-
-                </Label>
-
-                <Input
-
-                  type="email"
-
-                  placeholder="Enter your email"
-
-                  value={email}
-
-                  onChange={(e)=>
-
-                    setEmail(
-                      e.target.value
-                    )
-
-                  }
-
-                />
-
-                {
-
-                  error && (
-
-                    <ErrorMessage>
-
-                      {error}
-
-                    </ErrorMessage>
-
-                  )
-
-                }
-
-              </FormGroup>
-
-              <SubmitButton
-
-                type="submit"
-
-                disabled={loading}
-
-              >
-
-                {
-
-                  loading
-
-                    ? "Sending..."
-
-                    : "Send Reset Link"
-
-                }
-
-              </SubmitButton>
-
-              <BackButton
-
-                type="button"
-
-                onClick={()=>
-
-                  navigate("/login")
-
-                }
-
-              >
-
-                ← Back to Login
-
-              </BackButton>
-
-            </Form>
+            </SuccessMessage>
 
           )
 
         }
 
-      </ForgotCard>
+        <Form
+          onSubmit={handleSubmit}
+        >
 
-    </ForgotContainer>
+          <InputGroup>
+
+            <Icon>
+
+              <FiMail />
+
+            </Icon>
+
+            <Input
+
+              type="email"
+
+              placeholder="Email Address"
+
+              value={email}
+
+              onChange={(e)=>
+
+                setEmail(e.target.value)
+
+              }
+
+              required
+
+            />
+
+          </InputGroup>
+
+          <Button>
+
+            Send Reset Link
+
+          </Button>
+
+        </Form>
+
+        <Footer>
+
+          <Link to="/login">
+
+            <FiArrowLeft />
+
+            Back to Login
+
+          </Link>
+
+        </Footer>
+
+      </Card>
+
+    </Page>
 
   );
 

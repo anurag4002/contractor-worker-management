@@ -6,9 +6,16 @@ import ApiError from '../common/errors/ApiError.js';
 
 import logger from '../common/logger/logger.js';
 
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken, } from '../common/utils/jwt.util.js';
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+} from '../common/utils/jwt.util.js';
 
-import { comparePassword, hashPassword, } from '../common/utils/password.util.js';
+import {
+  comparePassword,
+  hashPassword,
+} from '../common/utils/password.util.js';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -17,9 +24,10 @@ import { generateRandomToken } from '../common/utils/token.util.js';
 import AUTH_CONSTANTS from '../common/constants/auth.constants.js';
 
 import AUTH_MESSAGES from '../common/constants/auth.messages.js';
+
 class AuthService {
   /**
-   * Register User
+   * Register First Super Admin
    */
   async register(registerData) {
     const {
@@ -28,11 +36,26 @@ class AuthService {
       mobileNumber,
       username,
       password,
-      role,
     } = registerData;
 
-    // Check email
-    const existingEmail = await authRepository.findByEmail(email);
+    /**
+     * Allow registration only for first user
+     */
+    const totalUsers =
+      await authRepository.countUsers();
+
+    if (totalUsers > 0) {
+      throw new ApiError(
+        StatusCodes.FORBIDDEN,
+        'Public registration is disabled. Please contact the administrator.'
+      );
+    }
+
+    /**
+     * Check Email
+     */
+    const existingEmail =
+      await authRepository.findByEmail(email);
 
     if (existingEmail) {
       throw new ApiError(
@@ -41,9 +64,13 @@ class AuthService {
       );
     }
 
-    // Check mobile
+    /**
+     * Check Mobile
+     */
     const existingMobile =
-      await authRepository.findByMobileNumber(mobileNumber);
+      await authRepository.findByMobileNumber(
+        mobileNumber
+      );
 
     if (existingMobile) {
       throw new ApiError(
@@ -52,9 +79,13 @@ class AuthService {
       );
     }
 
-    // Check username
+    /**
+     * Check Username
+     */
     const existingUsername =
-      await authRepository.findByUsername(username);
+      await authRepository.findByUsername(
+        username
+      );
 
     if (existingUsername) {
       throw new ApiError(
@@ -63,22 +94,30 @@ class AuthService {
       );
     }
 
-    // Check role
-    const existingRole =
-      await authRepository.findRoleById(role);
+    /**
+     * Get SUPER_ADMIN Role
+     */
+    const superAdminRole =
+      await authRepository.findRoleByCode(
+        'SUPER_ADMIN'
+      );
 
-    if (!existingRole) {
+    if (!superAdminRole) {
       throw new ApiError(
         StatusCodes.NOT_FOUND,
-        'Role not found.'
+        'SUPER_ADMIN role not found. Please run role seeder.'
       );
     }
 
-    // Hash password
+    /**
+     * Hash Password
+     */
     const hashedPassword =
       await hashPassword(password);
 
-    // Create user
+    /**
+     * Create First Admin
+     */
     const createdUser =
       await authRepository.create({
         fullName,
@@ -86,24 +125,29 @@ class AuthService {
         mobileNumber,
         username,
         password: hashedPassword,
-        role,
+        role: superAdminRole._id,
       });
 
-    // Fetch user without password
+    /**
+     * Fetch User
+     */
     const user =
-      await authRepository.findById(createdUser._id);
+      await authRepository.findById(
+        createdUser._id
+      );
 
     return user;
   }
 
   /**
- * Login User
- */
+   * Login User
+   */
   async login(loginData) {
     const { email, password } = loginData;
 
     // Find user by email
-    const user = await authRepository.findByEmail(email);
+    const user =
+      await authRepository.findByEmail(email);
 
     if (!user) {
       throw new ApiError(
@@ -120,7 +164,8 @@ class AuthService {
       );
     }
 
-    // Check role
+    // Continue in Part 2...
+        // Check role
     if (!user.role) {
       throw new ApiError(
         StatusCodes.FORBIDDEN,
@@ -151,17 +196,19 @@ class AuthService {
       }
     }
 
-    // ---------- PART 2 STARTS HERE ----------'
     // Compare password
-    const isPasswordMatched = await comparePassword(
-      password,
-      user.password
-    );
+    const isPasswordMatched =
+      await comparePassword(
+        password,
+        user.password
+      );
 
     if (!isPasswordMatched) {
       // Increment failed login attempts
       const updatedUser =
-        await authRepository.incrementFailedLoginAttempts(user._id);
+        await authRepository.incrementFailedLoginAttempts(
+          user._id
+        );
 
       // Lock account if maximum attempts reached
       if (
@@ -169,7 +216,8 @@ class AuthService {
         AUTH_CONSTANTS.MAX_LOGIN_ATTEMPTS
       ) {
         const lockUntil = new Date(
-          Date.now() + AUTH_CONSTANTS.ACCOUNT_LOCK_DURATION
+          Date.now() +
+            AUTH_CONSTANTS.ACCOUNT_LOCK_DURATION
         );
 
         await authRepository.lockAccount(
@@ -190,37 +238,45 @@ class AuthService {
     }
 
     // Password is correct
-    await authRepository.resetFailedLoginAttempts(user._id);
+    await authRepository.resetFailedLoginAttempts(
+      user._id
+    );
 
-    // ---------- PART 3 STARTS HERE ----------
-    // Prepare JWT payload
+    // Prepare JWT Payload
     const payload = {
       userId: user._id,
       email: user.email,
       role: user.role._id,
     };
 
-    // Generate JWT Tokens
-    const accessToken = generateAccessToken(payload);
+    // Generate Tokens
+    const accessToken =
+      generateAccessToken(payload);
 
-    const refreshToken = generateRefreshToken(payload);
+    const refreshToken =
+      generateRefreshToken(payload);
+
+    // Hash Refresh Token
+    const hashedRefreshToken =
+      await hashPassword(refreshToken);
 
     // Save Refresh Token
-    const hashedRefreshToken = await hashPassword(refreshToken);
-
     await authRepository.saveRefreshToken(
       user._id,
       hashedRefreshToken
     );
 
     // Update Last Login
-    await authRepository.updateLastLogin(user._id);
+    await authRepository.updateLastLogin(
+      user._id
+    );
 
-    // Fetch Updated User (without password & refresh token)
+    // Fetch Updated User
     const loggedInUser =
-      await authRepository.findUserById(user._id);
+      await authRepository.findUserById(
+        user._id
+      );
 
-    // Return Response
     return {
       user: loggedInUser,
       accessToken,
@@ -228,33 +284,38 @@ class AuthService {
     };
   }
 
-    /**
- * Logout User
- */
-async logout(userId) {
-  // Find User
-  const user = await authRepository.findUserById(userId);
+  /**
+   * Logout User
+   */
+  async logout(userId) {
+    // Find User
+    const user =
+      await authRepository.findUserById(
+        userId
+      );
 
-  if (!user) {
-    throw new ApiError(
-      StatusCodes.NOT_FOUND,
-      AUTH_MESSAGES.USER.NOT_FOUND
+    if (!user) {
+      throw new ApiError(
+        StatusCodes.NOT_FOUND,
+        AUTH_MESSAGES.USER.NOT_FOUND
+      );
+    }
+
+    // Remove Refresh Token
+    await authRepository.removeRefreshToken(
+      userId
     );
+
+    return {
+      message: AUTH_MESSAGES.LOGOUT.SUCCESS,
+    };
   }
 
-  // Remove Refresh Token
-  await authRepository.removeRefreshToken(userId);
-
-  return {
-    message: AUTH_MESSAGES.LOGOUT.SUCCESS,
-  };
-}
-
   /**
- * Refresh Access Token
- */
+   * Refresh Access Token
+   */
   async refreshToken(refreshToken) {
-    // Check token
+      // Check token
     if (!refreshToken) {
       throw new ApiError(
         StatusCodes.BAD_REQUEST,
@@ -262,11 +323,15 @@ async logout(userId) {
       );
     }
 
-    // Verify JWT
-    const decoded = verifyRefreshToken(refreshToken);
+    // Verify Refresh Token
+    const decoded =
+      verifyRefreshToken(refreshToken);
 
     // Find User
-    const user = await authRepository.findUserById(decoded.userId);
+    const user =
+      await authRepository.findUserById(
+        decoded.userId
+      );
 
     if (!user) {
       throw new ApiError(
@@ -276,10 +341,11 @@ async logout(userId) {
     }
 
     // Compare Refresh Token
-    const isTokenValid = await comparePassword(
-      refreshToken,
-      user.refreshTokenHash
-    );
+    const isTokenValid =
+      await comparePassword(
+        refreshToken,
+        user.refreshTokenHash
+      );
 
     if (!isTokenValid) {
       throw new ApiError(
@@ -306,7 +372,7 @@ async logout(userId) {
     const hashedRefreshToken =
       await hashPassword(newRefreshToken);
 
-    // Save New Refresh Token Hash
+    // Save New Refresh Token
     await authRepository.saveRefreshToken(
       user._id,
       hashedRefreshToken
@@ -317,15 +383,17 @@ async logout(userId) {
       refreshToken: newRefreshToken,
     };
   }
+
   /**
    * Forgot Password
    */
   async forgotPassword(email) {
     // Find User
-    const user = await authRepository.findUserByEmail(email);
+    const user =
+      await authRepository.findUserByEmail(email);
 
     /**
-     * Never reveal whether an account exists
+     * Never reveal whether account exists
      */
     if (!user) {
       return {
@@ -338,19 +406,20 @@ async logout(userId) {
     const tokenId = uuidv4();
 
     // Generate Secret
-    const secret = generateRandomToken(32);
+    const secret =
+      generateRandomToken(32);
 
     // Hash Secret
     const hashedSecret =
       await hashPassword(secret);
 
-    // Expiry
+    // Token Expiry
     const expiresAt = new Date(
       Date.now() +
-      AUTH_CONSTANTS.PASSWORD_RESET_TOKEN_EXPIRY
+        AUTH_CONSTANTS.PASSWORD_RESET_TOKEN_EXPIRY
     );
 
-    // Save Token
+    // Save Reset Token
     await authRepository.savePasswordResetToken(
       user._id,
       tokenId,
@@ -359,8 +428,7 @@ async logout(userId) {
     );
 
     /**
-     * Final Reset Token
-     *
+     * Final Token
      * tokenId.secret
      */
     const resetToken =
@@ -368,226 +436,270 @@ async logout(userId) {
 
     const resetUrl = new URL(
       '/reset-password',
-      process.env.FRONTEND_URL || 'http://localhost:5173'
+      process.env.FRONTEND_URL ||
+        'http://localhost:5173'
     );
-    resetUrl.searchParams.set('token', resetToken);
 
-    const resetLink = resetUrl.toString();
+    resetUrl.searchParams.set(
+      'token',
+      resetToken
+    );
+
+    const resetLink =
+      resetUrl.toString();
+
     const expiryMinutes =
-      AUTH_CONSTANTS.PASSWORD_RESET_TOKEN_EXPIRY / (60 * 1000);
+      AUTH_CONSTANTS.PASSWORD_RESET_TOKEN_EXPIRY /
+      (60 * 1000);
+
     const emailPayload = {
       to: user.email,
       subject: 'Reset your password',
+
       text: [
-        `Hi ${user.fullName || user.username || 'there'},`,
+        `Hi ${
+          user.fullName ||
+          user.username ||
+          'there'
+        },`,
         '',
         `Use this link to reset your password: ${resetLink}`,
         '',
         `This link expires in ${expiryMinutes} minutes.`,
         'If you did not request this, you can ignore this email.',
       ].join('\n'),
+
       html: `
-      <p>Hi ${user.fullName || user.username || 'there'},</p>
-      <p>Use the link below to reset your password:</p>
-      <p><a href="${resetLink}">Reset password</a></p>
-      <p>This link expires in ${expiryMinutes} minutes.</p>
-      <p>If you did not request this, you can ignore this email.</p>
-    `,
+        <p>Hi ${
+          user.fullName ||
+          user.username ||
+          'there'
+        },</p>
+
+        <p>Use the link below to reset your password:</p>
+
+        <p>
+          <a href="${resetLink}">
+            Reset Password
+          </a>
+        </p>
+
+        <p>
+          This link expires in
+          ${expiryMinutes} minutes.
+        </p>
+
+        <p>
+          If you did not request this,
+          you can ignore this email.
+        </p>
+      `,
     };
 
-    if (process.env.PASSWORD_RESET_EMAIL_WEBHOOK_URL) {
-      const emailResponse = await fetch(
-        process.env.PASSWORD_RESET_EMAIL_WEBHOOK_URL,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(process.env.PASSWORD_RESET_EMAIL_WEBHOOK_TOKEN && {
-              Authorization:
-                `Bearer ${process.env.PASSWORD_RESET_EMAIL_WEBHOOK_TOKEN}`,
-            }),
-          },
-          body: JSON.stringify(emailPayload),
-        }
-      );
-
-      if (!emailResponse.ok) {
-        throw new ApiError(
-          StatusCodes.BAD_GATEWAY,
-          'Unable to send password reset email.'
-        );
+    if (
+      process.env
+        .PASSWORD_RESET_EMAIL_WEBHOOK_URL
+    ) {
+      const emailResponse =
+        await fetch(
+          process.env
+            .PASSWORD_RESET_EMAIL_WEBHOOK_URL,
+                  {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(process.env.PASSWORD_RESET_EMAIL_WEBHOOK_TOKEN && {
+            Authorization: `Bearer ${process.env.PASSWORD_RESET_EMAIL_WEBHOOK_TOKEN}`,
+          }),
+        },
+        body: JSON.stringify(emailPayload),
       }
-    } else if (process.env.NODE_ENV !== 'production') {
-      logger.info(emailPayload);
+    );
+
+    if (!emailResponse.ok) {
+      throw new ApiError(
+        StatusCodes.BAD_GATEWAY,
+        'Unable to send password reset email.'
+      );
     }
-
-    return {
-      message:
-        'If an account exists with this email, a password reset link has been sent.',
-
-      /**
-       * Development Only
-       */
-      resetToken,
-    };
+  } else if (process.env.NODE_ENV !== 'production') {
+    logger.info(emailPayload);
   }
-  /**
+
+  return {
+    message:
+      'If an account exists with this email, a password reset link has been sent.',
+
+    /**
+     * Development Only
+     */
+    resetToken,
+  };
+}
+
+/**
  * Reset Password
  */
-  async resetPassword(resetToken, newPassword) {
-    const normalizedResetToken =
-      typeof resetToken === 'string'
-        ? resetToken.trim()
-        : '';
+async resetPassword(resetToken, newPassword) {
+  const normalizedResetToken =
+    typeof resetToken === 'string'
+      ? resetToken.trim()
+      : '';
 
-    if (!normalizedResetToken) {
-      throw new ApiError(
-        StatusCodes.BAD_REQUEST,
-        AUTH_MESSAGES.TOKEN.INVALID
-      );
-    }
-
-    const tokenParts = normalizedResetToken.split('.');
-
-    if (
-      tokenParts.length !== 2 ||
-      !tokenParts[0] ||
-      !tokenParts[1]
-    ) {
-      throw new ApiError(
-        StatusCodes.BAD_REQUEST,
-        AUTH_MESSAGES.TOKEN.INVALID
-      );
-    }
-
-    const [tokenId, secret] = tokenParts;
-
-    const user =
-      await authRepository.findUserByPasswordResetTokenId(
-        tokenId
-      );
-
-    if (
-      !user ||
-      !user.passwordResetTokenHash ||
-      !user.passwordResetTokenExpires
-    ) {
-      throw new ApiError(
-        StatusCodes.BAD_REQUEST,
-        AUTH_MESSAGES.TOKEN.INVALID
-      );
-    }
-
-    if (
-      user.passwordResetTokenExpires.getTime() <=
-      Date.now()
-    ) {
-      await authRepository.clearPasswordResetToken(
-        user._id
-      );
-
-      throw new ApiError(
-        StatusCodes.BAD_REQUEST,
-        AUTH_MESSAGES.TOKEN.EXPIRED
-      );
-    }
-
-    const isValidToken =
-      await comparePassword(
-        secret,
-        user.passwordResetTokenHash
-      );
-
-    if (!isValidToken) {
-      throw new ApiError(
-        StatusCodes.BAD_REQUEST,
-        AUTH_MESSAGES.TOKEN.INVALID
-      );
-    }
-
-    const hashedPassword =
-      await hashPassword(newPassword);
-
-    await authRepository.updatePasswordAndClearRefreshToken(
-      user._id,
-      hashedPassword
+  if (!normalizedResetToken) {
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      AUTH_MESSAGES.TOKEN.INVALID
     );
-
-    return {
-      message:
-        AUTH_MESSAGES.PASSWORD.RESET_SUCCESS,
-    };
   }
 
-  /**
-   * Change Password
-   */
-  async changePassword(
-    userId,
-    oldPassword,
-    newPassword
+  const tokenParts =
+    normalizedResetToken.split('.');
+
+  if (
+    tokenParts.length !== 2 ||
+    !tokenParts[0] ||
+    !tokenParts[1]
   ) {
-    // Find User
-    const user =
-      await authRepository.findUserByIdWithPassword(userId);
-
-    if (!user) {
-      throw new ApiError(
-        StatusCodes.NOT_FOUND,
-        AUTH_MESSAGES.USER.NOT_FOUND
-      );
-    }
-
-    // Verify Old Password
-    const isOldPasswordValid =
-      await comparePassword(
-        oldPassword,
-        user.password
-      );
-
-    if (!isOldPasswordValid) {
-      throw new ApiError(
-        StatusCodes.BAD_REQUEST,
-        AUTH_MESSAGES.PASSWORD.INVALID
-      );
-    }
-
-    // Prevent Same Password
-    const isSamePassword =
-      await comparePassword(
-        newPassword,
-        user.password
-      );
-
-    if (isSamePassword) {
-      throw new ApiError(
-        StatusCodes.BAD_REQUEST,
-        AUTH_MESSAGES.PASSWORD.SAME_AS_OLD
-      );
-    }
-
-    // Hash New Password
-    const hashedPassword =
-      await hashPassword(newPassword);
-
-    // Update Password
-    await authRepository.updatePasswordAndClearRefreshToken(
-      userId,
-      hashedPassword
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      AUTH_MESSAGES.TOKEN.INVALID
     );
-
-    return {
-      message:
-        AUTH_MESSAGES.PASSWORD.CHANGED,
-    };
   }
 
-  /**
+  const [tokenId, secret] = tokenParts;
+
+  const user =
+    await authRepository.findUserByPasswordResetTokenId(
+      tokenId
+    );
+
+  if (
+    !user ||
+    !user.passwordResetTokenHash ||
+    !user.passwordResetTokenExpires
+  ) {
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      AUTH_MESSAGES.TOKEN.INVALID
+    );
+  }
+
+  if (
+    user.passwordResetTokenExpires.getTime() <=
+    Date.now()
+  ) {
+    await authRepository.clearPasswordResetToken(
+      user._id
+    );
+
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      AUTH_MESSAGES.TOKEN.EXPIRED
+    );
+  }
+
+  const isValidToken =
+    await comparePassword(
+      secret,
+      user.passwordResetTokenHash
+    );
+
+  if (!isValidToken) {
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      AUTH_MESSAGES.TOKEN.INVALID
+    );
+  }
+
+  const hashedPassword =
+    await hashPassword(newPassword);
+
+  await authRepository.updatePasswordAndClearRefreshToken(
+    user._id,
+    hashedPassword
+  );
+
+  return {
+    message:
+      AUTH_MESSAGES.PASSWORD.RESET_SUCCESS,
+  };
+}
+
+/**
+ * Change Password
+ */
+async changePassword(
+  userId,
+  oldPassword,
+  newPassword
+) {
+    // Find User
+  const user =
+    await authRepository.findUserByIdWithPassword(
+      userId
+    );
+
+  if (!user) {
+    throw new ApiError(
+      StatusCodes.NOT_FOUND,
+      AUTH_MESSAGES.USER.NOT_FOUND
+    );
+  }
+
+  // Verify Old Password
+  const isOldPasswordValid =
+    await comparePassword(
+      oldPassword,
+      user.password
+    );
+
+  if (!isOldPasswordValid) {
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      AUTH_MESSAGES.PASSWORD.INVALID
+    );
+  }
+
+  // Prevent Same Password
+  const isSamePassword =
+    await comparePassword(
+      newPassword,
+      user.password
+    );
+
+  if (isSamePassword) {
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      AUTH_MESSAGES.PASSWORD.SAME_AS_OLD
+    );
+  }
+
+  // Hash New Password
+  const hashedPassword =
+    await hashPassword(newPassword);
+
+  // Update Password
+  await authRepository.updatePasswordAndClearRefreshToken(
+    userId,
+    hashedPassword
+  );
+
+  return {
+    message:
+      AUTH_MESSAGES.PASSWORD.CHANGED,
+  };
+}
+
+/**
  * Get User Profile
  */
 async getProfile(userId) {
   // Find User
-  const user = await authRepository.findUserById(userId);
+  const user =
+    await authRepository.findUserById(
+      userId
+    );
 
   if (!user) {
     throw new ApiError(
@@ -621,6 +733,7 @@ async getProfile(userId) {
 
   return user;
 }
+
 }
 
 export default new AuthService();

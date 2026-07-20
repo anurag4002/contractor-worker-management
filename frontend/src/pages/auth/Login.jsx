@@ -1,51 +1,42 @@
-import React, {
-  useState,
-} from "react";
-
-import {
-  useNavigate,
-} from "react-router-dom";
-
+import { useState } from "react";
 import {
   FiEye,
   FiEyeOff,
-  FiShield,
+  FiLock,
+  FiMail,
 } from "react-icons/fi";
+import {
+  Link,
+  useNavigate,
+} from "react-router-dom";
+
+import { useAuth } from "../../context/AuthContext";
+import useForm from "../../hooks/useForm";
+import authService from "../../services/auth.service";
+import { validateLogin } from "../../validators/auth.validator";
 
 import {
-  LoginContainer,
-  LoginCard,
+  Page,
+  Card,
   Logo,
   Title,
   Subtitle,
   Form,
-  FormGroup,
-  Label,
-  InputWrapper,
+  InputGroup,
   Input,
+  Icon,
   PasswordButton,
   Options,
-  Remember,
-  ForgotLink,
+  Checkbox,
   LoginButton,
-  Footer,
-  ContactText,
-  ErrorMessage,
+  FooterText,
+  ErrorText,
 } from "./Login.style";
 
 const Login = () => {
+  const navigate = useNavigate();
 
-  const navigate =
-    useNavigate();
-
-  const [email, setEmail] =
-    useState("");
-
-  const [password, setPassword] =
-    useState("");
-
-  const [remember, setRemember] =
-    useState(false);
+  const { login } = useAuth();
 
   const [showPassword, setShowPassword] =
     useState(false);
@@ -53,322 +44,181 @@ const Login = () => {
   const [loading, setLoading] =
     useState(false);
 
-  const [errors, setErrors] =
-    useState({});
+  const {
+    values,
+    errors,
+    handleChange,
+    validateForm,
+  } = useForm(
+    {
+      email: "",
+      password: "",
+      remember: false,
+    },
+    validateLogin
+  );
 
-  const validate = () => {
-
-    const newErrors = {};
-
-    if (!email.trim()) {
-
-      newErrors.email =
-        "Email is required.";
-
-    } else if (
-
-      !/\S+@\S+\.\S+/.test(email)
-
-    ) {
-
-      newErrors.email =
-        "Enter a valid email.";
-
-    }
-
-    if (!password.trim()) {
-
-      newErrors.password =
-        "Password is required.";
-
-    } else if (
-
-      password.length < 6
-
-    ) {
-
-      newErrors.password =
-        "Minimum 6 characters required.";
-
-    }
-
-    setErrors(newErrors);
-
-    return Object.keys(newErrors)
-      .length === 0;
-
-  };
-
-  const handleSubmit = (e) => {
-
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validate()) return;
+    if (!validateForm()) {
+      return;
+    }
 
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    setTimeout(() => {
+      const response =
+        await authService.login({
+          email: values.email,
+          password: values.password,
+        });
 
-      localStorage.setItem(
-        "isLoggedIn",
-        "true"
+      if (!response.success) {
+        alert(
+          response.message ||
+            "Login failed."
+        );
+        return;
+      }
+
+      login(
+        response.data.user,
+        response.data.accessToken
       );
 
       localStorage.setItem(
-        "rememberMe",
-        remember
+        "refreshToken",
+        response.data.refreshToken
       );
 
+      navigate("/dashboard", {
+        replace: true,
+      });
+    } catch (error) {
+      console.error(error);
+
+      alert(
+        error.response?.data?.message ||
+          error.response?.data?.error ||
+          "Invalid email or password."
+      );
+    } finally {
       setLoading(false);
-
-      navigate("/dashboard");
-
-    }, 1200);
-
+    }
   };
 
   return (
-
-    <LoginContainer>
-
-      <LoginCard>
-
+    <Page>
+      <Card>
         <Logo>
-
-          <FiShield />
-
+          Contractor Worker
         </Logo>
 
         <Title>
-
           Welcome Back
-
         </Title>
 
         <Subtitle>
-
-          Contractor Worker Management System
-
+          Login to continue
         </Subtitle>
 
-        <Form
-          onSubmit={handleSubmit}
-        >
-
-          <FormGroup>
-
-            <Label>
-
-              Email
-
-            </Label>
+        <Form onSubmit={handleSubmit}>
+          <InputGroup>
+            <Icon>
+              <FiMail />
+            </Icon>
 
             <Input
-
               type="email"
+              name="email"
+              placeholder="Email Address"
+              value={values.email}
+              onChange={handleChange}
+              disabled={loading}
+            />
+          </InputGroup>
 
-              placeholder="Enter email"
+          {errors.email && (
+            <ErrorText>
+              {errors.email}
+            </ErrorText>
+          )}
 
-              value={email}
+          <InputGroup>
+            <Icon>
+              <FiLock />
+            </Icon>
 
-              onChange={(e)=>
-
-                setEmail(
-                  e.target.value
-                )
-
+            <Input
+              type={
+                showPassword
+                  ? "text"
+                  : "password"
               }
-
+              name="password"
+              placeholder="Password"
+              value={values.password}
+              onChange={handleChange}
+              disabled={loading}
             />
 
-            {
+            <PasswordButton
+              type="button"
+              onClick={() =>
+                setShowPassword(
+                  !showPassword
+                )
+              }
+              disabled={loading}
+            >
+              {showPassword ? (
+                <FiEyeOff />
+              ) : (
+                <FiEye />
+              )}
+            </PasswordButton>
+          </InputGroup>
 
-              errors.email && (
-
-                <ErrorMessage>
-
-                  {errors.email}
-
-                </ErrorMessage>
-
-              )
-
-            }
-
-          </FormGroup>
-
-          <FormGroup>
-
-            <Label>
-
-              Password
-
-            </Label>
-
-            <InputWrapper>
-
-              <Input
-
-                type={
-
-                  showPassword
-
-                    ? "text"
-
-                    : "password"
-
-                }
-
-                placeholder="Enter password"
-
-                value={password}
-
-                onChange={(e)=>
-
-                  setPassword(
-                    e.target.value
-                  )
-
-                }
-
-              />
-
-              <PasswordButton
-
-                type="button"
-
-                onClick={()=>
-
-                  setShowPassword(
-
-                    !showPassword
-
-                  )
-
-                }
-
-              >
-
-                {
-
-                  showPassword
-
-                    ? <FiEyeOff />
-
-                    : <FiEye />
-
-                }
-
-              </PasswordButton>
-
-            </InputWrapper>
-
-            {
-
-              errors.password && (
-
-                <ErrorMessage>
-
-                  {errors.password}
-
-                </ErrorMessage>
-
-              )
-
-            }
-
-          </FormGroup>
+          {errors.password && (
+            <ErrorText>
+              {errors.password}
+            </ErrorText>
+          )}
 
           <Options>
-
-            <Remember>
-
+            <Checkbox>
               <input
-
                 type="checkbox"
-
-                checked={remember}
-
-                onChange={(e)=>
-
-                  setRemember(
-
-                    e.target.checked
-
-                  )
-
-                }
-
+                name="remember"
+                checked={values.remember}
+                onChange={handleChange}
+                disabled={loading}
               />
-
               Remember Me
+            </Checkbox>
 
-            </Remember>
-
-            <ForgotLink
-
-              type="button"
-
-              onClick={()=>
-
-                navigate(
-
-                  "/forgot-password"
-
-                )
-
-              }
-
-            >
-
+            <Link to="/forgot-password">
               Forgot Password?
-
-            </ForgotLink>
-
+            </Link>
           </Options>
 
           <LoginButton
-
             type="submit"
-
             disabled={loading}
-
           >
-
-            {
-
-              loading
-
-                ? "Logging in..."
-
-                : "Login"
-
-            }
-
+            {loading
+              ? "Logging In..."
+              : "Login"}
           </LoginButton>
-
         </Form>
 
-        <Footer>
-
-          Don't have an account?
-
-          <br />
-
-          <ContactText>
-
-            Contact Administrator
-
-          </ContactText>
-
-        </Footer>
-
-      </LoginCard>
-
-    </LoginContainer>
-
+        <FooterText>
+          Contractor Worker Management
+        </FooterText>
+      </Card>
+    </Page>
   );
-
 };
 
 export default Login;

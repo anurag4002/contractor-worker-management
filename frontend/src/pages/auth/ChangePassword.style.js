@@ -6,30 +6,16 @@ export const Page = styled.div`
   justify-content: center;
   align-items: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #2563eb, #1e3a8a);
+  background: #f8fafc;
 `;
 
 export const Card = styled.div`
   width: 100%;
-  max-width: 28rem;
+  max-width: 32rem;
   background: #ffffff;
-  border-radius: 1.25rem;
-  padding: 2.5rem;
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
-
-  animation: popup 0.3s ease;
-
-  @keyframes popup {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
 `;
 
 export const Title = styled.h2`
@@ -41,7 +27,7 @@ export const Title = styled.h2`
 `;
 
 export const Subtitle = styled.p`
-  margin: 1rem 0 2rem;
+  margin: 0.75rem 0 2rem;
   text-align: center;
   color: #64748b;
 `;
@@ -49,7 +35,7 @@ export const Subtitle = styled.p`
 export const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
 `;
 
 export const InputGroup = styled.div`
@@ -62,11 +48,12 @@ export const Icon = styled.div`
   position: absolute;
   left: 1rem;
   color: #64748b;
+  font-size: 1rem;
 `;
 
 export const Input = styled.input`
   width: 100%;
-  padding: 1rem 3rem 1rem 3rem;
+  padding: 0.95rem 3rem 0.95rem 2.9rem;
   border: 1px solid #cbd5e1;
   border-radius: 0.8rem;
   outline: none;
@@ -76,6 +63,11 @@ export const Input = styled.input`
   &:focus {
     border-color: #2563eb;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+
+  &:disabled {
+    background: #f8fafc;
+    cursor: not-allowed;
   }
 `;
 
@@ -89,29 +81,22 @@ export const ToggleButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 1.1rem;
 
   &:hover {
     color: #2563eb;
   }
 `;
 
-export const PasswordStrength = styled.div`
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: ${({ color }) => color};
-`;
-
-export const ErrorMessage = styled.div`
-  padding: 0.85rem;
-  border-radius: 0.75rem;
-  background: #fee2e2;
+export const ErrorText = styled.span`
+  margin-top: -0.5rem;
+  margin-bottom: 0.25rem;
   color: #dc2626;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 500;
 `;
 
-export const Button = styled.button`
+export const SaveButton = styled.button`
   width: 100%;
   border: none;
   background: #2563eb;
@@ -120,6 +105,10 @@ export const Button = styled.button`
   border-radius: 0.8rem;
   font-size: 1rem;
   font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
   cursor: pointer;
   transition: 0.25s;
 
@@ -130,22 +119,9 @@ export const Button = styled.button`
   &:active {
     transform: scale(0.98);
   }
-`;
 
-export const Footer = styled.div`
-  margin-top: 2rem;
-  text-align: center;
-
-  a {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #2563eb;
-    text-decoration: none;
-    font-weight: 600;
-  }
-
-  a:hover {
-    text-decoration: underline;
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
   }
 `;

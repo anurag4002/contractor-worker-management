@@ -5,7 +5,6 @@ const permissionSchema = new mongoose.Schema(
     name: {
       type: String,
       required: [true, 'Permission name is required'],
-      unique: true,
       trim: true,
       minlength: 3,
       maxlength: 100,
@@ -14,7 +13,6 @@ const permissionSchema = new mongoose.Schema(
     code: {
       type: String,
       required: [true, 'Permission code is required'],
-      unique: true,
       uppercase: true,
       trim: true,
     },
@@ -105,18 +103,29 @@ const permissionSchema = new mongoose.Schema(
   }
 );
 
-// ==============================
-// Database Indexes
-// ==============================
+/*
+|--------------------------------------------------------------------------
+| Database Indexes
+|--------------------------------------------------------------------------
+*/
 
-permissionSchema.index({ code: 1 });
+// Unique indexes
+permissionSchema.index({ name: 1 }, { unique: true });
+permissionSchema.index({ code: 1 }, { unique: true });
+
+// Frequently queried indexes
 permissionSchema.index({ module: 1 });
 permissionSchema.index({ action: 1 });
 permissionSchema.index({ status: 1 });
 permissionSchema.index({ isDeleted: 1 });
 
+// Compound indexes
 permissionSchema.index({ module: 1, action: 1 });
 permissionSchema.index({ code: 1, isDeleted: 1 });
-const Permission = mongoose.model('Permission', permissionSchema);
+
+const Permission = mongoose.model(
+  'Permission',
+  permissionSchema
+);
 
 export default Permission;

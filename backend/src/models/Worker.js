@@ -5,7 +5,6 @@ const workerSchema = new mongoose.Schema(
         employeeCode: {
             type: String,
             required: [true, 'Employee code is required'],
-            unique: true,
             trim: true,
             uppercase: true,
         },
@@ -28,7 +27,6 @@ const workerSchema = new mongoose.Schema(
         mobileNumber: {
             type: String,
             required: [true, 'Mobile number is required'],
-            unique: true,
             trim: true,
             match: [/^[6-9]\d{9}$/, 'Invalid mobile number'],
         },
@@ -76,14 +74,11 @@ const workerSchema = new mongoose.Schema(
         aadhaarNumber: {
             type: String,
             required: true,
-            unique: true,
             trim: true,
         },
 
         panNumber: {
             type: String,
-            unique: true,
-            sparse: true,
             trim: true,
             default: null,
         },
@@ -129,8 +124,7 @@ const workerSchema = new mongoose.Schema(
             required: true,
             trim: true,
         },
-
-        trade: {
+                trade: {
             type: String,
             required: true,
             enum: [
@@ -149,7 +143,11 @@ const workerSchema = new mongoose.Schema(
 
         skillLevel: {
             type: String,
-            enum: ['UNSKILLED', 'SEMI_SKILLED', 'SKILLED'],
+            enum: [
+                'UNSKILLED',
+                'SEMI_SKILLED',
+                'SKILLED',
+            ],
             default: 'UNSKILLED',
         },
 
@@ -223,7 +221,10 @@ const workerSchema = new mongoose.Schema(
         emergencyContactNumber: {
             type: String,
             required: true,
-            match: [/^[6-9]\d{9}$/, 'Invalid mobile number'],
+            match: [
+                /^[6-9]\d{9}$/,
+                'Invalid mobile number',
+            ],
         },
 
         relationship: {
@@ -287,30 +288,58 @@ const workerSchema = new mongoose.Schema(
         versionKey: false,
     }
 );
-
 /*
 |--------------------------------------------------------------------------
-| Indexes
+| Database Indexes
 |--------------------------------------------------------------------------
 */
 
-workerSchema.index({ employeeCode: 1 });
+// Unique Indexes
+workerSchema.index(
+    { employeeCode: 1 },
+    { unique: true }
+);
 
-workerSchema.index({ mobileNumber: 1 });
+workerSchema.index(
+    { mobileNumber: 1 },
+    { unique: true }
+);
 
-workerSchema.index({ aadhaarNumber: 1 });
+workerSchema.index(
+    { aadhaarNumber: 1 },
+    { unique: true }
+);
 
-workerSchema.index({ panNumber: 1 });
+workerSchema.index(
+    { panNumber: 1 },
+    {
+        unique: true,
+        sparse: true,
+    }
+);
 
-workerSchema.index({ site: 1 });
+// Frequently Queried Indexes
+workerSchema.index({
+    site: 1,
+});
 
-workerSchema.index({ trade: 1 });
+workerSchema.index({
+    trade: 1,
+});
 
-workerSchema.index({ status: 1 });
+workerSchema.index({
+    status: 1,
+});
 
-workerSchema.index({ isDeleted: 1 });
+workerSchema.index({
+    isDeleted: 1,
+});
 
-workerSchema.index({ fullName: 'text', employeeCode: 'text' });
+// Full Text Search
+workerSchema.index({
+    fullName: 'text',
+    employeeCode: 'text',
+});
 
 const Worker = mongoose.model(
     'Worker',

@@ -1,8 +1,9 @@
-import { Router } from 'express';
+import { Router } from "express";
 
-import authController from '../controllers/auth.controller.js';
+import authController from "../controllers/auth.controller.js";
 
-import validate from '../middlewares/validate.middleware.js';
+import validate from "../middlewares/validate.middleware.js";
+import authMiddleware from "../middlewares/auth.middleware.js";
 
 import {
   registerSchema,
@@ -12,9 +13,7 @@ import {
   resetPasswordSchema,
   changePasswordSchema,
   updateProfileSchema,
-} from '../validators/auth.validator.js';
-
-import authMiddleware from '../middlewares/auth.middleware.js';
+} from "../validators/auth.validator.js";
 
 const router = Router();
 
@@ -25,31 +24,31 @@ const router = Router();
 */
 
 router.post(
-  '/register',
+  "/register",
   validate(registerSchema),
   authController.register
 );
 
 router.post(
-  '/login',
+  "/login",
   validate(loginSchema),
   authController.login
 );
 
 router.post(
-  '/refresh-token',
+  "/refresh-token",
   validate(refreshTokenSchema),
   authController.refreshToken
 );
 
 router.post(
-  '/forgot-password',
+  "/forgot-password",
   validate(forgotPasswordSchema),
   authController.forgotPassword
 );
 
 router.post(
-  '/reset-password',
+  "/reset-password",
   validate(resetPasswordSchema),
   authController.resetPassword
 );
@@ -61,26 +60,26 @@ router.post(
 */
 
 router.post(
-  '/logout',
+  "/logout",
   authMiddleware,
   authController.logout
 );
 
 router.post(
-  '/change-password',
+  "/change-password",
   authMiddleware,
   validate(changePasswordSchema),
   authController.changePassword
 );
 
 router.get(
-  '/profile',
+  "/profile",
   authMiddleware,
   authController.getProfile
 );
 
 router.put(
-  '/profile',
+  "/profile",
   authMiddleware,
   validate(updateProfileSchema),
   authController.updateProfile

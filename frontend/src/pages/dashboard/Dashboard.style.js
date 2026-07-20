@@ -72,36 +72,37 @@ export const ExportButton = styled.button`
     outline-offset: 2px;
   }
 `;
-
 export const StatsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(15rem, 1fr)
+  );
   gap: 1.5rem;
-
-  @media (max-width: 1100px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
 `;
 
 export const DashboardGrid = styled.div`
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(22rem, 1fr)
+  );
   gap: 1.5rem;
-
-  @media (max-width: 992px) {
-    grid-template-columns: 1fr;
-  }
+  align-items: start;
 `;
 
 export const Section = styled.div`
+  display: flex;
+  flex-direction: column;
+
   background: #ffffff;
-  border-radius: 1rem;
   border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+
   padding: 1.5rem;
+
+  min-height: 22rem;
+
   box-shadow: 0 0.25rem 0.75rem
     rgba(15, 23, 42, 0.05);
 `;
@@ -166,33 +167,57 @@ export const ActionTitle = styled.span`
 export const List = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  overflow-y: auto;
+  flex: 1;
+  max-height: 20rem;
 `;
 
 export const ListItem = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   gap: 1rem;
+
   padding: 1rem;
+
   border-radius: 0.75rem;
+
+  border: 1px solid #f1f5f9;
+
   cursor: ${({ onClick }) =>
     onClick ? "pointer" : "default"};
-  transition: 0.25s;
+
+  transition: all 0.25s ease;
 
   &:hover {
     background: ${({ onClick }) =>
-      onClick ? "#f1f5f9" : "transparent"};
+      onClick ? "#eff6ff" : "#ffffff"};
+
+    border-color: ${({ onClick }) =>
+      onClick ? "#bfdbfe" : "#f1f5f9"};
+  }
+
+  strong {
+    color: #0f172a;
+    font-weight: 600;
   }
 `;
 
 export const Badge = styled.span`
-  min-width: 2rem;
-  padding: 0.35rem 0.8rem;
+  min-width: 2.2rem;
+
   text-align: center;
+
+  padding: 0.35rem 0.8rem;
+
   border-radius: 999px;
+
   font-size: 0.8rem;
+
   font-weight: 600;
+
   background: ${({ success, danger, warning }) =>
     success
       ? "#dcfce7"
@@ -200,7 +225,8 @@ export const Badge = styled.span`
       ? "#fee2e2"
       : warning
       ? "#fef3c7"
-      : "#e2e8f0"};
+      : "#dbeafe"};
+
   color: ${({ success, danger, warning }) =>
     success
       ? "#15803d"
@@ -208,5 +234,5 @@ export const Badge = styled.span`
       ? "#dc2626"
       : warning
       ? "#b45309"
-      : "#475569"};
+      : "#2563eb"};
 `;

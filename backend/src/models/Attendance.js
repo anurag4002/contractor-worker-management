@@ -95,11 +95,18 @@ const attendanceSchema = new mongoose.Schema(
 |--------------------------------------------------------------------------
 */
 
-attendanceSchema.index({
-  worker: 1,
-  attendanceDate: 1,
-});
+// One attendance per worker per day
+attendanceSchema.index(
+  {
+    worker: 1,
+    attendanceDate: 1,
+  },
+  {
+    unique: true,
+  }
+);
 
+// Frequently queried indexes
 attendanceSchema.index({
   site: 1,
   attendanceDate: 1,
@@ -128,26 +135,6 @@ attendanceSchema.index({
   attendanceDate: 1,
   isDeleted: 1,
 });
-
-/*
-|--------------------------------------------------------------------------
-| Prevent Duplicate Attendance
-|--------------------------------------------------------------------------
-|
-| One worker can have only one attendance
-| entry for a single day.
-|
-*/
-
-attendanceSchema.index(
-  {
-    worker: 1,
-    attendanceDate: 1,
-  },
-  {
-    unique: true,
-  }
-);
 
 const Attendance = mongoose.model(
   'Attendance',

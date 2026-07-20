@@ -175,12 +175,19 @@ const payrollSchema = new mongoose.Schema(
 |--------------------------------------------------------------------------
 */
 
-payrollSchema.index({
-  worker: 1,
-  attendanceMonth: 1,
-  attendanceYear: 1,
-});
+// One payroll per worker per month
+payrollSchema.index(
+  {
+    worker: 1,
+    attendanceMonth: 1,
+    attendanceYear: 1,
+  },
+  {
+    unique: true,
+  }
+);
 
+// Frequently queried indexes
 payrollSchema.index({
   site: 1,
 });
@@ -197,27 +204,6 @@ payrollSchema.index({
 payrollSchema.index({
   isDeleted: 1,
 });
-
-/*
-|--------------------------------------------------------------------------
-| Prevent Duplicate Payroll
-|--------------------------------------------------------------------------
-|
-| One payroll per worker
-| per month and year.
-|
-*/
-
-payrollSchema.index(
-  {
-    worker: 1,
-    attendanceMonth: 1,
-    attendanceYear: 1,
-  },
-  {
-    unique: true,
-  }
-);
 
 const Payroll = mongoose.model(
   'Payroll',

@@ -5,7 +5,6 @@ const roleSchema = new mongoose.Schema(
     name: {
       type: String,
       required: [true, 'Role name is required'],
-      unique: true,
       trim: true,
       minlength: 2,
       maxlength: 50,
@@ -14,7 +13,6 @@ const roleSchema = new mongoose.Schema(
     code: {
       type: String,
       required: [true, 'Role code is required'],
-      unique: true,
       uppercase: true,
       trim: true,
     },
@@ -72,16 +70,23 @@ const roleSchema = new mongoose.Schema(
   }
 );
 
-// ==============================
-// Database Indexes
-// ==============================
+/*
+|--------------------------------------------------------------------------
+| Database Indexes
+|--------------------------------------------------------------------------
+*/
 
-roleSchema.index({ name: 1 });
-roleSchema.index({ code: 1 });
+// Unique indexes
+roleSchema.index({ name: 1 }, { unique: true });
+roleSchema.index({ code: 1 }, { unique: true });
+
+// Frequently queried fields
 roleSchema.index({ status: 1 });
 roleSchema.index({ isDeleted: 1 });
 
+// Compound indexes
 roleSchema.index({ code: 1, isDeleted: 1 });
+
 const Role = mongoose.model('Role', roleSchema);
 
 export default Role;

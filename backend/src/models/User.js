@@ -13,7 +13,6 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: [true, 'Email is required'],
-      unique: true,
       lowercase: true,
       trim: true,
     },
@@ -21,14 +20,11 @@ const userSchema = new mongoose.Schema(
     mobileNumber: {
       type: String,
       required: [true, 'Mobile number is required'],
-      unique: true,
       trim: true,
     },
 
     username: {
       type: String,
-      unique: true,
-      sparse: true,
       trim: true,
       lowercase: true,
     },
@@ -108,6 +104,7 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+
     passwordResetTokenId: {
       type: String,
       default: null,
@@ -128,18 +125,25 @@ const userSchema = new mongoose.Schema(
   {
     timestamps: true,
     versionKey: false,
-  },
-
+  }
 );
 
-// ==============================
-// Database Indexes
-// ==============================
+/*
+|--------------------------------------------------------------------------
+| Database Indexes
+|--------------------------------------------------------------------------
+*/
 
-// Unique lookup indexes
-userSchema.index({ email: 1 });
-userSchema.index({ mobileNumber: 1 });
-userSchema.index({ username: 1 });
+// Unique indexes
+userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ mobileNumber: 1 }, { unique: true });
+userSchema.index(
+  { username: 1 },
+  {
+    unique: true,
+    sparse: true,
+  }
+);
 
 // Frequently queried fields
 userSchema.index({ role: 1 });

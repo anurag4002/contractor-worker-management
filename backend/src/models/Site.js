@@ -5,7 +5,6 @@ const siteSchema = new mongoose.Schema(
     siteCode: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
       uppercase: true,
     },
@@ -145,18 +144,17 @@ const siteSchema = new mongoose.Schema(
 |--------------------------------------------------------------------------
 */
 
-siteSchema.index({ siteCode: 1 });
+// Unique index
+siteSchema.index({ siteCode: 1 }, { unique: true });
 
+// Frequently queried fields
 siteSchema.index({ siteName: 1 });
-
 siteSchema.index({ clientName: 1 });
-
 siteSchema.index({ projectName: 1 });
-
 siteSchema.index({ status: 1 });
-
 siteSchema.index({ isDeleted: 1 });
 
+// Full-text search
 siteSchema.index({
   siteName: 'text',
   clientName: 'text',

@@ -1,5 +1,3 @@
-import React from "react";
-
 import {
   FiUsers,
   FiUserCheck,
@@ -31,11 +29,14 @@ const iconMap = {
   FiCreditCard,
 
   "Total Workers": FiUsers,
+  "Active Workers": FiUserCheck,
   "Present Today": FiUserCheck,
+  Present: FiUserCheck,
+  Absent: FiUsers,
+  Leave: FiTrendingUp,
+  "Half Day": FiTrendingUp,
   "Active Sites": FiMapPin,
   "Pending Salary": FiDollarSign,
-  "Gross Salary": FiTrendingUp,
-  "Salary Paid": FiCreditCard,
 };
 
 const colorMap = {
@@ -47,23 +48,25 @@ const colorMap = {
   FiCreditCard: "#DC2626",
 
   "Total Workers": "#2563EB",
+  "Active Workers": "#16A34A",
   "Present Today": "#16A34A",
+  Present: "#16A34A",
+  Absent: "#DC2626",
+  Leave: "#F59E0B",
+  "Half Day": "#0EA5E9",
   "Active Sites": "#F97316",
   "Pending Salary": "#8B5CF6",
-  "Gross Salary": "#0EA5E9",
-  "Salary Paid": "#DC2626",
 };
 
 const StatCard = ({
   title,
   value,
-  description,
-  progress = 0,
+  description = "",
+  progress,
   icon,
   change,
   onClick,
 }) => {
-
   const Icon =
     iconMap[icon] ||
     iconMap[title] ||
@@ -74,70 +77,52 @@ const StatCard = ({
     colorMap[title] ||
     "#2563EB";
 
-  const progressValue = Math.min(
-    Math.max(Number(progress) || 0, 0),
-    100
-  );
+  const progressValue =
+    progress !== undefined
+      ? Math.min(
+          Math.max(Number(progress), 0),
+          100
+        )
+      : 100;
 
   return (
-
     <Card
       onClick={onClick}
       style={{
         cursor: onClick ? "pointer" : "default",
       }}
     >
-
       <Top>
-
         <IconBox color={color}>
-
           <Icon />
-
         </IconBox>
 
-        <Badge>
-
-          {change || `${progressValue}%`}
-
-        </Badge>
-
+        {change && (
+          <Badge>
+            {change}
+          </Badge>
+        )}
       </Top>
 
-      <Title>
+      <Title>{title}</Title>
 
-        {title}
+      <Value>{value}</Value>
 
-      </Title>
+      {description && (
+        <Bottom>
+          <Description>
+            {description}
+          </Description>
 
-      <Value>
-
-        {value}
-
-      </Value>
-
-      <Bottom>
-
-        <Description>
-
-          {description}
-
-        </Description>
-
-        <Progress>
-
-          <ProgressFill
-            width={`${progressValue}%`}
-          />
-
-        </Progress>
-
-      </Bottom>
-
+          <Progress>
+            <ProgressFill
+              width={`${progressValue}%`}
+            />
+          </Progress>
+        </Bottom>
+      )}
     </Card>
-
   );
-
 };
 
 export default StatCard;
