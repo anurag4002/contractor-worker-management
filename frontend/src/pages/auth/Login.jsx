@@ -12,7 +12,6 @@ import {
 
 import { useAuth } from "../../context/AuthContext";
 import useForm from "../../hooks/useForm";
-import authService from "../../services/auth.service";
 import { validateLogin } from "../../validators/auth.validator";
 
 import {
@@ -68,11 +67,10 @@ const Login = () => {
     try {
       setLoading(true);
 
-      const response =
-        await authService.login({
-          email: values.email,
-          password: values.password,
-        });
+      const response = await login({
+        email: values.email,
+        password: values.password,
+      });
 
       if (!response.success) {
         alert(
@@ -81,16 +79,6 @@ const Login = () => {
         );
         return;
       }
-
-      login(
-        response.data.user,
-        response.data.accessToken
-      );
-
-      localStorage.setItem(
-        "refreshToken",
-        response.data.refreshToken
-      );
 
       navigate("/dashboard", {
         replace: true,

@@ -85,6 +85,16 @@ export const Input = styled.input`
   font-size: 1rem;
 `;
 
+export const Select = styled.select`
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0 0.8rem;
+  font-size: 1rem;
+  appearance: none;
+`;
+
 export const RegisterButton = styled.button`
   margin-top: 0.8rem;
   height: 3.5rem;
