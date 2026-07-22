@@ -19,6 +19,7 @@ import Attendance from "../pages/attendance/Attendance";
 import Salary from "../pages/salary/Salary";
 import Sites from "../pages/sites/Sites";
 import Reports from "../pages/reports/Reports";
+import Settings from "../pages/settings/Settings";
 
 import Profile from "../pages/auth/profile/Profile";
 import ChangePassword from "../pages/auth/ChangePassword";
@@ -80,6 +81,11 @@ const AppRoutes = () => {
           <Route
             path="/reports"
             element={<Reports />}
+          />
+
+          <Route
+            path="/settings"
+            element={<Settings />}
           />
 
           <Route

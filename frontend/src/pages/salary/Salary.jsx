@@ -28,11 +28,21 @@ const Salary = () => {
 
     salarySummary,
 
+    loading,
+
     addAdvancePayment,
 
     sites,
 
   } = useWorkers();
+
+  const salaryData =
+    Array.isArray(salarySummary) ? salarySummary : [];
+
+  const sitesData =
+    Array.isArray(sites) ? sites : [];
+
+  const isLoading = loading ?? false;
 
   const [search, setSearch] =
     useState("");
@@ -60,7 +70,7 @@ const Salary = () => {
 
   const filteredWorkers = useMemo(() => {
 
-    return salarySummary.filter((worker) => {
+    return salaryData.filter((worker) => {
 
       const keyword =
         search.toLowerCase();
@@ -117,7 +127,7 @@ const Salary = () => {
 
   }, [
 
-    salarySummary,
+    salaryData,
 
     search,
 
@@ -195,13 +205,23 @@ const Salary = () => {
 
       </Header>
 
-      <SalarySummary
+      {isLoading ? (
+        <div
+          style={{
+            padding: "2rem",
+            textAlign: "center",
+            color: "#64748b",
+          }}
+        >
+          Loading salary records...
+        </div>
+      ) : (
+        <>
+          <SalarySummary
+            workers={filteredWorkers}
+          />
 
-        workers={filteredWorkers}
-
-      />
-
-      <SalaryFilter
+          <SalaryFilter
 
         search={search}
 
@@ -223,7 +243,7 @@ const Salary = () => {
 
           "All",
 
-          ...sites.map(
+          ...sitesData.map(
 
             (item) => item.name
 
@@ -293,19 +313,21 @@ const Salary = () => {
 
       />
 
-      <PaymentHistoryModal
+          <PaymentHistoryModal
 
-        open={historyOpen}
+            open={historyOpen}
 
-        worker={selectedWorker}
+            worker={selectedWorker}
 
-        onClose={() =>
+            onClose={() =>
 
-          setHistoryOpen(false)
+              setHistoryOpen(false)
 
-        }
+            }
 
-      />
+          />
+        </>
+      )}
 
     </SalaryContainer>
 

@@ -36,9 +36,22 @@ const Sites = () => {
 
     attendance,
 
+    loading,
+
     assignWorkerToSite,
 
   } = useWorkers();
+
+  const sitesData =
+    Array.isArray(sites) ? sites : [];
+
+  const workersData =
+    Array.isArray(workers) ? workers : [];
+
+  const attendanceData =
+    Array.isArray(attendance) ? attendance : [];
+
+  const isLoading = loading ?? false;
 
   const [search, setSearch] =
     useState("");
@@ -60,7 +73,7 @@ const Sites = () => {
 
   const filteredSites = useMemo(() => {
 
-    return sites.filter((site) => {
+    return sitesData.filter((site) => {
 
       const keyword =
         search.toLowerCase();
@@ -103,7 +116,7 @@ const Sites = () => {
 
   }, [
 
-    sites,
+    sitesData,
 
     search,
 
@@ -155,15 +168,24 @@ const Sites = () => {
 
       </Header>
 
-      <SiteSummary
+      {isLoading ? (
+        <div
+          style={{
+            padding: "2rem",
+            textAlign: "center",
+            color: "#64748b",
+          }}
+        >
+          Loading sites...
+        </div>
+      ) : (
+        <>
+          <SiteSummary
+            sites={sitesData}
+            workers={workersData}
+          />
 
-        sites={sites}
-
-        workers={workers}
-
-      />
-
-      <SiteFilter
+          <SiteFilter
 
         search={search}
 
@@ -205,57 +227,59 @@ const Sites = () => {
 
       />
 
-      <SiteDetailsModal
+          <SiteDetailsModal
 
-        open={detailsOpen}
+            open={detailsOpen}
 
-        site={selectedSite}
+            site={selectedSite}
 
-        workers={workers}
+            workers={workersData}
 
-        attendance={attendance}
+            attendance={attendanceData}
 
-        onClose={() =>
+            onClose={() =>
 
-          setDetailsOpen(false)
+              setDetailsOpen(false)
 
-        }
+            }
 
-      />
+          />
 
-      <AssignWorkerModal
+          <AssignWorkerModal
 
-        open={assignOpen}
+            open={assignOpen}
 
-        site={selectedSite}
+            site={selectedSite}
 
-        workers={workers}
+            workers={workersData}
 
-        onAssign={assignWorkerToSite}
+            onAssign={assignWorkerToSite}
 
-        onClose={() =>
+            onClose={() =>
 
-          setAssignOpen(false)
+              setAssignOpen(false)
 
-        }
+            }
 
-      />
+          />
 
-      <SiteAttendanceModal
+          <SiteAttendanceModal
 
-        open={attendanceOpen}
+            open={attendanceOpen}
 
-        site={selectedSite}
+            site={selectedSite}
 
-        attendance={attendance}
+            attendance={attendanceData}
 
-        onClose={() =>
+            onClose={() =>
 
-          setAttendanceOpen(false)
+              setAttendanceOpen(false)
 
-        }
+            }
 
-      />
+          />
+        </>
+      )}
 
     </SitesContainer>
 

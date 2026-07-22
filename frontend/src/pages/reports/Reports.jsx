@@ -36,7 +36,21 @@ const Reports = () => {
 
     sites,
 
+    loading,
+
   } = useWorkers();
+
+  const reportData =
+    Array.isArray(workerReport)
+      ? workerReport
+      : [];
+
+  const sitesData =
+    Array.isArray(sites)
+      ? sites
+      : [];
+
+  const isLoading = loading ?? false;
 
   const [search, setSearch] =
     useState("");
@@ -62,7 +76,7 @@ const Reports = () => {
 
     ...new Set(
 
-      sites.map(
+      sitesData.map(
 
         (item) => item.name
 
@@ -104,20 +118,20 @@ const Reports = () => {
 
   const filteredReports = useMemo(() => {
 
-    return workerReport.filter((report) => {
+    return reportData.filter((report) => {
 
       const keyword =
         search.toLowerCase();
 
       const searchMatch =
 
-        report.name
+        String(report.name || "")
           .toLowerCase()
           .includes(keyword)
 
         ||
 
-        report.id
+        String(report.id || "")
           .toLowerCase()
           .includes(keyword);
 
@@ -164,7 +178,7 @@ const Reports = () => {
 
   }, [
 
-    workerReport,
+    reportData,
 
     search,
 
@@ -290,63 +304,52 @@ const Reports = () => {
 
       </Header>
 
-      <ReportSummary
+      {isLoading ? (
+        <div
+          style={{
+            padding: "2rem",
+            textAlign: "center",
+            color: "#64748b",
+          }}
+        >
+          Loading reports...
+        </div>
+      ) : (
+        <>
+          <ReportSummary
+            reports={filteredReports}
+          />
 
-        reports={filteredReports}
+          <ReportFilter
+            search={search}
+            setSearch={setSearch}
+            site={site}
+            setSite={setSite}
+            month={month}
+            setMonth={setMonth}
+            status={status}
+            setStatus={setStatus}
+            sites={sitesList}
+            months={months}
+          />
 
-      />
+          <ReportTable
+            reports={filteredReports}
+            onView={(report) => {
+              setSelectedReport(report);
+              setPreviewOpen(true);
+            }}
+          />
 
-      <ReportFilter
-
-        search={search}
-
-        setSearch={setSearch}
-
-        site={site}
-
-        setSite={setSite}
-
-        month={month}
-
-        setMonth={setMonth}
-
-        status={status}
-
-        setStatus={setStatus}
-
-        sites={sitesList}
-
-        months={months}
-
-      />
-
-      <ReportTable
-
-        reports={filteredReports}
-
-        onView={(report) => {
-
-          setSelectedReport(report);
-
-          setPreviewOpen(true);
-
-        }}
-
-      />
-
-      <ReportPreviewModal
-
-        open={previewOpen}
-
-        report={selectedReport}
-
-        onClose={() =>
-
-          setPreviewOpen(false)
-
-        }
-
-      />
+          <ReportPreviewModal
+            open={previewOpen}
+            report={selectedReport}
+            onClose={() =>
+              setPreviewOpen(false)
+            }
+          />
+        </>
+      )}
 
     </ReportsContainer>
 

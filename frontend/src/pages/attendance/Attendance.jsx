@@ -27,6 +27,8 @@ const Attendance = () => {
 
     attendance,
 
+    loading,
+
     markAttendance,
 
     attendanceSummary,
@@ -34,6 +36,17 @@ const Attendance = () => {
     sites,
 
   } = useWorkers();
+
+  const attendanceData =
+    Array.isArray(attendance) ? attendance : [];
+
+  const sitesData =
+    Array.isArray(sites) ? sites : [];
+
+  const attendanceSummaryData =
+    attendanceSummary ?? {};
+
+  const isLoading = loading ?? false;
 
   const [search, setSearch] =
     useState("");
@@ -58,7 +71,7 @@ const Attendance = () => {
 
   const filteredWorkers = useMemo(() => {
 
-    return attendance.filter((worker) => {
+    return attendanceData.filter((worker) => {
 
       const keyword =
         search.toLowerCase();
@@ -115,7 +128,7 @@ const Attendance = () => {
 
   }, [
 
-    attendance,
+    attendanceData,
 
     search,
 
@@ -194,100 +207,70 @@ const Attendance = () => {
 
       </Header>
 
-      <AttendanceSummary
+      {isLoading ? (
+        <div
+          style={{
+            padding: "2rem",
+            textAlign: "center",
+            color: "#64748b",
+          }}
+        >
+          Loading attendance records...
+        </div>
+      ) : (
+        <>
+          <AttendanceSummary
+            workers={attendanceSummaryData}
+          />
 
-        workers={attendanceSummary}
+          <AttendanceFilter
+            search={search}
+            setSearch={setSearch}
+            site={site}
+            setSite={setSite}
+            status={status}
+            setStatus={setStatus}
+            month={month}
+            setMonth={setMonth}
+            sites={[
+              "All",
+              ...sitesData.map((item) => item.name),
+            ]}
+          />
 
-      />
+          <AttendanceTable
+            workers={filteredWorkers}
+            onHistory={(worker) => {
+              setSelectedWorker(worker);
+              setHistoryOpen(true);
+            }}
+            onMark={(worker) => {
+              setSelectedWorker(worker);
+              setMarkOpen(true);
+            }}
+          />
 
-      <AttendanceFilter
+          <AttendanceHistoryModal
+            open={historyOpen}
+            worker={selectedWorker}
+            onClose={() =>
+              setHistoryOpen(false)
+            }
+          />
 
-        search={search}
-
-        setSearch={setSearch}
-
-        site={site}
-
-        setSite={setSite}
-
-        status={status}
-
-        setStatus={setStatus}
-
-        month={month}
-
-        setMonth={setMonth}
-
-        sites={[
-
-          "All",
-
-          ...sites.map(
-
-            (item) => item.name
-
-          ),
-
-        ]}
-
-      />
-
-      <AttendanceTable
-
-        workers={filteredWorkers}
-
-        onHistory={(worker) => {
-
-          setSelectedWorker(worker);
-
-          setHistoryOpen(true);
-
-        }}
-
-        onMark={(worker) => {
-
-          setSelectedWorker(worker);
-
-          setMarkOpen(true);
-
-        }}
-
-      />
-
-      <AttendanceHistoryModal
-
-        open={historyOpen}
-
-        worker={selectedWorker}
-
-        onClose={() =>
-
-          setHistoryOpen(false)
-
-        }
-
-      />
-
-      <MarkAttendanceModal
-
-        open={markOpen}
-
-        worker={selectedWorker}
-
-        onClose={() =>
-
-          setMarkOpen(false)
-
-        }
-
-        onSave={handleAttendance}
-
-      />
+          <MarkAttendanceModal
+            open={markOpen}
+            worker={selectedWorker}
+            onClose={() =>
+              setMarkOpen(false)
+            }
+            onSave={handleAttendance}
+          />
+        </>
+      )}
 
     </AttendanceContainer>
-
   );
-
 };
 
 export default Attendance;
