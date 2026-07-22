@@ -16,7 +16,6 @@ import {
 } from "../validators/auth.validator.js";
 
 const router = Router();
-
 /*
 |--------------------------------------------------------------------------
 | Public Routes
@@ -84,5 +83,6 @@ router.put(
   validate(updateProfileSchema),
   authController.updateProfile
 );
+
 
 export default router;

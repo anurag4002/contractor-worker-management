@@ -70,8 +70,17 @@ export const updateUserSchema = Joi.object({
     }),
 
   role: Joi.string()
-    .length(24)
-    .hex(),
+  .valid(
+    "SUPER_ADMIN",
+    "ADMIN",
+    "MANAGER",
+    "SUPERVISOR"
+  )
+  .required()
+  .messages({
+    "any.only": "Invalid role selected.",
+    "any.required": "Role is required."
+  }),
 
   status: Joi.string()
     .valid(

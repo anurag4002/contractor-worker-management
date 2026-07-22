@@ -79,6 +79,8 @@ app.use(requestLogger);
 
 app.use('/api/v1', routes);
 
+
+
 /*
 |--------------------------------------------------------------------------
 | 404 Middleware
@@ -94,5 +96,6 @@ app.use(notFoundMiddleware);
 */
 
 app.use(errorMiddleware);
+
 
 export default app;

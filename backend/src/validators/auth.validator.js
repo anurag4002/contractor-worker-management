@@ -53,11 +53,6 @@ export const registerSchema = Joi.object({
       'string.pattern.base':
         'Password must contain uppercase, lowercase, number and special character.',
     }),
-
-  role: Joi.string()
-    .hex()
-    .length(24)
-    .required(),
 });
 
 /**

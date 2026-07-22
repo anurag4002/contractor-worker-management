@@ -77,6 +77,15 @@ class AuthRepository {
   }
 
   /**
+   * Count active users
+   */
+  async countUsers() {
+    return await User.countDocuments({
+      isDeleted: false,
+    });
+  }
+
+  /**
    * Find user by id
    */
   async findUserById(userId) {
@@ -91,6 +100,20 @@ class AuthRepository {
           path: 'permissions',
         },
       });
+  }
+
+  /**
+   * Find user by id
+   */
+  async findById(userId) {
+    return await this.findUserById(userId);
+  }
+
+  /**
+   * Create new user
+   */
+  async create(userData) {
+    return await User.create(userData);
   }
 
   /**
@@ -209,6 +232,23 @@ class AuthRepository {
         new: true,
       }
     );
+  }
+
+  /**
+   * Find role by code
+   */
+  async findRoleByCode(code) {
+    return await Role.findOne({
+      code,
+      isDeleted: false,
+      status: 'ACTIVE',
+    }).populate({
+      path: 'permissions',
+      match: {
+        isDeleted: false,
+        status: 'ACTIVE',
+      },
+    });
   }
 
   /**
