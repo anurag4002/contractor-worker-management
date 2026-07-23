@@ -28,12 +28,9 @@ export const ContentWrapper = styled.div`
 
 export const MainContent = styled.main`
   flex: 1;
-
+  min-height: 0;
   padding: 2rem;
-
   background: #f8fafc;
-
   overflow-x: hidden;
-
   overflow-y: auto;
 `;

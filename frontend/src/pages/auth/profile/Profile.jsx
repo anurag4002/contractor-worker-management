@@ -1,214 +1,261 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   FiUser,
   FiMail,
   FiPhone,
   FiShield,
+  FiLock,
   FiEdit,
   FiSave,
   FiX,
 } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../../context/AuthContext.jsx";
 import {
   Page,
   Card,
-  Avatar,
-  Title,
-  Form,
-  InputGroup,
-  Icon,
-  Input,
-  ButtonGroup,
+  AvatarCircle,
+  HeaderSection,
+  Name,
+  RoleLabel,
+  SummaryText,
+  InfoGrid,
+  FieldGroup,
+  FieldLabel,
+  FieldBox,
+  FieldIcon,
+  FieldInput,
+  ButtonRow,
   PrimaryButton,
   SecondaryButton,
 } from "./Profile.style";
 
+const EMPTY_VALUE = "—";
+
+const getRoleDisplay = (role) => {
+  if (!role) return EMPTY_VALUE;
+  if (typeof role === "string") return role || EMPTY_VALUE;
+  if (typeof role === "object") {
+    return role.name || role.code || role.title || EMPTY_VALUE;
+  }
+  return String(role) || EMPTY_VALUE;
+};
+
+const getStatusDisplay = (user) => {
+  if (!user) return EMPTY_VALUE;
+  if (user.status) return user.status;
+  if (typeof user.isActive === "boolean") {
+    return user.isActive ? "Active" : "Inactive";
+  }
+  if (typeof user.active === "boolean") {
+    return user.active ? "Active" : "Inactive";
+  }
+  return EMPTY_VALUE;
+};
+
+const getUsernameDisplay = (user) => {
+  if (!user) return EMPTY_VALUE;
+  return user.username || user.email || EMPTY_VALUE;
+};
+
+const displayValue = (value) => {
+  if (value === null || value === undefined || value === "") {
+    return EMPTY_VALUE;
+  }
+  return value;
+};
+
 const Profile = () => {
   const { user, updateProfile } = useAuth();
+  const navigate = useNavigate();
 
-  const [isEditing, setIsEditing] =
-    useState(false);
-
+  const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState({
     name: "",
-    email: "",
     phone: "",
     role: "",
   });
 
-  useEffect(() => {
-    if (user) {
-      setForm({
-        name: user.name || "",
-        email: user.email || "",
-        phone: user.phone || "",
-        role: user.role || "",
-      });
-    }
-  }, [user]);
+  const initiateEdit = () => {
+    if (!user) return;
+    setForm({
+      name: user.name || "",
+      phone: user.phone || "",
+      role: getRoleDisplay(user.role),
+    });
+    setIsEditing(true);
+  };
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setForm((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
   };
 
   const handleSave = () => {
-    updateProfile(form);
+    if (typeof updateProfile === "function") {
+      updateProfile({
+        name: form.name,
+        phone: form.phone,
+        role: form.role,
+      });
+    }
     setIsEditing(false);
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-
     setForm({
-      name: user.name || "",
-      email: user.email || "",
-      phone: user.phone || "",
-      role: user.role || "",
+      name: "",
+      phone: "",
+      role: "",
     });
   };
 
+  if (!user) {
+    return (
+      <Page>
+        <Card>
+          <HeaderSection>
+            <Name>Loading profile...</Name>
+          </HeaderSection>
+        </Card>
+      </Page>
+    );
+  }
+
+  const headerName = displayValue(user.name || user.email || "User");
+  const headerRole = getRoleDisplay(user.role);
+  const emailValue = displayValue(user.email);
+  const phoneValue = isEditing ? form.phone : displayValue(user.phone);
+  const nameValue = isEditing ? form.name : displayValue(user.name);
+  const roleValue = isEditing ? form.role : getRoleDisplay(user.role);
+  const usernameValue = displayValue(getUsernameDisplay(user));
+  const statusValue = displayValue(getStatusDisplay(user));
+
   return (
     <Page>
-
       <Card>
+        <AvatarCircle aria-hidden="true">
+          <FiUser size={40} />
+        </AvatarCircle>
 
-        <Avatar>
+        <HeaderSection>
+          <Name>{headerName}</Name>
+          <RoleLabel>{headerRole}</RoleLabel>
+          <SummaryText>
+            Enterprise profile details for your account, ready for team-level review and security workflows.
+          </SummaryText>
+        </HeaderSection>
 
-          <FiUser size={42} />
+        <InfoGrid>
+          <FieldGroup>
+            <FieldLabel htmlFor="name">Full Name</FieldLabel>
+            <FieldBox>
+              <FieldIcon>
+                <FiUser />
+              </FieldIcon>
+              <FieldInput
+                id="name"
+                name="name"
+                value={nameValue}
+                readOnly={!isEditing}
+                onChange={handleChange}
+              />
+            </FieldBox>
+          </FieldGroup>
 
-        </Avatar>
+          <FieldGroup>
+            <FieldLabel htmlFor="email">Email</FieldLabel>
+            <FieldBox>
+              <FieldIcon>
+                <FiMail />
+              </FieldIcon>
+              <FieldInput id="email" name="email" value={emailValue} readOnly />
+            </FieldBox>
+          </FieldGroup>
 
-        <Title>
+          <FieldGroup>
+            <FieldLabel htmlFor="phone">Mobile Number</FieldLabel>
+            <FieldBox>
+              <FieldIcon>
+                <FiPhone />
+              </FieldIcon>
+              <FieldInput
+                id="phone"
+                name="phone"
+                value={phoneValue}
+                readOnly={!isEditing}
+                onChange={handleChange}
+              />
+            </FieldBox>
+          </FieldGroup>
 
-          My Profile
+          <FieldGroup>
+            <FieldLabel htmlFor="username">Username</FieldLabel>
+            <FieldBox>
+              <FieldIcon>
+                <FiShield />
+              </FieldIcon>
+              <FieldInput id="username" name="username" value={usernameValue} readOnly />
+            </FieldBox>
+          </FieldGroup>
 
-        </Title>
+          <FieldGroup>
+            <FieldLabel htmlFor="role">Role</FieldLabel>
+            <FieldBox>
+              <FieldIcon>
+                <FiShield />
+              </FieldIcon>
+              <FieldInput
+                id="role"
+                name="role"
+                value={roleValue}
+                readOnly={!isEditing}
+                onChange={handleChange}
+              />
+            </FieldBox>
+          </FieldGroup>
 
-        <Form>
+          <FieldGroup>
+            <FieldLabel htmlFor="status">Status</FieldLabel>
+            <FieldBox>
+              <FieldIcon>
+                <FiLock />
+              </FieldIcon>
+              <FieldInput id="status" name="status" value={statusValue} readOnly />
+            </FieldBox>
+          </FieldGroup>
+        </InfoGrid>
 
-          <InputGroup>
+        <ButtonRow>
+          <SecondaryButton type="button" onClick={() => navigate("/settings")}> 
+            <FiLock />
+            Account Settings
+          </SecondaryButton>
 
-            <Icon>
-
-              <FiUser />
-
-            </Icon>
-
-            <Input
-              name="name"
-              value={form.name}
-              disabled={!isEditing}
-              onChange={handleChange}
-            />
-
-          </InputGroup>
-
-          <InputGroup>
-
-            <Icon>
-
-              <FiMail />
-
-            </Icon>
-
-            <Input
-              name="email"
-              value={form.email}
-              disabled
-            />
-
-          </InputGroup>
-
-          <InputGroup>
-
-            <Icon>
-
-              <FiPhone />
-
-            </Icon>
-
-            <Input
-              name="phone"
-              value={form.phone}
-              disabled={!isEditing}
-              onChange={handleChange}
-            />
-
-          </InputGroup>
-
-          <InputGroup>
-
-            <Icon>
-
-              <FiShield />
-
-            </Icon>
-
-            <Input
-              name="role"
-              value={form.role}
-              disabled
-            />
-
-          </InputGroup>
-
-          <ButtonGroup>
-
-            {!isEditing ? (
-
-              <PrimaryButton
-                type="button"
-                onClick={() =>
-                  setIsEditing(true)
-                }
-              >
-
-                <FiEdit />
-
-                Edit Profile
-
+          {!isEditing ? (
+            <PrimaryButton type="button" onClick={initiateEdit}>
+              <FiEdit />
+              Edit Profile
+            </PrimaryButton>
+          ) : (
+            <>
+              <PrimaryButton type="button" onClick={handleSave}>
+                <FiSave />
+                Save
               </PrimaryButton>
-
-            ) : (
-
-              <>
-
-                <PrimaryButton
-                  type="button"
-                  onClick={handleSave}
-                >
-
-                  <FiSave />
-
-                  Save
-
-                </PrimaryButton>
-
-                <SecondaryButton
-                  type="button"
-                  onClick={handleCancel}
-                >
-
-                  <FiX />
-
-                  Cancel
-
-                </SecondaryButton>
-
-              </>
-
-            )}
-
-          </ButtonGroup>
-
-        </Form>
-
+              <SecondaryButton type="button" onClick={handleCancel}>
+                <FiX />
+                Cancel
+              </SecondaryButton>
+            </>
+          )}
+        </ButtonRow>
       </Card>
-
     </Page>
   );
 };
