@@ -13,12 +13,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  /*
-  |--------------------------------------------------------------------------
-  | Load User
-  |--------------------------------------------------------------------------
-  */
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
@@ -30,76 +24,29 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  /*
-  |--------------------------------------------------------------------------
-  | Check Admin
-  |--------------------------------------------------------------------------
-  */
-
   const checkAdmin = async () => {
     try {
-      const response =
-        await authService.checkAdmin();
-
+      const response = await authService.checkAdmin();
       return response.data.adminExists;
     } catch (error) {
       console.error(error);
-
       return true;
     }
   };
 
-  /*
-  |--------------------------------------------------------------------------
-  | Login
-  |--------------------------------------------------------------------------
-  */
-
   const login = async (payload) => {
-    const response =
-      await authService.login(payload);
-
-    const {
-      user,
-      accessToken,
-      refreshToken,
-    } = response.data;
-
-    localStorage.setItem(
-      "token",
-      accessToken
-    );
-
-    localStorage.setItem(
-      "refreshToken",
-      refreshToken
-    );
-
-    localStorage.setItem(
-      "user",
-      JSON.stringify(user)
-    );
-
+    const response = await authService.login(payload);
+    const { user, accessToken, refreshToken } = response.data;
+    localStorage.setItem("token", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+    localStorage.setItem("user", JSON.stringify(user));
     setUser(user);
-
     return response;
   };
-
-  /*
-  |--------------------------------------------------------------------------
-  | Register
-  |--------------------------------------------------------------------------
-  */
 
   const register = async (payload) => {
     return authService.register(payload);
   };
-
-  /*
-  |--------------------------------------------------------------------------
-  | Logout
-  |--------------------------------------------------------------------------
-  */
 
   const logout = async () => {
     try {
@@ -107,12 +54,33 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error(error);
     }
-
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
-
     setUser(null);
+  };
+
+  const forgotPassword = async (email) => {
+    return authService.forgotPassword(email);
+  };
+
+  const resetPassword = async (token, password) => {
+    return authService.resetPassword(token, password);
+  };
+
+  const changePassword = async (oldPassword, newPassword) => {
+    return authService.changePassword(oldPassword, newPassword);
+  };
+
+  const getProfile = async () => {
+    return authService.getProfile();
+  };
+
+  const updateProfile = async (payload) => {
+    const response = await authService.updateProfile(payload);
+    localStorage.setItem("user", JSON.stringify(response.data));
+    setUser(response.data);
+    return response;
   };
 
   return (
@@ -124,6 +92,11 @@ export const AuthProvider = ({ children }) => {
         register,
         logout,
         checkAdmin,
+        forgotPassword,
+        resetPassword,
+        changePassword,
+        getProfile,
+        updateProfile,
         isAuthenticated: !!user,
       }}
     >
@@ -132,5 +105,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () =>
-  useContext(AuthContext);
+export const useAuth = () => useContext(AuthContext);

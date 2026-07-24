@@ -7,7 +7,10 @@ import {
   FiLock,
 } from "react-icons/fi";
 
-import { Link } from "react-router-dom";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
+
+import { useAuth } from "../../context/AuthContext";
+import { showSuccess, showError } from "../../components/common/toast";
 
 import {
   Page,
@@ -39,8 +42,11 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] =
     useState("");
 
-  const [error, setError] =
-    useState("");
+  const [loading, setLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
+  const navigate = useNavigate();
+  const { resetPassword } = useAuth();
 
   const getStrength = () => {
 
@@ -72,30 +78,35 @@ const ResetPassword = () => {
   const strength =
     getStrength();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
 
     e.preventDefault();
 
-    if (
-      password !==
-      confirmPassword
-    ) {
-
-      setError(
-        "Passwords do not match."
-      );
-
+    if (password !== confirmPassword) {
+      showError("Passwords do not match.");
       return;
-
     }
 
-    setError("");
+    if (password.length < 6) {
+      showError("Password must be at least 6 characters.");
+      return;
+    }
 
-    alert(
-      "Password Reset Successfully"
-    );
+    if (!token) {
+      showError("Reset token is missing from the URL.");
+      return;
+    }
 
-    // Backend API
+    try {
+      setLoading(true);
+      await resetPassword(token, password);
+      showSuccess("Password Reset Successfully");
+      navigate("/login", { replace: true });
+    } catch (err) {
+      showError(err.response?.data?.message || "Failed to reset password.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -140,7 +151,7 @@ const ResetPassword = () => {
 
               value={password}
 
-              onChange={(e)=>
+              onChange={(e) =>
 
                 setPassword(
                   e.target.value
@@ -154,7 +165,7 @@ const ResetPassword = () => {
 
             <ToggleButton
               type="button"
-              onClick={()=>
+              onClick={() =>
 
                 setShowPassword(
 
@@ -211,7 +222,7 @@ const ResetPassword = () => {
 
               value={confirmPassword}
 
-              onChange={(e)=>
+              onChange={(e) =>
 
                 setConfirmPassword(
 
@@ -227,7 +238,7 @@ const ResetPassword = () => {
 
             <ToggleButton
               type="button"
-              onClick={()=>
+              onClick={() =>
 
                 setShowConfirmPassword(
 
@@ -252,23 +263,11 @@ const ResetPassword = () => {
 
           </InputGroup>
 
-          {
+          {/* Removed internal error mapping, relying on toast */}
 
-            error && (
+          <Button disabled={loading}>
 
-              <ErrorMessage>
-
-                {error}
-
-              </ErrorMessage>
-
-            )
-
-          }
-
-          <Button>
-
-            Reset Password
+            {loading ? "Resetting..." : "Reset Password"}
 
           </Button>
 

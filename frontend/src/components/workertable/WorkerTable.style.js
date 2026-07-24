@@ -101,13 +101,13 @@ export const Status = styled.span`
 
   font-weight:600;
 
-  background:${({status})=>
-    status==="Active"
+  background:${({ status }) =>
+    status === "Active"
       ? "#DCFCE7"
       : "#FEE2E2"};
 
-  color:${({status})=>
-    status==="Active"
+  color:${({ status }) =>
+    status === "Active"
       ? "#15803D"
       : "#DC2626"};
 `;
@@ -143,5 +143,18 @@ export const IconButton = styled.button`
 
     color:#fff;
 
+  }
+`;
+
+export const SkeletonRow = styled.div`
+  height: 20px;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+
+  @keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
   }
 `;

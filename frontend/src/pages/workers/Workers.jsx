@@ -1,6 +1,7 @@
 import React, {
   useMemo,
   useState,
+  useEffect,
 } from "react";
 
 import {
@@ -28,16 +29,17 @@ import {
 const Workers = () => {
 
   const {
-
     workers = [],
-
     addWorker,
-
     updateWorker,
-
     deleteWorker,
-
+    fetchWorkers,
+    loading,
   } = useWorkers();
+
+  useEffect(() => {
+    fetchWorkers();
+  }, []);
 
   const [search, setSearch] =
     useState("");
@@ -176,7 +178,7 @@ const Workers = () => {
 
               value={search}
 
-              onChange={(e)=>
+              onChange={(e) =>
 
                 setSearch(e.target.value)
 
@@ -200,7 +202,7 @@ const Workers = () => {
 
             type="button"
 
-            onClick={()=>
+            onClick={() =>
 
               setAddModal(true)
 
@@ -222,6 +224,8 @@ const Workers = () => {
 
         workers={filteredWorkers}
 
+        loading={loading}
+
         onView={handleView}
 
         onEdit={handleEdit}
@@ -234,7 +238,7 @@ const Workers = () => {
 
         open={addModal}
 
-        onClose={()=>
+        onClose={() =>
 
           setAddModal(false)
 
@@ -250,13 +254,13 @@ const Workers = () => {
 
         worker={selectedWorker}
 
-        onClose={()=>
+        onClose={() =>
 
           setEditModal(false)
 
         }
 
-        onUpdateWorker={(worker)=>
+        onUpdateWorker={(worker) =>
 
           updateWorker(
 
@@ -276,7 +280,7 @@ const Workers = () => {
 
         worker={selectedWorker}
 
-        onClose={()=>
+        onClose={() =>
 
           setDeleteModal(false)
 
@@ -292,7 +296,7 @@ const Workers = () => {
 
         worker={selectedWorker}
 
-        onClose={()=>
+        onClose={() =>
 
           setViewModal(false)
 

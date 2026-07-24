@@ -44,6 +44,7 @@ const EditWorkerModal = ({
 
   const [form, setForm] =
     useState(defaultWorker);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
 
@@ -77,60 +78,41 @@ const EditWorkerModal = ({
 
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
 
     e.preventDefault();
 
     if (
-
       form.name.trim() === "" ||
-
       form.mobile.trim() === "" ||
-
       form.skill.trim() === "" ||
-
       form.workType.trim() === ""
-
     ) {
-
       alert("Please fill all required fields.");
-
       return;
-
     }
 
     if (!/^[6-9]\d{9}$/.test(form.mobile)) {
-
       alert("Please enter a valid mobile number.");
-
       return;
-
     }
 
-    onUpdateWorker({
-
-      ...form,
-
-      dailyWage:
-
-        form.wageType === "Daily"
-
-          ? Number(form.dailyWage)
-
-          : 0,
-
-      monthlySalary:
-
-        form.wageType === "Monthly"
-
-          ? Number(form.monthlySalary)
-
-          : 0,
-
-    });
-
-    onClose();
-
+    try {
+      setIsSubmitting(true);
+      await onUpdateWorker(form.id, {
+        fullName: form.name,
+        mobileNumber: form.mobile,
+        trade: form.skill,
+        salaryType: form.wageType === "Daily" ? "DAILY" : "MONTHLY",
+        dailyWage: form.wageType === "Daily" ? Number(form.dailyWage) : 0,
+        monthlySalary: form.wageType === "Monthly" ? Number(form.monthlySalary) : 0,
+      });
+      onClose();
+    } catch (err) {
+      // Handled by context
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -545,10 +527,11 @@ const EditWorkerModal = ({
             <SaveButton
 
               type="submit"
+              disabled={isSubmitting}
 
             >
 
-              Update Worker
+              {isSubmitting ? "Updating..." : "Update Worker"}
 
             </SaveButton>
 

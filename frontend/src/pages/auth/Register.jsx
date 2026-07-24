@@ -10,7 +10,8 @@ import {
   EyeOff,
 } from "lucide-react";
 
-import authService from "../../services/auth.service";
+import { useAuth } from "../../context/AuthContext";
+import { showSuccess, showError } from "../../components/common/toast";
 
 import {
   RegisterContainer,
@@ -27,6 +28,7 @@ import {
 
 const Register = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
 
   const [loading, setLoading] = useState(false);
 
@@ -59,7 +61,7 @@ const Register = () => {
       formData.password !==
       formData.confirmPassword
     ) {
-      alert("Passwords do not match");
+      showError("Passwords do not match");
       return;
     }
 
@@ -76,22 +78,22 @@ const Register = () => {
       };
 
       const response =
-        await authService.register(
+        await register(
           payload
         );
 
-      alert(
-        response.message ||
-          "Super Admin created successfully."
+      showSuccess(
+        response.data?.message ||
+        "Super Admin created successfully."
       );
 
       navigate("/login");
     } catch (error) {
       console.error(error);
 
-      alert(
+      showError(
         error.response?.data?.message ||
-          "Registration failed"
+        "Registration failed"
       );
     } finally {
       setLoading(false);

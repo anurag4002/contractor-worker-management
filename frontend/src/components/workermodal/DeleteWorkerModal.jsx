@@ -23,14 +23,21 @@ const DeleteWorkerModal = ({
   onDeleteWorker,
 }) => {
 
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
   if (!open || !worker) return null;
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
 
-    onDeleteWorker(worker.id);
-
-    onClose();
-
+    try {
+      setIsSubmitting(true);
+      await onDeleteWorker(worker.id);
+      onClose();
+    } catch (err) {
+      // toast handles error
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -135,10 +142,11 @@ const DeleteWorkerModal = ({
 
           <SaveButton
             type="button"
+            disabled={isSubmitting}
             onClick={handleDelete}
           >
 
-            Yes, Delete Worker
+            {isSubmitting ? "Deleting..." : "Yes, Delete Worker"}
 
           </SaveButton>
 

@@ -42,6 +42,7 @@ const AddWorkerModal = ({
 
   const [form, setForm] =
     useState(initialState);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
 
@@ -69,7 +70,7 @@ const AddWorkerModal = ({
 
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
 
     e.preventDefault();
 
@@ -79,46 +80,49 @@ const AddWorkerModal = ({
       form.skill.trim() === "" ||
       form.workType.trim() === ""
     ) {
-
       alert("Please fill all required fields.");
-
       return;
-
     }
 
     if (!/^[6-9]\d{9}$/.test(form.mobile)) {
-
-      alert("Enter valid mobile number.");
-
+      alert("Enter a valid mobile number.");
       return;
-
     }
 
     const worker = {
-
-      id: `CW${Date.now()
-        .toString()
-        .slice(-5)}`,
-
-      ...form,
-
-      dailyWage:
-        form.wageType === "Daily"
-          ? Number(form.dailyWage)
-          : 0,
-
-      monthlySalary:
-        form.wageType === "Monthly"
-          ? Number(form.monthlySalary)
-          : 0,
-
+      fullName: form.name,
+      mobileNumber: form.mobile,
+      trade: form.skill,
+      workType: form.workType,
+      site: form.site || null,
+      salaryType: form.wageType === "Daily" ? "DAILY" : "MONTHLY",
+      dailyWage: form.wageType === "Daily" ? Number(form.dailyWage) : 0,
+      monthlySalary: form.wageType === "Monthly" ? Number(form.monthlySalary) : 0,
+      joiningDate: form.joiningDate || new Date().toISOString().split("T")[0],
+      fatherName: "Not Provided", // Assuming fatherName is required in backend
+      gender: "MALE", // Defaulting as UI doesn't have it
+      dateOfBirth: "2000-01-01", // Defaulting as UI doesn't have it
+      aadhaarNumber: "000011112222", // Defaulting
+      address: "Not Provided",
+      state: "State",
+      district: "District",
+      city: "City",
+      pincode: "000000",
+      emergencyContactName: "Not Provided",
+      emergencyContactNumber: "9999999999",
+      photo: form.photo || "",
     };
 
-    onAddWorker(worker);
-
-    setForm(initialState);
-
-    onClose();
+    try {
+      setIsSubmitting(true);
+      await onAddWorker(worker);
+      setForm(initialState);
+      onClose();
+    } catch (error) {
+      // Error handled by context toast UI
+    } finally {
+      setIsSubmitting(false);
+    }
 
   };
 
@@ -277,49 +281,49 @@ const AddWorkerModal = ({
 
               form.wageType === "Daily"
 
-              ? (
+                ? (
 
-                <FormGroup>
+                  <FormGroup>
 
-                  <Label>
+                    <Label>
 
-                    Daily Wage
+                      Daily Wage
 
-                  </Label>
+                    </Label>
 
-                  <Input
-                    type="number"
-                    name="dailyWage"
-                    value={form.dailyWage}
-                    onChange={handleChange}
-                    required
-                  />
+                    <Input
+                      type="number"
+                      name="dailyWage"
+                      value={form.dailyWage}
+                      onChange={handleChange}
+                      required
+                    />
 
-                </FormGroup>
+                  </FormGroup>
 
-              )
+                )
 
-              : (
+                : (
 
-                <FormGroup>
+                  <FormGroup>
 
-                  <Label>
+                    <Label>
 
-                    Monthly Salary
+                      Monthly Salary
 
-                  </Label>
+                    </Label>
 
-                  <Input
-                    type="number"
-                    name="monthlySalary"
-                    value={form.monthlySalary}
-                    onChange={handleChange}
-                    required
-                  />
+                    <Input
+                      type="number"
+                      name="monthlySalary"
+                      value={form.monthlySalary}
+                      onChange={handleChange}
+                      required
+                    />
 
-                </FormGroup>
+                  </FormGroup>
 
-              )
+                )
 
             }
 
@@ -457,9 +461,10 @@ const AddWorkerModal = ({
 
             <SaveButton
               type="submit"
+              disabled={isSubmitting}
             >
 
-              Add Worker
+              {isSubmitting ? "Adding..." : "Add Worker"}
 
             </SaveButton>
 

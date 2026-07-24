@@ -12,6 +12,8 @@ import {
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../../context/AuthContext.jsx";
+import { showSuccess, showError } from "../../../components/common/toast";
+
 import {
   Page,
   Card,
@@ -76,6 +78,7 @@ const Profile = () => {
     phone: "",
     role: "",
   });
+  const [isSaving, setIsSaving] = useState(false);
 
   const initiateEdit = () => {
     if (!user) return;
@@ -95,15 +98,23 @@ const Profile = () => {
     }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (typeof updateProfile === "function") {
-      updateProfile({
-        name: form.name,
-        phone: form.phone,
-        role: form.role,
-      });
+      try {
+        setIsSaving(true);
+        await updateProfile({
+          name: form.name,
+          phone: form.phone,
+          role: form.role,
+        });
+        showSuccess("Profile updated successfully!");
+        setIsEditing(false);
+      } catch (error) {
+        showError(error.response?.data?.message || "Failed to update profile.");
+      } finally {
+        setIsSaving(false);
+      }
     }
-    setIsEditing(false);
   };
 
   const handleCancel = () => {
@@ -232,7 +243,7 @@ const Profile = () => {
         </InfoGrid>
 
         <ButtonRow>
-          <SecondaryButton type="button" onClick={() => navigate("/settings")}> 
+          <SecondaryButton type="button" onClick={() => navigate("/settings")}>
             <FiLock />
             Account Settings
           </SecondaryButton>
@@ -244,11 +255,11 @@ const Profile = () => {
             </PrimaryButton>
           ) : (
             <>
-              <PrimaryButton type="button" onClick={handleSave}>
+              <PrimaryButton type="button" onClick={handleSave} disabled={isSaving}>
                 <FiSave />
-                Save
+                {isSaving ? "Saving..." : "Save"}
               </PrimaryButton>
-              <SecondaryButton type="button" onClick={handleCancel}>
+              <SecondaryButton type="button" onClick={handleCancel} disabled={isSaving}>
                 <FiX />
                 Cancel
               </SecondaryButton>

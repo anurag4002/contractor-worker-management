@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiCalendar, FiDownload } from "react-icons/fi";
+import { FiCalendar, FiDownload, FiRefreshCw, FiAlertCircle } from "react-icons/fi";
+import { showError, showSuccess } from "../../components/common/toast";
 
 import dashboardService from "../../services/dashboard.service";
 import DashboardCharts from "../../components/dashboardcharts/DashboardCharts";
@@ -24,6 +25,10 @@ import {
   List,
   ListItem,
   Badge,
+  SkeletonBlock,
+  ErrorContainer,
+  ErrorTitle,
+  RetryButton,
 } from "./Dashboard.style";
 
 const Dashboard = () => {
@@ -33,7 +38,9 @@ const Dashboard = () => {
   const [recentWorkers, setRecentWorkers] = useState([]);
   const [recentAttendance, setRecentAttendance] = useState([]);
   const [recentPayroll, setRecentPayroll] = useState([]);
+  const [chartsData, setChartsData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const today = new Date().toLocaleDateString("en-IN", {
     weekday: "long",
@@ -48,28 +55,33 @@ const Dashboard = () => {
 
   const loadDashboard = async () => {
     try {
+      setLoading(true);
+      setError(false);
       const [
         dashboardRes,
         workersRes,
         attendanceRes,
         payrollRes,
+        chartsRes,
       ] = await Promise.all([
         dashboardService.getDashboard(),
         dashboardService.getRecentWorkers(),
         dashboardService.getRecentAttendance(),
         dashboardService.getRecentPayroll(),
+        dashboardService.getCharts(),
       ]);
 
       setDashboard(dashboardRes.data);
       setRecentWorkers(workersRes.data || []);
       setRecentAttendance(attendanceRes.data || []);
       setRecentPayroll(payrollRes.data || []);
-    } catch (error) {
-      console.error(error);
-
-      alert(
-        error.response?.data?.message ||
-          "Unable to load dashboard."
+      setChartsData(chartsRes.data || null);
+    } catch (err) {
+      console.error(err);
+      setError(true);
+      showError(
+        err.response?.data?.message ||
+        "Unable to load dashboard."
       );
     } finally {
       setLoading(false);
@@ -86,7 +98,46 @@ const Dashboard = () => {
   };
 
   if (loading) {
-    return <h2>Loading Dashboard...</h2>;
+    return (
+      <DashboardContainer>
+        <DashboardHeader>
+          <HeaderLeft>
+            <h2>Dashboard</h2>
+            <p>Contractor Worker Management System</p>
+          </HeaderLeft>
+          <HeaderRight>
+            <FiCalendar />
+            <span>{today}</span>
+            <ExportButton disabled style={{ opacity: 0.5 }}>
+              <FiDownload /> Export Report
+            </ExportButton>
+          </HeaderRight>
+        </DashboardHeader>
+        <StatsGrid>
+          {[1, 2, 3, 4, 5].map(i => <SkeletonBlock key={i} height="8rem" />)}
+        </StatsGrid>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(24rem, 1fr))', gap: '1.5rem', marginTop: '1.5rem' }}>
+          <SkeletonBlock height="22rem" radius="1rem" />
+          <SkeletonBlock height="22rem" radius="1rem" />
+          <SkeletonBlock height="22rem" radius="1rem" />
+        </div>
+      </DashboardContainer>
+    );
+  }
+
+  if (error || !dashboard) {
+    return (
+      <DashboardContainer>
+        <ErrorContainer>
+          <FiAlertCircle size={48} color="#dc2626" />
+          <ErrorTitle>Failed to load Dashboard</ErrorTitle>
+          <p style={{ color: '#64748b', margin: 0 }}>Please check your configuration or try again.</p>
+          <RetryButton onClick={loadDashboard}>
+            <FiRefreshCw /> Retry Connection
+          </RetryButton>
+        </ErrorContainer>
+      </DashboardContainer>
+    );
   }
 
   const stats = [
@@ -156,7 +207,7 @@ const Dashboard = () => {
         ))}
       </StatsGrid>
 
-      <DashboardCharts />
+      <DashboardCharts chartsData={chartsData} />
 
       <DashboardGrid>
 
@@ -257,7 +308,7 @@ const Dashboard = () => {
           </List>
 
         </Section>
-                <Section>
+        <Section>
           <SectionTitle>
             Recent Workers
           </SectionTitle>

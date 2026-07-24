@@ -1,4 +1,55 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+
+export const shimmer = keyframes`
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+`;
+
+export const SkeletonBlock = styled.div`
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: ${shimmer} 2s infinite linear;
+  border-radius: ${(props) => props.radius || '1rem'};
+  height: ${(props) => props.height || '10rem'};
+  width: ${(props) => props.width || '100%'};
+`;
+
+export const ErrorContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  background: #fff;
+  border-radius: 1rem;
+  border: 1px solid #fee2e2;
+  gap: 1.5rem;
+  margin-top: 2rem;
+`;
+
+export const ErrorTitle = styled.h3`
+  color: #dc2626;
+  margin: 0;
+  font-size: 1.5rem;
+`;
+
+export const RetryButton = styled.button`
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: 0.2s;
+  
+  &:hover {
+    background: #1d4ed8;
+  }
+`;
 
 export const DashboardContainer = styled.div`
   display: flex;
@@ -193,10 +244,10 @@ export const ListItem = styled.div`
 
   &:hover {
     background: ${({ onClick }) =>
-      onClick ? "#eff6ff" : "#ffffff"};
+    onClick ? "#eff6ff" : "#ffffff"};
 
     border-color: ${({ onClick }) =>
-      onClick ? "#bfdbfe" : "#f1f5f9"};
+    onClick ? "#bfdbfe" : "#f1f5f9"};
   }
 
   strong {
@@ -222,17 +273,17 @@ export const Badge = styled.span`
     success
       ? "#dcfce7"
       : danger
-      ? "#fee2e2"
-      : warning
-      ? "#fef3c7"
-      : "#dbeafe"};
+        ? "#fee2e2"
+        : warning
+          ? "#fef3c7"
+          : "#dbeafe"};
 
   color: ${({ success, danger, warning }) =>
     success
       ? "#15803d"
       : danger
-      ? "#dc2626"
-      : warning
-      ? "#b45309"
-      : "#2563eb"};
+        ? "#dc2626"
+        : warning
+          ? "#b45309"
+          : "#2563eb"};
 `;

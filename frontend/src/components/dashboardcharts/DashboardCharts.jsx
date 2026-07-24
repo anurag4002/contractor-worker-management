@@ -13,8 +13,6 @@ import {
   CartesianGrid,
 } from "recharts";
 
-import dashboardService from "../../services/dashboard.service";
-
 import {
   ChartsGrid,
   ChartCard,
@@ -30,50 +28,35 @@ const COLORS = [
   "#0EA5E9",
 ];
 
-const DashboardCharts = () => {
+const DashboardCharts = ({ chartsData }) => {
   const [attendance, setAttendance] = useState([]);
   const [payroll, setPayroll] = useState([]);
   const [sites, setSites] = useState([]);
 
   useEffect(() => {
-    loadCharts();
-  }, []);
-
-  const loadCharts = async () => {
-    try {
-      const response =
-        await dashboardService.getCharts();
-
+    if (chartsData) {
       setAttendance(
-        response.data.attendanceChart.map(
-          (item) => ({
-            status: item._id.replace("_", " "),
-            value: item.value,
-          })
-        )
+        (chartsData.attendanceChart || []).map((item) => ({
+          status: item._id.replace("_", " "),
+          value: item.value,
+        }))
       );
 
       setPayroll(
-        response.data.payrollStatusChart.map(
-          (item) => ({
-            name: item._id,
-            value: item.value,
-          })
-        )
+        (chartsData.payrollStatusChart || []).map((item) => ({
+          name: item._id,
+          value: item.value,
+        }))
       );
 
       setSites(
-        response.data.siteWorkerChart.map(
-          (item) => ({
-            site: item.siteName,
-            workers: item.totalWorkers,
-          })
-        )
+        (chartsData.siteWorkerChart || []).map((item) => ({
+          site: item.siteName,
+          workers: item.totalWorkers,
+        }))
       );
-    } catch (error) {
-      console.error(error);
     }
-  };
+  }, [chartsData]);
 
   return (
     <ChartsGrid>
@@ -128,8 +111,8 @@ const DashboardCharts = () => {
                     key={index}
                     fill={
                       COLORS[
-                        index %
-                          COLORS.length
+                      index %
+                      COLORS.length
                       ]
                     }
                   />

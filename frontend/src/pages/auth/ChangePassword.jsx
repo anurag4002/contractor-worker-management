@@ -6,6 +6,9 @@ import {
   FiSave,
 } from "react-icons/fi";
 
+import { useAuth } from "../../context/AuthContext";
+import { showSuccess, showError } from "../../components/common/toast";
+
 import {
   Page,
   Card,
@@ -49,6 +52,9 @@ const ChangePassword = () => {
     }));
   };
 
+  const { changePassword } = useAuth();
+  const [loading, setLoading] = useState(false);
+
   const validate = () => {
     const newErrors = {};
 
@@ -81,16 +87,24 @@ const ChangePassword = () => {
       .length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validate()) {
       return;
     }
 
-    console.log(form);
+    try {
+      setLoading(true);
+      await changePassword(form.currentPassword, form.newPassword);
+      showSuccess("Password changed successfully.");
+      setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    } catch (err) {
+      showError(err.response?.data?.message || "Failed to change password.");
+    } finally {
+      setLoading(false);
+    }
 
-    // Backend Integration
   };
 
   return (
@@ -251,10 +265,11 @@ const ChangePassword = () => {
 
           <SaveButton
             type="submit"
+            disabled={loading}
           >
             <FiSave />
 
-            Update Password
+            {loading ? "Updating..." : "Update Password"}
 
           </SaveButton>
 

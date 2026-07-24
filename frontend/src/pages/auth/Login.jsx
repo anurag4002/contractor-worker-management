@@ -13,6 +13,7 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import useForm from "../../hooks/useForm";
 import { validateLogin } from "../../validators/auth.validator";
+import { showSuccess, showError } from "../../components/common/toast";
 
 import {
   Page,
@@ -72,24 +73,22 @@ const Login = () => {
         password: values.password,
       });
 
-      if (!response.success) {
-        alert(
-          response.message ||
-            "Login failed."
-        );
+      if (!response || response.error) {
+        showError("Login failed.");
         return;
       }
 
+      showSuccess("Logged in successfully!");
       navigate("/dashboard", {
         replace: true,
       });
     } catch (error) {
       console.error(error);
 
-      alert(
+      showError(
         error.response?.data?.message ||
-          error.response?.data?.error ||
-          "Invalid email or password."
+        error.response?.data?.error ||
+        "Invalid email or password."
       );
     } finally {
       setLoading(false);

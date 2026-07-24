@@ -14,10 +14,12 @@ import {
   Status,
   ActionButtons,
   IconButton,
+  SkeletonRow,
 } from "./WorkerTable.style";
 
 const WorkerTable = ({
   workers = [],
+  loading = false,
   onView,
   onEdit,
   onDelete,
@@ -67,7 +69,15 @@ const WorkerTable = ({
 
           {
 
-            workers.length === 0 ? (
+            loading ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <tr key={`skeleton-${index}`}>
+                  <td colSpan={13} style={{ padding: "1rem" }}>
+                    <SkeletonRow />
+                  </td>
+                </tr>
+              ))
+            ) : workers.length === 0 ? (
 
               <tr>
 
@@ -200,15 +210,15 @@ const WorkerTable = ({
 
                         ? `₹${Number(
 
-                            worker.dailyWage || 0
+                          worker.dailyWage || 0
 
-                          ).toLocaleString("en-IN")}/Day`
+                        ).toLocaleString("en-IN")}/Day`
 
                         : `₹${Number(
 
-                            worker.monthlySalary || 0
+                          worker.monthlySalary || 0
 
-                          ).toLocaleString("en-IN")}/Month`
+                        ).toLocaleString("en-IN")}/Month`
 
                     }
 

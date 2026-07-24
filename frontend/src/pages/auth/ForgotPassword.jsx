@@ -21,7 +21,12 @@ import {
   SuccessMessage,
 } from "./ForgotPassword.style";
 
+import { useAuth } from "../../context/AuthContext";
+import { showSuccess, showError } from "../../components/common/toast";
+
 const ForgotPassword = () => {
+  const { forgotPassword } = useAuth();
+  const [loading, setLoading] = useState(false);
 
   const [email, setEmail] =
     useState("");
@@ -29,15 +34,23 @@ const ForgotPassword = () => {
   const [success, setSuccess] =
     useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
 
     e.preventDefault();
 
     if (!email) return;
 
-    // Backend API
-
-    setSuccess(true);
+    try {
+      setLoading(true);
+      await forgotPassword(email);
+      setSuccess(true);
+      showSuccess("Reset password link sent to your email.");
+    } catch (error) {
+      showError(error.response?.data?.message || "Failed to send reset link.");
+      setSuccess(false);
+    } finally {
+      setLoading(false);
+    }
 
   };
 
@@ -93,7 +106,7 @@ const ForgotPassword = () => {
 
               value={email}
 
-              onChange={(e)=>
+              onChange={(e) =>
 
                 setEmail(e.target.value)
 
@@ -105,9 +118,9 @@ const ForgotPassword = () => {
 
           </InputGroup>
 
-          <Button>
+          <Button disabled={loading}>
 
-            Send Reset Link
+            {loading ? "Sending..." : "Send Reset Link"}
 
           </Button>
 
