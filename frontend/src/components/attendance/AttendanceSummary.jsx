@@ -13,9 +13,8 @@ import {
   SummaryGrid,
 } from "./AttendanceSummary.style";
 
-const AttendanceSummary = ({
-  workers,
-}) => {
+const AttendanceSummary = ({ summary }) => {
+  const s = summary || {};
 
   return (
 
@@ -23,28 +22,28 @@ const AttendanceSummary = ({
 
       <AttendanceCard
         title="Total Workers"
-        value={workers.totalWorkers || 0}
+        value={s.totalWorkers || 0}
         icon={<FiUsers />}
         color="#2563EB"
       />
 
       <AttendanceCard
         title="Present Today"
-        value={workers.present || 0}
+        value={s.present || s.totalPresent || 0}
         icon={<FiCheckCircle />}
         color="#16A34A"
       />
 
       <AttendanceCard
         title="Absent Today"
-        value={workers.absent || 0}
+        value={s.absent || s.totalAbsent || 0}
         icon={<FiXCircle />}
         color="#DC2626"
       />
 
       <AttendanceCard
         title="On Leave"
-        value={workers.leave || 0}
+        value={s.leave || s.onLeave || s.totalLeave || 0}
         icon={<FiCoffee />}
         color="#F59E0B"
       />

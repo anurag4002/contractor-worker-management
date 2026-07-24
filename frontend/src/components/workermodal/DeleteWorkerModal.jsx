@@ -40,15 +40,17 @@ const DeleteWorkerModal = ({
     }
   };
 
+  const titleId = "delete-worker-modal-title";
+
   return (
 
-    <Overlay>
+    <Overlay role="dialog" aria-modal="true" aria-labelledby={titleId}>
 
       <Modal>
 
         <Header>
 
-          <Title>
+          <Title id={titleId}>
 
             Delete Worker
 
@@ -56,6 +58,7 @@ const DeleteWorkerModal = ({
 
           <CloseButton
             onClick={onClose}
+            aria-label="Close dialog"
           >
 
             ×

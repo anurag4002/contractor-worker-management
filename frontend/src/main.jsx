@@ -6,6 +6,11 @@ import App from "./App";
 
 import { AuthProvider } from "./context/AuthContext";
 import { WorkerProvider } from "./context/WorkerContext";
+import { SiteProvider } from "./context/SiteContext";
+import { AttendanceProvider } from "./context/AttendanceContext";
+import { PayrollProvider } from "./context/PayrollContext";
+import ReportProvider from "./context/ReportContext";
+import NotificationProvider from "./context/NotificationContext";
 
 import "./index.css";
 
@@ -16,7 +21,17 @@ ReactDOM.createRoot(
     <BrowserRouter>
       <AuthProvider>
         <WorkerProvider>
-          <App />
+          <SiteProvider>
+            <AttendanceProvider>
+              <PayrollProvider>
+                <ReportProvider>
+                  <NotificationProvider>
+                    <App />
+                  </NotificationProvider>
+                </ReportProvider>
+              </PayrollProvider>
+            </AttendanceProvider>
+          </SiteProvider>
         </WorkerProvider>
       </AuthProvider>
     </BrowserRouter>

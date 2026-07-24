@@ -28,22 +28,27 @@ const errorHandler = (err, req, res, next) => {
   if (err.code === 11000) {
     const field = Object.keys(err.keyValue)[0];
 
+    const duplicateErrors = {};
+    duplicateErrors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`;
+
     error = new ApiError(
       StatusCodes.CONFLICT,
-      `${field} already exists`
+      `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`,
+      duplicateErrors
     );
   }
 
   // Validation Error
   if (err.name === 'ValidationError') {
-    const errors = Object.values(err.errors).map(
-      (value) => value.message
-    );
+    const validationErrors = {};
+    for (const [key, value] of Object.entries(err.errors)) {
+      validationErrors[key] = value.message;
+    }
 
     error = new ApiError(
       StatusCodes.BAD_REQUEST,
       'Validation Failed',
-      errors
+      validationErrors
     );
   }
 

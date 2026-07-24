@@ -17,8 +17,10 @@ import {
   Select,
   Footer,
   CancelButton,
-  SaveButton,
 } from "./WorkerModal.style";
+import useFormErrors from "../../hooks/useFormErrors";
+import FormError from "../ui/FormError";
+import LoadingButton from "../ui/LoadingButton";
 
 const defaultWorker = {
   id: "",
@@ -42,9 +44,9 @@ const EditWorkerModal = ({
   onUpdateWorker,
 }) => {
 
-  const [form, setForm] =
-    useState(defaultWorker);
+  const [form, setForm] = useState(defaultWorker);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { errors: apiErrors, clearFieldError, handleError } = useFormErrors();
 
   useEffect(() => {
 
@@ -67,15 +69,8 @@ const EditWorkerModal = ({
   const handleChange = (e) => {
 
     const { name, value } = e.target;
-
-    setForm((prev) => ({
-
-      ...prev,
-
-      [name]: value,
-
-    }));
-
+    setForm((prev) => ({ ...prev, [name]: value }));
+    clearFieldError(name);
   };
 
   const handleSubmit = async (e) => {
@@ -88,12 +83,12 @@ const EditWorkerModal = ({
       form.skill.trim() === "" ||
       form.workType.trim() === ""
     ) {
-      alert("Please fill all required fields.");
+      handleError({ response: { data: { message: "Please fill all required fields." } } });
       return;
     }
 
     if (!/^[6-9]\d{9}$/.test(form.mobile)) {
-      alert("Please enter a valid mobile number.");
+      handleError({ response: { data: { message: "Enter a valid mobile number.", errors: { mobile: "Invalid mobile number" } } } });
       return;
     }
 
@@ -109,7 +104,7 @@ const EditWorkerModal = ({
       });
       onClose();
     } catch (err) {
-      // Handled by context
+      handleError(err);
     } finally {
       setIsSubmitting(false);
     }
@@ -176,16 +171,12 @@ const EditWorkerModal = ({
               </Label>
 
               <Input
-
                 name="name"
-
                 value={form.name}
-
                 onChange={handleChange}
-
                 required
-
               />
+              <FormError error={apiErrors.name || apiErrors.fullName} />
 
             </FormGroup>
 
@@ -198,20 +189,14 @@ const EditWorkerModal = ({
               </Label>
 
               <Input
-
                 type="tel"
-
                 maxLength={10}
-
                 name="mobile"
-
                 value={form.mobile}
-
                 onChange={handleChange}
-
                 required
-
               />
+              <FormError error={apiErrors.mobile || apiErrors.mobileNumber} />
 
             </FormGroup>
 
@@ -224,16 +209,12 @@ const EditWorkerModal = ({
               </Label>
 
               <Input
-
                 name="photo"
-
                 value={form.photo}
-
                 onChange={handleChange}
-
                 placeholder="https://image-url"
-
               />
+              <FormError error={apiErrors.photo} />
 
             </FormGroup>
 
@@ -246,16 +227,12 @@ const EditWorkerModal = ({
               </Label>
 
               <Input
-
                 name="skill"
-
                 value={form.skill}
-
                 onChange={handleChange}
-
                 required
-
               />
+              <FormError error={apiErrors.skill || apiErrors.trade} />
 
             </FormGroup>
 
@@ -268,16 +245,12 @@ const EditWorkerModal = ({
               </Label>
 
               <Input
-
                 name="workType"
-
                 value={form.workType}
-
                 onChange={handleChange}
-
                 required
-
               />
+              <FormError error={apiErrors.workType} />
 
             </FormGroup>
 
@@ -330,16 +303,12 @@ const EditWorkerModal = ({
                     </Label>
 
                     <Input
-
                       type="number"
-
                       name="dailyWage"
-
                       value={form.dailyWage}
-
                       onChange={handleChange}
-
                     />
+                    <FormError error={apiErrors.dailyWage} />
 
                   </FormGroup>
 
@@ -356,16 +325,12 @@ const EditWorkerModal = ({
                     </Label>
 
                     <Input
-
                       type="number"
-
                       name="monthlySalary"
-
                       value={form.monthlySalary}
-
                       onChange={handleChange}
-
                     />
+                    <FormError error={apiErrors.monthlySalary} />
 
                   </FormGroup>
 
@@ -382,16 +347,12 @@ const EditWorkerModal = ({
               </Label>
 
               <Input
-
                 type="date"
-
                 name="joiningDate"
-
                 value={form.joiningDate}
-
                 onChange={handleChange}
-
               />
+              <FormError error={apiErrors.joiningDate} />
 
             </FormGroup>
 
@@ -524,16 +485,18 @@ const EditWorkerModal = ({
 
             </CancelButton>
 
-            <SaveButton
-
+            <LoadingButton
               type="submit"
-              disabled={isSubmitting}
-
+              loading={isSubmitting}
+              loadingText="Updating..."
+              style={{
+                background: "#2563EB", color: "white", padding: "0.55rem 1.25rem",
+                borderRadius: "0.6rem", fontSize: "0.95rem", fontWeight: 600,
+                border: "none", cursor: "pointer", transition: "all 0.2s"
+              }}
             >
-
-              {isSubmitting ? "Updating..." : "Update Worker"}
-
-            </SaveButton>
+              Update Worker
+            </LoadingButton>
 
           </Footer>
 

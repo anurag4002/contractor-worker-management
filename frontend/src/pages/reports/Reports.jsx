@@ -1,360 +1,88 @@
-import React, {
-  useMemo,
-  useState,
-} from "react";
+import React, { useEffect, useState } from "react";
+import useSites from "../../hooks/useSites";
 
-import {
-  FiDownload,
-  FiFileText,
-} from "react-icons/fi";
-
-import useWorkers from "../../hooks/useWorkers";
-
-import {
-  exportToExcel,
-  exportToPDF,
-} from "../../utils/export.utils";
-
-import ReportSummary from "../../components/reports/ReportSummary";
-import ReportFilter from "../../components/reports/ReportFilter";
-import ReportTable from "../../components/reports/ReportTable";
-import ReportPreviewModal from "../../components/reports/ReportPreviewModal";
+import WorkerReport from "../../components/reports/WorkerReport";
+import AttendanceReport from "../../components/reports/AttendanceReport";
+import PayrollReport from "../../components/reports/PayrollReport";
+import SiteReport from "../../components/reports/SiteReport";
+import DashboardReport from "../../components/reports/DashboardReport";
+import ExportPanel from "../../components/reports/ExportPanel";
 
 import {
   ReportsContainer,
   Header,
   TitleSection,
   ActionSection,
-  Button,
+  Section,
+  Card,
 } from "./Reports.style";
 
+const TABS = [
+  { id: "dashboard", label: "📊 Dashboard" },
+  { id: "workers", label: "👷 Workers" },
+  { id: "attendance", label: "📅 Attendance" },
+  { id: "payroll", label: "💰 Payroll" },
+  { id: "sites", label: "🏗 Sites" },
+  { id: "export", label: "📥 Export" },
+];
+
+const tabStyle = (active) => ({
+  padding: "0.65rem 1.35rem",
+  border: "none",
+  borderRadius: "0.65rem",
+  background: active ? "#2563eb" : "#f1f5f9",
+  color: active ? "#fff" : "#475569",
+  fontWeight: active ? 700 : 500,
+  fontSize: "0.9rem",
+  cursor: "pointer",
+  transition: "0.2s",
+});
+
 const Reports = () => {
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const { sites, fetchSites } = useSites();
 
-  const {
+  useEffect(() => {
+    if (!sites || sites.length === 0) fetchSites({ limit: 100 });
+  }, []);
 
-    workerReport,
-
-    sites,
-
-    loading,
-
-  } = useWorkers();
-
-  const reportData =
-    Array.isArray(workerReport)
-      ? workerReport
-      : [];
-
-  const sitesData =
-    Array.isArray(sites)
-      ? sites
-      : [];
-
-  const isLoading = loading ?? false;
-
-  const [search, setSearch] =
-    useState("");
-
-  const [site, setSite] =
-    useState("All");
-
-  const [status, setStatus] =
-    useState("All");
-
-  const [month, setMonth] =
-    useState("All");
-
-  const [selectedReport, setSelectedReport] =
-    useState(null);
-
-  const [previewOpen, setPreviewOpen] =
-    useState(false);
-
-  const sitesList = [
-
-    "All",
-
-    ...new Set(
-
-      sitesData.map(
-
-        (item) => item.name
-
-      )
-
-    ),
-
-  ];
-
-  const months = [
-
-    "All",
-
-    "January",
-
-    "February",
-
-    "March",
-
-    "April",
-
-    "May",
-
-    "June",
-
-    "July",
-
-    "August",
-
-    "September",
-
-    "October",
-
-    "November",
-
-    "December",
-
-  ];
-
-  const filteredReports = useMemo(() => {
-
-    return reportData.filter((report) => {
-
-      const keyword =
-        search.toLowerCase();
-
-      const searchMatch =
-
-        String(report.name || "")
-          .toLowerCase()
-          .includes(keyword)
-
-        ||
-
-        String(report.id || "")
-          .toLowerCase()
-          .includes(keyword);
-
-      const siteMatch =
-
-        site === "All"
-
-          ? true
-
-          : report.site === site;
-
-      const statusMatch =
-
-        status === "All"
-
-          ? true
-
-          : (
-
-              report.balance <= 0
-
-                ? "Paid"
-
-                : report.balance <
-                  report.grossSalary
-
-                ? "Partial"
-
-                : "Pending"
-
-            ) === status;
-
-      return (
-
-        searchMatch &&
-
-        siteMatch &&
-
-        statusMatch
-
-      );
-
-    });
-
-  }, [
-
-    reportData,
-
-    search,
-
-    site,
-
-    status,
-
-  ]);
-
-  const handleExcelExport = () => {
-
-    exportToExcel(
-
-      filteredReports,
-
-      "Worker_Report"
-
-    );
-
-  };
-
-  const handlePDFExport = () => {
-
-    exportToPDF(
-
-      "Worker Report",
-
-      [
-
-        "ID",
-
-        "Name",
-
-        "Site",
-
-        "Attendance",
-
-        "Gross",
-
-        "Net",
-
-        "Balance",
-
-      ],
-
-      filteredReports.map(
-
-        (item) => [
-
-          item.id,
-
-          item.name,
-
-          item.site,
-
-          `${item.attendance}%`,
-
-          item.grossSalary,
-
-          item.netSalary,
-
-          item.balance,
-
-        ]
-
-      ),
-
-      "Worker_Report"
-
-    );
-
-  };
+  const sitesData = Array.isArray(sites) ? sites : [];
 
   return (
-
     <ReportsContainer>
-
       <Header>
-
         <TitleSection>
-
-          <h2>
-
-            Reports
-
-          </h2>
-
-          <p>
-
-            Worker Attendance, Salary & Site Reports
-
-          </p>
-
+          <h2>Reports</h2>
+          <p>Worker, Attendance, Payroll & Site Reports from the backend</p>
         </TitleSection>
-
         <ActionSection>
-
-          <Button
-
-            onClick={handleExcelExport}
-
-          >
-
-            <FiDownload />
-
-            Export Excel
-
-          </Button>
-
-          <Button
-
-            onClick={handlePDFExport}
-
-          >
-
-            <FiFileText />
-
-            Export PDF
-
-          </Button>
-
+          {/* Tab bar */}
+          <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+            {TABS.map((t) => (
+              <button
+                key={t.id}
+                style={tabStyle(activeTab === t.id)}
+                onClick={() => setActiveTab(t.id)}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
         </ActionSection>
-
       </Header>
 
-      {isLoading ? (
-        <div
-          style={{
-            padding: "2rem",
-            textAlign: "center",
-            color: "#64748b",
-          }}
-        >
-          Loading reports...
-        </div>
-      ) : (
-        <>
-          <ReportSummary
-            reports={filteredReports}
-          />
-
-          <ReportFilter
-            search={search}
-            setSearch={setSearch}
-            site={site}
-            setSite={setSite}
-            month={month}
-            setMonth={setMonth}
-            status={status}
-            setStatus={setStatus}
-            sites={sitesList}
-            months={months}
-          />
-
-          <ReportTable
-            reports={filteredReports}
-            onView={(report) => {
-              setSelectedReport(report);
-              setPreviewOpen(true);
-            }}
-          />
-
-          <ReportPreviewModal
-            open={previewOpen}
-            report={selectedReport}
-            onClose={() =>
-              setPreviewOpen(false)
-            }
-          />
-        </>
-      )}
-
+      <Section>
+        <Card>
+          {activeTab === "dashboard" && <DashboardReport />}
+          {activeTab === "workers" && <WorkerReport sites={sitesData} />}
+          {activeTab === "attendance" && <AttendanceReport sites={sitesData} />}
+          {activeTab === "payroll" && <PayrollReport sites={sitesData} />}
+          {activeTab === "sites" && <SiteReport />}
+          {activeTab === "export" && <ExportPanel />}
+        </Card>
+      </Section>
     </ReportsContainer>
-
   );
-
 };
 
 export default Reports;

@@ -1,192 +1,66 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import useAttendance from "../../hooks/useAttendance";
+import { Overlay, Modal, Header, Title, CloseButton, Table, EmptyState } from "./AttendanceHistoryModal.style";
 
-import {
-  Overlay,
-  Modal,
-  Header,
-  Title,
-  CloseButton,
-  Table,
-  EmptyState,
-} from "./AttendanceHistoryModal.style";
+const AttendanceHistoryModal = ({ open, workerId, onClose }) => {
+  const { workerHistory, fetchWorkerHistory, loading } = useAttendance();
 
-const AttendanceHistoryModal = ({
-  open,
-  worker,
-  onClose,
-}) => {
+  useEffect(() => {
+    if (open && workerId) {
+      fetchWorkerHistory(workerId);
+    }
+  }, [open, workerId]);
 
-  if (!open || !worker) return null;
+  if (!open) return null;
 
-  const history = worker.history || [];
+  const history = Array.isArray(workerHistory) ? workerHistory : [];
+
+  const statusLabel = (s) => {
+    const map = { PRESENT: "Present", ABSENT: "Absent", HALF_DAY: "Half Day", LEAVE: "Leave", HOLIDAY: "Holiday" };
+    return map[s] || s;
+  };
 
   return (
-
     <Overlay>
-
       <Modal>
-
         <Header>
-
-          <Title>
-
-            Attendance History
-
-          </Title>
-
-          <CloseButton
-            onClick={onClose}
-          >
-
-            ×
-
-          </CloseButton>
-
+          <Title>Attendance History</Title>
+          <CloseButton onClick={onClose}>×</CloseButton>
         </Header>
 
-        <div
-          style={{
-            marginBottom: "1.5rem",
-          }}
-        >
-
-          <h3
-            style={{
-              marginBottom: ".25rem",
-            }}
-          >
-
-            {worker.name}
-
-          </h3>
-
-          <p
-            style={{
-              color: "#64748b",
-              margin: 0,
-            }}
-          >
-
-            Worker ID : {worker.id}
-
-          </p>
-
-          <p
-            style={{
-              color: "#64748b",
-              margin: ".25rem 0 0",
-            }}
-          >
-
-            Site : {worker.site || "-"}
-
-          </p>
-
-        </div>
-
-        {
-
-          history.length > 0
-
-          ? (
-
-            <Table>
-
-              <thead>
-
-                <tr>
-
-                  <th>Date</th>
-
-                  <th>Status</th>
-
-                  <th>Working Hours</th>
-
-                  <th>Overtime</th>
-
-                  <th>Remark</th>
-
+        {loading ? (
+          <EmptyState>Loading history...</EmptyState>
+        ) : history.length > 0 ? (
+          <Table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Regular Hours</th>
+                <th>Overtime</th>
+                <th>Site</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody>
+              {history.map((item, index) => (
+                <tr key={item._id || index}>
+                  <td>{item.attendanceDate ? new Date(item.attendanceDate).toLocaleDateString("en-IN") : "-"}</td>
+                  <td>{statusLabel(item.status)}</td>
+                  <td>{item.regularHours ?? 0} hrs</td>
+                  <td>{item.overtimeHours ?? 0} hrs</td>
+                  <td>{item.site?.siteName || "-"}</td>
+                  <td>{item.remarks || "-"}</td>
                 </tr>
-
-              </thead>
-
-              <tbody>
-
-                {
-
-                  history.map((item, index) => (
-
-                    <tr key={index}>
-
-                      <td>
-
-                        {
-
-                          item.date
-
-                            ? new Date(item.date)
-                                .toLocaleDateString("en-IN")
-
-                            : "-"
-
-                        }
-
-                      </td>
-
-                      <td>
-
-                        {item.status}
-
-                      </td>
-
-                      <td>
-
-                        {item.workingHours ?? 8} hrs
-
-                      </td>
-
-                      <td>
-
-                        {item.overtime ?? 0} hrs
-
-                      </td>
-
-                      <td>
-
-                        {item.remark || "-"}
-
-                      </td>
-
-                    </tr>
-
-                  ))
-
-                }
-
-              </tbody>
-
-            </Table>
-
-          )
-
-          : (
-
-            <EmptyState>
-
-              No attendance history available for this worker.
-
-            </EmptyState>
-
-          )
-
-        }
-
+              ))}
+            </tbody>
+          </Table>
+        ) : (
+          <EmptyState>No attendance history available for this worker.</EmptyState>
+        )}
       </Modal>
-
     </Overlay>
-
   );
-
 };
 
 export default AttendanceHistoryModal;

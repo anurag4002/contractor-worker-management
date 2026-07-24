@@ -1,248 +1,116 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import {
-  FiMenu,
-  FiSearch,
-  FiBell,
-  FiSettings,
-  FiChevronDown,
+  FiMenu, FiSearch, FiBell, FiSettings, FiChevronDown,
 } from "react-icons/fi";
 
 import NotificationDropdown from "./NotificationDropdown";
 import ProfileDropdown from "./ProfileDropdown";
+import useNotification from "../../hooks/useNotification";
+import { useAuth } from "../../context/AuthContext";
 
 import {
-  HeaderContainer,
-  LeftSection,
-  MenuButton,
-  SearchBar,
-  RightSection,
-  IconButton,
-  NotificationBadge,
-  UserProfile,
-  Avatar,
-  UserInfo,
+  HeaderContainer, LeftSection, MenuButton, SearchBar,
+  RightSection, IconButton, NotificationBadge, UserProfile,
+  Avatar, UserInfo,
 } from "./Header.style";
 
 const Header = ({ toggleSidebar }) => {
-
   const navigate = useNavigate();
-
   const notificationRef = useRef(null);
-
   const profileRef = useRef(null);
 
   const [search, setSearch] = useState("");
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
-  const [showNotifications, setShowNotifications] =
-    useState(false);
+  /* ── Live unread counter ── */
+  const { unreadCount, startPolling, stopPolling } = useNotification();
+  const { user } = useAuth();
 
-  const [showProfile, setShowProfile] =
-    useState(false);
-
-  const notifications = [
-    "Rahul marked Present",
-    "Salary generated successfully",
-    "New worker added",
-  ];
+  useEffect(() => {
+    startPolling();
+    return () => stopPolling();
+  }, []);
 
   const toggleNotification = () => {
-
     setShowNotifications((prev) => !prev);
-
     setShowProfile(false);
-
   };
 
   const toggleProfile = () => {
-
     setShowProfile((prev) => !prev);
-
     setShowNotifications(false);
-
   };
 
+  /* ── Click outside ── */
   useEffect(() => {
-
     const handleClickOutside = (event) => {
-
-      if (
-        notificationRef.current &&
-        !notificationRef.current.contains(event.target)
-      ) {
-
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
         setShowNotifications(false);
-
       }
-
-      if (
-        profileRef.current &&
-        !profileRef.current.contains(event.target)
-      ) {
-
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
         setShowProfile(false);
-
       }
-
     };
-
-    document.addEventListener(
-      "mousedown",
-      handleClickOutside
-    );
-
-    return () => {
-
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
-
-    };
-
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSearch = (e) => {
-
-    setSearch(e.target.value);
-
-  };
-
   return (
-
     <HeaderContainer>
-
       <LeftSection>
-
-        <MenuButton
-          onClick={toggleSidebar}
-        >
-
+        <MenuButton onClick={toggleSidebar}>
           <FiMenu />
-
         </MenuButton>
-
         <SearchBar>
-
           <FiSearch />
-
           <input
             type="text"
             placeholder="Search workers, sites..."
             value={search}
-            onChange={handleSearch}
+            onChange={(e) => setSearch(e.target.value)}
           />
-
         </SearchBar>
-
       </LeftSection>
 
       <RightSection>
-
-        <div
-          ref={notificationRef}
-          style={{
-            position: "relative",
-          }}
-        >
-
-          <IconButton
-            onClick={toggleNotification}
-          >
-
+        {/* Notification Bell */}
+        <div ref={notificationRef} style={{ position: "relative" }}>
+          <IconButton onClick={toggleNotification} aria-label="Notifications">
             <FiBell />
-
-            <NotificationBadge>
-
-              {notifications.length}
-
-            </NotificationBadge>
-
+            {unreadCount > 0 && (
+              <NotificationBadge>
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </NotificationBadge>
+            )}
           </IconButton>
-
-          {
-
-            showNotifications && (
-
-              <NotificationDropdown />
-
-            )
-
-          }
-
+          {showNotifications && (
+            <NotificationDropdown onClose={() => setShowNotifications(false)} />
+          )}
         </div>
 
-        <IconButton
-          onClick={() =>
-            navigate("/settings")
-          }
-        >
-
+        <IconButton onClick={() => navigate("/settings")}>
           <FiSettings />
-
         </IconButton>
 
-        <div
-          ref={profileRef}
-          style={{
-            position: "relative",
-          }}
-        >
-
-          <UserProfile
-            onClick={toggleProfile}
-          >
-
+        {/* Profile */}
+        <div ref={profileRef} style={{ position: "relative" }}>
+          <UserProfile onClick={toggleProfile}>
             <Avatar>
-
-              A
-
+              {user?.fullName ? user.fullName.charAt(0).toUpperCase() : "U"}
             </Avatar>
-
             <UserInfo>
-
-              <h4>
-
-                Admin
-
-              </h4>
-
-              <p>
-
-                Administrator
-
-              </p>
-
+              <h4>{user?.fullName || user?.email || "User"}</h4>
+              <p>{typeof user?.role === "object" ? user.role.name : (user?.role || "—")}</p>
             </UserInfo>
-
             <FiChevronDown />
-
           </UserProfile>
-
-          {
-
-            showProfile && (
-
-              <ProfileDropdown />
-
-            )
-
-          }
-
+          {showProfile && <ProfileDropdown />}
         </div>
-
       </RightSection>
-
     </HeaderContainer>
-
   );
-
 };
 
 export default Header;

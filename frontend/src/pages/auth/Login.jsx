@@ -28,21 +28,20 @@ import {
   PasswordButton,
   Options,
   Checkbox,
-  LoginButton,
   FooterText,
-  ErrorText,
 } from "./Login.style";
+
+import useFormErrors from "../../hooks/useFormErrors";
+import FormError from "../../components/ui/FormError";
+import LoadingButton from "../../components/ui/LoadingButton";
 
 const Login = () => {
   const navigate = useNavigate();
 
   const { login } = useAuth();
 
-  const [showPassword, setShowPassword] =
-    useState(false);
-
-  const [loading, setLoading] =
-    useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     values,
@@ -58,6 +57,13 @@ const Login = () => {
     validateLogin
   );
 
+  const { errors: apiErrors, clearFieldError, handleError } = useFormErrors();
+
+  const handleInputChange = (e) => {
+    handleChange(e);
+    clearFieldError(e.target.name);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -66,7 +72,7 @@ const Login = () => {
     }
 
     try {
-      setLoading(true);
+      setIsSubmitting(true);
 
       const response = await login({
         email: values.email,
@@ -83,15 +89,9 @@ const Login = () => {
         replace: true,
       });
     } catch (error) {
-      console.error(error);
-
-      showError(
-        error.response?.data?.message ||
-        error.response?.data?.error ||
-        "Invalid email or password."
-      );
+      handleError(error);
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -121,16 +121,12 @@ const Login = () => {
               name="email"
               placeholder="Email Address"
               value={values.email}
-              onChange={handleChange}
-              disabled={loading}
+              onChange={handleInputChange}
+              disabled={isSubmitting}
             />
           </InputGroup>
 
-          {errors.email && (
-            <ErrorText>
-              {errors.email}
-            </ErrorText>
-          )}
+          <FormError error={errors.email || apiErrors.email} />
 
           <InputGroup>
             <Icon>
@@ -146,32 +142,20 @@ const Login = () => {
               name="password"
               placeholder="Password"
               value={values.password}
-              onChange={handleChange}
-              disabled={loading}
+              onChange={handleInputChange}
+              disabled={isSubmitting}
             />
 
             <PasswordButton
               type="button"
-              onClick={() =>
-                setShowPassword(
-                  !showPassword
-                )
-              }
-              disabled={loading}
+              onClick={() => setShowPassword(!showPassword)}
+              disabled={isSubmitting}
             >
-              {showPassword ? (
-                <FiEyeOff />
-              ) : (
-                <FiEye />
-              )}
+              {showPassword ? <FiEyeOff /> : <FiEye />}
             </PasswordButton>
           </InputGroup>
 
-          {errors.password && (
-            <ErrorText>
-              {errors.password}
-            </ErrorText>
-          )}
+          <FormError error={errors.password || apiErrors.password} />
 
           <Options>
             <Checkbox>
@@ -180,7 +164,7 @@ const Login = () => {
                 name="remember"
                 checked={values.remember}
                 onChange={handleChange}
-                disabled={loading}
+                disabled={isSubmitting}
               />
               Remember Me
             </Checkbox>
@@ -190,14 +174,19 @@ const Login = () => {
             </Link>
           </Options>
 
-          <LoginButton
+          <LoadingButton
             type="submit"
-            disabled={loading}
+            loading={isSubmitting}
+            loadingText="Logging In..."
+            style={{
+              width: "100%", padding: "0.95rem", borderRadius: "0.8rem",
+              background: "#2563EB", color: "white", fontSize: "1rem",
+              fontWeight: 600, border: "none", cursor: "pointer",
+              transition: "0.3s", marginTop: "1rem"
+            }}
           >
-            {loading
-              ? "Logging In..."
-              : "Login"}
-          </LoginButton>
+            Login
+          </LoadingButton>
         </Form>
 
         <FooterText>

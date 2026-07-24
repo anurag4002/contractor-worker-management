@@ -18,6 +18,7 @@ import Workers from "../pages/workers/Workers";
 import Attendance from "../pages/attendance/Attendance";
 import Salary from "../pages/salary/Salary";
 import Sites from "../pages/sites/Sites";
+import Payroll from "../pages/payroll/Payroll";
 import Reports from "../pages/reports/Reports";
 import Settings from "../pages/settings/Settings";
 
@@ -76,6 +77,11 @@ const AppRoutes = () => {
           <Route
             path="/sites"
             element={<Sites />}
+          />
+
+          <Route
+            path="/payroll"
+            element={<Payroll />}
           />
 
           <Route

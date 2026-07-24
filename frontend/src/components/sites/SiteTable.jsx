@@ -19,6 +19,9 @@ const SiteTable = ({
   onView,
   onAssign,
   onAttendance,
+  onEdit,
+  onDelete,
+  onToggleStatus,
 }) => {
 
   return (
@@ -101,7 +104,7 @@ const SiteTable = ({
 
                 return (
 
-                  <tr key={site.id}>
+                  <tr key={site._id || index}>
 
                     <td>
 
@@ -111,19 +114,19 @@ const SiteTable = ({
 
                     <td>
 
-                      {site.id}
+                      {site._id}
 
                     </td>
 
                     <td>
 
-                      {site.name}
+                      {site.siteName}
 
                     </td>
 
                     <td>
 
-                      {site.location || "-"}
+                      {site.city && site.state ? `${site.city}, ${site.state}` : "-"}
 
                     </td>
 
@@ -148,69 +151,20 @@ const SiteTable = ({
                     <td>
 
                       <Status
-
                         status={site.status}
-
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => onToggleStatus && onToggleStatus(site._id, site.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE')}
                       >
-
                         {site.status}
-
                       </Status>
-
                     </td>
-
                     <td>
-
                       <ActionButtons>
-
-                        <IconButton
-
-                          title="View Details"
-
-                          onClick={() =>
-
-                            onView(site)
-
-                          }
-
-                        >
-
-                          <FiEye />
-
-                        </IconButton>
-
-                        <IconButton
-
-                          title="Assign Workers"
-
-                          onClick={() =>
-
-                            onAssign(site)
-
-                          }
-
-                        >
-
-                          <FiUsers />
-
-                        </IconButton>
-
-                        <IconButton
-
-                          title="Site Attendance"
-
-                          onClick={() =>
-
-                            onAttendance(site)
-
-                          }
-
-                        >
-
-                          <FiClipboard />
-
-                        </IconButton>
-
+                        <IconButton title="View Details" onClick={() => onView(site)}><FiEye /></IconButton>
+                        <IconButton title="Assign Workers" onClick={() => onAssign(site)}><FiUsers /></IconButton>
+                        <IconButton title="Site Attendance" onClick={() => onAttendance(site)}><FiClipboard /></IconButton>
+                        {onEdit && <IconButton title="Edit Site" onClick={() => onEdit(site)}>Edit</IconButton>}
+                        {onDelete && <IconButton title="Delete Site" style={{ color: 'red' }} onClick={() => onDelete(site)}>Del</IconButton>}
                       </ActionButtons>
 
                     </td>

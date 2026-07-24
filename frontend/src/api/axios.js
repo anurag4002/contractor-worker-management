@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -85,7 +86,13 @@ axiosInstance.interceptors.response.use(
         localStorage.removeItem("refreshToken");
         localStorage.removeItem("user");
 
-        window.location.href = "/login";
+        // Notify user about session expiry
+        toast.error("Session expired. Please login again.");
+
+        // Brief delay to allow toast to render (though location change might kill it, doing our best)
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 300);
 
         return Promise.reject(refreshError);
       }

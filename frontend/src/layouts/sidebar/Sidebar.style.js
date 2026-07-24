@@ -1,9 +1,8 @@
 import styled from "styled-components";
 
 export const SidebarContainer = styled.aside`
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
 
   width: ${({ $sidebarOpen }) =>
     $sidebarOpen ? "16rem" : "5rem"};
@@ -23,12 +22,15 @@ export const SidebarContainer = styled.aside`
   z-index: 1000;
 
   border-right: 1px solid rgba(255,255,255,.08);
+  flex-shrink: 0;
 
   @media (max-width:768px){
+    position: fixed;
+    left: 0;
     transform: ${({ $sidebarOpen }) =>
-      $sidebarOpen
-        ? "translateX(0)"
-        : "translateX(-100%)"};
+    $sidebarOpen
+      ? "translateX(0)"
+      : "translateX(-100%)"};
 
     width:16rem;
   }
@@ -143,7 +145,7 @@ export const MenuButton = styled.button`
 
   span{
     display:${({ $sidebarOpen }) =>
-      $sidebarOpen ? "block" : "none"};
+    $sidebarOpen ? "block" : "none"};
 
     white-space:nowrap;
 

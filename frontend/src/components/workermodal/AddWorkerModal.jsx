@@ -17,8 +17,10 @@ import {
   Select,
   Footer,
   CancelButton,
-  SaveButton,
 } from "./WorkerModal.style";
+import useFormErrors from "../../hooks/useFormErrors";
+import FormError from "../ui/FormError";
+import LoadingButton from "../ui/LoadingButton";
 
 const initialState = {
   name: "",
@@ -40,9 +42,9 @@ const AddWorkerModal = ({
   onAddWorker,
 }) => {
 
-  const [form, setForm] =
-    useState(initialState);
+  const [form, setForm] = useState(initialState);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { errors: apiErrors, clearFieldError, handleError } = useFormErrors();
 
   useEffect(() => {
 
@@ -59,15 +61,8 @@ const AddWorkerModal = ({
   const handleChange = (e) => {
 
     const { name, value } = e.target;
-
-    setForm((prev) => ({
-
-      ...prev,
-
-      [name]: value,
-
-    }));
-
+    setForm((prev) => ({ ...prev, [name]: value }));
+    clearFieldError(name);
   };
 
   const handleSubmit = async (e) => {
@@ -80,12 +75,12 @@ const AddWorkerModal = ({
       form.skill.trim() === "" ||
       form.workType.trim() === ""
     ) {
-      alert("Please fill all required fields.");
+      handleError({ response: { data: { message: "Please fill all required fields." } } });
       return;
     }
 
     if (!/^[6-9]\d{9}$/.test(form.mobile)) {
-      alert("Enter a valid mobile number.");
+      handleError({ response: { data: { message: "Enter a valid mobile number.", errors: { mobile: "Invalid mobile number" } } } });
       return;
     }
 
@@ -119,7 +114,7 @@ const AddWorkerModal = ({
       setForm(initialState);
       onClose();
     } catch (error) {
-      // Error handled by context toast UI
+      handleError(error);
     } finally {
       setIsSubmitting(false);
     }
@@ -171,6 +166,7 @@ const AddWorkerModal = ({
                 placeholder="Enter worker name"
                 required
               />
+              <FormError error={apiErrors.name || apiErrors.fullName} />
 
             </FormGroup>
 
@@ -191,6 +187,7 @@ const AddWorkerModal = ({
                 placeholder="9876543210"
                 required
               />
+              <FormError error={apiErrors.mobile || apiErrors.mobileNumber} />
 
             </FormGroup>
 
@@ -208,6 +205,7 @@ const AddWorkerModal = ({
                 onChange={handleChange}
                 placeholder="https://image-url"
               />
+              <FormError error={apiErrors.photo} />
 
             </FormGroup>
 
@@ -226,6 +224,7 @@ const AddWorkerModal = ({
                 placeholder="Electrician"
                 required
               />
+              <FormError error={apiErrors.skill || apiErrors.trade} />
 
             </FormGroup>
 
@@ -244,6 +243,7 @@ const AddWorkerModal = ({
                 placeholder="Electrical Work"
                 required
               />
+              <FormError error={apiErrors.workType} />
 
             </FormGroup>
 
@@ -274,6 +274,7 @@ const AddWorkerModal = ({
                 </option>
 
               </Select>
+              <FormError error={apiErrors.wageType || apiErrors.salaryType} />
 
             </FormGroup>
 
@@ -298,6 +299,7 @@ const AddWorkerModal = ({
                       onChange={handleChange}
                       required
                     />
+                    <FormError error={apiErrors.dailyWage} />
 
                   </FormGroup>
 
@@ -320,6 +322,7 @@ const AddWorkerModal = ({
                       onChange={handleChange}
                       required
                     />
+                    <FormError error={apiErrors.monthlySalary} />
 
                   </FormGroup>
 
@@ -342,6 +345,7 @@ const AddWorkerModal = ({
                 onChange={handleChange}
                 required
               />
+              <FormError error={apiErrors.joiningDate} />
 
             </FormGroup>
 
@@ -459,14 +463,18 @@ const AddWorkerModal = ({
 
             </CancelButton>
 
-            <SaveButton
+            <LoadingButton
               type="submit"
-              disabled={isSubmitting}
+              loading={isSubmitting}
+              loadingText="Adding..."
+              style={{
+                background: "#2563EB", color: "white", padding: "0.55rem 1.25rem",
+                borderRadius: "0.6rem", fontSize: "0.95rem", fontWeight: 600,
+                border: "none", cursor: "pointer", transition: "all 0.2s"
+              }}
             >
-
-              {isSubmitting ? "Adding..." : "Add Worker"}
-
-            </SaveButton>
+              Add Worker
+            </LoadingButton>
 
           </Footer>
 

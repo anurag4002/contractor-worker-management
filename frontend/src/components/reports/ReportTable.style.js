@@ -1,5 +1,23 @@
 import styled from "styled-components";
 
+export const ReportContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ $gap }) => $gap || "1rem"};
+`;
+
+export const FilterControls = styled.div`
+  margin-left: auto;
+  display: flex;
+  gap: 0.5rem;
+`;
+
+export const FilterLabel = styled.label`
+  font-size: 0.85rem;
+  color: #64748b;
+  white-space: nowrap;
+`;
+
 export const TableCard = styled.div`
   background: #ffffff;
 
@@ -70,37 +88,29 @@ export const Table = styled.table`
 
 export const Status = styled.span`
   display: inline-flex;
-
   align-items: center;
-
   justify-content: center;
-
   padding: .35rem .9rem;
-
   border-radius: 999px;
-
-  font-size: .8rem;
-
+  font-size: .78rem;
   font-weight: 600;
 
   background: ${({ status }) =>
-
-    status === "Generated"
-
-      ? "#DCFCE7"
-
-      : "#FEF3C7"
-
+    status === "ACTIVE" || status === "PRESENT" || status === "PAID" ? "#dcfce7" :
+      status === "GENERATED" || status === "HALF_DAY" ? "#dbeafe" :
+        status === "PENDING" || status === "LEAVE" || status === "HOLIDAY" ? "#fef9c3" :
+          status === "INACTIVE" || status === "ABSENT" || status === "CANCELLED" ? "#fee2e2" :
+            status === "COMPLETED" ? "#f3e8ff" :
+              "#f1f5f9"
   };
 
   color: ${({ status }) =>
-
-    status === "Generated"
-
-      ? "#15803D"
-
-      : "#B45309"
-
+    status === "ACTIVE" || status === "PRESENT" || status === "PAID" ? "#16a34a" :
+      status === "GENERATED" || status === "HALF_DAY" ? "#2563eb" :
+        status === "PENDING" || status === "LEAVE" || status === "HOLIDAY" ? "#ca8a04" :
+          status === "INACTIVE" || status === "ABSENT" || status === "CANCELLED" ? "#dc2626" :
+            status === "COMPLETED" ? "#7c3aed" :
+              "#64748b"
   };
 `;
 
