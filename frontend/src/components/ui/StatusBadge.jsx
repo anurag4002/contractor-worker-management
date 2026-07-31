@@ -1,18 +1,18 @@
 import styled from "styled-components";
 
 const COLOR = {
-    ACTIVE: { bg: "#dcfce7", fg: "#16a34a" },
-    PRESENT: { bg: "#dcfce7", fg: "#16a34a" },
-    PAID: { bg: "#dcfce7", fg: "#16a34a" },
-    GENERATED: { bg: "#dbeafe", fg: "#2563eb" },
-    HALF_DAY: { bg: "#dbeafe", fg: "#2563eb" },
-    COMPLETED: { bg: "#f3e8ff", fg: "#7c3aed" },
-    PENDING: { bg: "#fef9c3", fg: "#ca8a04" },
-    LEAVE: { bg: "#fef9c3", fg: "#ca8a04" },
-    HOLIDAY: { bg: "#fef9c3", fg: "#ca8a04" },
-    INACTIVE: { bg: "#fee2e2", fg: "#dc2626" },
-    ABSENT: { bg: "#fee2e2", fg: "#dc2626" },
-    CANCELLED: { bg: "#fee2e2", fg: "#dc2626" },
+    ACTIVE: { bg: "var(--badge-success-bg)", fg: "var(--badge-success-fg)" },
+    PRESENT: { bg: "var(--badge-success-bg)", fg: "var(--badge-success-fg)" },
+    PAID: { bg: "var(--badge-success-bg)", fg: "var(--badge-success-fg)" },
+    GENERATED: { bg: "var(--badge-info-bg)", fg: "var(--badge-info-fg)" },
+    HALF_DAY: { bg: "var(--badge-info-bg)", fg: "var(--badge-info-fg)" },
+    COMPLETED: { bg: "var(--badge-purple-bg)", fg: "var(--badge-purple-fg)" },
+    PENDING: { bg: "var(--badge-warning-bg)", fg: "var(--badge-warning-fg)" },
+    LEAVE: { bg: "var(--badge-warning-bg)", fg: "var(--badge-warning-fg)" },
+    HOLIDAY: { bg: "var(--badge-warning-bg)", fg: "var(--badge-warning-fg)" },
+    INACTIVE: { bg: "var(--badge-danger-bg)", fg: "var(--badge-danger-fg)" },
+    ABSENT: { bg: "var(--badge-danger-bg)", fg: "var(--badge-danger-fg)" },
+    CANCELLED: { bg: "var(--badge-danger-bg)", fg: "var(--badge-danger-fg)" },
 };
 
 const Badge = styled.span`
@@ -24,8 +24,8 @@ const Badge = styled.span`
   font-weight: 700;
   letter-spacing: 0.03em;
   white-space: nowrap;
-  background: ${({ $status }) => COLOR[$status]?.bg ?? "#f1f5f9"};
-  color: ${({ $status }) => COLOR[$status]?.fg ?? "#64748b"};
+  background: ${({ $status }) => COLOR[$status]?.bg ?? "var(--surface-hover)"};
+  color: ${({ $status }) => COLOR[$status]?.fg ?? "var(--text-secondary)"};
 `;
 
 const StatusBadge = ({ status, children }) => (

@@ -13,7 +13,7 @@ const Bar = styled.div`
 
 const Info = styled.span`
   font-size: 0.85rem;
-  color: #64748b;
+  color: var(--text-secondary);
 `;
 
 const NavBtn = styled.button`
@@ -21,17 +21,17 @@ const NavBtn = styled.button`
   align-items: center;
   gap: 0.3rem;
   padding: 0.5rem 0.9rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   border-radius: 0.6rem;
-  background: #fff;
+  background: var(--surface);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  color: #334155;
+  color: var(--text);
   transition: background 0.15s;
 
   &:hover:not(:disabled) {
-    background: #f1f5f9;
+    background: var(--surface-hover);
   }
 
   &:disabled {
@@ -40,10 +40,6 @@ const NavBtn = styled.button`
   }
 `;
 
-/**
- * Server-side pagination bar.
- * @param {{ page: number, totalPages: number, onPageChange: (n: number) => void, total?: number }} props
- */
 const Pagination = ({ page, totalPages, onPageChange, total }) => {
     if (!totalPages || totalPages <= 1) return null;
 

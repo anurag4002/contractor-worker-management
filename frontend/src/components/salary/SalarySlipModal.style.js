@@ -13,7 +13,7 @@ export const Overlay = styled.div`
 export const Modal = styled.div`
   width:100%;
   max-width:52rem;
-  background:#ffffff;
+  background:var(--surface);
   border-radius:1rem;
   overflow:hidden;
   box-shadow:0 20px 60px rgba(15,23,42,.18);
@@ -24,12 +24,12 @@ export const Header = styled.div`
   justify-content:space-between;
   align-items:center;
   padding:1.4rem 1.6rem;
-  border-bottom:1px solid #E2E8F0;
+  border-bottom:1px solid var(--border);
 `;
 
 export const Title = styled.h3`
   margin:0;
-  color:#0F172A;
+  color:var(--text);
 `;
 
 export const CloseButton = styled.button`
@@ -61,31 +61,31 @@ export const Item = styled.div`
 
 export const Label = styled.span`
   font-size:.85rem;
-  color:#64748B;
+  color:var(--text-secondary);
 `;
 
 export const Value = styled.span`
   font-size:1rem;
   font-weight:600;
-  color:#0F172A;
+  color:var(--text);
 `;
 
 export const Footer = styled.div`
   display:flex;
   justify-content:flex-end;
   padding:1.5rem;
-  border-top:1px solid #E2E8F0;
+  border-top:1px solid var(--border);
 `;
 
 export const Button = styled.button`
   border:none;
-  background:#2563EB;
-  color:#ffffff;
+  background:var(--primary);
+  color:var(--surface);
   padding:.9rem 1.6rem;
   border-radius:.75rem;
   cursor:pointer;
 
   &:hover{
-    background:#1D4ED8;
+    background:var(--primary-hover);
   }
 `;

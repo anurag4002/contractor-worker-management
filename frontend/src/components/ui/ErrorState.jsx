@@ -14,13 +14,13 @@ const Wrap = styled.div`
 
 const IconBox = styled.div`
   font-size: 2.5rem;
-  color: #dc2626;
+  color: var(--danger);
 `;
 
 const Msg = styled.p`
   margin: 0;
   font-size: 0.95rem;
-  color: #64748b;
+  color: var(--text-secondary);
 `;
 
 const RetryBtn = styled.button`
@@ -29,13 +29,13 @@ const RetryBtn = styled.button`
   gap: 0.4rem;
   margin-top: 0.5rem;
   padding: 0.55rem 1.1rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   border-radius: 0.6rem;
-  background: #f8fafc;
+  background: var(--surface);
   font-size: 0.85rem;
   cursor: pointer;
-  color: #334155;
-  &:hover { background: #e2e8f0; }
+  color: var(--text);
+  &:hover { background: var(--surface-hover); }
 `;
 
 const ErrorState = ({ message = "Something went wrong.", onRetry }) => (

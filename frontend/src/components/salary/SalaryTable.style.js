@@ -1,9 +1,9 @@
 import styled from "styled-components";
 
 export const TableCard = styled.div`
-  background: #ffffff;
+  background: var(--surface);
 
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
 
   border-radius: 1rem;
 
@@ -21,7 +21,7 @@ export const Table = styled.table`
 
   thead {
 
-    background: #F8FAFC;
+    background: var(--table-header-bg);
 
   }
 
@@ -31,13 +31,13 @@ export const Table = styled.table`
 
     text-align: left;
 
-    color: #475569;
+    color: var(--text);
 
     font-size: .9rem;
 
     font-weight: 600;
 
-    border-bottom: 1px solid #E2E8F0;
+    border-bottom: 1px solid var(--border);
 
     white-space: nowrap;
 
@@ -47,11 +47,11 @@ export const Table = styled.table`
 
     padding: 1rem;
 
-    color: #334155;
+    color: var(--text);
 
     font-size: .9rem;
 
-    border-bottom: 1px solid #F1F5F9;
+    border-bottom: 1px solid var(--surface-hover);
 
     white-space: nowrap;
 
@@ -65,7 +65,7 @@ export const Table = styled.table`
 
   tbody tr:hover {
 
-    background: #F8FAFC;
+    background: var(--table-header-bg);
 
   }
 `;
@@ -89,13 +89,13 @@ export const Status = styled.span`
 
     status === "Paid"
 
-      ? "#DCFCE7"
+      ? "var(--badge-success-bg)"
 
       : status === "Partial"
 
       ? "#FEF3C7"
 
-      : "#FEE2E2"
+      : "var(--badge-danger-bg)"
 
   };
 
@@ -109,7 +109,7 @@ export const Status = styled.span`
 
       ? "#B45309"
 
-      : "#DC2626"
+      : "var(--danger)"
 
   };
 `;
@@ -129,9 +129,9 @@ export const IconButton = styled.button`
 
   border-radius: .65rem;
 
-  background: #EFF6FF;
+  background: var(--primary-light);
 
-  color: #2563EB;
+  color: var(--primary);
 
   display: flex;
 
@@ -145,9 +145,9 @@ export const IconButton = styled.button`
 
   &:hover {
 
-    background: #2563EB;
+    background: var(--primary);
 
-    color: #ffffff;
+    color: var(--surface);
 
   }
 `;

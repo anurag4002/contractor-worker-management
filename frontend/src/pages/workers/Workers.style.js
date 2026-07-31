@@ -28,13 +28,13 @@ export const TitleSection = styled.div`
   h2{
     margin:0;
     font-size:2rem;
-    color:#0F172A;
+    color:var(--text);
     font-weight:700;
   }
 
   p{
     margin:.5rem 0 0;
-    color:#64748B;
+    color:var(--text-secondary);
   }
 `;
 
@@ -51,13 +51,13 @@ export const SearchBox = styled.div`
   input{
     width:100%;
     padding:0.9rem 1rem;
-    border:1px solid #CBD5E1;
+    border:1px solid var(--input-border);
     border-radius:0.8rem;
     outline:none;
     font-size:.95rem;
 
     &:focus{
-      border-color:#2563EB;
+      border-color:var(--primary);
     }
   }
 
@@ -69,7 +69,7 @@ export const SearchBox = styled.div`
 export const Button = styled.button`
   border:none;
 
-  background:#2563EB;
+  background:var(--primary);
 
   color:white;
 
@@ -84,7 +84,7 @@ export const Button = styled.button`
   transition:.3s;
 
   &:hover{
-      background:#1D4ED8;
+      background:var(--primary-hover);
   }
 `;
 
@@ -95,7 +95,7 @@ export const TableCard = styled.div`
 
   overflow:hidden;
 
-  border:1px solid #E2E8F0;
+  border:1px solid var(--border);
 
   box-shadow:0 10px 25px rgba(15,23,42,.05);
 `;
@@ -105,22 +105,22 @@ export const Table = styled.table`
   border-collapse:collapse;
 
   thead{
-      background:#F8FAFC;
+      background:var(--table-header-bg);
   }
 
   th{
       padding:1rem;
       text-align:left;
-      color:#475569;
+      color:var(--text);
       font-size:.9rem;
       font-weight:600;
-      border-bottom:1px solid #E2E8F0;
+      border-bottom:1px solid var(--border);
   }
 
   td{
       padding:1rem;
-      border-bottom:1px solid #E2E8F0;
-      color:#334155;
+      border-bottom:1px solid var(--border);
+      color:var(--text);
       font-size:.95rem;
   }
 
@@ -129,7 +129,7 @@ export const Table = styled.table`
   }
 
   tbody tr:hover{
-      background:#F8FAFC;
+      background:var(--table-header-bg);
   }
 `;
 
@@ -145,7 +145,7 @@ export const Avatar = styled.div`
 
   border-radius:50%;
 
-  background:#2563EB;
+  background:var(--primary);
 
   display:flex;
   justify-content:center;
@@ -165,13 +165,13 @@ export const Status = styled.span`
 
   background:${({status})=>
     status==="Present"
-    ? "#DCFCE7"
-    : "#FEE2E2"};
+    ? "var(--badge-success-bg)"
+    : "var(--badge-danger-bg)"};
 
   color:${({status})=>
     status==="Present"
     ? "#15803D"
-    : "#DC2626"};
+    : "var(--danger)"};
 
   font-size:.8rem;
 
@@ -191,16 +191,16 @@ export const IconButton = styled.button`
 
   border-radius:.6rem;
 
-  background:#EFF6FF;
+  background:var(--primary-light);
 
-  color:#2563EB;
+  color:var(--primary);
 
   cursor:pointer;
 
   transition:.3s;
 
   &:hover{
-      background:#2563EB;
+      background:var(--primary);
       color:white;
   }
 `;

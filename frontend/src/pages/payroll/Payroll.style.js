@@ -20,8 +20,8 @@ export const Header = styled.div`
 `;
 
 export const TitleSection = styled.div`
-  h2 { margin: 0; font-size: 2rem; font-weight: 700; color: #0f172a; }
-  p { margin-top: 0.5rem; color: #64748b; font-size: 0.95rem; }
+  h2 { margin: 0; font-size: 2rem; font-weight: 700; color: var(--text); }
+  p { margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.95rem; }
 `;
 
 export const ActionSection = styled.div`
@@ -38,12 +38,12 @@ export const Button = styled.button`
   padding: 0.9rem 1.4rem;
   border: none;
   border-radius: 0.8rem;
-  background: #2563eb;
-  color: #ffffff;
+  background: var(--primary);
+  color: var(--surface);
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   transition: 0.25s;
-  &:hover { background: #1d4ed8; }
+  &:hover { background: var(--primary-hover); }
   &:disabled { opacity: 0.6; cursor: not-allowed; }
 `;

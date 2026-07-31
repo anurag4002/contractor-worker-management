@@ -22,7 +22,7 @@ const PayrollTable = ({ payrolls = [], onEdit, onDelete, onViewHistory, onChange
             <tbody>
                 {payrolls.length === 0 ? (
                     <tr>
-                        <td colSpan="8" style={{ textAlign: "center", padding: "2rem", color: "#64748b" }}>
+                        <td colSpan="8" style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)" }}>
                             No payroll records found.
                         </td>
                     </tr>
@@ -54,7 +54,7 @@ const PayrollTable = ({ payrolls = [], onEdit, onDelete, onViewHistory, onChange
                                         <IconButton title="Change Status" onClick={() => onChangeStatus(p)}>
                                             <FiRefreshCw />
                                         </IconButton>
-                                        <IconButton title="Delete Payroll" style={{ color: "#dc2626" }} onClick={() => onDelete(p)}>
+                                        <IconButton title="Delete Payroll" style={{ color: "var(--danger)" }} onClick={() => onDelete(p)}>
                                             <FiTrash2 />
                                         </IconButton>
                                     </ActionButtons>

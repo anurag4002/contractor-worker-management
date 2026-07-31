@@ -16,7 +16,7 @@ export const Modal = styled.div`
   width:100%;
   max-width:55rem;
 
-  background:#ffffff;
+  background:var(--surface);
 
   border-radius:1rem;
 
@@ -32,12 +32,12 @@ export const Header = styled.div`
 
   padding:1.5rem;
 
-  border-bottom:1px solid #E2E8F0;
+  border-bottom:1px solid var(--border);
 `;
 
 export const Title = styled.h3`
   margin:0;
-  color:#0F172A;
+  color:var(--text);
 `;
 
 export const CloseButton = styled.button`
@@ -70,12 +70,12 @@ export const Item = styled.div`
 `;
 
 export const Label = styled.span`
-  color:#64748B;
+  color:var(--text-secondary);
   font-size:.9rem;
 `;
 
 export const Value = styled.span`
-  color:#0F172A;
+  color:var(--text);
   font-size:1rem;
   font-weight:600;
 `;
@@ -88,7 +88,7 @@ export const Footer = styled.div`
 
   padding:1.5rem;
 
-  border-top:1px solid #E2E8F0;
+  border-top:1px solid var(--border);
 `;
 
 export const Button = styled.button`
@@ -98,7 +98,7 @@ export const Button = styled.button`
 
   border:none;
 
-  background:#2563EB;
+  background:var(--primary);
 
   color:white;
 
@@ -113,6 +113,6 @@ export const Button = styled.button`
   transition:.25s;
 
   &:hover{
-    background:#1D4ED8;
+    background:var(--primary-hover);
   }
 `;

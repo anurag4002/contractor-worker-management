@@ -1,6 +1,7 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+import { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 
+import { useAuth } from "../../context/AuthContext";
 import sidebarData from "./Sidebar.data.json";
 
 import {
@@ -11,6 +12,7 @@ import {
   FiDollarSign,
   FiBarChart2,
   FiSettings,
+  FiLogOut,
 } from "react-icons/fi";
 
 import {
@@ -27,6 +29,14 @@ import {
   Avatar,
   UserInfo,
   LogoutButton,
+  LogoutConfirm,
+  LogoutConfirmOverlay,
+  LogoutConfirmCard,
+  LogoutConfirmTitle,
+  LogoutConfirmText,
+  LogoutConfirmActions,
+  LogoutConfirmBtn,
+  LogoutCancelBtn,
 } from "./Sidebar.style";
 
 const iconMap = {
@@ -40,6 +50,30 @@ const iconMap = {
 };
 
 const Sidebar = ({ sidebarOpen }) => {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const handleLogoutClick = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const handleLogoutConfirm = async () => {
+    setShowLogoutConfirm(false);
+    try {
+      await logout();
+      setTimeout(() => {
+        navigate("/login", { replace: true });
+      }, 1000);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleLogoutCancel = () => {
+    setShowLogoutConfirm(false);
+  };
+
   return (
     <SidebarContainer $sidebarOpen={sidebarOpen}>
       <TopSection>
@@ -101,7 +135,15 @@ const Sidebar = ({ sidebarOpen }) => {
 
       <BottomSection>
 
-        <UserCard>
+        <UserCard
+          as={NavLink}
+          to="/profile"
+          onClick={() => {
+            if (!sidebarOpen) {
+              /* allow navigation when sidebar is collapsed */
+            }
+          }}
+        >
 
           <Avatar>A</Avatar>
 
@@ -117,11 +159,51 @@ const Sidebar = ({ sidebarOpen }) => {
 
         {sidebarOpen && (
 
-          <LogoutButton type="button">
+          <>
 
-            Logout
+            <LogoutButton
+              type="button"
+              onClick={handleLogoutClick}
+            >
 
-          </LogoutButton>
+              <FiLogOut />
+
+              Logout
+
+            </LogoutButton>
+
+            {showLogoutConfirm && (
+
+              <LogoutConfirm>
+
+                <LogoutConfirmOverlay />
+
+                <LogoutConfirmCard>
+
+                  <LogoutConfirmTitle>Confirm Logout</LogoutConfirmTitle>
+
+                  <LogoutConfirmText>
+                    Are you sure you want to logout?
+                  </LogoutConfirmText>
+
+                  <LogoutConfirmActions>
+
+                    <LogoutCancelBtn onClick={handleLogoutCancel}>
+                      Cancel
+                    </LogoutCancelBtn>
+
+                    <LogoutConfirmBtn onClick={handleLogoutConfirm}>
+                      Logout
+                    </LogoutConfirmBtn>
+
+                  </LogoutConfirmActions>
+
+                </LogoutConfirmCard>
+
+              </LogoutConfirm>
+
+            )}
+          </>
 
         )}
 

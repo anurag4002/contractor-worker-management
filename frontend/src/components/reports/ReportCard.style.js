@@ -1,9 +1,9 @@
 import styled from "styled-components";
 
 export const Card = styled.div`
-  background: #ffffff;
+  background: var(--surface);
 
-  border: 1px solid #E2E8F0;
+  border: 1px solid var(--border);
 
   border-radius: 1rem;
 
@@ -45,7 +45,7 @@ export const IconBox = styled.div`
 
   align-items: center;
 
-  color: #ffffff;
+  color: var(--surface);
 
   font-size: 1.35rem;
 `;
@@ -53,7 +53,7 @@ export const IconBox = styled.div`
 export const Title = styled.p`
   margin: 0;
 
-  color: #64748B;
+  color: var(--text-secondary);
 
   font-size: .95rem;
 
@@ -63,7 +63,7 @@ export const Title = styled.p`
 export const Value = styled.h2`
   margin-top: .6rem;
 
-  color: #0F172A;
+  color: var(--text);
 
   font-size: 2rem;
 

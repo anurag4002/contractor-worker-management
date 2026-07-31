@@ -22,7 +22,7 @@ export const FormGroup = styled.div`
   gap:.5rem;
 
   label{
-    color:#334155;
+    color:var(--text);
     font-size:.9rem;
     font-weight:600;
   }
@@ -32,7 +32,7 @@ export const FormGroup = styled.div`
     width:100%;
     padding:.9rem 1rem;
 
-    border:1px solid #CBD5E1;
+    border:1px solid var(--input-border);
 
     border-radius:.8rem;
 
@@ -43,7 +43,7 @@ export const FormGroup = styled.div`
     transition:.3s;
 
     &:focus{
-      border-color:#2563EB;
+      border-color:var(--primary);
     }
   }
 `;
@@ -54,7 +54,7 @@ export const ImagePreview = styled.div`
 
   border-radius:1rem;
 
-  border:2px dashed #CBD5E1;
+  border:2px dashed var(--input-border);
 
   display:flex;
   justify-content:center;
@@ -69,7 +69,7 @@ export const ImagePreview = styled.div`
   }
 
   span{
-    color:#94A3B8;
+    color:var(--text-secondary);
     font-size:.8rem;
   }
 `;

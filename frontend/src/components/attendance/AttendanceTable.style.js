@@ -1,9 +1,9 @@
 import styled from "styled-components";
 
 export const TableCard = styled.div`
-  background: #ffffff;
+  background: var(--surface);
 
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
 
   border-radius: 1rem;
 
@@ -18,7 +18,7 @@ export const Table = styled.table`
   border-collapse: collapse;
 
   thead {
-    background: #f8fafc;
+    background: var(--bg);
   }
 
   th {
@@ -26,27 +26,27 @@ export const Table = styled.table`
 
     text-align: left;
 
-    color: #475569;
+    color: var(--text);
 
     font-size: .9rem;
 
     font-weight: 600;
 
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border);
   }
 
   td {
     padding: 1rem;
 
-    color: #334155;
+    color: var(--text);
 
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border);
 
     font-size: .9rem;
   }
 
   tbody tr:hover {
-    background: #f8fafc;
+    background: var(--bg);
   }
 `;
 
@@ -67,16 +67,16 @@ export const Status = styled.span`
 
   background: ${({ status }) =>
     status === "Present"
-      ? "#DCFCE7"
+      ? "var(--badge-success-bg)"
       : status === "Absent"
-      ? "#FEE2E2"
+      ? "var(--badge-danger-bg)"
       : "#FEF3C7"};
 
   color: ${({ status }) =>
     status === "Present"
       ? "#15803D"
       : status === "Absent"
-      ? "#DC2626"
+      ? "var(--danger)"
       : "#B45309"};
 `;
 
@@ -95,9 +95,9 @@ export const IconButton = styled.button`
 
   border-radius: .6rem;
 
-  background: #eff6ff;
+  background: var(--primary-light);
 
-  color: #2563eb;
+  color: var(--primary);
 
   cursor: pointer;
 
@@ -111,9 +111,9 @@ export const IconButton = styled.button`
 
   &:hover {
 
-    background: #2563eb;
+    background: var(--primary);
 
-    color: #ffffff;
+    color: var(--surface);
 
   }
 `;

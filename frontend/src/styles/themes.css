@@ -1,0 +1,126 @@
+:root {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-hover: #f1f5f9;
+  --text: #0f172a;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-light: #eff6ff;
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+  --success: #16a34a;
+  --warning: #ca8a04;
+  --shadow: rgba(15, 23, 42, 0.05);
+  --shadow-lg: rgba(15, 23, 42, 0.12);
+  --sidebar-bg: #0f172a;
+  --sidebar-text: #cbd5e1;
+  --sidebar-active-bg: #2563eb;
+  --sidebar-hover-bg: #1e293b;
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1;
+  --input-text: #0f172a;
+  --input-placeholder: #94a3b8;
+  --table-header-bg: #f8fafc;
+  --table-row-hover: #f8fafc;
+  --table-border: #f1f5f9;
+  --badge-success-bg: #dcfce7;
+  --badge-success-fg: #16a34a;
+  --badge-danger-bg: #fee2e2;
+  --badge-danger-fg: #dc2626;
+  --badge-warning-bg: #fef9c3;
+  --badge-warning-fg: #ca8a04;
+  --badge-info-bg: #dbeafe;
+  --badge-info-fg: #2563eb;
+  --badge-purple-bg: #f3e8ff;
+  --badge-purple-fg: #7c3aed;
+  --toggle-bg: #f1f5f9;
+  --toggle-border: #e2e8f0;
+  --chart-grid: #e2e8f0;
+  --chart-axis: #64748b;
+  --tooltip-bg: #0f172a;
+  --tooltip-fg: #ffffff;
+  --modal-overlay: rgba(15, 23, 42, 0.5);
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-track: #f1f5f9;
+}
+
+.dark {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --surface-hover: #334155;
+  --text: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --border: #334155;
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-light: #1e3a5f;
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+  --success: #22c55e;
+  --warning: #eab308;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --shadow-lg: rgba(0, 0, 0, 0.4);
+  --sidebar-bg: #0f172a;
+  --sidebar-text: #cbd5e1;
+  --sidebar-active-bg: #2563eb;
+  --sidebar-hover-bg: #1e293b;
+  --input-bg: #1e293b;
+  --input-border: #475569;
+  --input-text: #f1f5f9;
+  --input-placeholder: #64748b;
+  --table-header-bg: #1e293b;
+  --table-row-hover: #1e293b;
+  --table-border: #334155;
+  --badge-success-bg: #14532d;
+  --badge-success-fg: #86efac;
+  --badge-danger-bg: #7f1d1d;
+  --badge-danger-fg: #fca5a5;
+  --badge-warning-bg: #713f12;
+  --badge-warning-fg: #fde047;
+  --badge-info-bg: #1e3a5f;
+  --badge-info-fg: #93c5fd;
+  --badge-purple-bg: #4c1d95;
+  --badge-purple-fg: #c4b5fd;
+  --toggle-bg: #334155;
+  --toggle-border: #475569;
+  --chart-grid: #334155;
+  --chart-axis: #94a3b8;
+  --tooltip-bg: #f1f5f9;
+  --tooltip-fg: #0f172a;
+  --modal-overlay: rgba(0, 0, 0, 0.6);
+  --scrollbar-thumb: #475569;
+  --scrollbar-track: #1e293b;
+}
+
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+html {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}

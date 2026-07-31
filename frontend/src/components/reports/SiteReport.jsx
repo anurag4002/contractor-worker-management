@@ -13,6 +13,7 @@ import StatusBadge from "../ui/StatusBadge";
 import SkeletonRows from "../ui/SkeletonRows";
 import EmptyState from "../ui/EmptyState";
 import Pagination from "../ui/Pagination";
+import { showSuccess, showError } from "../../components/common/toast";
 
 const SmallInput = styled(Input)`
     width: 120px;
@@ -35,26 +36,40 @@ const SiteReport = () => {
     const data = Array.isArray(siteReport) ? siteReport : [];
     const set = (k, v) => { setFilters((p) => ({ ...p, [k]: v })); setPage(1); };
 
-    const handleExcel = () =>
-        exportToExcel(
-            data.map((s) => ({
-                Name: s.siteName || "",
-                Code: s.siteCode || "",
-                Client: s.clientName || "",
-                City: s.city || "",
-                State: s.state || "",
-                Status: s.status || "",
-            })),
-            "Site_Report"
-        );
+    const handleExcel = () => {
+        try {
+            exportToExcel(
+                data.map((s) => ({
+                    Name: s.siteName || "",
+                    Code: s.siteCode || "",
+                    Client: s.clientName || "",
+                    City: s.city || "",
+                    State: s.state || "",
+                    Status: s.status || "",
+                })),
+                "Site_Report"
+            );
+            showSuccess("Site Report exported to Excel.");
+        } catch (err) {
+            console.error(err);
+            showError("Failed to export Site Report.");
+        }
+    };
 
-    const handlePDF = () =>
-        exportToPDF(
-            "Site Report",
-            ["Name", "Code", "Client", "City", "Status"],
-            data.map((s) => [s.siteName, s.siteCode, s.clientName, s.city, s.status]),
-            "Site_Report"
-        );
+    const handlePDF = () => {
+        try {
+            exportToPDF(
+                "Site Report",
+                ["Name", "Code", "Client", "City", "Status"],
+                data.map((s) => [s.siteName, s.siteCode, s.clientName, s.city, s.status]),
+                "Site_Report"
+            );
+            showSuccess("Site Report exported to PDF.");
+        } catch (err) {
+            console.error(err);
+            showError("Failed to export Site Report.");
+        }
+    };
 
     return (
         <ReportContainer>

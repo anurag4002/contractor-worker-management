@@ -61,8 +61,8 @@ const Btn = styled.button`
   padding: 0.55rem 1rem;
   border: none;
   border-radius: 0.6rem;
-  background: ${({ $loading }) => ($loading ? "#f1f5f9" : "#2563eb")};
-  color: ${({ $loading }) => ($loading ? "#94a3b8" : "#fff")};
+  background: ${({ $loading }) => ($loading ? "var(--surface-hover)" : "var(--primary)")};
+  color: ${({ $loading }) => ($loading ? "var(--text-secondary)" : "#ffffff")};
   font-size: 0.82rem;
   font-weight: 600;
   cursor: ${({ $loading }) => ($loading ? "not-allowed" : "pointer")};
@@ -145,7 +145,7 @@ const ExportPanel = () => {
                                         <Meta>
                                             <p>{format}</p>
                                             <h4>{label}</h4>
-                                            <span style={{ fontSize: "0.78rem", color: "#94a3b8" }}>{sub}</span>
+                                            <span style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}>{sub}</span>
                                         </Meta>
                                     </CardLeft>
                                     <Btn

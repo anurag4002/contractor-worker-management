@@ -35,9 +35,9 @@ const WorkerPayrollHistoryModal = ({ open, onClose, payroll }) => {
                 </ModalHeader>
                 <div style={{ padding: "1rem 1.5rem 1.5rem" }}>
                     {loading ? (
-                        <p style={{ color: "#64748b", textAlign: "center" }}>Loading history...</p>
+                        <p style={{ color: "var(--text-secondary)", textAlign: "center" }}>Loading history...</p>
                     ) : history.length === 0 ? (
-                        <p style={{ color: "#64748b", textAlign: "center" }}>No payroll history found for this worker.</p>
+                        <p style={{ color: "var(--text-secondary)", textAlign: "center" }}>No payroll history found for this worker.</p>
                     ) : (
                         <TableCard style={{ marginTop: 0 }}>
                             <Table>

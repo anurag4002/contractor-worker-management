@@ -14,75 +14,50 @@ export const FilterControls = styled.div`
 
 export const FilterLabel = styled.label`
   font-size: 0.85rem;
-  color: #64748b;
+  color: var(--text-secondary);
   white-space: nowrap;
 `;
 
 export const TableCard = styled.div`
-  background: #ffffff;
-
-  border: 1px solid #e2e8f0;
-
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 1rem;
-
   overflow-x: auto;
-
-  box-shadow: 0 8px 24px rgba(15, 23, 42, .05);
+  box-shadow: 0 8px 24px var(--shadow);
 `;
 
 export const Table = styled.table`
   width: 100%;
-
   min-width: 1200px;
-
   border-collapse: collapse;
 
   thead {
-
-    background: #F8FAFC;
-
+    background: var(--table-header-bg);
   }
 
   th {
-
     padding: 1rem;
-
     text-align: left;
-
-    color: #475569;
-
-    font-size: .9rem;
-
+    color: var(--text-secondary);
+    font-size: 0.9rem;
     font-weight: 600;
-
-    border-bottom: 1px solid #E2E8F0;
-
+    border-bottom: 1px solid var(--border);
     white-space: nowrap;
-
   }
 
   td {
-
     padding: 1rem;
-
-    color: #334155;
-
-    border-bottom: 1px solid #F1F5F9;
-
+    color: var(--text);
+    border-bottom: 1px solid var(--table-border);
     white-space: nowrap;
-
   }
 
   tbody tr {
-
-    transition: .25s;
-
+    transition: 0.25s;
   }
 
   tbody tr:hover {
-
-    background: #F8FAFC;
-
+    background: var(--table-row-hover);
   }
 `;
 
@@ -90,64 +65,48 @@ export const Status = styled.span`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: .35rem .9rem;
+  padding: 0.35rem 0.9rem;
   border-radius: 999px;
-  font-size: .78rem;
+  font-size: 0.78rem;
   font-weight: 600;
-
   background: ${({ status }) =>
-    status === "ACTIVE" || status === "PRESENT" || status === "PAID" ? "#dcfce7" :
-      status === "GENERATED" || status === "HALF_DAY" ? "#dbeafe" :
-        status === "PENDING" || status === "LEAVE" || status === "HOLIDAY" ? "#fef9c3" :
-          status === "INACTIVE" || status === "ABSENT" || status === "CANCELLED" ? "#fee2e2" :
-            status === "COMPLETED" ? "#f3e8ff" :
-              "#f1f5f9"
+    status === "ACTIVE" || status === "PRESENT" || status === "PAID" ? "var(--badge-success-bg)" :
+      status === "GENERATED" || status === "HALF_DAY" ? "var(--badge-info-bg)" :
+        status === "PENDING" || status === "LEAVE" || status === "HOLIDAY" ? "var(--badge-warning-bg)" :
+          status === "INACTIVE" || status === "ABSENT" || status === "CANCELLED" ? "var(--badge-danger-bg)" :
+            status === "COMPLETED" ? "var(--badge-purple-bg)" :
+              "var(--surface-hover)"
   };
-
   color: ${({ status }) =>
-    status === "ACTIVE" || status === "PRESENT" || status === "PAID" ? "#16a34a" :
-      status === "GENERATED" || status === "HALF_DAY" ? "#2563eb" :
-        status === "PENDING" || status === "LEAVE" || status === "HOLIDAY" ? "#ca8a04" :
-          status === "INACTIVE" || status === "ABSENT" || status === "CANCELLED" ? "#dc2626" :
-            status === "COMPLETED" ? "#7c3aed" :
-              "#64748b"
+    status === "ACTIVE" || status === "PRESENT" || status === "PAID" ? "var(--badge-success-fg)" :
+      status === "GENERATED" || status === "HALF_DAY" ? "var(--badge-info-fg)" :
+        status === "PENDING" || status === "LEAVE" || status === "HOLIDAY" ? "var(--badge-warning-fg)" :
+          status === "INACTIVE" || status === "ABSENT" || status === "CANCELLED" ? "var(--badge-danger-fg)" :
+            status === "COMPLETED" ? "var(--badge-purple-fg)" :
+              "var(--text-secondary)"
   };
 `;
 
 export const ActionButtons = styled.div`
   display: flex;
-
-  gap: .5rem;
+  gap: 0.5rem;
 `;
 
 export const IconButton = styled.button`
   width: 2.4rem;
-
   height: 2.4rem;
-
   border: none;
-
-  border-radius: .65rem;
-
-  background: #EFF6FF;
-
-  color: #2563EB;
-
+  border-radius: 0.65rem;
+  background: var(--primary-light);
+  color: var(--primary);
   display: flex;
-
   justify-content: center;
-
   align-items: center;
-
   cursor: pointer;
-
-  transition: .25s;
+  transition: 0.25s;
 
   &:hover {
-
-    background: #2563EB;
-
+    background: var(--primary);
     color: #ffffff;
-
   }
 `;

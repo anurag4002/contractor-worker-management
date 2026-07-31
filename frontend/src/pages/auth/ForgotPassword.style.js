@@ -13,7 +13,7 @@ export const Page = styled.div`
 
   background: linear-gradient(
     135deg,
-    #2563EB,
+    var(--primary),
     #1E3A8A
   );
 `;
@@ -23,7 +23,7 @@ export const Card = styled.div`
 
   max-width: 28rem;
 
-  background: #ffffff;
+  background: var(--surface);
 
   border-radius: 1.25rem;
 
@@ -53,7 +53,7 @@ export const Title = styled.h2`
 
   text-align:center;
 
-  color:#0F172A;
+  color:var(--text);
 
   font-size:2rem;
 
@@ -65,7 +65,7 @@ export const Subtitle = styled.p`
 
   text-align:center;
 
-  color:#64748B;
+  color:var(--text-secondary);
 
   line-height:1.6;
 `;
@@ -77,7 +77,7 @@ export const SuccessMessage = styled.div`
 
   border-radius:.75rem;
 
-  background:#DCFCE7;
+  background:var(--badge-success-bg);
 
   color:#15803D;
 
@@ -109,7 +109,7 @@ export const Icon = styled.div`
 
   left:1rem;
 
-  color:#64748B;
+  color:var(--text-secondary);
 
   font-size:1rem;
 `;
@@ -119,7 +119,7 @@ export const Input = styled.input`
 
   padding:1rem 1rem 1rem 3rem;
 
-  border:1px solid #CBD5E1;
+  border:1px solid var(--input-border);
 
   border-radius:.8rem;
 
@@ -131,7 +131,7 @@ export const Input = styled.input`
 
   &:focus{
 
-    border-color:#2563EB;
+    border-color:var(--primary);
 
     box-shadow:0 0 0 3px rgba(37,99,235,.15);
 
@@ -141,9 +141,9 @@ export const Input = styled.input`
 export const Button = styled.button`
   border:none;
 
-  background:#2563EB;
+  background:var(--primary);
 
-  color:#ffffff;
+  color:var(--surface);
 
   padding:1rem;
 
@@ -159,7 +159,7 @@ export const Button = styled.button`
 
   &:hover{
 
-    background:#1D4ED8;
+    background:var(--primary-hover);
 
   }
 
@@ -183,7 +183,7 @@ export const Footer = styled.div`
 
     gap:.5rem;
 
-    color:#2563EB;
+    color:var(--primary);
 
     text-decoration:none;
 
@@ -195,7 +195,7 @@ export const Footer = styled.div`
 
   a:hover{
 
-    color:#1D4ED8;
+    color:var(--primary-hover);
 
   }
 `;

@@ -11,6 +11,7 @@ import StatusBadge from "../ui/StatusBadge";
 import SkeletonRows from "../ui/SkeletonRows";
 import EmptyState from "../ui/EmptyState";
 import Pagination from "../ui/Pagination";
+import { showSuccess, showError } from "../../components/common/toast";
 
 const STATUSES = ["PRESENT", "ABSENT", "HALF_DAY", "LEAVE", "HOLIDAY"];
 
@@ -31,31 +32,45 @@ const AttendanceReport = ({ sites = [] }) => {
     const data = Array.isArray(attendanceReport) ? attendanceReport : [];
     const set = (k, v) => { setFilters((p) => ({ ...p, [k]: v })); setPage(1); };
 
-    const handleExcel = () =>
-        exportToExcel(
-            data.map((r) => ({
-                Worker: r.worker?.fullName || "",
-                Site: r.site?.siteName || "",
-                Date: r.attendanceDate?.slice(0, 10) || "",
-                Status: r.status || "",
-                "Regular Hrs": r.regularHours ?? 0,
-                "Overtime Hrs": r.overtimeHours ?? 0,
-                Remarks: r.remarks || "",
-            })),
-            "Attendance_Report"
-        );
+    const handleExcel = () => {
+        try {
+            exportToExcel(
+                data.map((r) => ({
+                    Worker: r.worker?.fullName || "",
+                    Site: r.site?.siteName || "",
+                    Date: r.attendanceDate?.slice(0, 10) || "",
+                    Status: r.status || "",
+                    "Regular Hrs": r.regularHours ?? 0,
+                    "Overtime Hrs": r.overtimeHours ?? 0,
+                    Remarks: r.remarks || "",
+                })),
+                "Attendance_Report"
+            );
+            showSuccess("Attendance Report exported to Excel.");
+        } catch (err) {
+            console.error(err);
+            showError("Failed to export Attendance Report.");
+        }
+    };
 
-    const handlePDF = () =>
-        exportToPDF(
-            "Attendance Report",
-            ["Worker", "Site", "Date", "Status", "Reg Hrs", "OT Hrs"],
-            data.map((r) => [
-                r.worker?.fullName, r.site?.siteName,
-                r.attendanceDate?.slice(0, 10), r.status,
-                r.regularHours, r.overtimeHours,
-            ]),
-            "Attendance_Report"
-        );
+    const handlePDF = () => {
+        try {
+            exportToPDF(
+                "Attendance Report",
+                ["Worker", "Site", "Date", "Status", "Reg Hrs", "OT Hrs"],
+                data.map((r) => [
+                    r.worker?.fullName, r.site?.siteName,
+                    r.attendanceDate?.slice(0, 10), r.status,
+                    r.regularHours, r.overtimeHours,
+                ]),
+                "Attendance_Report"
+            );
+            showSuccess("Attendance Report exported to PDF.");
+        } catch (err) {
+            console.error(err);
+            showError("Failed to export Attendance Report.");
+        }
+    };
 
     return (
         <ReportContainer>

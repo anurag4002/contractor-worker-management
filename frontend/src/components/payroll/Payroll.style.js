@@ -11,7 +11,7 @@ export const SummaryGrid = styled.div`
 
 export const Card = styled.div`
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1.5rem;
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
@@ -24,8 +24,8 @@ export const IconBox = styled.div`
   width: 48px;
   height: 48px;
   border-radius: 0.75rem;
-  background: ${({ color }) => color || "#2563eb"}22;
-  color: ${({ color }) => color || "#2563eb"};
+  background: ${({ color }) => color || "var(--primary)"}22;
+  color: ${({ color }) => color || "var(--primary)"};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,13 +34,13 @@ export const IconBox = styled.div`
 `;
 
 export const Info = styled.div`
-  p { margin: 0; font-size: 0.85rem; color: #64748b; }
-  h3 { margin: 0.25rem 0 0; font-size: 1.5rem; font-weight: 700; color: #0f172a; }
+  p { margin: 0; font-size: 0.85rem; color: var(--text-secondary); }
+  h3 { margin: 0.25rem 0 0; font-size: 1.5rem; font-weight: 700; color: var(--text); }
 `;
 
 export const TableCard = styled.div`
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   border-radius: 1rem;
   overflow: hidden;
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
@@ -51,21 +51,21 @@ export const Table = styled.table`
   border-collapse: collapse;
   font-size: 0.9rem;
 
-  thead tr { background: #f8fafc; }
+  thead tr { background: var(--bg); }
   th {
     padding: 1rem 1.25rem;
     text-align: left;
     font-weight: 600;
-    color: #475569;
-    border-bottom: 1px solid #e2e8f0;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
     white-space: nowrap;
   }
   td {
     padding: 1rem 1.25rem;
-    border-bottom: 1px solid #f1f5f9;
-    color: #334155;
+    border-bottom: 1px solid var(--surface-hover);
+    color: var(--text);
   }
-  tbody tr:hover { background: #f8fafc; }
+  tbody tr:hover { background: var(--bg); }
   tbody tr:last-child td { border-bottom: none; }
 `;
 
@@ -77,15 +77,15 @@ export const Status = styled.span`
   font-size: 0.78rem;
   font-weight: 600;
   background: ${({ status }) =>
-        status === "PAID" ? "#dcfce7" :
-            status === "GENERATED" ? "#dbeafe" :
-                status === "PENDING" ? "#fef9c3" :
-                    status === "CANCELLED" ? "#fee2e2" : "#f1f5f9"};
+        status === "PAID" ? "var(--badge-success-bg)" :
+            status === "GENERATED" ? "var(--badge-info-bg)" :
+                status === "PENDING" ? "var(--badge-warning-bg)" :
+                    status === "CANCELLED" ? "var(--badge-danger-bg)" : "var(--surface-hover)"};
   color: ${({ status }) =>
-        status === "PAID" ? "#16a34a" :
-            status === "GENERATED" ? "#2563eb" :
-                status === "PENDING" ? "#ca8a04" :
-                    status === "CANCELLED" ? "#dc2626" : "#64748b"};
+        status === "PAID" ? "var(--success)" :
+            status === "GENERATED" ? "var(--primary)" :
+                status === "PENDING" ? "var(--warning)" :
+                    status === "CANCELLED" ? "var(--danger)" : "var(--text-secondary)"};
 `;
 
 export const ActionButtons = styled.div`
@@ -96,14 +96,14 @@ export const ActionButtons = styled.div`
 
 export const IconButton = styled.button`
   background: none;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   border-radius: 0.5rem;
   padding: 0.4rem 0.6rem;
   cursor: pointer;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 0.85rem;
   transition: 0.2s;
-  &:hover { background: #f1f5f9; color: #0f172a; }
+  &:hover { background: var(--surface-hover); color: var(--text); }
 `;
 
 export const FilterBar = styled.div`
@@ -112,7 +112,7 @@ export const FilterBar = styled.div`
   flex-wrap: wrap;
   align-items: center;
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1rem 1.25rem;
 `;
@@ -121,30 +121,30 @@ export const SearchInput = styled.input`
   flex: 1;
   min-width: 180px;
   padding: 0.65rem 1rem;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--input-border);
   border-radius: 0.65rem;
   font-size: 0.9rem;
   outline: none;
-  &:focus { border-color: #2563eb; }
+  &:focus { border-color: var(--primary); }
 `;
 
 export const FilterSelect = styled.select`
   padding: 0.65rem 1rem;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--input-border);
   border-radius: 0.65rem;
   font-size: 0.9rem;
   background: #fff;
   outline: none;
   cursor: pointer;
-  &:focus { border-color: #2563eb; }
+  &:focus { border-color: var(--primary); }
 `;
 
 export const ResetButton = styled.button`
   padding: 0.65rem 1.1rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   border-radius: 0.65rem;
-  background: #f8fafc;
+  background: var(--bg);
   font-size: 0.9rem;
   cursor: pointer;
-  &:hover { background: #f1f5f9; }
+  &:hover { background: var(--surface-hover); }
 `;

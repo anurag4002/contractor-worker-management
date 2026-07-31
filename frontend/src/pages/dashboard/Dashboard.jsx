@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiCalendar, FiDownload, FiRefreshCw, FiAlertCircle } from "react-icons/fi";
-import { showError, showSuccess } from "../../components/common/toast";
+import { showError } from "../../components/common/toast";
 
 import dashboardService from "../../services/dashboard.service";
 import DashboardCharts from "../../components/dashboardcharts/DashboardCharts";
@@ -49,10 +49,6 @@ const Dashboard = () => {
     year: "numeric",
   });
 
-  useEffect(() => {
-    loadDashboard();
-  }, []);
-
   const loadDashboard = async () => {
     try {
       setLoading(true);
@@ -88,13 +84,13 @@ const Dashboard = () => {
     }
   };
 
+  useEffect(() => {
+    loadDashboard();
+  }, []);
+
   const handleExport = () => {
-    exportDashboardPDF({
-      dashboard,
-      recentWorkers,
-      recentAttendance,
-      recentPayroll,
-    });
+    if (!dashboard) return;
+    exportDashboardPDF(dashboard);
   };
 
   if (loading) {
@@ -131,7 +127,7 @@ const Dashboard = () => {
         <ErrorContainer>
           <FiAlertCircle size={48} color="#dc2626" />
           <ErrorTitle>Failed to load Dashboard</ErrorTitle>
-          <p style={{ color: '#64748b', margin: 0 }}>Please check your configuration or try again.</p>
+          <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Please check your configuration or try again.</p>
           <RetryButton onClick={loadDashboard}>
             <FiRefreshCw /> Retry Connection
           </RetryButton>

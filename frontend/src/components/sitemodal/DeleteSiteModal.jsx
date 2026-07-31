@@ -30,20 +30,20 @@ const DeleteSiteModal = ({ open, onClose, site }) => {
         <ModalOverlay role="dialog" aria-modal="true" aria-labelledby={titleId}>
             <ModalContent>
                 <ModalHeader>
-                    <ModalTitle id={titleId} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#dc2626' }}>
+                    <ModalTitle id={titleId} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--danger)' }}>
                         <FiAlertTriangle /> Delete Site
                     </ModalTitle>
                     <CloseButton type="button" onClick={onClose} aria-label="Close dialog"><FiX /></CloseButton>
                 </ModalHeader>
                 <div style={{ padding: '1.5rem' }}>
                     <p>Are you sure you want to delete the site <strong>{site?.siteName}</strong>?</p>
-                    <p style={{ color: '#64748b', fontSize: '0.875rem' }}>This action cannot be undone.</p>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>This action cannot be undone.</p>
                 </div>
                 <ModalFooter>
                     <CancelButton type="button" onClick={onClose} disabled={loading}>Cancel</CancelButton>
                     <SaveButton
                         type="button"
-                        style={{ background: '#dc2626' }}
+                        style={{ background: 'var(--danger)' }}
                         onClick={handleDelete}
                         disabled={loading}
                     >

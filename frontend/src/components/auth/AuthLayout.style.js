@@ -7,7 +7,7 @@ export const AuthContainer = styled.div`
 
   grid-template-columns: 1fr 32rem;
 
-  background: #F8FAFC;
+  background: var(--table-header-bg);
 
   @media (max-width: 992px) {
     grid-template-columns: 1fr;
@@ -17,11 +17,11 @@ export const AuthContainer = styled.div`
 export const LeftSection = styled.div`
   background: linear-gradient(
     135deg,
-    #2563EB 0%,
-    #1D4ED8 100%
+    var(--primary) 0%,
+    var(--primary-hover) 100%
   );
 
-  color: #ffffff;
+  color: var(--surface);
 
   display: flex;
 
@@ -113,5 +113,5 @@ export const RightSection = styled.div`
 
   padding: 2rem;
 
-  background: #F8FAFC;
+  background: var(--table-header-bg);
 `;

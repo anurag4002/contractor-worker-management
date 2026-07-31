@@ -76,7 +76,7 @@ const Sites = () => {
       </Header>
 
       {loading && !sitesData.length ? (
-        <div style={{ padding: "2rem", textAlign: "center", color: "#64748b" }}>
+        <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
           Loading sites...
         </div>
       ) : (

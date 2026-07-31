@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }) => {
     return authService.register(payload);
   };
 
-  const logout = async () => {
+   const logout = async () => {
     try {
       await authService.logout();
     } catch (error) {
@@ -57,6 +57,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
+    sessionStorage.clear();
     setUser(null);
   };
 

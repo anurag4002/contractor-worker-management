@@ -12,7 +12,7 @@ export const Page = styled.div`
 export const Card = styled.div`
   width: 100%;
   max-width: 58rem;
-  background: #ffffff;
+  background: var(--surface);
   border-radius: 1.5rem;
   padding: 2.5rem;
   box-shadow: 0 28px 60px rgba(15, 23, 42, 0.12);
@@ -26,8 +26,8 @@ export const AvatarCircle = styled.div`
   display: grid;
   place-items: center;
   margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, #2563eb 0%, #38bdf8 100%);
-  color: #ffffff;
+  background: linear-gradient(135deg, var(--primary) 0%, #38bdf8 100%);
+  color: var(--surface);
   box-shadow: 0 15px 35px rgba(37, 99, 235, 0.18);
 `;
 
@@ -41,20 +41,20 @@ export const HeaderSection = styled.section`
 export const Name = styled.h1`
   margin: 0;
   font-size: clamp(1.9rem, 3vw, 2.6rem);
-  color: #0f172a;
+  color: var(--text);
   letter-spacing: -0.02em;
 `;
 
 export const RoleLabel = styled.p`
   margin: 0;
-  color: #2563eb;
+  color: var(--primary);
   font-weight: 700;
   font-size: 1rem;
 `;
 
 export const SummaryText = styled.p`
   margin: 0;
-  color: #475569;
+  color: var(--text);
   line-height: 1.8;
   max-width: 52rem;
 `;
@@ -77,7 +77,7 @@ export const FieldGroup = styled.div`
 
 export const FieldLabel = styled.label`
   font-size: 0.92rem;
-  color: #64748b;
+  color: var(--text-secondary);
   font-weight: 600;
 `;
 
@@ -86,8 +86,8 @@ export const FieldBox = styled.div`
   grid-template-columns: auto 1fr;
   align-items: center;
   gap: 0.75rem;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--bg);
+  border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 0.9rem 1rem;
 `;
@@ -98,7 +98,7 @@ export const FieldIcon = styled.div`
   width: 2.75rem;
   height: 2.75rem;
   border-radius: 0.95rem;
-  color: #2563eb;
+  color: var(--primary);
   background: rgba(37, 99, 235, 0.08);
   flex-shrink: 0;
 `;
@@ -107,7 +107,7 @@ export const FieldInput = styled.input`
   width: 100%;
   border: none;
   background: transparent;
-  color: #0f172a;
+  color: var(--text);
   font-size: 1rem;
   font-weight: 600;
   min-width: 0;
@@ -117,7 +117,7 @@ export const FieldInput = styled.input`
   }
 
   &:read-only {
-    color: #334155;
+    color: var(--text);
     cursor: default;
   }
 `;
@@ -141,23 +141,27 @@ const Button = styled.button`
 `;
 
 export const PrimaryButton = styled(Button)`
-  background: #2563eb;
-  color: #ffffff;
+  background: var(--primary);
+  color: var(--surface);
   box-shadow: 0 14px 30px rgba(37, 99, 235, 0.2);
 
   &:hover {
-    background: #1d4ed8;
+    background: var(--primary-hover);
   }
 `;
 
 export const SecondaryButton = styled(Button)`
-  background: #e2e8f0;
-  color: #0f172a;
+  background: var(--border);
+  color: var(--text);
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 
   &:hover {
-    background: #cbd5e1;
+    background: var(--input-border);
   }
+`;
+
+export const BackButton = styled(SecondaryButton)`
+  margin-right: auto;
 `;
 
 export const ButtonRow = styled.div`

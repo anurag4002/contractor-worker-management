@@ -7,7 +7,7 @@ export const Card = styled.div`
 
   padding: 1rem;
 
-  background: #ffffff;
+  background: var(--surface);
 
   border: 1px solid #e5e7eb;
 
@@ -18,8 +18,8 @@ export const Card = styled.div`
   cursor: pointer;
 
   &:hover {
-    background: #f8fafc;
-    border-color: #2563eb;
+    background: var(--bg);
+    border-color: var(--primary);
   }
 `;
 

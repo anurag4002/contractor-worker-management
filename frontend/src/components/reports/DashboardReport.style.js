@@ -13,14 +13,14 @@ export const SummaryGrid = styled.div`
 `;
 
 export const StatCard = styled.div`
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1.25rem 1.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 4px 12px var(--shadow);
 `;
 
 export const IconWrapper = styled.div`
@@ -39,31 +39,31 @@ export const IconWrapper = styled.div`
 export const StatLabel = styled.p`
   margin: 0;
   font-size: 0.8rem;
-  color: #64748b;
+  color: var(--text-secondary);
 `;
 
 export const StatValue = styled.h3`
   margin: 0.2rem 0 0;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text);
 `;
 
 export const ActivitiesCard = styled.div`
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1.5rem;
 `;
 
 export const ActivitiesTitle = styled.h4`
   margin: 0 0 1rem;
-  color: #0f172a;
+  color: var(--text);
 `;
 
 export const ActivitiesPre = styled.pre`
   margin: 0;
   font-size: 0.8rem;
-  color: #475569;
+  color: var(--text-secondary);
   overflow-x: auto;
 `;

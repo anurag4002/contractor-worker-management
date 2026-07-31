@@ -2,26 +2,26 @@ import styled from "styled-components";
 
 const VARIANTS = {
     primary: `
-    background: #2563eb; color: #fff; border: none;
+    background: var(--primary); color: #fff; border: none;
     box-shadow: 0 4px 12px rgba(37,99,235,0.2);
-    &:hover:not(:disabled) { background: #1d4ed8; }
+    &:hover:not(:disabled) { background: var(--primary-hover); }
   `,
     secondary: `
-    background: #f1f5f9; color: #334155; border: 1px solid #e2e8f0;
-    &:hover:not(:disabled) { background: #e2e8f0; }
+    background: var(--surface-hover); color: var(--text); border: 1px solid var(--border);
+    &:hover:not(:disabled) { background: var(--border); }
   `,
     danger: `
-    background: #dc2626; color: #fff; border: none;
-    &:hover:not(:disabled) { background: #b91c1c; }
+    background: var(--danger); color: #fff; border: none;
+    &:hover:not(:disabled) { background: var(--danger-hover); }
   `,
     ghost: `
-    background: transparent; color: #2563eb; border: 1px solid #2563eb;
-    &:hover:not(:disabled) { background: #eff6ff; }
+    background: transparent; color: var(--primary); border: 1px solid var(--primary);
+    &:hover:not(:disabled) { background: var(--primary-light); }
   `,
     icon: `
-    background: #eff6ff; color: #2563eb; border: none;
+    background: var(--primary-light); color: var(--primary); border: none;
     width: 2.4rem; height: 2.4rem; padding: 0;
-    &:hover:not(:disabled) { background: #2563eb; color: #fff; }
+    &:hover:not(:disabled) { background: var(--primary); color: #fff; }
   `,
 };
 

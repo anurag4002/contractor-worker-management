@@ -27,7 +27,7 @@ const DeletePayrollModal = ({ open, onClose, payroll }) => {
         <ModalOverlay role="dialog" aria-modal="true" aria-labelledby={titleId}>
             <ModalContent style={{ maxWidth: "32rem" }}>
                 <ModalHeader>
-                    <ModalTitle id={titleId} style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "#dc2626" }}>
+                    <ModalTitle id={titleId} style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--danger)" }}>
                         <FiAlertTriangle /> Delete Payroll
                     </ModalTitle>
                     <CloseButton type="button" onClick={onClose} aria-label="Close dialog"><FiX /></CloseButton>
@@ -38,11 +38,11 @@ const DeletePayrollModal = ({ open, onClose, payroll }) => {
                         <strong>{workerName}</strong> for{" "}
                         <strong>{MONTHS[payroll.attendanceMonth]} {payroll.attendanceYear}</strong>?
                     </p>
-                    <p style={{ color: "#64748b", fontSize: "0.875rem" }}>This action cannot be undone.</p>
+                    <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem" }}>This action cannot be undone.</p>
                 </div>
                 <ModalFooter>
                     <CancelButton type="button" onClick={onClose} disabled={loading}>Cancel</CancelButton>
-                    <SaveButton type="button" style={{ background: "#dc2626" }} onClick={handleDelete} disabled={loading}>
+                    <SaveButton type="button" style={{ background: "var(--danger)" }} onClick={handleDelete} disabled={loading}>
                         {loading ? "Deleting..." : "Delete"}
                     </SaveButton>
                 </ModalFooter>

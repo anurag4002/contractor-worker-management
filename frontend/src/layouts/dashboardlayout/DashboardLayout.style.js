@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const LayoutWrapper = styled.div`
   display: flex;
   min-height: 100vh;
-  background: #f8fafc;
+  background: var(--bg);
 `;
 
 export const ContentWrapper = styled.div`
@@ -16,5 +16,5 @@ export const ContentWrapper = styled.div`
 export const MainContent = styled.main`
   flex: 1;
   padding: 2rem;
-  background: #f8fafc;
+  background: var(--bg);
 `;

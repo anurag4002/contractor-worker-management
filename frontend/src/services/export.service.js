@@ -8,6 +8,9 @@ const BASE = "/export";
  * @param {string} filename  e.g. "workers.pdf"
  */
 const triggerDownload = (blob, filename) => {
+    if (!(blob instanceof Blob)) {
+        throw new Error("Invalid download response: expected a file blob.");
+    }
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;

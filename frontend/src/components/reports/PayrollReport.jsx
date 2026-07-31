@@ -10,6 +10,7 @@ import StatusBadge from "../ui/StatusBadge";
 import SkeletonRows from "../ui/SkeletonRows";
 import EmptyState from "../ui/EmptyState";
 import Pagination from "../ui/Pagination";
+import { showSuccess, showError } from "../../components/common/toast";
 
 const MONTHS = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const currentYear = new Date().getFullYear();
@@ -32,33 +33,47 @@ const PayrollReport = ({ sites = [] }) => {
     const data = Array.isArray(payrollReport) ? payrollReport : [];
     const set = (k, v) => { setFilters((p) => ({ ...p, [k]: v })); setPage(1); };
 
-    const handleExcel = () =>
-        exportToExcel(
-            data.map((p) => ({
-                Worker: p.worker?.fullName || "",
-                Site: p.site?.siteName || "",
-                Month: MONTHS[p.attendanceMonth] || "",
-                Year: p.attendanceYear || "",
-                "Daily Wage": p.dailyWage || 0,
-                "Net Payable": p.netPayable || 0,
-                Status: p.status || "",
-            })),
-            "Payroll_Report"
-        );
+    const handleExcel = () => {
+        try {
+            exportToExcel(
+                data.map((p) => ({
+                    Worker: p.worker?.fullName || "",
+                    Site: p.site?.siteName || "",
+                    Month: MONTHS[p.attendanceMonth] || "",
+                    Year: p.attendanceYear || "",
+                    "Daily Wage": p.dailyWage || 0,
+                    "Net Payable": p.netPayable || 0,
+                    Status: p.status || "",
+                })),
+                "Payroll_Report"
+            );
+            showSuccess("Payroll Report exported to Excel.");
+        } catch (err) {
+            console.error(err);
+            showError("Failed to export Payroll Report.");
+        }
+    };
 
-    const handlePDF = () =>
-        exportToPDF(
-            "Payroll Report",
-            ["Worker", "Month/Year", "Daily Wage", "Net Payable", "Status"],
-            data.map((p) => [
-                p.worker?.fullName,
-                `${MONTHS[p.attendanceMonth]} ${p.attendanceYear}`,
-                `₹${p.dailyWage}`,
-                `₹${p.netPayable}`,
-                p.status,
-            ]),
-            "Payroll_Report"
-        );
+    const handlePDF = () => {
+        try {
+            exportToPDF(
+                "Payroll Report",
+                ["Worker", "Month/Year", "Daily Wage", "Net Payable", "Status"],
+                data.map((p) => [
+                    p.worker?.fullName,
+                    `${MONTHS[p.attendanceMonth]} ${p.attendanceYear}`,
+                    `₹${p.dailyWage}`,
+                    `₹${p.netPayable}`,
+                    p.status,
+                ]),
+                "Payroll_Report"
+            );
+            showSuccess("Payroll Report exported to PDF.");
+        } catch (err) {
+            console.error(err);
+            showError("Failed to export Payroll Report.");
+        }
+    };
 
     return (
         <ReportContainer>

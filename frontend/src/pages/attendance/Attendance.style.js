@@ -22,13 +22,13 @@ export const TitleSection = styled.div`
   h2 {
     margin: 0;
     font-size: 2rem;
-    color: #0f172a;
+    color: var(--text);
     font-weight: 700;
   }
 
   p {
     margin-top: 0.5rem;
-    color: #64748b;
+    color: var(--text-secondary);
   }
 `;
 
@@ -47,7 +47,7 @@ export const Button = styled.button`
 
   border-radius: 0.8rem;
 
-  background: #2563eb;
+  background: var(--primary);
   color: #fff;
 
   font-size: 0.95rem;
@@ -56,14 +56,14 @@ export const Button = styled.button`
   transition: 0.3s;
 
   &:hover {
-    background: #1d4ed8;
+    background: var(--primary-hover);
   }
 `;
 
 export const Section = styled.section`
-  background: #ffffff;
+  background: var(--surface);
 
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
 
   border-radius: 1rem;
 
@@ -82,12 +82,12 @@ export const SectionHeader = styled.div`
   h3 {
     margin: 0;
     font-size: 1.2rem;
-    color: #0f172a;
+    color: var(--text);
   }
 
   p {
     margin-top: 0.35rem;
-    color: #64748b;
+    color: var(--text-secondary);
     font-size: 0.9rem;
   }
 
@@ -103,11 +103,11 @@ export const EmptyState = styled.div`
 
   text-align: center;
 
-  color: #64748b;
+  color: var(--text-secondary);
 
-  border: 2px dashed #cbd5e1;
+  border: 2px dashed var(--input-border);
 
   border-radius: 1rem;
 
-  background: #f8fafc;
+  background: var(--bg);
 `;

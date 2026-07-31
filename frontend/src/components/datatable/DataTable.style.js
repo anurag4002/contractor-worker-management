@@ -2,16 +2,16 @@ import styled from "styled-components";
 
 export const TableContainer = styled.div`
   width: 100%;
-  background: #ffffff;
+  background: var(--surface);
   border-radius: 1rem;
   overflow: hidden;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
 `;
 
 export const TableHeader = styled.div`
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border);
 
   display: flex;
   justify-content: space-between;
@@ -26,7 +26,7 @@ export const TableHeader = styled.div`
 
 export const Title = styled.h3`
   margin: 0;
-  color: #0f172a;
+  color: var(--text);
   font-size: 1.2rem;
   font-weight: 700;
 `;
@@ -40,20 +40,20 @@ export const SearchBox = styled.div`
     left: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    color: #94a3b8;
+    color: var(--text-secondary);
   }
 
   input {
     width: 100%;
     padding: 0.9rem 1rem 0.9rem 2.8rem;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--input-border);
     border-radius: 0.8rem;
     outline: none;
     font-size: 0.95rem;
     transition: 0.3s;
 
     &:focus {
-      border-color: #2563eb;
+      border-color: var(--primary);
     }
   }
 
@@ -72,23 +72,23 @@ export const StyledTable = styled.table`
   border-collapse: collapse;
 
   thead {
-    background: #f8fafc;
+    background: var(--bg);
   }
 
   th {
     padding: 1rem;
     text-align: left;
-    color: #475569;
+    color: var(--text);
     font-size: 0.9rem;
     font-weight: 600;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border);
     white-space: nowrap;
   }
 
   td {
     padding: 1rem;
-    border-bottom: 1px solid #f1f5f9;
-    color: #334155;
+    border-bottom: 1px solid var(--surface-hover);
+    color: var(--text);
     font-size: 0.94rem;
   }
 
@@ -97,14 +97,14 @@ export const StyledTable = styled.table`
   }
 
   tbody tr:hover {
-    background: #f8fafc;
+    background: var(--bg);
   }
 `;
 
 export const EmptyState = styled.div`
   padding: 3rem;
   text-align: center;
-  color: #94a3b8;
+  color: var(--text-secondary);
 `;
 
 export const Pagination = styled.div`
@@ -114,7 +114,7 @@ export const Pagination = styled.div`
   justify-content: space-between;
   align-items: center;
 
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--border);
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -137,15 +137,15 @@ export const PageButton = styled.button`
   cursor: pointer;
 
   background: ${({ active }) =>
-    active ? "#2563EB" : "#F1F5F9"};
+    active ? "var(--primary)" : "var(--surface-hover)"};
 
   color: ${({ active }) =>
-    active ? "#fff" : "#475569"};
+    active ? "#fff" : "var(--text)"};
 
   transition: 0.3s;
 
   &:hover {
-    background: #2563eb;
+    background: var(--primary);
     color: white;
   }
 `;

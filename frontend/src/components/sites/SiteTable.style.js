@@ -1,9 +1,9 @@
 import styled from "styled-components";
 
 export const TableCard = styled.div`
-  background: #ffffff;
+  background: var(--surface);
 
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
 
   border-radius: 1rem;
 
@@ -20,7 +20,7 @@ export const Table = styled.table`
   border-collapse: collapse;
 
   thead {
-    background: #f8fafc;
+    background: var(--bg);
   }
 
   th {
@@ -28,13 +28,13 @@ export const Table = styled.table`
 
     text-align: left;
 
-    color: #475569;
+    color: var(--text);
 
     font-size: .9rem;
 
     font-weight: 600;
 
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border);
 
     white-space: nowrap;
   }
@@ -42,15 +42,15 @@ export const Table = styled.table`
   td {
     padding: 1rem;
 
-    color: #334155;
+    color: var(--text);
 
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--surface-hover);
 
     white-space: nowrap;
   }
 
   tbody tr:hover {
-    background: #f8fafc;
+    background: var(--bg);
   }
 `;
 
@@ -71,13 +71,13 @@ export const Status = styled.span`
 
   background: ${({ status }) =>
     status === "Active"
-      ? "#DCFCE7"
-      : "#E2E8F0"};
+      ? "var(--badge-success-bg)"
+      : "var(--border)"};
 
   color: ${({ status }) =>
     status === "Active"
       ? "#15803D"
-      : "#475569"};
+      : "var(--text)"};
 `;
 
 export const ActionButtons = styled.div`
@@ -95,9 +95,9 @@ export const IconButton = styled.button`
 
   border-radius: .65rem;
 
-  background: #EFF6FF;
+  background: var(--primary-light);
 
-  color: #2563EB;
+  color: var(--primary);
 
   display: flex;
 
@@ -111,9 +111,9 @@ export const IconButton = styled.button`
 
   &:hover {
 
-    background: #2563EB;
+    background: var(--primary);
 
-    color: #ffffff;
+    color: var(--surface);
 
   }
 `;

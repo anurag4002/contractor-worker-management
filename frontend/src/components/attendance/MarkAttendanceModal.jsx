@@ -141,7 +141,7 @@ const MarkAttendanceModal = ({ open, record, onClose }) => {
               value={formData.attendanceDate}
               onChange={handleChange}
               required
-              style={{ padding: "0.5rem", borderRadius: "6px", border: "1px solid #e2e8f0", width: "100%" }}
+              style={{ padding: "0.5rem", borderRadius: "6px", border: "1px solid var(--border)", width: "100%" }}
             />
             <FormError error={apiErrors.attendanceDate} />
           </FormGroup>

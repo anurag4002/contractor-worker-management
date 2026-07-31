@@ -11,6 +11,7 @@ import StatusBadge from "../ui/StatusBadge";
 import SkeletonRows from "../ui/SkeletonRows";
 import EmptyState from "../ui/EmptyState";
 import Pagination from "../ui/Pagination";
+import { showSuccess, showError } from "../../components/common/toast";
 
 const WorkerReport = ({ sites = [] }) => {
     const { workerReport, pagination, loading, fetchWorkerReport } = useReport();
@@ -29,23 +30,37 @@ const WorkerReport = ({ sites = [] }) => {
     const data = Array.isArray(workerReport) ? workerReport : [];
     const set = (k, v) => { setFilters((p) => ({ ...p, [k]: v })); setPage(1); };
 
-    const handleExcel = () =>
-        exportToExcel(
-            data.map((w) => ({
-                Name: w.fullName || "", Code: w.employeeCode || "",
-                Trade: w.trade || "", Site: w.site?.siteName || "",
-                Status: w.status || "", Mobile: w.mobileNumber || "",
-            })),
-            "Worker_Report"
-        );
+    const handleExcel = () => {
+        try {
+            exportToExcel(
+                data.map((w) => ({
+                    Name: w.fullName || "", Code: w.employeeCode || "",
+                    Trade: w.trade || "", Site: w.site?.siteName || "",
+                    Status: w.status || "", Mobile: w.mobileNumber || "",
+                })),
+                "Worker_Report"
+            );
+            showSuccess("Worker Report exported to Excel.");
+        } catch (err) {
+            console.error(err);
+            showError("Failed to export Worker Report.");
+        }
+    };
 
-    const handlePDF = () =>
-        exportToPDF(
-            "Worker Report",
-            ["Name", "Code", "Trade", "Site", "Status"],
-            data.map((w) => [w.fullName, w.employeeCode, w.trade, w.site?.siteName, w.status]),
-            "Worker_Report"
-        );
+    const handlePDF = () => {
+        try {
+            exportToPDF(
+                "Worker Report",
+                ["Name", "Code", "Trade", "Site", "Status"],
+                data.map((w) => [w.fullName, w.employeeCode, w.trade, w.site?.siteName, w.status]),
+                "Worker_Report"
+            );
+            showSuccess("Worker Report exported to PDF.");
+        } catch (err) {
+            console.error(err);
+            showError("Failed to export Worker Report.");
+        }
+    };
 
     return (
         <ReportContainer>

@@ -21,7 +21,7 @@ const AttendanceTable = ({ records = [], onHistory, onMark, onDelete, onChangeSt
         <tbody>
           {records.length === 0 ? (
             <tr>
-              <td colSpan="8" style={{ textAlign: "center", padding: "2rem", color: "#64748b" }}>
+              <td colSpan="8" style={{ textAlign: "center", padding: "2rem", color: "var(--text-secondary)" }}>
                 No attendance records found.
               </td>
             </tr>

@@ -24,12 +24,12 @@ export const TitleSection = styled.div`
     margin: 0;
     font-size: 2rem;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--text);
   }
 
   p {
     margin-top: 0.5rem;
-    color: #64748b;
+    color: var(--text-secondary);
     font-size: 0.95rem;
   }
 `;
@@ -47,9 +47,9 @@ export const Button = styled.button`
 
   border: none;
 
-  background: #2563eb;
+  background: var(--primary);
 
-  color: #ffffff;
+  color: var(--surface);
 
   padding: .9rem 1.4rem;
 
@@ -62,7 +62,7 @@ export const Button = styled.button`
   transition: .25s;
 
   &:hover {
-    background: #1d4ed8;
+    background: var(--primary-hover);
   }
 `;
 
@@ -73,9 +73,9 @@ export const Section = styled.section`
 `;
 
 export const Card = styled.div`
-  background: #ffffff;
+  background: var(--surface);
 
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
 
   border-radius: 1rem;
 

@@ -3,12 +3,12 @@ import styled from "styled-components";
 export const Message = styled.div`
   padding: 2rem;
   text-align: center;
-  color: #475569;
+  color: var(--text);
   line-height: 1.8;
   font-size: 1rem;
 `;
 
 export const WorkerName = styled.span`
-  color: #DC2626;
+  color: var(--danger);
   font-weight: 700;
 `;

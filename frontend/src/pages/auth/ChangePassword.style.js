@@ -6,13 +6,13 @@ export const Page = styled.div`
   justify-content: center;
   align-items: center;
   padding: 2rem;
-  background: #f8fafc;
+  background: var(--bg);
 `;
 
 export const Card = styled.div`
   width: 100%;
   max-width: 32rem;
-  background: #ffffff;
+  background: var(--surface);
   border-radius: 1rem;
   padding: 2rem;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
@@ -21,7 +21,7 @@ export const Card = styled.div`
 export const Title = styled.h2`
   margin: 0;
   text-align: center;
-  color: #0f172a;
+  color: var(--text);
   font-size: 2rem;
   font-weight: 700;
 `;
@@ -29,7 +29,7 @@ export const Title = styled.h2`
 export const Subtitle = styled.p`
   margin: 0.75rem 0 2rem;
   text-align: center;
-  color: #64748b;
+  color: var(--text-secondary);
 `;
 
 export const Form = styled.form`
@@ -47,26 +47,26 @@ export const InputGroup = styled.div`
 export const Icon = styled.div`
   position: absolute;
   left: 1rem;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 1rem;
 `;
 
 export const Input = styled.input`
   width: 100%;
   padding: 0.95rem 3rem 0.95rem 2.9rem;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--input-border);
   border-radius: 0.8rem;
   outline: none;
   font-size: 0.95rem;
   transition: 0.25s;
 
   &:focus {
-    border-color: #2563eb;
+    border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
   }
 
   &:disabled {
-    background: #f8fafc;
+    background: var(--bg);
     cursor: not-allowed;
   }
 `;
@@ -77,21 +77,21 @@ export const ToggleButton = styled.button`
   border: none;
   background: transparent;
   cursor: pointer;
-  color: #64748b;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.1rem;
 
   &:hover {
-    color: #2563eb;
+    color: var(--primary);
   }
 `;
 
 export const ErrorText = styled.span`
   margin-top: -0.5rem;
   margin-bottom: 0.25rem;
-  color: #dc2626;
+  color: var(--danger);
   font-size: 0.8rem;
   font-weight: 500;
 `;
@@ -99,8 +99,8 @@ export const ErrorText = styled.span`
 export const SaveButton = styled.button`
   width: 100%;
   border: none;
-  background: #2563eb;
-  color: #ffffff;
+  background: var(--primary);
+  color: var(--surface);
   padding: 1rem;
   border-radius: 0.8rem;
   font-size: 1rem;
@@ -113,7 +113,7 @@ export const SaveButton = styled.button`
   transition: 0.25s;
 
   &:hover {
-    background: #1d4ed8;
+    background: var(--primary-hover);
   }
 
   &:active {

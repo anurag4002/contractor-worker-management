@@ -19,12 +19,12 @@ export const TitleSection = styled.div`
     margin: 0;
     font-size: 2rem;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--text);
   }
 
   p {
     margin-top: 0.5rem;
-    color: #64748b;
+    color: var(--text-secondary);
     font-size: 0.95rem;
   }
 `;
@@ -42,14 +42,14 @@ export const SearchBox = styled.div`
   input {
     width: 100%;
     padding: 0.9rem 1rem;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--input-border);
     border-radius: 0.75rem;
     font-size: 0.95rem;
     outline: none;
     transition: 0.3s;
 
     &:focus {
-      border-color: #2563eb;
+      border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
     }
   }
@@ -69,8 +69,8 @@ export const Button = styled.button`
   border: none;
   border-radius: 0.75rem;
 
-  background: #2563eb;
-  color: #ffffff;
+  background: var(--primary);
+  color: var(--surface);
 
   font-size: 0.95rem;
   font-weight: 600;
@@ -79,7 +79,7 @@ export const Button = styled.button`
   transition: 0.3s;
 
   &:hover {
-    background: #1d4ed8;
+    background: var(--primary-hover);
   }
 `;
 
@@ -90,8 +90,8 @@ export const Section = styled.section`
 `;
 
 export const Card = styled.div`
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1.5rem;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);

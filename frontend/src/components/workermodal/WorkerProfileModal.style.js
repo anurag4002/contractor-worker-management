@@ -5,14 +5,14 @@ export const ProfileContainer = styled.div`
   align-items:center;
   gap:1.5rem;
   padding:2rem;
-  border-bottom:1px solid #E2E8F0;
+  border-bottom:1px solid var(--border);
 `;
 
 export const ProfileImage = styled.div`
   width:6rem;
   height:6rem;
   border-radius:50%;
-  background:#2563EB;
+  background:var(--primary);
   color:#fff;
   display:flex;
   justify-content:center;
@@ -31,12 +31,12 @@ export const ProfileImage = styled.div`
 export const ProfileInfo = styled.div`
   h2{
     margin:0;
-    color:#0F172A;
+    color:var(--text);
   }
 
   p{
     margin:.5rem 0 0;
-    color:#64748B;
+    color:var(--text-secondary);
   }
 `;
 
@@ -59,13 +59,13 @@ export const ProfileItem = styled.div`
 
 export const Label = styled.span`
   font-size:.85rem;
-  color:#64748B;
+  color:var(--text-secondary);
 `;
 
 export const Value = styled.span`
   font-size:1rem;
   font-weight:600;
-  color:#0F172A;
+  color:var(--text);
 `;
 
 export const StatusBadge = styled.span`
@@ -80,13 +80,13 @@ export const StatusBadge = styled.span`
 
   background:${({status}) =>
     status === "Active"
-      ? "#DCFCE7"
-      : "#FEE2E2"};
+      ? "var(--badge-success-bg)"
+      : "var(--badge-danger-bg)"};
 
   color:${({status}) =>
     status === "Active"
       ? "#15803D"
-      : "#DC2626"};
+      : "var(--danger)"};
 
   font-size:.8rem;
 

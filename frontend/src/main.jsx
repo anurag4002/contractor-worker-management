@@ -11,29 +11,33 @@ import { AttendanceProvider } from "./context/AttendanceContext";
 import { PayrollProvider } from "./context/PayrollContext";
 import ReportProvider from "./context/ReportContext";
 import NotificationProvider from "./context/NotificationContext";
+import { ThemeProvider } from "./context/ThemeContext";
 
 import "./index.css";
+import "./styles/themes.css";
 
 ReactDOM.createRoot(
   document.getElementById("root")
 ).render(
   <React.StrictMode>
     <BrowserRouter>
-      <AuthProvider>
-        <WorkerProvider>
-          <SiteProvider>
-            <AttendanceProvider>
-              <PayrollProvider>
-                <ReportProvider>
-                  <NotificationProvider>
-                    <App />
-                  </NotificationProvider>
-                </ReportProvider>
-              </PayrollProvider>
-            </AttendanceProvider>
-          </SiteProvider>
-        </WorkerProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <WorkerProvider>
+            <SiteProvider>
+              <AttendanceProvider>
+                <PayrollProvider>
+                  <ReportProvider>
+                    <NotificationProvider>
+                      <App />
+                    </NotificationProvider>
+                  </ReportProvider>
+                </PayrollProvider>
+              </AttendanceProvider>
+            </SiteProvider>
+          </WorkerProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

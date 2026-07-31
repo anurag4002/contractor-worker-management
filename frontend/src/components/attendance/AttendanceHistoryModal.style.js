@@ -46,7 +46,7 @@ export const Header = styled.div`
 
   padding: 1.25rem 1.5rem;
 
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid var(--border);
 
   position: sticky;
   top: 0;
@@ -59,7 +59,7 @@ export const Header = styled.div`
 export const Title = styled.h3`
   margin: 0;
 
-  color: #0F172A;
+  color: var(--text);
 
   font-size: 1.2rem;
 
@@ -74,10 +74,10 @@ export const CloseButton = styled.button`
 
   font-size: 1.5rem;
 
-  color: #64748B;
+  color: var(--text-secondary);
 
   &:hover {
-    color: #DC2626;
+    color: var(--danger);
   }
 `;
 
@@ -95,23 +95,23 @@ export const Table = styled.table`
 
     text-align: left;
 
-    background: #F8FAFC;
+    background: var(--table-header-bg);
 
-    color: #475569;
+    color: var(--text);
 
-    border-bottom: 1px solid #E2E8F0;
+    border-bottom: 1px solid var(--border);
   }
 
   td {
     padding: 1rem;
 
-    border-bottom: 1px solid #F1F5F9;
+    border-bottom: 1px solid var(--surface-hover);
 
-    color: #334155;
+    color: var(--text);
   }
 
   tbody tr:hover {
-    background: #F8FAFC;
+    background: var(--table-header-bg);
   }
 `;
 
@@ -120,7 +120,7 @@ export const EmptyState = styled.div`
 
   text-align: center;
 
-  color: #64748B;
+  color: var(--text-secondary);
 `;
 
 export const Footer = styled.div`
@@ -129,7 +129,7 @@ export const Footer = styled.div`
 
   padding: 1.5rem;
 
-  border-top: 1px solid #E2E8F0;
+  border-top: 1px solid var(--border);
 
   position: sticky;
   bottom: 0;
@@ -140,7 +140,7 @@ export const Footer = styled.div`
 export const Button = styled.button`
   border: none;
 
-  background: #2563EB;
+  background: var(--primary);
 
   color: #fff;
 
@@ -153,6 +153,6 @@ export const Button = styled.button`
   font-weight: 600;
 
   &:hover {
-    background: #1D4ED8;
+    background: var(--primary-hover);
   }
 `;

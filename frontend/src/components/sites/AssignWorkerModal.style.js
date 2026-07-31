@@ -13,7 +13,7 @@ export const Overlay = styled.div`
 export const Modal = styled.div`
   width:100%;
   max-width:38rem;
-  background:#ffffff;
+  background:var(--surface);
   border-radius:1rem;
   overflow:hidden;
   box-shadow:0 20px 60px rgba(15,23,42,.18);
@@ -24,7 +24,7 @@ export const Header = styled.div`
   justify-content:space-between;
   align-items:center;
   padding:1.4rem;
-  border-bottom:1px solid #E2E8F0;
+  border-bottom:1px solid var(--border);
 `;
 
 export const Title = styled.h3`
@@ -45,7 +45,7 @@ export const SearchInput = styled.input`
 
   padding:.9rem 1rem;
 
-  border:1px solid #CBD5E1;
+  border:1px solid var(--input-border);
 
   border-radius:.75rem;
 
@@ -53,7 +53,7 @@ export const SearchInput = styled.input`
 
   &:focus{
 
-    border-color:#2563EB;
+    border-color:var(--primary);
 
   }
 `;
@@ -69,7 +69,7 @@ export const WorkerList = styled.div`
 export const WorkerItem = styled.div`
   padding:1rem 0;
 
-  border-bottom:1px solid #F1F5F9;
+  border-bottom:1px solid var(--surface-hover);
 `;
 
 export const Checkbox = styled.label`
@@ -83,7 +83,7 @@ export const Checkbox = styled.label`
 
   span{
 
-    color:#334155;
+    color:var(--text);
 
     font-weight:500;
 
@@ -99,15 +99,15 @@ export const Footer = styled.div`
 
   padding:1.5rem;
 
-  border-top:1px solid #E2E8F0;
+  border-top:1px solid var(--border);
 `;
 
 export const CancelButton = styled.button`
   border:none;
 
-  background:#E2E8F0;
+  background:var(--border);
 
-  color:#334155;
+  color:var(--text);
 
   padding:.85rem 1.5rem;
 
@@ -119,9 +119,9 @@ export const CancelButton = styled.button`
 export const SaveButton = styled.button`
   border:none;
 
-  background:#2563EB;
+  background:var(--primary);
 
-  color:#ffffff;
+  color:var(--surface);
 
   padding:.85rem 1.6rem;
 
@@ -131,7 +131,7 @@ export const SaveButton = styled.button`
 
   &:hover{
 
-    background:#1D4ED8;
+    background:var(--primary-hover);
 
   }
 `;

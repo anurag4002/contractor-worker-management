@@ -6,13 +6,13 @@ export const Page = styled.div`
   justify-content: center;
   align-items: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #2563eb, #1e40af);
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
 `;
 
 export const Card = styled.div`
   width: 100%;
   max-width: 28rem;
-  background: #ffffff;
+  background: var(--surface);
   border-radius: 1.25rem;
   padding: 2.5rem;
   box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
@@ -36,8 +36,8 @@ export const Logo = styled.div`
   width: 4.5rem;
   height: 4.5rem;
   border-radius: 1rem;
-  background: #2563eb;
-  color: #ffffff;
+  background: var(--primary);
+  color: var(--surface);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -49,14 +49,14 @@ export const Logo = styled.div`
 export const Title = styled.h2`
   margin: 1.5rem 0 0.4rem;
   text-align: center;
-  color: #0f172a;
+  color: var(--text);
   font-size: 2rem;
   font-weight: 700;
 `;
 
 export const Subtitle = styled.p`
   text-align: center;
-  color: #64748b;
+  color: var(--text-secondary);
   margin-bottom: 2rem;
 `;
 
@@ -75,26 +75,26 @@ export const InputGroup = styled.div`
 export const Icon = styled.div`
   position: absolute;
   left: 1rem;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 1rem;
 `;
 
 export const Input = styled.input`
   width: 100%;
   padding: 0.95rem 3rem 0.95rem 2.9rem;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--input-border);
   border-radius: 0.8rem;
   outline: none;
   font-size: 0.95rem;
   transition: 0.25s;
 
   &:focus {
-    border-color: #2563eb;
+    border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
   }
 
   &:disabled {
-    background: #f8fafc;
+    background: var(--bg);
     cursor: not-allowed;
   }
 `;
@@ -105,21 +105,21 @@ export const PasswordButton = styled.button`
   border: none;
   background: transparent;
   cursor: pointer;
-  color: #64748b;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.1rem;
 
   &:hover {
-    color: #2563eb;
+    color: var(--primary);
   }
 `;
 
 export const ErrorText = styled.span`
   margin-top: -0.5rem;
   margin-bottom: 0.25rem;
-  color: #dc2626;
+  color: var(--danger);
   font-size: 0.8rem;
   font-weight: 500;
 `;
@@ -131,7 +131,7 @@ export const Options = styled.div`
   font-size: 0.9rem;
 
   a {
-    color: #2563eb;
+    color: var(--primary);
     text-decoration: none;
     font-weight: 600;
   }
@@ -151,21 +151,21 @@ export const Checkbox = styled.label`
   display: flex;
   align-items: center;
   gap: 0.55rem;
-  color: #475569;
+  color: var(--text);
   cursor: pointer;
 
   input {
     width: 1rem;
     height: 1rem;
-    accent-color: #2563eb;
+    accent-color: var(--primary);
   }
 `;
 
 export const LoginButton = styled.button`
   width: 100%;
   border: none;
-  background: #2563eb;
-  color: #ffffff;
+  background: var(--primary);
+  color: var(--surface);
   padding: 1rem;
   border-radius: 0.8rem;
   font-size: 1rem;
@@ -174,7 +174,7 @@ export const LoginButton = styled.button`
   transition: 0.25s;
 
   &:hover:not(:disabled) {
-    background: #1d4ed8;
+    background: var(--primary-hover);
   }
 
   &:active:not(:disabled) {
@@ -190,6 +190,6 @@ export const LoginButton = styled.button`
 export const FooterText = styled.p`
   margin-top: 2rem;
   text-align: center;
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-size: 0.85rem;
 `;

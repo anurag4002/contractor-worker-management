@@ -5,14 +5,14 @@ export const RegisterContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  background: linear-gradient(135deg, #3b82f6, var(--primary-hover));
   padding: 2rem;
 `;
 
 export const RegisterCard = styled.div`
   width: 100%;
   max-width: 34rem;
-  background: #ffffff;
+  background: var(--surface);
   border-radius: 1.5rem;
   padding: 3rem;
   box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.15);
@@ -23,7 +23,7 @@ export const Logo = styled.div`
   height: 5rem;
   margin: 0 auto 1.5rem;
   border-radius: 1rem;
-  background: #2563eb;
+  background: var(--primary);
   color: white;
   display: flex;
   justify-content: center;
@@ -34,14 +34,14 @@ export const Logo = styled.div`
 
 export const Heading = styled.h1`
   text-align: center;
-  color: #0f172a;
+  color: var(--text);
   font-size: 2.2rem;
   margin-bottom: 0.5rem;
 `;
 
 export const SubHeading = styled.p`
   text-align: center;
-  color: #64748b;
+  color: var(--text-secondary);
   margin-bottom: 2rem;
 `;
 
@@ -61,12 +61,12 @@ export const InputGroup = styled.div`
   background: #fff;
 
   &:focus-within {
-    border-color: #2563eb;
+    border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
   }
 
   svg {
-    color: #64748b;
+    color: var(--text-secondary);
   }
 
   span {
@@ -100,7 +100,7 @@ export const RegisterButton = styled.button`
   height: 3.5rem;
   border: none;
   border-radius: 0.9rem;
-  background: #2563eb;
+  background: var(--primary);
   color: #fff;
   font-size: 1rem;
   font-weight: 600;
@@ -108,18 +108,18 @@ export const RegisterButton = styled.button`
   transition: 0.25s;
 
   &:hover {
-    background: #1d4ed8;
+    background: var(--primary-hover);
   }
 `;
 
 export const Footer = styled.div`
   text-align: center;
   margin-top: 1.5rem;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 0.95rem;
 
   a {
-    color: #2563eb;
+    color: var(--primary);
     text-decoration: none;
     font-weight: 600;
     margin-left: 0.3rem;
@@ -131,13 +131,13 @@ export const Footer = styled.div`
 `;
 
 export const ErrorText = styled.p`
-  color: #dc2626;
+  color: var(--danger);
   font-size: 0.85rem;
   margin: -0.4rem 0 0.2rem;
 `;
 
 export const SuccessText = styled.p`
-  color: #16a34a;
+  color: var(--success);
   font-size: 0.9rem;
   text-align: center;
   margin-bottom: 1rem;

@@ -40,13 +40,13 @@ const ItemActions = styled.div`
 const SmBtn = styled.button`
   background: none; border: none; cursor: pointer; padding: 0.25rem;
   border-radius: 0.35rem; font-size: 0.85rem;
-  color: ${({ $danger }) => ($danger ? "#dc2626" : "#64748b")};
-  &:hover { background: ${({ $danger }) => ($danger ? "#fee2e2" : "#f1f5f9")}; }
+  color: ${({ $danger }) => ($danger ? "var(--danger)" : "var(--text-secondary)")};
+  &:hover { background: ${({ $danger }) => ($danger ? "var(--badge-danger-bg)" : "var(--surface-hover)")}; }
 `;
 
 const Footer = styled.div`
-  padding: 0.75rem 1.25rem; border-top: 1px solid #e2e8f0;
-  text-align: center; background: #f8fafc;
+  padding: 0.75rem 1.25rem; border-top: 1px solid var(--border);
+  text-align: center; background: var(--table-header-bg);
   font-size: 0.8rem; color: #64748b;
 `;
 
@@ -92,7 +92,7 @@ const NotificationDropdown = ({ onClose }) => {
           Notifications
           {unreadCount > 0 && (
             <span style={{
-              marginLeft: "0.5rem", background: "#2563eb", color: "#fff",
+              marginLeft: "0.5rem", background: "var(--primary)", color: "#fff",
               fontSize: "0.7rem", fontWeight: 700, padding: "0.1rem 0.5rem",
               borderRadius: "999px",
             }}>
@@ -110,7 +110,7 @@ const NotificationDropdown = ({ onClose }) => {
           <EmptyState>Loading notifications…</EmptyState>
         ) : data.length === 0 ? (
           <EmptyState>
-            <FiBell style={{ fontSize: "2rem", marginBottom: "0.5rem", color: "#cbd5e1" }} />
+              <FiBell style={{ fontSize: "2rem", marginBottom: "0.5rem", color: "var(--border)" }} />
             <br />No notifications
           </EmptyState>
         ) : (
@@ -119,7 +119,7 @@ const NotificationDropdown = ({ onClose }) => {
             return (
               <NotificationItem
                 key={n._id}
-                style={{ background: n.isRead ? "#fff" : "#f0f6ff" }}
+                style={{ background: n.isRead ? "var(--surface)" : "var(--primary-light)" }}
                 onClick={() => { if (!n.isRead) markAsRead(n._id); }}
               >
                 <NotificationIcon style={{ background: meta.bg, color: meta.color }}>
@@ -127,11 +127,11 @@ const NotificationDropdown = ({ onClose }) => {
                 </NotificationIcon>
 
                 <NotificationText style={{ minWidth: 0 }}>
-                  <div style={{ fontWeight: n.isRead ? 400 : 700, fontSize: "0.88rem", color: "#0f172a" }}>
+                  <div style={{ fontWeight: n.isRead ? 400 : 700, fontSize: "0.88rem", color: "var(--text)" }}>
                     {n.title}
                   </div>
                   {n.message && (
-                    <p style={{ margin: "0.15rem 0 0", fontSize: "0.78rem", color: "#64748b", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <p style={{ margin: "0.15rem 0 0", fontSize: "0.78rem", color: "var(--text-secondary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                       {n.message}
                     </p>
                   )}

@@ -46,7 +46,7 @@ export const Header = styled.div`
 
   padding: 1.3rem 1.5rem;
 
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid var(--border);
 
   position: sticky;
   top: 0;
@@ -59,7 +59,7 @@ export const Header = styled.div`
 export const Title = styled.h3`
   margin: 0;
 
-  color: #0F172A;
+  color: var(--text);
 
   font-size: 1.2rem;
 
@@ -74,10 +74,10 @@ export const CloseButton = styled.button`
 
   font-size: 1.5rem;
 
-  color: #64748B;
+  color: var(--text-secondary);
 
   &:hover {
-    color: #DC2626;
+    color: var(--danger);
   }
 `;
 
@@ -97,26 +97,26 @@ export const FormGroup = styled.div`
 export const Label = styled.label`
   font-weight: 600;
 
-  color: #334155;
+  color: var(--text);
 `;
 
 const Field = `
   width:100%;
   padding:.9rem 1rem;
-  border:1px solid #CBD5E1;
+  border:1px solid var(--input-border);
   border-radius:.75rem;
   outline:none;
   font-size:.95rem;
   box-sizing:border-box;
 
   &:focus{
-    border-color:#2563EB;
+    border-color:var(--primary);
     box-shadow:0 0 0 3px rgba(37,99,235,.12);
   }
 
   &:disabled{
-    background:#F8FAFC;
-    color:#475569;
+    background:var(--table-header-bg);
+    color:var(--text);
   }
 `;
 
@@ -151,15 +151,15 @@ export const Footer = styled.div`
 
   padding-top: 1rem;
 
-  border-top: 1px solid #E2E8F0;
+  border-top: 1px solid var(--border);
 `;
 
 export const CancelButton = styled.button`
   border: none;
 
-  background: #E2E8F0;
+  background: var(--border);
 
-  color: #334155;
+  color: var(--text);
 
   padding: .85rem 1.5rem;
 
@@ -173,7 +173,7 @@ export const CancelButton = styled.button`
 export const SaveButton = styled.button`
   border: none;
 
-  background: #2563EB;
+  background: var(--primary);
 
   color: #fff;
 
@@ -186,6 +186,6 @@ export const SaveButton = styled.button`
   font-weight: 600;
 
   &:hover{
-    background:#1D4ED8;
+    background:var(--primary-hover);
   }
 `;

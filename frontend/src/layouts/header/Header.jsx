@@ -1,18 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  FiMenu, FiSearch, FiBell, FiSettings, FiChevronDown,
+  FiMenu, FiSearch, FiBell, FiSettings, FiChevronDown, FiSun, FiMoon,
 } from "react-icons/fi";
 
 import NotificationDropdown from "./NotificationDropdown";
 import ProfileDropdown from "./ProfileDropdown";
 import useNotification from "../../hooks/useNotification";
 import { useAuth } from "../../context/AuthContext";
+import { useTheme } from "../../context/ThemeContext";
 
 import {
   HeaderContainer, LeftSection, MenuButton, SearchBar,
   RightSection, IconButton, NotificationBadge, UserProfile,
-  Avatar, UserInfo,
+  Avatar, UserInfo, ThemeToggle,
 } from "./Header.style";
 
 const Header = ({ toggleSidebar }) => {
@@ -23,6 +24,8 @@ const Header = ({ toggleSidebar }) => {
   const [search, setSearch] = useState("");
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+
+  const { theme, toggleTheme } = useTheme();
 
   /* ── Live unread counter ── */
   const { unreadCount, startPolling, stopPolling } = useNotification();
@@ -75,6 +78,11 @@ const Header = ({ toggleSidebar }) => {
       </LeftSection>
 
       <RightSection>
+        {/* Theme Toggle */}
+        <ThemeToggle onClick={toggleTheme} aria-label="Toggle theme" title={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}>
+          {theme === "light" ? <FiMoon /> : <FiSun />}
+        </ThemeToggle>
+
         {/* Notification Bell */}
         <div ref={notificationRef} style={{ position: "relative" }}>
           <IconButton onClick={toggleNotification} aria-label="Notifications">

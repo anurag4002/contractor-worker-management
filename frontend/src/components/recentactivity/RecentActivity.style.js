@@ -14,9 +14,9 @@ export const Container = styled.div`
 `;
 
 export const Section = styled.div`
-  background: #ffffff;
+  background: var(--surface);
 
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
 
   border-radius: 1rem;
 
@@ -31,7 +31,7 @@ export const Title = styled.h3`
 
   font-size: 1.1rem;
 
-  color: #0f172a;
+  color: var(--text);
 `;
 
 export const List = styled.div`
@@ -53,23 +53,23 @@ export const Item = styled.div`
 
   border-radius: 0.75rem;
 
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
 
   cursor: pointer;
 
   transition: 0.25s;
 
   &:hover {
-    background: #eff6ff;
+    background: var(--primary-light);
 
-    border-color: #2563eb;
+    border-color: var(--primary);
   }
 `;
 
 export const Primary = styled.div`
   font-weight: 600;
 
-  color: #0f172a;
+  color: var(--text);
 `;
 
 export const Secondary = styled.div`
@@ -77,7 +77,7 @@ export const Secondary = styled.div`
 
   font-size: 0.85rem;
 
-  color: #64748b;
+  color: var(--text-secondary);
 `;
 
 export const Status = styled.span`
@@ -85,9 +85,9 @@ export const Status = styled.span`
 
   border-radius: 999px;
 
-  background: #dbeafe;
+  background: var(--badge-info-bg);
 
-  color: #2563eb;
+  color: var(--primary);
 
   font-size: 0.75rem;
 
@@ -99,5 +99,5 @@ export const Empty = styled.div`
 
   text-align: center;
 
-  color: #94a3b8;
+  color: var(--text-secondary);
 `;

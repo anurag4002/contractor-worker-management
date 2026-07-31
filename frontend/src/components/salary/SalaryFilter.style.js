@@ -25,7 +25,7 @@ const InputStyle = `
 
   padding:.9rem 1rem;
 
-  border:1px solid #CBD5E1;
+  border:1px solid var(--input-border);
 
   border-radius:.8rem;
 
@@ -37,7 +37,7 @@ const InputStyle = `
 
   &:focus{
 
-    border-color:#2563EB;
+    border-color:var(--primary);
 
     box-shadow:0 0 0 3px rgba(37,99,235,.08);
 
@@ -59,9 +59,9 @@ export const MonthInput = styled.input`
 export const ResetButton = styled.button`
   border:none;
 
-  background:#EF4444;
+  background:var(--danger);
 
-  color:#ffffff;
+  color:var(--surface);
 
   padding:.9rem 1.4rem;
 
@@ -75,7 +75,7 @@ export const ResetButton = styled.button`
 
   &:hover{
 
-    background:#DC2626;
+    background:var(--danger);
 
   }
 `;

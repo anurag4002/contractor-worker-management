@@ -63,11 +63,11 @@ export const ModalHeader = styled.div`
   justify-content:space-between;
   align-items:center;
 
-  border-bottom:1px solid #E2E8F0;
+  border-bottom:1px solid var(--border);
 
   h3{
       margin:0;
-      color:#0F172A;
+      color:var(--text);
       font-size:1.2rem;
   }
 `;
@@ -80,7 +80,7 @@ export const CloseButton = styled.button`
 
   border-radius:.75rem;
 
-  background:#F1F5F9;
+  background:var(--surface-hover);
 
   cursor:pointer;
 
@@ -89,7 +89,7 @@ export const CloseButton = styled.button`
   transition:.3s;
 
   &:hover{
-      background:#2563EB;
+      background:var(--primary);
       color:white;
   }
 `;
@@ -105,7 +105,7 @@ export const ModalFooter = styled.div`
   justify-content:flex-end;
   gap:1rem;
 
-  border-top:1px solid #E2E8F0;
+  border-top:1px solid var(--border);
 `;
 
 export const Button = styled.button`
@@ -123,13 +123,13 @@ export const Button = styled.button`
 
   background:${({ variant }) =>
     variant === "primary"
-      ? "#2563EB"
-      : "#E2E8F0"};
+      ? "var(--primary)"
+      : "var(--border)"};
 
   color:${({ variant }) =>
     variant === "primary"
       ? "#fff"
-      : "#334155"};
+      : "var(--text)"};
 
   &:hover{
       opacity:.9;

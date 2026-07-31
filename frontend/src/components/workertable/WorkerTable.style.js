@@ -5,7 +5,7 @@ export const TableCard = styled.div`
 
   background: #fff;
 
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
 
   border-radius: 1rem;
 
@@ -24,7 +24,7 @@ export const Table = styled.table`
   table-layout: fixed;
 
   thead{
-    background:#F8FAFC;
+    background:var(--table-header-bg);
   }
 
   th{
@@ -32,29 +32,29 @@ export const Table = styled.table`
 
     text-align:left;
 
-    color:#475569;
+    color:var(--text);
 
     font-size:.88rem;
 
     font-weight:600;
 
-    border-bottom:1px solid #E2E8F0;
+    border-bottom:1px solid var(--border);
   }
 
   td{
     padding:1rem .75rem;
 
-    color:#334155;
+    color:var(--text);
 
     font-size:.88rem;
 
-    border-bottom:1px solid #F1F5F9;
+    border-bottom:1px solid var(--surface-hover);
 
     word-break:break-word;
   }
 
   tbody tr:hover{
-    background:#F8FAFC;
+    background:var(--table-header-bg);
   }
 `;
 
@@ -73,7 +73,7 @@ export const Avatar = styled.div`
 
   border-radius:50%;
 
-  background:#2563EB;
+  background:var(--primary);
 
   color:#fff;
 
@@ -103,13 +103,13 @@ export const Status = styled.span`
 
   background:${({ status }) =>
     status === "Active"
-      ? "#DCFCE7"
-      : "#FEE2E2"};
+      ? "var(--badge-success-bg)"
+      : "var(--badge-danger-bg)"};
 
   color:${({ status }) =>
     status === "Active"
       ? "#15803D"
-      : "#DC2626"};
+      : "var(--danger)"};
 `;
 
 export const ActionButtons = styled.div`
@@ -129,9 +129,9 @@ export const IconButton = styled.button`
 
   border-radius:.6rem;
 
-  background:#EFF6FF;
+  background:var(--primary-light);
 
-  color:#2563EB;
+  color:var(--primary);
 
   cursor:pointer;
 
@@ -139,7 +139,7 @@ export const IconButton = styled.button`
 
   &:hover{
 
-    background:#2563EB;
+    background:var(--primary);
 
     color:#fff;
 
@@ -148,7 +148,7 @@ export const IconButton = styled.button`
 
 export const SkeletonRow = styled.div`
   height: 20px;
-  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background: linear-gradient(90deg, var(--surface-hover) 25%, var(--border) 50%, var(--surface-hover) 75%);
   background-size: 200% 100%;
   animation: loading 1.5s infinite;
   border-radius: 4px;

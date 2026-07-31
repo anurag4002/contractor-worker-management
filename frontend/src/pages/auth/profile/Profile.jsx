@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import {
   FiUser, FiMail, FiPhone, FiShield, FiLock,
-  FiEdit, FiSave, FiX, FiKey, FiEye, FiEyeOff,
+  FiEdit, FiSave, FiX, FiKey, FiEye, FiEyeOff, FiClock, FiCalendar, FiArrowLeft,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
@@ -11,7 +11,7 @@ import { showSuccess, showError } from "../../../components/common/toast";
 import {
   Page, Card, AvatarCircle, HeaderSection, Name, RoleLabel,
   SummaryText, InfoGrid, FieldGroup, FieldLabel, FieldBox,
-  FieldIcon, FieldInput, ButtonRow, PrimaryButton, SecondaryButton,
+  FieldIcon, FieldInput, ButtonRow, PrimaryButton, SecondaryButton, BackButton,
 } from "./Profile.style";
 
 const EMPTY = "—";
@@ -182,9 +182,9 @@ const Profile = () => {
             </FieldBox>
           </FieldGroup>
 
-          {/* Mobile Number — editable */}
-          <FieldGroup>
-            <FieldLabel htmlFor="mobileNumber">Mobile Number</FieldLabel>
+           {/* Mobile Number — editable */}
+           <FieldGroup>
+             <FieldLabel htmlFor="mobileNumber">Phone Number</FieldLabel>
             <FieldBox>
               <FieldIcon><FiPhone /></FieldIcon>
               <FieldInput
@@ -196,69 +196,108 @@ const Profile = () => {
             </FieldBox>
           </FieldGroup>
 
-          {/* Username — editable */}
-          <FieldGroup>
-            <FieldLabel htmlFor="username">Username</FieldLabel>
-            <FieldBox>
-              <FieldIcon><FiShield /></FieldIcon>
-              <FieldInput
-                id="username" name="username"
-                value={isEditing ? form.username : val(p.username)}
-                readOnly={!isEditing}
-                onChange={handleChange}
-              />
-            </FieldBox>
-          </FieldGroup>
+           {/* Username — editable */}
+           <FieldGroup>
+             <FieldLabel htmlFor="username">Username</FieldLabel>
+             <FieldBox>
+               <FieldIcon><FiShield /></FieldIcon>
+               <FieldInput
+                 id="username" name="username"
+                 value={isEditing ? form.username : val(p.username)}
+                 readOnly={!isEditing}
+                 onChange={handleChange}
+               />
+             </FieldBox>
+           </FieldGroup>
 
-          {/* Role — read-only system field */}
-          <FieldGroup>
-            <FieldLabel htmlFor="role">Role</FieldLabel>
-            <FieldBox>
-              <FieldIcon><FiShield /></FieldIcon>
-              <FieldInput id="role" value={roleDisplay} readOnly />
-            </FieldBox>
-          </FieldGroup>
+           {/* Employee ID — read-only */}
+           <FieldGroup>
+             <FieldLabel htmlFor="employeeId">Employee ID</FieldLabel>
+             <FieldBox>
+               <FieldIcon><FiShield /></FieldIcon>
+               <FieldInput id="employeeId" value={val(p.employeeId || p.employee_code || "—")} readOnly />
+             </FieldBox>
+           </FieldGroup>
 
-          {/* Status — read-only system field */}
-          <FieldGroup>
-            <FieldLabel htmlFor="status">Status</FieldLabel>
-            <FieldBox>
-              <FieldIcon><FiLock /></FieldIcon>
-              <FieldInput id="status" value={getStatus(p)} readOnly />
-            </FieldBox>
-          </FieldGroup>
-        </InfoGrid>
+           {/* Department — read-only */}
+           <FieldGroup>
+             <FieldLabel htmlFor="department">Department</FieldLabel>
+             <FieldBox>
+               <FieldIcon><FiShield /></FieldIcon>
+               <FieldInput id="department" value={val(p.department || "—")} readOnly />
+             </FieldBox>
+           </FieldGroup>
 
-        {/* ── Profile buttons ── */}
-        <ButtonRow>
-          {!isEditing ? (
-            <>
-              <SecondaryButton type="button" onClick={() => setShowPw((v) => !v)}>
-                <FiKey /> {showPw ? "Hide Password" : "Change Password"}
-              </SecondaryButton>
-              <PrimaryButton type="button" onClick={startEdit}>
-                <FiEdit /> Edit Profile
-              </PrimaryButton>
-            </>
-          ) : (
-            <>
-              <SecondaryButton type="button" onClick={() => setIsEditing(false)} disabled={saving}>
-                <FiX /> Cancel
-              </SecondaryButton>
-              <PrimaryButton type="button" onClick={handleSave} disabled={saving}>
-                <FiSave /> {saving ? "Saving…" : "Save Changes"}
-              </PrimaryButton>
-            </>
-          )}
-        </ButtonRow>
+           {/* Role — read-only system field */}
+           <FieldGroup>
+             <FieldLabel htmlFor="role">Role</FieldLabel>
+             <FieldBox>
+               <FieldIcon><FiShield /></FieldIcon>
+               <FieldInput id="role" value={roleDisplay} readOnly />
+             </FieldBox>
+           </FieldGroup>
+
+           {/* Account Status — read-only system field */}
+           <FieldGroup>
+             <FieldLabel htmlFor="status">Account Status</FieldLabel>
+             <FieldBox>
+               <FieldIcon><FiLock /></FieldIcon>
+               <FieldInput id="status" value={getStatus(p)} readOnly />
+             </FieldBox>
+           </FieldGroup>
+
+           {/* Last Login — read-only */}
+           <FieldGroup>
+             <FieldLabel htmlFor="lastLogin">Last Login</FieldLabel>
+             <FieldBox>
+               <FieldIcon><FiClock /></FieldIcon>
+               <FieldInput id="lastLogin" value={val(p.lastLogin || p.last_login || "—")} readOnly />
+             </FieldBox>
+           </FieldGroup>
+
+           {/* Join Date — read-only */}
+           <FieldGroup>
+             <FieldLabel htmlFor="joinDate">Join Date</FieldLabel>
+             <FieldBox>
+               <FieldIcon><FiCalendar /></FieldIcon>
+               <FieldInput id="joinDate" value={val(p.joinDate || p.join_date || "—")} readOnly />
+             </FieldBox>
+           </FieldGroup>
+         </InfoGrid>
+
+         {/* ── Profile buttons ── */}
+         <ButtonRow>
+           <BackButton type="button" onClick={() => navigate(-1)}>
+             <FiArrowLeft /> Back
+           </BackButton>
+           {!isEditing ? (
+             <>
+               <SecondaryButton type="button" onClick={() => setShowPw((v) => !v)}>
+                 <FiKey /> {showPw ? "Hide Password" : "Change Password"}
+               </SecondaryButton>
+               <PrimaryButton type="button" onClick={startEdit}>
+                 <FiEdit /> Edit Profile
+               </PrimaryButton>
+             </>
+           ) : (
+             <>
+               <SecondaryButton type="button" onClick={() => setIsEditing(false)} disabled={saving}>
+                 <FiX /> Cancel
+               </SecondaryButton>
+               <PrimaryButton type="button" onClick={handleSave} disabled={saving}>
+                 <FiSave /> {saving ? "Saving…" : "Save Changes"}
+               </PrimaryButton>
+             </>
+           )}
+         </ButtonRow>
 
         {/* ── Inline Change Password ── */}
         {showPw && (
           <div style={{
             marginTop: "2rem", padding: "1.5rem", borderRadius: "1rem",
-            background: "#f8fafc", border: "1px solid #e2e8f0",
+            background: "var(--bg)", border: "1px solid var(--border)",
           }}>
-            <h3 style={{ margin: "0 0 1rem", fontSize: "1.05rem", color: "#0f172a" }}>
+            <h3 style={{ margin: "0 0 1rem", fontSize: "1.05rem", color: "var(--text)" }}>
               <FiKey style={{ marginRight: "0.4rem", verticalAlign: "middle" }} />
               Change Password
             </h3>
@@ -274,7 +313,7 @@ const Profile = () => {
                   onChange={handlePwChange} placeholder="Enter current password"
                 />
                 <button type="button" onClick={() => setShowOld(!showOld)}
-                  style={{ background: "none", border: "none", cursor: "pointer", color: "#64748b" }}>
+                  style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-secondary)" }}>
                   {showOld ? <FiEyeOff /> : <FiEye />}
                 </button>
               </FieldBox>
@@ -291,7 +330,7 @@ const Profile = () => {
                   onChange={handlePwChange} placeholder="Min 8 chars, upper+lower+number+special"
                 />
                 <button type="button" onClick={() => setShowNew(!showNew)}
-                  style={{ background: "none", border: "none", cursor: "pointer", color: "#64748b" }}>
+                  style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-secondary)" }}>
                   {showNew ? <FiEyeOff /> : <FiEye />}
                 </button>
               </FieldBox>
@@ -308,7 +347,7 @@ const Profile = () => {
                   onChange={handlePwChange} placeholder="Re-enter new password"
                 />
                 <button type="button" onClick={() => setShowCfm(!showCfm)}
-                  style={{ background: "none", border: "none", cursor: "pointer", color: "#64748b" }}>
+                  style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-secondary)" }}>
                   {showCfm ? <FiEyeOff /> : <FiEye />}
                 </button>
               </FieldBox>

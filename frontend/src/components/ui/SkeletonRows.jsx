@@ -14,14 +14,11 @@ const Bar = styled.div`
   height: 0.85rem;
   border-radius: 4px;
   width: ${({ $w }) => $w || "80%"};
-  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background: linear-gradient(90deg, var(--surface-hover) 25%, var(--border) 50%, var(--surface-hover) 75%);
   background-size: 600px 100%;
   animation: ${shimmer} 1.4s infinite linear;
 `;
 
-/**
- * Renders `count` skeleton rows each with `cols` shimmer cells.
- */
 const SkeletonRows = ({ cols = 5, count = 5 }) =>
     Array.from({ length: count }).map((_, r) => (
         <tr key={r} aria-hidden="true">

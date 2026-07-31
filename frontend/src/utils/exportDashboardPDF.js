@@ -2,11 +2,24 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 const exportDashboardPDF = ({
-  workers,
-  attendanceSummary,
-  expenseReport,
-  activeSites,
+  dashboard,
 }) => {
+  if (!dashboard) return;
+
+  const {
+    workers = {},
+    attendance = {},
+    sites = {},
+    payroll = {},
+  } = dashboard;
+
+  const workersTotal = Number(workers.total || 0);
+  const workersActive = Number(workers.active || 0);
+  const present = Number(attendance.present || 0);
+  const absent = Number(attendance.absent || 0);
+  const leave = Number(attendance.leave || 0);
+  const sitesActive = Number(sites.active || 0);
+  const pendingSalary = Number(payroll.pendingSalary || 0);
 
   const doc = new jsPDF();
 
@@ -46,55 +59,37 @@ const exportDashboardPDF = ({
 
       [
         "Total Workers",
-        workers.length,
+        workersTotal,
+      ],
+
+      [
+        "Active Workers",
+        workersActive,
       ],
 
       [
         "Present Today",
-        attendanceSummary.present || 0,
+        present,
       ],
 
       [
         "Absent Today",
-        attendanceSummary.absent || 0,
+        absent,
       ],
 
       [
         "Leave",
-        attendanceSummary.leave || 0,
+        leave,
       ],
 
       [
         "Active Sites",
-        activeSites.length,
-      ],
-
-      [
-        "Gross Salary",
-        `₹${Number(
-          expenseReport.totalGross || 0
-        ).toLocaleString("en-IN")}`,
-      ],
-
-      [
-        "Advance Paid",
-        `₹${Number(
-          expenseReport.totalAdvance || 0
-        ).toLocaleString("en-IN")}`,
-      ],
-
-      [
-        "Salary Paid",
-        `₹${Number(
-          expenseReport.totalPaid || 0
-        ).toLocaleString("en-IN")}`,
+        sitesActive,
       ],
 
       [
         "Pending Salary",
-        `₹${Number(
-          expenseReport.totalBalance || 0
-        ).toLocaleString("en-IN")}`,
+        `₹${pendingSalary.toLocaleString("en-IN")}`,
       ],
 
     ],

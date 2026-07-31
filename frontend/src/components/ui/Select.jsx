@@ -1,22 +1,18 @@
 import styled from "styled-components";
 
-/**
- * Shared Select matching Input styling.
- * Drop-in replacement for <select style={sel}>.
- */
 const Select = styled.select`
   padding: 0.6rem 0.9rem;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--input-border);
   border-radius: 0.6rem;
   font-size: 0.88rem;
-  background: #fff;
-  color: #0f172a;
+  background: var(--input-bg);
+  color: var(--input-text);
   cursor: pointer;
   outline: none;
   transition: border-color 0.15s;
 
   &:focus {
-    border-color: #2563eb;
+    border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
   }
 `;
