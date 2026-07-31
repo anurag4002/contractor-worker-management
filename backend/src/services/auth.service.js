@@ -733,7 +733,74 @@ async getProfile(userId) {
 
   return user;
 }
+/**
+ * Update User Profile
+ */
+async updateProfile(userId, payload) {
+    const {
+        fullName,
+        mobileNumber,
+        username,
+    } = payload;
 
+    // Check user exists
+    const user =
+        await authRepository.findUserById(userId);
+
+    if (!user) {
+        throw new ApiError(
+            StatusCodes.NOT_FOUND,
+            AUTH_MESSAGES.USER.NOT_FOUND
+        );
+    }
+
+    // Username uniqueness check
+    if (
+        username &&
+        username !== user.username
+    ) {
+        const existingUser =
+            await authRepository.findByUsername(
+                username
+            );
+
+        if (
+            existingUser &&
+            existingUser._id.toString() !==
+                userId.toString()
+        ) {
+            throw new ApiError(
+                StatusCodes.CONFLICT,
+                AUTH_MESSAGES.USER.USERNAME_ALREADY_EXISTS
+            );
+        }
+    }
+
+    // Prepare update payload
+    const updateData = {};
+
+    if (fullName !== undefined) {
+        updateData.fullName = fullName;
+    }
+
+    if (mobileNumber !== undefined) {
+        updateData.mobileNumber =
+            mobileNumber;
+    }
+
+    if (username !== undefined) {
+        updateData.username = username;
+    }
+
+    // Update profile
+    const updatedUser =
+        await authRepository.updateUserById(
+            userId,
+            updateData
+        );
+
+    return updatedUser;
 }
 
+}
 export default new AuthService();
