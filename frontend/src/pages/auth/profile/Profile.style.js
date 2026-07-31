@@ -120,6 +120,19 @@ export const FieldInput = styled.input`
     color: var(--text);
     cursor: default;
   }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+`;
+
+export const FieldError = styled.p`
+  margin: 0;
+  color: #dc2626;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.5;
 `;
 
 const Button = styled.button`

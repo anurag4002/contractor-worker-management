@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import {
   FiUser, FiMail, FiPhone, FiShield, FiLock,
-  FiEdit, FiSave, FiX, FiKey, FiEye, FiEyeOff, FiClock, FiCalendar, FiArrowLeft,
+  FiEdit, FiSave, FiX, FiKey, FiEye, FiEyeOff, FiClock, FiCalendar, FiArrowLeft, FiLoader,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
@@ -11,7 +11,7 @@ import { showSuccess, showError } from "../../../components/common/toast";
 import {
   Page, Card, AvatarCircle, HeaderSection, Name, RoleLabel,
   SummaryText, InfoGrid, FieldGroup, FieldLabel, FieldBox,
-  FieldIcon, FieldInput, ButtonRow, PrimaryButton, SecondaryButton, BackButton,
+  FieldIcon, FieldInput, FieldError, ButtonRow, PrimaryButton, SecondaryButton, BackButton,
 } from "./Profile.style";
 
 const EMPTY = "—";
@@ -57,6 +57,7 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState({ fullName: "", mobileNumber: "", username: "" });
   const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState({ fullName: "", mobileNumber: "", username: "" });
 
   const p = profileData || user || {};
 
@@ -66,31 +67,94 @@ const Profile = () => {
       mobileNumber: p.mobileNumber || "",
       username: p.username || "",
     });
+    setErrors({ fullName: "", mobileNumber: "", username: "" });
     setIsEditing(true);
   };
 
-  const handleChange = (e) => setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  const getValidationErrors = () => {
+    const nextErrors = { fullName: "", mobileNumber: "", username: "" };
+    const fullName = form.fullName.trim();
+    const mobileNumber = form.mobileNumber.trim();
+    const username = form.username.trim();
+
+    if (!fullName) {
+      nextErrors.fullName = "Full name is required.";
+    } else if (fullName.length < 2) {
+      nextErrors.fullName = "Full name must be at least 2 characters.";
+    }
+
+    if (mobileNumber && !/^[6-9]\d{9}$/.test(mobileNumber)) {
+      nextErrors.mobileNumber = "Enter a valid 10-digit Indian mobile number.";
+    }
+
+    if (username && username.length < 3) {
+      nextErrors.username = "Username must be at least 3 characters.";
+    }
+
+    return nextErrors;
+  };
+
+  const getErrorMessage = (error) => {
+    if (error?.response?.data?.message) return error.response.data.message;
+    if (Array.isArray(error?.response?.data?.errors) && error.response.data.errors.length > 0) {
+      return error.response.data.errors[0];
+    }
+    if (error?.message) return error.message;
+    return "Something went wrong.";
+  };
 
   const handleSave = async () => {
-    /* Client-side quick check */
-    if (form.fullName.length < 2) return showError("Full name must be at least 2 characters.");
-    if (form.mobileNumber && !/^[6-9]\d{9}$/.test(form.mobileNumber))
-      return showError("Enter a valid 10-digit Indian mobile number.");
-    if (form.username && form.username.length < 3)
-      return showError("Username must be at least 3 characters.");
+    const validationErrors = getValidationErrors();
+    setErrors(validationErrors);
+
+    if (Object.values(validationErrors).some(Boolean)) {
+      return;
+    }
 
     try {
       setSaving(true);
+
       const payload = {};
-      if (form.fullName) payload.fullName = form.fullName;
-      if (form.mobileNumber) payload.mobileNumber = form.mobileNumber;
-      if (form.username) payload.username = form.username;
-      await updateProfile(payload);
-      setProfileData((prev) => ({ ...prev, ...payload }));
-      showSuccess("Profile updated successfully!");
+      const nextFullName = form.fullName.trim();
+      const nextMobileNumber = form.mobileNumber.trim();
+      const nextUsername = form.username.trim();
+
+      if (nextFullName && nextFullName !== (p.fullName || "")) payload.fullName = nextFullName;
+      if (nextMobileNumber && nextMobileNumber !== (p.mobileNumber || "")) payload.mobileNumber = nextMobileNumber;
+      if (nextUsername && nextUsername !== (p.username || "")) payload.username = nextUsername;
+
+      if (Object.keys(payload).length === 0) {
+        setIsEditing(false);
+        return;
+      }
+
+      const response = await updateProfile(payload);
+      const responseData = response?.data;
+      const updatedUser = responseData?.data || responseData?.user || responseData || { ...p, ...payload };
+
+      const mergedUser = { ...(p || {}), ...updatedUser };
+      setProfileData(mergedUser);
+      localStorage.setItem("user", JSON.stringify(mergedUser));
+      showSuccess("Profile Updated Successfully\nYour profile information has been updated successfully.");
+      setErrors({ fullName: "", mobileNumber: "", username: "" });
       setIsEditing(false);
     } catch (error) {
-      showError(error?.response?.data?.message || "Failed to update profile.");
+      const apiStatus = error?.response?.status;
+      const message = getErrorMessage(error);
+
+      if (!error?.response && error?.message?.toLowerCase().includes("network")) {
+        showError("Network Error\nUnable to connect to server.\nPlease check your internet connection.");
+      } else if (apiStatus === 500) {
+        showError("Something went wrong.\nPlease try again later.");
+      } else {
+        showError(`Profile Update Failed\n${message}`);
+      }
     } finally {
       setSaving(false);
     }
@@ -169,8 +233,10 @@ const Profile = () => {
                 value={isEditing ? form.fullName : val(p.fullName)}
                 readOnly={!isEditing}
                 onChange={handleChange}
+                disabled={saving}
               />
             </FieldBox>
+            {errors.fullName && <FieldError>{errors.fullName}</FieldError>}
           </FieldGroup>
 
           {/* Email — read-only system field */}
@@ -192,8 +258,10 @@ const Profile = () => {
                 value={isEditing ? form.mobileNumber : val(p.mobileNumber)}
                 readOnly={!isEditing}
                 onChange={handleChange}
+                disabled={saving}
               />
             </FieldBox>
+            {errors.mobileNumber && <FieldError>{errors.mobileNumber}</FieldError>}
           </FieldGroup>
 
            {/* Username — editable */}
@@ -206,8 +274,10 @@ const Profile = () => {
                  value={isEditing ? form.username : val(p.username)}
                  readOnly={!isEditing}
                  onChange={handleChange}
+                 disabled={saving}
                />
              </FieldBox>
+             {errors.username && <FieldError>{errors.username}</FieldError>}
            </FieldGroup>
 
            {/* Employee ID — read-only */}
@@ -285,7 +355,7 @@ const Profile = () => {
                  <FiX /> Cancel
                </SecondaryButton>
                <PrimaryButton type="button" onClick={handleSave} disabled={saving}>
-                 <FiSave /> {saving ? "Saving…" : "Save Changes"}
+                 {saving ? <><FiLoader size={16} style={{ animation: "spin 1s linear infinite" }} /> Saving...</> : <><FiSave /> Save Changes</>}
                </PrimaryButton>
              </>
            )}

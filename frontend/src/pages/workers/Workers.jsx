@@ -8,14 +8,13 @@ import {
   FiDownload,
   FiPlus,
 } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 import useWorkers from "../../hooks/useWorkers";
 
 import WorkerTable from "../../components/workertable/WorkerTable";
 import AddWorkerModal from "../../components/workermodal/AddWorkerModal";
-import EditWorkerModal from "../../components/workermodal/EditWorkerModal";
 import DeleteWorkerModal from "../../components/workermodal/DeleteWorkerModal";
-import WorkerProfileModal from "../../components/workertable/WorkerProfileModal";
 
 import {
   WorkersContainer,
@@ -27,11 +26,11 @@ import {
 } from "./Workers.style";
 
 const Workers = () => {
+  const navigate = useNavigate();
 
   const {
     workers = [],
     addWorker,
-    updateWorker,
     deleteWorker,
     fetchWorkers,
     loading,
@@ -47,13 +46,7 @@ const Workers = () => {
   const [selectedWorker, setSelectedWorker] =
     useState(null);
 
-  const [viewModal, setViewModal] =
-    useState(false);
-
   const [addModal, setAddModal] =
-    useState(false);
-
-  const [editModal, setEditModal] =
     useState(false);
 
   const [deleteModal, setDeleteModal] =
@@ -121,19 +114,11 @@ const Workers = () => {
   ]);
 
   const handleView = (worker) => {
-
-    setSelectedWorker(worker);
-
-    setViewModal(true);
-
+    navigate(`/workers/${worker.id}`);
   };
 
   const handleEdit = (worker) => {
-
-    setSelectedWorker(worker);
-
-    setEditModal(true);
-
+    navigate(`/workers/${worker.id}/edit`);
   };
 
   const handleDelete = (worker) => {
@@ -248,32 +233,6 @@ const Workers = () => {
 
       />
 
-      <EditWorkerModal
-
-        open={editModal}
-
-        worker={selectedWorker}
-
-        onClose={() =>
-
-          setEditModal(false)
-
-        }
-
-        onUpdateWorker={(worker) =>
-
-          updateWorker(
-
-            worker.id,
-
-            worker
-
-          )
-
-        }
-
-      />
-
       <DeleteWorkerModal
 
         open={deleteModal}
@@ -287,20 +246,6 @@ const Workers = () => {
         }
 
         onDeleteWorker={deleteWorker}
-
-      />
-
-      <WorkerProfileModal
-
-        open={viewModal}
-
-        worker={selectedWorker}
-
-        onClose={() =>
-
-          setViewModal(false)
-
-        }
 
       />
 

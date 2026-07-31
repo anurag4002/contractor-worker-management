@@ -15,6 +15,8 @@ import ResetPassword from "../pages/auth/ResetPassword";
 
 import Dashboard from "../pages/dashboard/Dashboard";
 import Workers from "../pages/workers/Workers";
+import WorkerDetails from "../pages/workers/WorkerDetails";
+import EditWorker from "../pages/workers/EditWorker";
 import Attendance from "../pages/attendance/Attendance";
 import Salary from "../pages/salary/Salary";
 import Sites from "../pages/sites/Sites";
@@ -62,6 +64,16 @@ const AppRoutes = () => {
           <Route
             path="/workers"
             element={<Workers />}
+          />
+
+          <Route
+            path="/workers/:id"
+            element={<WorkerDetails />}
+          />
+
+          <Route
+            path="/workers/:id/edit"
+            element={<EditWorker />}
           />
 
           <Route

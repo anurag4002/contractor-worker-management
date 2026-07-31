@@ -12,6 +12,8 @@ const Toast = () => {
       pauseOnHover
       draggable
       theme="light"
+      aria-live="polite"
+      toastStyle={{ borderRadius: "12px" }}
     />
   );
 };
