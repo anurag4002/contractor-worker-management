@@ -14,7 +14,11 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token =
+      localStorage.getItem("token") ||
+      localStorage.getItem("accessToken") ||
+      localStorage.getItem("jwt") ||
+      localStorage.getItem("authToken");
     const storedUser = localStorage.getItem("user");
 
     if (token && storedUser) {
@@ -36,11 +40,23 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (payload) => {
     const response = await authService.login(payload);
-    const { user, accessToken, refreshToken } = response.data;
-    localStorage.setItem("token", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
-    localStorage.setItem("user", JSON.stringify(user));
-    setUser(user);
+    const authPayload = response?.data?.data || response?.data || response || {};
+    const { user, accessToken, refreshToken } = authPayload;
+
+    if (accessToken) {
+      localStorage.setItem("token", accessToken);
+      localStorage.setItem("accessToken", accessToken);
+    }
+
+    if (refreshToken) {
+      localStorage.setItem("refreshToken", refreshToken);
+    }
+
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+      setUser(user);
+    }
+
     return response;
   };
 
@@ -55,6 +71,9 @@ export const AuthProvider = ({ children }) => {
       console.error(error);
     }
     localStorage.removeItem("token");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("jwt");
+    localStorage.removeItem("authToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
     sessionStorage.clear();
@@ -79,8 +98,16 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = async (payload) => {
     const response = await authService.updateProfile(payload);
-    localStorage.setItem("user", JSON.stringify(response.data));
-    setUser(response.data);
+    const updatedUser = response?.data?.data || response?.data || response || {};
+
+    if (updatedUser?.user) {
+      localStorage.setItem("user", JSON.stringify(updatedUser.user));
+      setUser(updatedUser.user);
+    } else if (updatedUser && typeof updatedUser === "object") {
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
+    }
+
     return response;
   };
 
@@ -98,7 +125,7 @@ export const AuthProvider = ({ children }) => {
         changePassword,
         getProfile,
         updateProfile,
-        isAuthenticated: !!user,
+        isAuthenticated: !!user || !!localStorage.getItem("token") || !!localStorage.getItem("accessToken"),
       }}
     >
       {children}

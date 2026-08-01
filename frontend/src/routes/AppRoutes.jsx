@@ -82,6 +82,11 @@ const AppRoutes = () => {
           />
 
           <Route
+            path="/attendance/new"
+            element={<Attendance />}
+          />
+
+          <Route
             path="/salary"
             element={<Salary />}
           />
