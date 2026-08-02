@@ -31,7 +31,7 @@ const DeleteWorkerModal = ({
 
     try {
       setIsSubmitting(true);
-      await onDeleteWorker(worker.id);
+      await onDeleteWorker(worker._id);
       onClose();
     } catch (err) {
       // toast handles error
@@ -90,7 +90,7 @@ const DeleteWorkerModal = ({
 
           {" "}
 
-          {worker.id}
+          {worker._id}
 
           <br />
 

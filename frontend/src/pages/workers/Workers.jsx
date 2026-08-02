@@ -67,7 +67,7 @@ const Workers = () => {
 
       return (
 
-        String(worker.id || "")
+        String(worker._id || "")
           .toLowerCase()
           .includes(keyword)
 
@@ -114,11 +114,11 @@ const Workers = () => {
   ]);
 
   const handleView = (worker) => {
-    navigate(`/workers/${worker.id}`);
+    navigate(`/workers/${worker._id}`);
   };
 
   const handleEdit = (worker) => {
-    navigate(`/workers/${worker.id}/edit`);
+    navigate(`/workers/${worker._id}/edit`);
   };
 
   const handleDelete = (worker) => {

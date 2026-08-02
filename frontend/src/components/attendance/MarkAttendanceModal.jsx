@@ -12,6 +12,7 @@ const MarkAttendanceModal = ({ open, record, onClose }) => {
   const { addAttendance, updateAttendance, loading } = useAttendance();
   const { sites } = useSites();
   const { workers } = useWorkers();
+  const { errors: apiErrors, clearFieldError, handleError, clearAllErrors } = useFormErrors();
   const workersData = Array.isArray(workers) ? workers : [];
 
   const isEdit = !!(record && record._id);
@@ -28,6 +29,7 @@ const MarkAttendanceModal = ({ open, record, onClose }) => {
 
   useEffect(() => {
     if (open && record) {
+      clearAllErrors();
       setFormData({
         worker: record.worker?._id || record.worker || "",
         site: record.site?._id || record.site || "",
@@ -40,6 +42,7 @@ const MarkAttendanceModal = ({ open, record, onClose }) => {
         remarks: record.remarks || "",
       });
     } else if (open && !record) {
+      clearAllErrors();
       setFormData({
         worker: "", site: "",
         attendanceDate: new Date().toISOString().split("T")[0],
@@ -49,8 +52,6 @@ const MarkAttendanceModal = ({ open, record, onClose }) => {
   }, [open, record]);
 
   if (!open) return null;
-
-  const { errors: apiErrors, clearFieldError, handleError } = useFormErrors();
 
   const handleChange = (e) => {
     const { name, value } = e.target;

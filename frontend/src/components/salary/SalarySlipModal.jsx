@@ -83,7 +83,7 @@ const SalarySlipModal = ({
 
               <Value>
 
-                {worker.id}
+                {worker._id}
 
               </Value>
 

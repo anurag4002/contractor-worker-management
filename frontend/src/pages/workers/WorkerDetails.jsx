@@ -190,7 +190,7 @@ const WorkerDetails = () => {
 
     return [
       { label: "Worker Name", value: valueOrDash(worker.name || worker.fullName), icon: <FiUser /> },
-      { label: "Employee ID", value: valueOrDash(worker.employeeId || worker.employee_code || worker.id), icon: <FiShield /> },
+      { label: "Employee ID", value: valueOrDash(worker.employeeId || worker.employee_code || worker._id), icon: <FiShield /> },
       { label: "Mobile Number", value: valueOrDash(worker.mobile || worker.mobileNumber), icon: <FiPhone /> },
       { label: "Email", value: valueOrDash(worker.email), icon: <FiMail /> },
       { label: "Site", value: valueOrDash(worker.site || worker.siteName), icon: <FiMapPin /> },
@@ -234,7 +234,7 @@ const WorkerDetails = () => {
                 <Avatar>{(worker.name || worker.fullName || "W").charAt(0).toUpperCase()}</Avatar>
                 <div>
                   <Title>{valueOrDash(worker.name || worker.fullName)}</Title>
-                  <Subtitle>{valueOrDash(worker.employeeId || worker.employee_code || worker.id)}</Subtitle>
+                  <Subtitle>{valueOrDash(worker.employeeId || worker.employee_code || worker._id)}</Subtitle>
                 </div>
               </TitleBlock>
               <StatusBadge status={worker.status || "Active"}>{worker.status || "Active"}</StatusBadge>

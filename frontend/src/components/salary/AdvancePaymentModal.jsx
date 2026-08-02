@@ -84,11 +84,11 @@ const AdvancePaymentModal = ({
 
     }
 
-    onSave(worker.id, {
+    onSave(worker._id, {
 
       paymentId: `PAY-${Date.now()}`,
 
-      workerId: worker.id,
+      workerId: worker._id,
 
       workerName: worker.name,
 
@@ -164,7 +164,7 @@ const AdvancePaymentModal = ({
 
             <Input
 
-              value={worker.id}
+              value={worker._id}
 
               disabled
 

@@ -259,3 +259,22 @@ export const SaveButton = styled.button`
     background: var(--primary-hover);
   }
 `;
+
+export const SectionCard = styled.div`
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: .75rem;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+`;
+
+export const SectionTitle = styled.h4`
+  margin: 0 0 1rem;
+  color: var(--text);
+  font-size: .95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  padding-bottom: .5rem;
+  border-bottom: 2px solid var(--primary);
+`;

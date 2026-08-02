@@ -121,7 +121,7 @@ const SalaryTable = ({
 
                 return (
 
-                  <tr key={worker.id}>
+                  <tr key={worker._id}>
 
                     <td>
 
@@ -203,7 +203,7 @@ const SalaryTable = ({
 
                     <td>
 
-                      {worker.id}
+                      {worker._id}
 
                     </td>
 

@@ -133,7 +133,7 @@ const WorkerProfileModal = ({
 
             <Value>
 
-              {worker.id}
+              {worker._id}
 
             </Value>
 

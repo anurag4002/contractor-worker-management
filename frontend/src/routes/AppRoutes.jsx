@@ -81,10 +81,7 @@ const AppRoutes = () => {
             element={<Attendance />}
           />
 
-          <Route
-            path="/attendance/new"
-            element={<Attendance />}
-          />
+
 
           <Route
             path="/salary"

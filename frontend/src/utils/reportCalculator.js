@@ -25,7 +25,7 @@ export const getWorkerReport = (
 
         (item) =>
 
-          item.workerId === worker.id
+          item.workerId === worker._id
 
       ) || {};
 
@@ -42,7 +42,7 @@ export const getWorkerReport = (
 
     return {
 
-      id: worker.id,
+      id: worker._id,
 
       name: worker.name,
 
@@ -58,7 +58,7 @@ export const getWorkerReport = (
 
         getAttendancePercentage(
 
-          worker.id,
+          worker._id,
 
           attendance
 
@@ -68,7 +68,7 @@ export const getWorkerReport = (
 
         getPresentDays(
 
-          worker.id,
+          worker._id,
 
           attendance
 
@@ -78,7 +78,7 @@ export const getWorkerReport = (
 
         getAbsentDays(
 
-          worker.id,
+          worker._id,
 
           attendance
 
@@ -88,7 +88,7 @@ export const getWorkerReport = (
 
         getLeaveDays(
 
-          worker.id,
+          worker._id,
 
           attendance
 
@@ -115,7 +115,7 @@ export const getSalaryReport = (
 
         (item) =>
 
-          item.workerId === worker.id
+          item.workerId === worker._id
 
       ) || {};
 
@@ -132,7 +132,7 @@ export const getSalaryReport = (
 
     return {
 
-      workerId: worker.id,
+      workerId: worker._id,
 
       workerName: worker.name,
 
@@ -146,7 +146,7 @@ export const getSalaryReport = (
 
         getAttendancePercentage(
 
-          worker.id,
+          worker._id,
 
           attendance
 

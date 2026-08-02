@@ -71,7 +71,7 @@ const AssignWorkerModal = ({
 
         ||
 
-        worker.id
+        worker._id
           .toLowerCase()
           .includes(keyword)
 
@@ -187,7 +187,7 @@ const AssignWorkerModal = ({
               filteredWorkers.map((worker) => (
 
                 <WorkerItem
-                  key={worker.id}
+                  key={worker._id}
                 >
 
                   <Checkbox>
@@ -198,13 +198,13 @@ const AssignWorkerModal = ({
 
                       checked={
                         selected.includes(
-                          worker.id
+                          worker._id
                         )
                       }
 
                       onChange={() =>
                         toggleWorker(
-                          worker.id
+                          worker._id
                         )
                       }
 

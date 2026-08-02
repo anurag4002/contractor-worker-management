@@ -53,7 +53,7 @@ export const calculateGrossSalary = (
 
   const presentDays =
     getPresentDays(
-      worker.id,
+      worker._id,
       attendance
     );
 
@@ -129,7 +129,7 @@ export const calculateSalary = (
 
   const presentDays =
     getPresentDays(
-      worker.id,
+      worker._id,
       attendance
     );
 
@@ -206,25 +206,25 @@ export const getSalarySummary = (
 
       (item) =>
 
-        item.workerId === worker.id
+        item.workerId === worker._id
 
     ) || {};
 
     const presentDays =
       getPresentDays(
-        worker.id,
+        worker._id,
         attendance
       );
 
     const absentDays =
       getAbsentDays(
-        worker.id,
+        worker._id,
         attendance
       );
 
     const leaveDays =
       getLeaveDays(
-        worker.id,
+        worker._id,
         attendance
       );
 

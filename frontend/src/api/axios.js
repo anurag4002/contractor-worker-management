@@ -24,7 +24,11 @@ axiosInstance.interceptors.request.use(
       localStorage.getItem("authToken");
 
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      if (config.headers && typeof config.headers.set === 'function') {
+        config.headers.set('Authorization', `Bearer ${token}`);
+      } else {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
 
     return config;
@@ -81,8 +85,11 @@ axiosInstance.interceptors.response.use(
           newRefreshToken
         );
 
-        originalRequest.headers.Authorization =
-          `Bearer ${accessToken}`;
+        if (originalRequest.headers && typeof originalRequest.headers.set === 'function') {
+          originalRequest.headers.set('Authorization', `Bearer ${accessToken}`);
+        } else {
+          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        }
 
         return axiosInstance(originalRequest);
       } catch (refreshError) {

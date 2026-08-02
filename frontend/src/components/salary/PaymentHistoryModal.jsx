@@ -72,7 +72,7 @@ const PaymentHistoryModal = ({
               }}
             >
 
-              Worker ID : {worker.id}
+              Worker ID : {worker._id}
 
             </p>
 

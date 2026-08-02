@@ -26,7 +26,7 @@ export const WorkerProvider = ({ children }) => {
     try {
       setLoading(true);
       await workerService.createWorker(payload);
-      showSuccess("Worker created successfully");
+      showSuccess("Worker added successfully");
       await fetchWorkers();
     } catch (error) {
       showError(error.response?.data?.message || "Failed to create worker.");
