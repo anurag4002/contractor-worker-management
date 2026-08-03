@@ -54,11 +54,11 @@ export const Form = styled.form`
 export const InputGroup = styled.div`
   display: flex;
   align-items: center;
-  border: 1px solid #dbe3ef;
+  border: 1px solid var(--border);
   border-radius: 0.9rem;
   height: 3.6rem;
   padding: 0 1rem;
-  background: #fff;
+  background: var(--surface);
 
   &:focus-within {
     border-color: var(--primary);
@@ -101,7 +101,7 @@ export const RegisterButton = styled.button`
   border: none;
   border-radius: 0.9rem;
   background: var(--primary);
-  color: #fff;
+  color: var(--text-on-primary);
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;

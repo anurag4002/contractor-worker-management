@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useCallback } from "react";
 import attendanceService from "../services/attendance.service";
 import { showSuccess, showError } from "../components/common/toast";
 
@@ -12,7 +12,7 @@ export const AttendanceProvider = ({ children }) => {
     const [loading, setLoading] = useState(false);
     const [selectedRecord, setSelectedRecord] = useState(null);
 
-    const fetchAttendance = async (params = {}) => {
+    const fetchAttendance = useCallback(async (params = {}) => {
         try {
             setLoading(true);
             const data = await attendanceService.getAttendance(params);
@@ -25,9 +25,9 @@ export const AttendanceProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const fetchSummary = async () => {
+    const fetchSummary = useCallback(async () => {
         try {
             setLoading(true);
             const data = await attendanceService.getSummary();
@@ -37,9 +37,9 @@ export const AttendanceProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const fetchWorkerHistory = async (workerId) => {
+    const fetchWorkerHistory = useCallback(async (workerId) => {
         try {
             setLoading(true);
             const data = await attendanceService.getWorkerHistory(workerId);
@@ -49,9 +49,9 @@ export const AttendanceProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const addAttendance = async (payload) => {
+    const addAttendance = useCallback(async (payload) => {
         try {
             setLoading(true);
             await attendanceService.markAttendance(payload);
@@ -64,9 +64,9 @@ export const AttendanceProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [fetchAttendance, fetchSummary]);
 
-    const updateAttendance = async (id, payload) => {
+    const updateAttendance = useCallback(async (id, payload) => {
         try {
             setLoading(true);
             await attendanceService.updateAttendance(id, payload);
@@ -78,9 +78,9 @@ export const AttendanceProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [fetchAttendance]);
 
-    const changeStatus = async (id, status) => {
+    const changeStatus = useCallback(async (id, status) => {
         try {
             setLoading(true);
             await attendanceService.changeAttendanceStatus(id, status);
@@ -92,9 +92,9 @@ export const AttendanceProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [fetchAttendance]);
 
-    const removeAttendance = async (id) => {
+    const removeAttendance = useCallback(async (id) => {
         try {
             setLoading(true);
             await attendanceService.deleteAttendance(id);
@@ -106,7 +106,7 @@ export const AttendanceProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [fetchAttendance]);
 
     return (
         <AttendanceContext.Provider

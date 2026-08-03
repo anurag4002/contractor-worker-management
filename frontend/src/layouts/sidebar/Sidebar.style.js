@@ -91,8 +91,7 @@ export const MenuButton = styled.button`
   outline: none;
   background: ${({ $active }) =>
     $active ? "var(--sidebar-active-bg)" : "transparent"};
-  color: ${({ $active }) =>
-    $active ? "#ffffff" : "var(--sidebar-text)"};
+  color: ${({ $active }) => $active ? "var(--text-on-primary)" : "var(--sidebar-text)"};
   border-radius: 0.9rem;
   padding: 0.95rem 1rem;
   display: flex;

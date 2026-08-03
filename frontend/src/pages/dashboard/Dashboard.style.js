@@ -51,6 +51,14 @@ export const RetryButton = styled.button`
   }
 `;
 
+export const HelperText = styled.p`
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 0;
+  padding: 1rem 0;
+  text-align: center;
+`;
+
 export const DashboardContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -103,7 +111,7 @@ export const ExportButton = styled.button`
   gap: 0.5rem;
   border: none;
   background: var(--primary);
-  color: #ffffff;
+  color: var(--text);
   padding: 0.85rem 1.4rem;
   border-radius: 0.75rem;
   cursor: pointer;
@@ -186,7 +194,7 @@ export const ActionCard = styled.button`
 
   &:hover {
     background: var(--primary);
-    color: #ffffff;
+    color: var(--text);
     border-color: var(--primary);
     transform: translateY(-4px);
     box-shadow: 0 15px 30px rgba(37, 99, 235, 0.2);
@@ -249,20 +257,24 @@ export const Badge = styled.span`
   border-radius: 999px;
   font-size: 0.8rem;
   font-weight: 600;
-  background: ${({ success, danger, warning }) =>
+  background: ${({ success, danger, warning, holiday }) =>
     success
       ? "var(--badge-success-bg)"
       : danger
         ? "var(--badge-danger-bg)"
         : warning
           ? "var(--badge-warning-bg)"
-          : "var(--badge-info-bg)"};
-  color: ${({ success, danger, warning }) =>
+          : holiday
+            ? "var(--badge-purple-bg)"
+            : "var(--badge-info-bg)"};
+  color: ${({ success, danger, warning, holiday }) =>
     success
       ? "var(--badge-success-fg)"
       : danger
         ? "var(--badge-danger-fg)"
         : warning
           ? "var(--badge-warning-fg)"
-          : "var(--badge-info-fg)"};
+          : holiday
+            ? "var(--badge-purple-fg)"
+            : "var(--badge-info-fg)"};
 `;

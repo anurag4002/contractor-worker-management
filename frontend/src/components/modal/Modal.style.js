@@ -29,7 +29,7 @@ export const ModalCard = styled.div`
   width: 100%;
   max-width: 38rem;
 
-  background: white;
+  background: var(--surface);
 
   border-radius: 1rem;
 
@@ -89,8 +89,8 @@ export const CloseButton = styled.button`
   transition:.3s;
 
   &:hover{
-      background:var(--primary);
-      color:white;
+       background: var(--primary);
+       color: var(--text-on-primary);
   }
 `;
 
@@ -128,7 +128,7 @@ export const Button = styled.button`
 
   color:${({ variant }) =>
     variant === "primary"
-      ? "#fff"
+      ? "var(--text-on-primary)"
       : "var(--text)"};
 
   &:hover{

@@ -28,35 +28,24 @@ const COLORS = [
   "#0EA5E9",
 ];
 
-const DashboardCharts = ({ chartsData }) => {
+const DashboardCharts = ({
+  attendanceChart,
+  payrollChart,
+  siteWorkersChart,
+}) => {
   const [attendance, setAttendance] = useState([]);
   const [payroll, setPayroll] = useState([]);
   const [sites, setSites] = useState([]);
 
   useEffect(() => {
-    if (chartsData) {
-      setAttendance(
-        (chartsData.attendanceChart || []).map((item) => ({
-          status: item._id.replace("_", " "),
-          value: item.value,
-        }))
-      );
+    console.log("Attendance Chart Prop:", attendanceChart);
+    console.log("Payroll Chart Prop:", payrollChart);
+    console.log("Site Workers Chart Prop:", siteWorkersChart);
 
-      setPayroll(
-        (chartsData.payrollStatusChart || []).map((item) => ({
-          name: item._id,
-          value: item.value,
-        }))
-      );
-
-      setSites(
-        (chartsData.siteWorkerChart || []).map((item) => ({
-          site: item.siteName,
-          workers: item.totalWorkers,
-        }))
-      );
-    }
-  }, [chartsData]);
+    setAttendance(attendanceChart || []);
+    setPayroll(payrollChart || []);
+    setSites(siteWorkersChart || []);
+  }, [attendanceChart, payrollChart, siteWorkersChart]);
 
   return (
     <ChartsGrid>
@@ -66,26 +55,32 @@ const DashboardCharts = ({ chartsData }) => {
           Attendance Status
         </ChartTitle>
 
-        <ResponsiveContainer
-          width="100%"
-          height={300}
-        >
-          <BarChart data={attendance}>
-            <CartesianGrid strokeDasharray="3 3" />
+        {attendance.length === 0 ? (
+          <div style={{ height: 300, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)" }}>
+            No attendance data available.
+          </div>
+        ) : (
+          <ResponsiveContainer
+            width="100%"
+            height={300}
+          >
+            <BarChart data={attendance}>
+              <CartesianGrid strokeDasharray="3 3" />
 
-            <XAxis dataKey="status" />
+              <XAxis dataKey="name" />
 
-            <YAxis />
+              <YAxis />
 
-            <Tooltip />
+              <Tooltip />
 
-            <Bar
-              dataKey="value"
-              fill="#2563EB"
-              radius={[6, 6, 0, 0]}
-            />
-          </BarChart>
-        </ResponsiveContainer>
+              <Bar
+                dataKey="value"
+                fill="#2563EB"
+                radius={[6, 6, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </ChartCard>
 
       <ChartCard>
@@ -93,35 +88,41 @@ const DashboardCharts = ({ chartsData }) => {
           Payroll Status
         </ChartTitle>
 
-        <ResponsiveContainer
-          width="100%"
-          height={300}
-        >
-          <PieChart>
-            <Pie
-              data={payroll}
-              dataKey="value"
-              nameKey="name"
-              outerRadius={100}
-              label
-            >
-              {payroll.map(
-                (_, index) => (
-                  <Cell
-                    key={index}
-                    fill={
-                      COLORS[
-                      index %
-                      COLORS.length
-                      ]
-                    }
-                  />
-                )
-              )}
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </ResponsiveContainer>
+        {payroll.length === 0 ? (
+          <div style={{ height: 300, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)" }}>
+            No payroll data available.
+          </div>
+        ) : (
+          <ResponsiveContainer
+            width="100%"
+            height={300}
+          >
+            <PieChart>
+              <Pie
+                data={payroll}
+                dataKey="value"
+                nameKey="name"
+                outerRadius={100}
+                label
+              >
+                {payroll.map(
+                  (_, index) => (
+                    <Cell
+                      key={index}
+                      fill={
+                        COLORS[
+                        index %
+                        COLORS.length
+                        ]
+                      }
+                    />
+                  )
+                )}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        )}
       </ChartCard>
 
       <ChartCard>
@@ -129,26 +130,32 @@ const DashboardCharts = ({ chartsData }) => {
           Site Workers
         </ChartTitle>
 
-        <ResponsiveContainer
-          width="100%"
-          height={300}
-        >
-          <BarChart data={sites}>
-            <CartesianGrid strokeDasharray="3 3" />
+        {sites.length === 0 ? (
+          <div style={{ height: 300, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)" }}>
+            No site worker data available.
+          </div>
+        ) : (
+          <ResponsiveContainer
+            width="100%"
+            height={300}
+          >
+            <BarChart data={sites}>
+              <CartesianGrid strokeDasharray="3 3" />
 
-            <XAxis dataKey="site" />
+              <XAxis dataKey="site" />
 
-            <YAxis />
+              <YAxis />
 
-            <Tooltip />
+              <Tooltip />
 
-            <Bar
-              dataKey="workers"
-              fill="#16A34A"
-              radius={[6, 6, 0, 0]}
-            />
-          </BarChart>
-        </ResponsiveContainer>
+              <Bar
+                dataKey="count"
+                fill="#16A34A"
+                radius={[6, 6, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </ChartCard>
 
     </ChartsGrid>

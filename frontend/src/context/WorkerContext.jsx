@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import workerService from "../services/worker.service";
 import { showSuccess, showError } from "../components/common/toast";
 
@@ -9,7 +9,7 @@ export const WorkerProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [selectedWorker, setSelectedWorker] = useState(null);
 
-  const fetchWorkers = async (params = {}) => {
+  const fetchWorkers = useCallback(async (params = {}) => {
     try {
       setLoading(true);
       const data = await workerService.getWorkers(params);
@@ -20,9 +20,9 @@ export const WorkerProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const addWorker = async (payload) => {
+  const addWorker = useCallback(async (payload) => {
     try {
       setLoading(true);
       await workerService.createWorker(payload);
@@ -34,9 +34,9 @@ export const WorkerProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchWorkers]);
 
-  const updateWorker = async (id, payload) => {
+  const updateWorker = useCallback(async (id, payload) => {
     try {
       setLoading(true);
       await workerService.updateWorker(id, payload);
@@ -48,9 +48,9 @@ export const WorkerProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchWorkers]);
 
-  const deleteWorker = async (id) => {
+  const deleteWorker = useCallback(async (id) => {
     try {
       setLoading(true);
       await workerService.deleteWorker(id);
@@ -62,9 +62,9 @@ export const WorkerProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchWorkers]);
 
-  const changeStatus = async (id, status) => {
+  const changeStatus = useCallback(async (id, status) => {
     try {
       setLoading(true);
       await workerService.changeWorkerStatus(id, status);
@@ -76,7 +76,7 @@ export const WorkerProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchWorkers]);
 
   return (
     <WorkerContext.Provider

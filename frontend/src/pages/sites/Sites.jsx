@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import { FiDownload, FiPlus, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import useWorkers from "../../hooks/useWorkers";
 import useSites from "../../hooks/useSites";
+import useExport from "../../hooks/useExport";
 
 import SiteSummary from "../../components/sites/SiteSummary";
 import SiteFilter from "../../components/sites/SiteFilter";
@@ -19,6 +20,13 @@ import { SitesContainer, Header, TitleSection, ActionSection, Button } from "./S
 const Sites = () => {
   const { workers, attendance, assignWorkerToSite } = useWorkers();
   const { sites, loading, pagination, fetchSites, changeStatus } = useSites();
+  const { exportSitesPdf, downloading } = useExport();
+
+  const sitesData = Array.isArray(sites) ? sites : [];
+  const workersData = Array.isArray(workers) ? workers : [];
+  const attendanceData = Array.isArray(attendance) ? attendance : [];
+
+  console.log("Sites: rendered. sites length:", sitesData?.length, "loading:", loading);
 
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
@@ -26,17 +34,22 @@ const Sites = () => {
   const limit = 10;
 
   useEffect(() => {
-    // Backend search/filter/pagination
+    console.log("Sites: MOUNTED");
+    return () => console.log("Sites: UNMOUNTED");
+  }, []);
+
+  useEffect(() => {
+    console.log("Sites: useEffect triggered, page:", page, "search:", search, "status:", status);
     const params = { page, limit };
     if (search) params.search = search;
     if (status && status !== "All") params.status = status;
 
+    console.log("Sites: calling fetchSites with params:", params);
     fetchSites(params);
-  }, [page, search, status]);
+    console.log("Sites: fetchSites called");
+  }, [page, search, status, fetchSites]);
 
-  const sitesData = Array.isArray(sites) ? sites : [];
-  const workersData = Array.isArray(workers) ? workers : [];
-  const attendanceData = Array.isArray(attendance) ? attendance : [];
+  console.log("Sites: Current state -> loading:", loading, "sitesData:", sitesData, "workersData:", workersData);
 
   const [selectedSite, setSelectedSite] = useState(null);
 
@@ -66,8 +79,12 @@ const Sites = () => {
           <p>Manage projects, supervisors and workers</p>
         </TitleSection>
         <ActionSection>
-          <Button>
-            <FiDownload /> Export
+          <Button
+            onClick={() => exportSitesPdf()}
+            disabled={downloading.sitesPdf}
+          >
+            <FiDownload />
+            {downloading.sitesPdf ? "Exporting…" : "Export"}
           </Button>
           <Button onClick={() => setAddOpen(true)}>
             <FiPlus /> Add Site

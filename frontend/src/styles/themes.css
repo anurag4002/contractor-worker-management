@@ -8,6 +8,8 @@
   --primary: #2563eb;
   --primary-hover: #1d4ed8;
   --primary-light: #eff6ff;
+  --text-on-primary: #ffffff;
+  --text-on-danger: #ffffff;
   --danger: #dc2626;
   --danger-hover: #b91c1c;
   --success: #16a34a;

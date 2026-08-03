@@ -1,9 +1,9 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-const exportDashboardPDF = ({
+const exportDashboardPDF = (
   dashboard,
-}) => {
+) => {
   if (!dashboard) return;
 
   const {

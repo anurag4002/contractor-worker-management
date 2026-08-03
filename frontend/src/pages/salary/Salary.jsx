@@ -3,6 +3,7 @@ import React, {
   useState,
 } from "react";
 
+import { toast } from "react-toastify";
 import { FiDownload } from "react-icons/fi";
 
 import useWorkers from "../../hooks/useWorkers";
@@ -193,12 +194,13 @@ const Salary = () => {
 
         <ActionSection>
 
-          <Button>
-
+          <Button
+            onClick={() => {
+              toast.error("Missing Endpoint: GET /api/v1/salary/export — No salary export endpoint exists on the backend.");
+            }}
+          >
             <FiDownload />
-
             Export Report
-
           </Button>
 
         </ActionSection>

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useState, useCallback } from "react";
 import siteService from "../services/site.service";
 import { showSuccess, showError } from "../components/common/toast";
 
@@ -10,22 +10,26 @@ export const SiteProvider = ({ children }) => {
     const [loading, setLoading] = useState(false);
     const [selectedSite, setSelectedSite] = useState(null);
 
-    const fetchSites = async (params = {}) => {
+    const fetchSites = useCallback(async (params = {}) => {
         try {
+            console.log("SiteContext: fetchSites called with params:", params);
             setLoading(true);
             const data = await siteService.getSites(params);
+            console.log("SiteContext: fetchSites response:", data);
             setSites(data?.data || data?.sites || data || []);
             if (data?.pagination) {
                 setPagination(data.pagination);
             }
         } catch (error) {
+            console.error("SiteContext: fetchSites error:", error);
             showError(error.response?.data?.message || "Failed to fetch sites.");
         } finally {
+            console.log("SiteContext: fetchSites done, loading set to false");
             setLoading(false);
         }
-    };
+    }, []);
 
-    const fetchSiteById = async (id) => {
+    const fetchSiteById = useCallback(async (id) => {
         try {
             setLoading(true);
             const data = await siteService.getSiteById(id);
@@ -36,9 +40,9 @@ export const SiteProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const addSite = async (payload) => {
+    const addSite = useCallback(async (payload) => {
         try {
             setLoading(true);
             await siteService.createSite(payload);
@@ -50,9 +54,9 @@ export const SiteProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [fetchSites]);
 
-    const updateSite = async (id, payload) => {
+    const updateSite = useCallback(async (id, payload) => {
         try {
             setLoading(true);
             await siteService.updateSite(id, payload);
@@ -64,9 +68,9 @@ export const SiteProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [fetchSites]);
 
-    const deleteSite = async (id) => {
+    const deleteSite = useCallback(async (id) => {
         try {
             setLoading(true);
             await siteService.deleteSite(id);
@@ -78,9 +82,9 @@ export const SiteProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [fetchSites]);
 
-    const changeStatus = async (id, status) => {
+    const changeStatus = useCallback(async (id, status) => {
         try {
             setLoading(true);
             await siteService.changeSiteStatus(id, status);
@@ -92,7 +96,7 @@ export const SiteProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [fetchSites]);
 
     return (
         <SiteContext.Provider

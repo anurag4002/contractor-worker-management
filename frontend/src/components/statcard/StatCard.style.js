@@ -44,7 +44,7 @@ export const IconBox = styled.div`
   transition: all 0.3s ease;
 
   svg {
-    color: #ffffff;
+    color: var(--text);
     font-size: 1.5rem;
   }
 

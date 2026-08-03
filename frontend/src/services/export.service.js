@@ -8,9 +8,14 @@ const BASE = "/export";
  * @param {string} filename  e.g. "workers.pdf"
  */
 const triggerDownload = (blob, filename) => {
-    if (!(blob instanceof Blob)) {
-        throw new Error("Invalid download response: expected a file blob.");
+    if (blob.type === "application/json") {
+        throw new Error("Export failed: Received JSON data instead of a file.");
     }
+
+    if (blob.size === 0) {
+        throw new Error("Export failed: The generated file is empty.");
+    }
+
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -18,7 +23,11 @@ const triggerDownload = (blob, filename) => {
     document.body.appendChild(link);
     link.click();
     link.remove();
-    window.URL.revokeObjectURL(url);
+
+    // Delay revocation to ensure the browser has time to start the download
+    setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+    }, 500);
 };
 
 const exportService = {

@@ -21,7 +21,7 @@ const SiteSummary = ({
   const totalSites = sites.length;
 
   const activeSites = sites.filter(
-    (site) => site.status === "Active"
+    (site) => site.status === "ACTIVE"
   ).length;
 
   const totalWorkers = sites.reduce(

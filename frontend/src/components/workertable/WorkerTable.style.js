@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const TableCard = styled.div`
   width: 100%;
 
-  background: #fff;
+  background: var(--surface);
 
   border: 1px solid var(--border);
 
@@ -75,7 +75,7 @@ export const Avatar = styled.div`
 
   background:var(--primary);
 
-  color:#fff;
+  color: var(--text-on-primary);
 
   display:flex;
 
@@ -108,7 +108,7 @@ export const Status = styled.span`
 
   color:${({ status }) =>
     status === "Active"
-      ? "#15803D"
+      ? "var(--success)"
       : "var(--danger)"};
 `;
 
@@ -141,7 +141,7 @@ export const IconButton = styled.button`
 
     background:var(--primary);
 
-    color:#fff;
+    color: var(--text-on-primary);
 
   }
 `;

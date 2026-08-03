@@ -31,7 +31,7 @@ const tabStyle = (active) => ({
   border: "none",
   borderRadius: "0.65rem",
   background: active ? "#2563eb" : "#f1f5f9",
-  color: active ? "#fff" : "#475569",
+  color: active ? "var(--text-on-primary)" : "#475569",
   fontWeight: active ? 700 : 500,
   fontSize: "0.9rem",
   cursor: "pointer",

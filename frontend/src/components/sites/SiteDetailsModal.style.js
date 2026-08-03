@@ -80,7 +80,7 @@ export const Footer = styled.div`
 export const Button = styled.button`
   border:none;
   background:var(--primary);
-  color:#fff;
+  color: var(--text-on-primary);
   padding:.9rem 1.6rem;
   border-radius:.75rem;
   cursor:pointer;

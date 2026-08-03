@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useCallback } from "react";
 import payrollService from "../services/payroll.service";
 import { showSuccess, showError } from "../components/common/toast";
 
@@ -11,7 +11,7 @@ export const PayrollProvider = ({ children }) => {
     const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 1 });
     const [loading, setLoading] = useState(false);
 
-    const fetchPayrolls = async (params = {}) => {
+    const fetchPayrolls = useCallback(async (params = {}) => {
         try {
             setLoading(true);
             const data = await payrollService.getPayrolls(params);
@@ -22,18 +22,18 @@ export const PayrollProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const fetchSummary = async () => {
+    const fetchSummary = useCallback(async () => {
         try {
             const data = await payrollService.getSummary();
             setSummary(data?.data || data);
         } catch (error) {
             showError(error.response?.data?.message || "Failed to fetch payroll summary.");
         }
-    };
+    }, []);
 
-    const fetchWorkerHistory = async (workerId) => {
+    const fetchWorkerHistory = useCallback(async (workerId) => {
         try {
             setLoading(true);
             const data = await payrollService.getWorkerPayrollHistory(workerId);
@@ -43,9 +43,9 @@ export const PayrollProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const createPayroll = async (payload) => {
+    const createPayroll = useCallback(async (payload) => {
         try {
             setLoading(true);
             await payrollService.createPayroll(payload);
@@ -58,9 +58,9 @@ export const PayrollProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [fetchPayrolls, fetchSummary]);
 
-    const updatePayroll = async (id, payload) => {
+    const updatePayroll = useCallback(async (id, payload) => {
         try {
             setLoading(true);
             await payrollService.updatePayroll(id, payload);
@@ -72,9 +72,9 @@ export const PayrollProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [fetchPayrolls]);
 
-    const changeStatus = async (id, status) => {
+    const changeStatus = useCallback(async (id, status) => {
         try {
             setLoading(true);
             await payrollService.changePayrollStatus(id, status);
@@ -86,9 +86,9 @@ export const PayrollProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [fetchPayrolls]);
 
-    const deletePayroll = async (id) => {
+    const deletePayroll = useCallback(async (id) => {
         try {
             setLoading(true);
             await payrollService.deletePayroll(id);
@@ -100,7 +100,7 @@ export const PayrollProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [fetchPayrolls]);
 
     return (
         <PayrollContext.Provider

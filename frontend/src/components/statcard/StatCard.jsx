@@ -35,6 +35,7 @@ const iconMap = {
   Absent: FiUsers,
   Leave: FiTrendingUp,
   "Half Day": FiTrendingUp,
+  Holiday: FiTrendingUp,
   "Active Sites": FiMapPin,
   "Pending Salary": FiDollarSign,
 };
@@ -54,6 +55,7 @@ const colorMap = {
   Absent: "#DC2626",
   Leave: "#F59E0B",
   "Half Day": "#0EA5E9",
+  Holiday: "#7C3AED",
   "Active Sites": "#F97316",
   "Pending Salary": "#8B5CF6",
 };

@@ -11,6 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 import useWorkers from "../../hooks/useWorkers";
+import useExport from "../../hooks/useExport";
 
 import WorkerTable from "../../components/workertable/WorkerTable";
 import AddWorkerModal from "../../components/workermodal/AddWorkerModal";
@@ -35,6 +36,8 @@ const Workers = () => {
     fetchWorkers,
     loading,
   } = useWorkers();
+
+  const { exportWorkersPdf, downloading } = useExport();
 
   useEffect(() => {
     fetchWorkers();
@@ -175,11 +178,13 @@ const Workers = () => {
 
           <Button
             type="button"
+            onClick={() => exportWorkersPdf()}
+            disabled={downloading.workersPdf}
           >
 
             <FiDownload />
 
-            Export
+            {downloading.workersPdf ? "Exporting…" : "Export"}
 
           </Button>
 

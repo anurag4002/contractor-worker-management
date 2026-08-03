@@ -47,7 +47,7 @@ const Avatar = styled.div`
   display: grid;
   place-items: center;
   background: linear-gradient(135deg, var(--primary) 0%, #38bdf8 100%);
-  color: #fff;
+  color: var(--text-on-primary);
   font-weight: 800;
   font-size: 1.4rem;
 `;

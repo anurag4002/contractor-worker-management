@@ -14,7 +14,7 @@ export const ChartsGrid = styled.div`
 `;
 
 export const ChartCard = styled.div`
-  background: #fff;
+  background: var(--surface);
 
   border-radius: 1rem;
 

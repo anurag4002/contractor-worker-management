@@ -48,7 +48,7 @@ export const Button = styled.button`
   border-radius: 0.8rem;
 
   background: var(--primary);
-  color: #fff;
+  color: var(--text);
 
   font-size: 0.95rem;
   font-weight: 600;

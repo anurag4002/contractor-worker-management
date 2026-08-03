@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FiDownload, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import useAttendance from "../../hooks/useAttendance";
 import useSites from "../../hooks/useSites";
+import useExport from "../../hooks/useExport";
 
 import AttendanceSummary from "../../components/attendance/AttendanceSummary";
 import AttendanceFilter from "../../components/attendance/AttendanceFilter";
@@ -17,6 +18,7 @@ const Attendance = () => {
     fetchAttendance, fetchSummary, changeStatus, removeAttendance
   } = useAttendance();
   const { sites, fetchSites } = useSites();
+  const { exportAttendancePdf, downloading } = useExport();
 
   const [search, setSearch] = useState(""); // Not directly mapped in backend attendance validator maybe, we'll try workerId if they type manually or just keep it
   const [siteId, setSiteId] = useState("");
@@ -66,8 +68,12 @@ const Attendance = () => {
           <Button onClick={() => setMarkOpen(true)}>
             Mark New Attendance
           </Button>
-          <Button>
-            <FiDownload /> Export Report
+          <Button
+            onClick={() => exportAttendancePdf()}
+            disabled={downloading.attendancePdf}
+          >
+            <FiDownload />
+            {downloading.attendancePdf ? "Exporting…" : "Export Report"}
           </Button>
         </ActionSection>
       </Header>

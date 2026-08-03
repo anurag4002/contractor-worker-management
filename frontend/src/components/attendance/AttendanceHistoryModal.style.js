@@ -23,7 +23,7 @@ export const Modal = styled.div`
 
   margin: auto;
 
-  background: #fff;
+  background: var(--surface);
 
   border-radius: 1rem;
 
@@ -134,7 +134,7 @@ export const Footer = styled.div`
   position: sticky;
   bottom: 0;
 
-  background: #fff;
+  background: var(--surface);
 `;
 
 export const Button = styled.button`
@@ -142,7 +142,7 @@ export const Button = styled.button`
 
   background: var(--primary);
 
-  color: #fff;
+  color: var(--text-on-primary);
 
   padding: .85rem 1.5rem;
 

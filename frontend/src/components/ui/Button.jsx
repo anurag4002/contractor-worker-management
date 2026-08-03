@@ -1,27 +1,27 @@
 import styled from "styled-components";
 
 const VARIANTS = {
-    primary: `
-    background: var(--primary); color: #fff; border: none;
+  primary: `
+    background: var(--primary); color: var(--text-on-primary); border: none;
     box-shadow: 0 4px 12px rgba(37,99,235,0.2);
     &:hover:not(:disabled) { background: var(--primary-hover); }
   `,
-    secondary: `
+  secondary: `
     background: var(--surface-hover); color: var(--text); border: 1px solid var(--border);
     &:hover:not(:disabled) { background: var(--border); }
   `,
-    danger: `
-    background: var(--danger); color: #fff; border: none;
+  danger: `
+    background: var(--danger); color: var(--text-on-danger); border: none;
     &:hover:not(:disabled) { background: var(--danger-hover); }
   `,
-    ghost: `
+  ghost: `
     background: transparent; color: var(--primary); border: 1px solid var(--primary);
     &:hover:not(:disabled) { background: var(--primary-light); }
   `,
-    icon: `
+  icon: `
     background: var(--primary-light); color: var(--primary); border: none;
     width: 2.4rem; height: 2.4rem; padding: 0;
-    &:hover:not(:disabled) { background: var(--primary); color: #fff; }
+    &:hover:not(:disabled) { background: var(--primary); color: var(--text-on-primary); }
   `,
 };
 

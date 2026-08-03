@@ -140,12 +140,12 @@ export const PageButton = styled.button`
     active ? "var(--primary)" : "var(--surface-hover)"};
 
   color: ${({ active }) =>
-    active ? "#fff" : "var(--text)"};
+    active ? "var(--text-on-primary)" : "var(--text)"};
 
   transition: 0.3s;
 
   &:hover {
     background: var(--primary);
-    color: white;
+    color: var(--text-on-primary);
   }
 `;

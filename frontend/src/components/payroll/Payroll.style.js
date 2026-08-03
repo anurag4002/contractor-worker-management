@@ -10,7 +10,7 @@ export const SummaryGrid = styled.div`
 `;
 
 export const Card = styled.div`
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1.5rem;
@@ -39,7 +39,7 @@ export const Info = styled.div`
 `;
 
 export const TableCard = styled.div`
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 1rem;
   overflow: hidden;
@@ -77,15 +77,15 @@ export const Status = styled.span`
   font-size: 0.78rem;
   font-weight: 600;
   background: ${({ status }) =>
-        status === "PAID" ? "var(--badge-success-bg)" :
-            status === "GENERATED" ? "var(--badge-info-bg)" :
-                status === "PENDING" ? "var(--badge-warning-bg)" :
-                    status === "CANCELLED" ? "var(--badge-danger-bg)" : "var(--surface-hover)"};
+    status === "PAID" ? "var(--badge-success-bg)" :
+      status === "GENERATED" ? "var(--badge-info-bg)" :
+        status === "PENDING" ? "var(--badge-warning-bg)" :
+          status === "CANCELLED" ? "var(--badge-danger-bg)" : "var(--surface-hover)"};
   color: ${({ status }) =>
-        status === "PAID" ? "var(--success)" :
-            status === "GENERATED" ? "var(--primary)" :
-                status === "PENDING" ? "var(--warning)" :
-                    status === "CANCELLED" ? "var(--danger)" : "var(--text-secondary)"};
+    status === "PAID" ? "var(--success)" :
+      status === "GENERATED" ? "var(--primary)" :
+        status === "PENDING" ? "var(--warning)" :
+          status === "CANCELLED" ? "var(--danger)" : "var(--text-secondary)"};
 `;
 
 export const ActionButtons = styled.div`
@@ -111,7 +111,7 @@ export const FilterBar = styled.div`
   gap: 1rem;
   flex-wrap: wrap;
   align-items: center;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1rem 1.25rem;
@@ -133,7 +133,7 @@ export const FilterSelect = styled.select`
   border: 1px solid var(--input-border);
   border-radius: 0.65rem;
   font-size: 0.9rem;
-  background: #fff;
+  background: var(--surface);
   outline: none;
   cursor: pointer;
   &:focus { border-color: var(--primary); }
