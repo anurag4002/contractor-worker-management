@@ -129,7 +129,7 @@ export const FieldInput = styled.input`
 
 export const FieldError = styled.p`
   margin: 0;
-  color: #dc2626;
+  color: var(--danger);
   font-size: 0.82rem;
   font-weight: 600;
   line-height: 1.5;

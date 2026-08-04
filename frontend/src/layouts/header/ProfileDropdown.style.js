@@ -32,7 +32,7 @@ export const Avatar = styled.div`
   height: 3rem;
   border-radius: 50%;
   background: var(--primary);
-  color: #ffffff;
+  color: var(--text-on-primary);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -81,6 +81,6 @@ export const MenuItem = styled.button`
 
   &:hover {
     background: ${({ danger }) =>
-      danger ? "var(--badge-danger-bg)" : "var(--table-header-bg)"};
+    danger ? "var(--badge-danger-bg)" : "var(--table-header-bg)"};
   }
 `;

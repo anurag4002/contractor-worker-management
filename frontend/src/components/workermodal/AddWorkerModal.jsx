@@ -4,27 +4,28 @@ import React, {
 } from "react";
 
 import {
-  Overlay,
-  Modal,
-  Header,
-  Title,
-  CloseButton,
-  Form,
-  Grid,
-  FormGroup,
-  Label,
-  Input,
-  Select,
-  Footer,
-  CancelButton,
+  ModalOverlay,
+  ModalContainer,
+  ModalHeader,
+  ModalTitle,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  FormGrid,
+  FormField,
+  FormLabel,
+  FormInput,
+  FormDatePicker,
+  FormSelect,
   SectionCard,
   SectionTitle,
-} from "./WorkerModal.style";
+  SecondaryButton,
+  PrimaryButton,
+} from "../ui/form";
 
-import { showSuccess } from "../common/toast";
+import { showSuccess } from "../../components/common/toast";
 import useFormErrors from "../../hooks/useFormErrors";
-import FormError from "../ui/FormError";
-import LoadingButton from "../ui/LoadingButton";
+import FormError from "../../components/ui/FormError";
 
 const initialState = {
   fullName: "",
@@ -292,461 +293,411 @@ const AddWorkerModal = ({
     }
   };
 
+  const titleId = "add-worker-modal-title";
+
   return (
-    <Overlay>
-      <Modal>
-        <Header>
-          <Title>Add New Worker</Title>
-          <CloseButton onClick={onClose}>×</CloseButton>
-        </Header>
+    <ModalOverlay role="dialog" aria-modal="true" aria-labelledby={titleId}>
+      <ModalContainer>
+        <ModalHeader>
+          <ModalTitle id={titleId}>Add New Worker</ModalTitle>
+          <ModalCloseButton type="button" onClick={onClose} aria-label="Close dialog">×</ModalCloseButton>
+        </ModalHeader>
 
-        <Form onSubmit={handleSubmit}>
-          <SectionCard>
-            <SectionTitle>Personal Information</SectionTitle>
-            <Grid>
-              <FormGroup>
-                <Label>Full Name *</Label>
-                <Input
-                  name="fullName"
-                  value={form.fullName}
-                  onChange={handleChange}
-                  placeholder="Enter full name (e.g. Vikram Singh)"
-                  required
-                />
-                <FormError error={apiErrors.fullName} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>Father's Name *</Label>
-                <Input
-                  name="fatherName"
-                  value={form.fatherName}
-                  onChange={handleChange}
-                  placeholder="Enter father's name (e.g. Ramesh Singh)"
-                  required
-                />
-                <FormError error={apiErrors.fatherName} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>Mobile Number *</Label>
-                <Input
-                  type="tel"
-                  name="mobileNumber"
-                  value={form.mobileNumber}
-                  onChange={handleChange}
-                  placeholder="10-digit mobile number (e.g. 9123456789)"
-                  maxLength={10}
-                  required
-                />
-                <FormError error={apiErrors.mobileNumber} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>Alternate Mobile Number</Label>
-                <Input
-                  type="tel"
-                  name="alternateMobileNumber"
-                  value={form.alternateMobileNumber}
-                  onChange={handleChange}
-                  placeholder="Optional alternate number (e.g. 9876543210)"
-                  maxLength={10}
-                />
-                <FormError error={apiErrors.alternateMobileNumber} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>Email</Label>
-                <Input
-                  type="email"
-                  name="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  placeholder="Enter email (e.g. vikram@gmail.com)"
-                />
-                <FormError error={apiErrors.email} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>Gender *</Label>
-                <Select
-                  name="gender"
-                  value={form.gender}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select Gender</option>
-                  {genderOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </Select>
-                <FormError error={apiErrors.gender} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>Date of Birth *</Label>
-                <Input
-                  type="date"
-                  name="dateOfBirth"
-                  value={form.dateOfBirth}
-                  onChange={handleChange}
-                  required
-                />
-                <FormError error={apiErrors.dateOfBirth} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>Blood Group *</Label>
-                <Select
-                  name="bloodGroup"
-                  value={form.bloodGroup}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select Blood Group</option>
-                  {bloodGroupOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </Select>
-                <FormError error={apiErrors.bloodGroup} />
-              </FormGroup>
-            </Grid>
-          </SectionCard>
-
-          <SectionCard>
-            <SectionTitle>Identity Information</SectionTitle>
-            <Grid>
-              <FormGroup>
-                <Label>Aadhaar Number *</Label>
-                <Input
-                  name="aadhaarNumber"
-                  value={form.aadhaarNumber}
-                  onChange={handleChange}
-                  placeholder="12-digit Aadhaar number (e.g. 456789123456)"
-                  maxLength={12}
-                  required
-                />
-                <FormError error={apiErrors.aadhaarNumber} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>PAN Number</Label>
-                <Input
-                  name="panNumber"
-                  value={form.panNumber}
-                  onChange={handleChange}
-                  placeholder="PAN format (e.g. ABCDE1234F)"
-                  maxLength={10}
-                />
-                <FormError error={apiErrors.panNumber} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>ESIC Number</Label>
-                <Input
-                  name="esicNumber"
-                  value={form.esicNumber}
-                  onChange={handleChange}
-                  placeholder="Enter ESIC number (e.g. ESIC789654)"
-                />
-                <FormError error={apiErrors.esicNumber} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>PF Number</Label>
-                <Input
-                  name="pfNumber"
-                  value={form.pfNumber}
-                  onChange={handleChange}
-                  placeholder="Enter PF number (e.g. PF789654)"
-                />
-                <FormError error={apiErrors.pfNumber} />
-              </FormGroup>
-            </Grid>
-          </SectionCard>
-
-          <SectionCard>
-            <SectionTitle>Address</SectionTitle>
-            <Grid>
-              <FormGroup>
-                <Label>Address *</Label>
-                <Input
-                  name="address"
-                  value={form.address}
-                  onChange={handleChange}
-                  placeholder="House No., Street, Locality"
-                  required
-                />
-                <FormError error={apiErrors.address} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>State *</Label>
-                <Input
-                  name="state"
-                  value={form.state}
-                  onChange={handleChange}
-                  placeholder="Select State"
-                  required
-                />
-                <FormError error={apiErrors.state} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>District *</Label>
-                <Input
-                  name="district"
-                  value={form.district}
-                  onChange={handleChange}
-                  placeholder="Enter District"
-                  required
-                />
-                <FormError error={apiErrors.district} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>City *</Label>
-                <Input
-                  name="city"
-                  value={form.city}
-                  onChange={handleChange}
-                  placeholder="Enter City"
-                  required
-                />
-                <FormError error={apiErrors.city} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>Pincode *</Label>
-                <Input
-                  name="pincode"
-                  value={form.pincode}
-                  onChange={handleChange}
-                  placeholder="6-digit PIN (e.g. 201308)"
-                  maxLength={6}
-                  required
-                />
-                <FormError error={apiErrors.pincode} />
-              </FormGroup>
-            </Grid>
-          </SectionCard>
-
-          <SectionCard>
-            <SectionTitle>Employment Details</SectionTitle>
-            <Grid>
-              <FormGroup>
-                <Label>Trade *</Label>
-                <Select
-                  name="trade"
-                  value={form.trade}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select Trade</option>
-                  {tradeOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </Select>
-                <FormError error={apiErrors.trade} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>Skill Level *</Label>
-                <Select
-                  name="skillLevel"
-                  value={form.skillLevel}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select Skill Level</option>
-                  {skillLevelOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </Select>
-                <FormError error={apiErrors.skillLevel} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>Joining Date *</Label>
-                <Input
-                  type="date"
-                  name="joiningDate"
-                  value={form.joiningDate}
-                  onChange={handleChange}
-                  required
-                />
-                <FormError error={apiErrors.joiningDate} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>Salary Type *</Label>
-                <Select
-                  name="salaryType"
-                  value={form.salaryType}
-                  onChange={handleChange}
-                  required
-                >
-                  {salaryTypeOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </Select>
-                <FormError error={apiErrors.salaryType} />
-              </FormGroup>
-
-              {form.salaryType === "DAILY" && (
-                <FormGroup>
-                  <Label>Daily Wage *</Label>
-                  <Input
-                    type="number"
-                    name="dailyWage"
-                    value={form.dailyWage}
+        <ModalBody>
+          <form onSubmit={handleSubmit}>
+            <SectionCard>
+              <SectionTitle>Personal Information</SectionTitle>
+              <FormGrid>
+                <FormField>
+                  <FormLabel $required>Full Name</FormLabel>
+                  <FormInput
+                    name="fullName"
+                    value={form.fullName}
                     onChange={handleChange}
-                    placeholder="Enter daily wage (e.g. 950)"
-                    min={0}
+                    placeholder="Enter full name (e.g. Vikram Singh)"
                     required
                   />
-                  <FormError error={apiErrors.dailyWage} />
-                </FormGroup>
-              )}
+                  <FormError error={apiErrors.fullName} />
+                </FormField>
 
-              {form.salaryType === "MONTHLY" && (
-                <FormGroup>
-                  <Label>Monthly Salary *</Label>
-                  <Input
-                    type="number"
-                    name="monthlySalary"
-                    value={form.monthlySalary}
+                <FormField>
+                  <FormLabel $required>Father's Name</FormLabel>
+                  <FormInput
+                    name="fatherName"
+                    value={form.fatherName}
                     onChange={handleChange}
-                    placeholder="Enter monthly salary (e.g. 28000)"
-                    min={0}
+                    placeholder="Enter father's name (e.g. Ramesh Singh)"
                     required
                   />
-                  <FormError error={apiErrors.monthlySalary} />
-                </FormGroup>
-              )}
-            </Grid>
-          </SectionCard>
+                  <FormError error={apiErrors.fatherName} />
+                </FormField>
 
-          <SectionCard>
-            <SectionTitle>Bank Details</SectionTitle>
-            <Grid>
-              <FormGroup>
-                <Label>Bank Name</Label>
-                <Input
-                  name="bankName"
-                  value={form.bankName}
-                  onChange={handleChange}
-                  placeholder="Enter bank name (e.g. Punjab National Bank)"
-                />
-                <FormError error={apiErrors.bankName} />
-              </FormGroup>
+                <FormField>
+                  <FormLabel $required>Mobile Number</FormLabel>
+                  <FormInput
+                    type="tel"
+                    name="mobileNumber"
+                    value={form.mobileNumber}
+                    onChange={handleChange}
+                    placeholder="10-digit mobile number (e.g. 9123456789)"
+                    maxLength={10}
+                    required
+                  />
+                  <FormError error={apiErrors.mobileNumber} />
+                </FormField>
 
-              <FormGroup>
-                <Label>Account Number</Label>
-                <Input
-                  name="accountNumber"
-                  value={form.accountNumber}
-                  onChange={handleChange}
-                  placeholder="Enter account number (e.g. 789456123987)"
-                />
-                <FormError error={apiErrors.accountNumber} />
-              </FormGroup>
+                <FormField>
+                  <FormLabel>Alternate Mobile Number</FormLabel>
+                  <FormInput
+                    type="tel"
+                    name="alternateMobileNumber"
+                    value={form.alternateMobileNumber}
+                    onChange={handleChange}
+                    placeholder="Optional alternate number (e.g. 9876543210)"
+                    maxLength={10}
+                  />
+                  <FormError error={apiErrors.alternateMobileNumber} />
+                </FormField>
 
-              <FormGroup>
-                <Label>IFSC Code</Label>
-                <Input
-                  name="ifscCode"
-                  value={form.ifscCode}
-                  onChange={handleChange}
-                  placeholder="IFSC format (e.g. PUNB0123456)"
-                  maxLength={11}
-                />
-                <FormError error={apiErrors.ifscCode} />
-              </FormGroup>
+                <FormField>
+                  <FormLabel>Email</FormLabel>
+                  <FormInput
+                    type="email"
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    placeholder="Enter email (e.g. vikram@gmail.com)"
+                  />
+                  <FormError error={apiErrors.email} />
+                </FormField>
 
-              <FormGroup>
-                <Label>UPI ID</Label>
-                <Input
-                  name="upiId"
-                  value={form.upiId}
-                  onChange={handleChange}
-                  placeholder="UPI ID (e.g. vikram@okpnb)"
-                />
-                <FormError error={apiErrors.upiId} />
-              </FormGroup>
-            </Grid>
-          </SectionCard>
+                <FormField>
+                  <FormLabel $required>Gender</FormLabel>
+                  <FormSelect name="gender" value={form.gender} onChange={handleChange} required>
+                    <option value="">Select Gender</option>
+                    {genderOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </FormSelect>
+                  <FormError error={apiErrors.gender} />
+                </FormField>
 
-          <SectionCard>
-            <SectionTitle>Emergency Contact</SectionTitle>
-            <Grid>
-              <FormGroup>
-                <Label>Emergency Contact Name *</Label>
-                <Input
-                  name="emergencyContactName"
-                  value={form.emergencyContactName}
-                  onChange={handleChange}
-                  placeholder="Enter emergency contact name"
-                  required
-                />
-                <FormError error={apiErrors.emergencyContactName} />
-              </FormGroup>
+                <FormField>
+                  <FormLabel $required>Date of Birth</FormLabel>
+                  <FormDatePicker type="date" name="dateOfBirth" value={form.dateOfBirth} onChange={handleChange} required />
+                  <FormError error={apiErrors.dateOfBirth} />
+                </FormField>
 
-              <FormGroup>
-                <Label>Emergency Contact Number *</Label>
-                <Input
-                  type="tel"
-                  name="emergencyContactNumber"
-                  value={form.emergencyContactNumber}
-                  onChange={handleChange}
-                  placeholder="10-digit mobile number"
-                  maxLength={10}
-                  required
-                />
-                <FormError error={apiErrors.emergencyContactNumber} />
-              </FormGroup>
+                <FormField>
+                  <FormLabel $required>Blood Group</FormLabel>
+                  <FormSelect name="bloodGroup" value={form.bloodGroup} onChange={handleChange} required>
+                    <option value="">Select Blood Group</option>
+                    {bloodGroupOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </FormSelect>
+                  <FormError error={apiErrors.bloodGroup} />
+                </FormField>
+              </FormGrid>
+            </SectionCard>
 
-              <FormGroup>
-                <Label>Relationship</Label>
-                <Select
-                  name="relationship"
-                  value={form.relationship}
-                  onChange={handleChange}
-                >
-                  <option value="">Select Relationship</option>
-                  {relationshipOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </Select>
-                <FormError error={apiErrors.relationship} />
-              </FormGroup>
-            </Grid>
-          </SectionCard>
+            <SectionCard>
+              <SectionTitle>Identity Information</SectionTitle>
+              <FormGrid>
+                <FormField>
+                  <FormLabel $required>Aadhaar Number</FormLabel>
+                  <FormInput
+                    name="aadhaarNumber"
+                    value={form.aadhaarNumber}
+                    onChange={handleChange}
+                    placeholder="12-digit Aadhaar number (e.g. 456789123456)"
+                    maxLength={12}
+                    required
+                  />
+                  <FormError error={apiErrors.aadhaarNumber} />
+                </FormField>
 
-          <Footer>
-            <CancelButton type="button" onClick={onClose}>Cancel</CancelButton>
-            <LoadingButton
-              type="submit"
-              loading={isSubmitting}
-              loadingText="Adding..."
-              style={{
-                background: "#2563EB",
-                color: "white",
-                padding: "0.55rem 1.25rem",
-                borderRadius: "0.6rem",
-                fontSize: "0.95rem",
-                fontWeight: 600,
-                border: "none",
-                cursor: "pointer",
-                transition: "all 0.2s",
-              }}
-            >
-              Add Worker
-            </LoadingButton>
-          </Footer>
-        </Form>
-      </Modal>
-    </Overlay>
+                <FormField>
+                  <FormLabel>PAN Number</FormLabel>
+                  <FormInput
+                    name="panNumber"
+                    value={form.panNumber}
+                    onChange={handleChange}
+                    placeholder="PAN format (e.g. ABCDE1234F)"
+                    maxLength={10}
+                  />
+                  <FormError error={apiErrors.panNumber} />
+                </FormField>
+
+                <FormField>
+                  <FormLabel>ESIC Number</FormLabel>
+                  <FormInput
+                    name="esicNumber"
+                    value={form.esicNumber}
+                    onChange={handleChange}
+                    placeholder="Enter ESIC number (e.g. ESIC789654)"
+                  />
+                  <FormError error={apiErrors.esicNumber} />
+                </FormField>
+
+                <FormField>
+                  <FormLabel>PF Number</FormLabel>
+                  <FormInput
+                    name="pfNumber"
+                    value={form.pfNumber}
+                    onChange={handleChange}
+                    placeholder="Enter PF number (e.g. PF789654)"
+                  />
+                  <FormError error={apiErrors.pfNumber} />
+                </FormField>
+              </FormGrid>
+            </SectionCard>
+
+            <SectionCard>
+              <SectionTitle>Address</SectionTitle>
+              <FormGrid>
+                <FormField>
+                  <FormLabel $required>Address</FormLabel>
+                  <FormInput
+                    name="address"
+                    value={form.address}
+                    onChange={handleChange}
+                    placeholder="House No., Street, Locality"
+                    required
+                  />
+                  <FormError error={apiErrors.address} />
+                </FormField>
+
+                <FormField>
+                  <FormLabel $required>State</FormLabel>
+                  <FormInput
+                    name="state"
+                    value={form.state}
+                    onChange={handleChange}
+                    placeholder="Select State"
+                    required
+                  />
+                  <FormError error={apiErrors.state} />
+                </FormField>
+
+                <FormField>
+                  <FormLabel $required>District</FormLabel>
+                  <FormInput
+                    name="district"
+                    value={form.district}
+                    onChange={handleChange}
+                    placeholder="Enter District"
+                    required
+                  />
+                  <FormError error={apiErrors.district} />
+                </FormField>
+
+                <FormField>
+                  <FormLabel $required>City</FormLabel>
+                  <FormInput
+                    name="city"
+                    value={form.city}
+                    onChange={handleChange}
+                    placeholder="Enter City"
+                    required
+                  />
+                  <FormError error={apiErrors.city} />
+                </FormField>
+
+                <FormField>
+                  <FormLabel $required>Pincode</FormLabel>
+                  <FormInput
+                    name="pincode"
+                    value={form.pincode}
+                    onChange={handleChange}
+                    placeholder="6-digit PIN (e.g. 201308)"
+                    maxLength={6}
+                    required
+                  />
+                  <FormError error={apiErrors.pincode} />
+                </FormField>
+              </FormGrid>
+            </SectionCard>
+
+            <SectionCard>
+              <SectionTitle>Employment Details</SectionTitle>
+              <FormGrid>
+                <FormField>
+                  <FormLabel $required>Trade</FormLabel>
+                  <FormSelect name="trade" value={form.trade} onChange={handleChange} required>
+                    <option value="">Select Trade</option>
+                    {tradeOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </FormSelect>
+                  <FormError error={apiErrors.trade} />
+                </FormField>
+
+                <FormField>
+                  <FormLabel $required>Skill Level</FormLabel>
+                  <FormSelect name="skillLevel" value={form.skillLevel} onChange={handleChange} required>
+                    <option value="">Select Skill Level</option>
+                    {skillLevelOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </FormSelect>
+                  <FormError error={apiErrors.skillLevel} />
+                </FormField>
+
+                <FormField>
+                  <FormLabel $required>Joining Date</FormLabel>
+                  <FormDatePicker type="date" name="joiningDate" value={form.joiningDate} onChange={handleChange} required />
+                  <FormError error={apiErrors.joiningDate} />
+                </FormField>
+
+                <FormField>
+                  <FormLabel $required>Salary Type</FormLabel>
+                  <FormSelect name="salaryType" value={form.salaryType} onChange={handleChange} required>
+                    {salaryTypeOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </FormSelect>
+                  <FormError error={apiErrors.salaryType} />
+                </FormField>
+
+                {form.salaryType === "DAILY" && (
+                  <FormField>
+                    <FormLabel $required>Daily Wage</FormLabel>
+                    <FormInput
+                      type="number"
+                      name="dailyWage"
+                      value={form.dailyWage}
+                      onChange={handleChange}
+                      placeholder="Enter daily wage (e.g. 950)"
+                      min={0}
+                      required
+                    />
+                    <FormError error={apiErrors.dailyWage} />
+                  </FormField>
+                )}
+
+                {form.salaryType === "MONTHLY" && (
+                  <FormField>
+                    <FormLabel $required>Monthly Salary</FormLabel>
+                    <FormInput
+                      type="number"
+                      name="monthlySalary"
+                      value={form.monthlySalary}
+                      onChange={handleChange}
+                      placeholder="Enter monthly salary (e.g. 28000)"
+                      min={0}
+                      required
+                    />
+                    <FormError error={apiErrors.monthlySalary} />
+                  </FormField>
+                )}
+              </FormGrid>
+            </SectionCard>
+
+            <SectionCard>
+              <SectionTitle>Bank Details</SectionTitle>
+              <FormGrid>
+                <FormField>
+                  <FormLabel>Bank Name</FormLabel>
+                  <FormInput
+                    name="bankName"
+                    value={form.bankName}
+                    onChange={handleChange}
+                    placeholder="Enter bank name (e.g. Punjab National Bank)"
+                  />
+                  <FormError error={apiErrors.bankName} />
+                </FormField>
+
+                <FormField>
+                  <FormLabel>Account Number</FormLabel>
+                  <FormInput
+                    name="accountNumber"
+                    value={form.accountNumber}
+                    onChange={handleChange}
+                    placeholder="Enter account number (e.g. 789456123987)"
+                  />
+                  <FormError error={apiErrors.accountNumber} />
+                </FormField>
+
+                <FormField>
+                  <FormLabel>IFSC Code</FormLabel>
+                  <FormInput
+                    name="ifscCode"
+                    value={form.ifscCode}
+                    onChange={handleChange}
+                    placeholder="IFSC format (e.g. PUNB0123456)"
+                    maxLength={11}
+                  />
+                  <FormError error={apiErrors.ifscCode} />
+                </FormField>
+
+                <FormField>
+                  <FormLabel>UPI ID</FormLabel>
+                  <FormInput
+                    name="upiId"
+                    value={form.upiId}
+                    onChange={handleChange}
+                    placeholder="UPI ID (e.g. vikram@okpnb)"
+                  />
+                  <FormError error={apiErrors.upiId} />
+                </FormField>
+              </FormGrid>
+            </SectionCard>
+
+            <SectionCard>
+              <SectionTitle>Emergency Contact</SectionTitle>
+              <FormGrid>
+                <FormField>
+                  <FormLabel $required>Emergency Contact Name</FormLabel>
+                  <FormInput
+                    name="emergencyContactName"
+                    value={form.emergencyContactName}
+                    onChange={handleChange}
+                    placeholder="Enter emergency contact name"
+                    required
+                  />
+                  <FormError error={apiErrors.emergencyContactName} />
+                </FormField>
+
+                <FormField>
+                  <FormLabel $required>Emergency Contact Number</FormLabel>
+                  <FormInput
+                    type="tel"
+                    name="emergencyContactNumber"
+                    value={form.emergencyContactNumber}
+                    onChange={handleChange}
+                    placeholder="10-digit mobile number"
+                    maxLength={10}
+                    required
+                  />
+                  <FormError error={apiErrors.emergencyContactNumber} />
+                </FormField>
+
+                <FormField>
+                  <FormLabel>Relationship</FormLabel>
+                  <FormSelect name="relationship" value={form.relationship} onChange={handleChange}>
+                    <option value="">Select Relationship</option>
+                    {relationshipOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </FormSelect>
+                  <FormError error={apiErrors.relationship} />
+                </FormField>
+              </FormGrid>
+            </SectionCard>
+
+            <ModalFooter>
+              <SecondaryButton type="button" onClick={onClose}>
+                Cancel
+              </SecondaryButton>
+              <PrimaryButton type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Adding..." : "Add Worker"}
+              </PrimaryButton>
+            </ModalFooter>
+          </form>
+        </ModalBody>
+      </ModalContainer>
+    </ModalOverlay>
   );
 };
 

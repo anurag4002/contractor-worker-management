@@ -66,7 +66,7 @@ export const Header = styled.div`
   position: sticky;
   top: 0;
 
-  background: #fff;
+  background: var(--surface);
 
   z-index: 10;
 `;
@@ -170,7 +170,7 @@ export const Footer = styled.div`
   position: sticky;
   bottom: 0;
 
-  background: #fff;
+  background: var(--surface);
 
   padding-top: 1rem;
 
@@ -198,7 +198,7 @@ export const SaveButton = styled.button`
 
   background: var(--primary);
 
-  color: #fff;
+  color: var(--text-on-primary);
 
   padding: .85rem 1.5rem;
 

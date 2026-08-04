@@ -107,6 +107,6 @@ export const IconButton = styled.button`
 
   &:hover {
     background: var(--primary);
-    color: #ffffff;
+    color: var(--text-on-primary);
   }
 `;

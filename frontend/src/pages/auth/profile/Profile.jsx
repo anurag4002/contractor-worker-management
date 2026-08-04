@@ -9,14 +9,25 @@ import { useAuth } from "../../../context/AuthContext.jsx";
 import { showSuccess, showError } from "../../../components/common/toast";
 
 import {
-  Page, Card, AvatarCircle, HeaderSection, Name, RoleLabel,
-  SummaryText, InfoGrid, FieldGroup, FieldLabel, FieldBox,
-  FieldIcon, FieldInput, FieldError, ButtonRow, PrimaryButton, SecondaryButton, BackButton,
-} from "./Profile.style";
+  FormPage,
+  FormContainer,
+  FormHeader,
+  FormTitle,
+  FormSubtitle,
+  FormGrid,
+  FormField,
+  FormLabel,
+  FormInput,
+  FormError,
+  SectionCard,
+  SectionTitle,
+  ButtonGroup,
+  PrimaryButton,
+  SecondaryButton,
+} from "../../../components/ui/form";
 
 const EMPTY = "—";
 
-/* ── Helpers ─────────────────────────────────────────── */
 const getRoleDisplay = (role) => {
   if (!role) return EMPTY;
   if (typeof role === "string") return role || EMPTY;
@@ -31,12 +42,10 @@ const getStatus = (u) => {
 };
 const val = (v) => (v == null || v === "" ? EMPTY : v);
 
-/* ── Component ───────────────────────────────────────── */
 const Profile = () => {
   const { user, getProfile, updateProfile, changePassword } = useAuth();
   const navigate = useNavigate();
 
-  /* ── profile fetch on mount ── */
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileData, setProfileData] = useState(null);
 
@@ -53,7 +62,6 @@ const Profile = () => {
     })();
   }, []);
 
-  /* ── edit mode ── */
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState({ fullName: "", mobileNumber: "", username: "" });
   const [saving, setSaving] = useState(false);
@@ -160,7 +168,6 @@ const Profile = () => {
     }
   };
 
-  /* ── change password section ── */
   const [showPw, setShowPw] = useState(false);
   const [pw, setPw] = useState({ oldPassword: "", newPassword: "", confirm: "" });
   const [pwSaving, setPwSaving] = useState(false);
@@ -190,251 +197,239 @@ const Profile = () => {
     }
   };
 
-  /* ── Loading ── */
   if (profileLoading) {
     return (
-      <Page>
-        <Card>
-          <HeaderSection><Name>Loading profile…</Name></HeaderSection>
-        </Card>
-      </Page>
+      <FormPage>
+        <FormContainer>
+          <FormHeader>
+            <FormTitle>Loading profile…</FormTitle>
+          </FormHeader>
+        </FormContainer>
+      </FormPage>
     );
   }
 
-  /* ── Render ── */
   const nameDisplay = val(p.fullName || p.email);
   const roleDisplay = getRoleDisplay(p.role);
 
   return (
-    <Page>
-      <Card>
-        {/* Avatar */}
-        <AvatarCircle aria-hidden>
-          {p.fullName ? p.fullName.charAt(0).toUpperCase() : <FiUser size={40} />}
-        </AvatarCircle>
+    <FormPage>
+      <FormContainer>
+        <FormHeader>
+          <div>
+            <FormTitle>{nameDisplay}</FormTitle>
+            <FormSubtitle>{roleDisplay}</FormSubtitle>
+          </div>
+        </FormHeader>
 
-        <HeaderSection>
-          <Name>{nameDisplay}</Name>
-          <RoleLabel>{roleDisplay}</RoleLabel>
-          <SummaryText>
-            View and manage your profile details and account security.
-          </SummaryText>
-        </HeaderSection>
-
-        {/* ── Fields ── */}
-        <InfoGrid>
-          {/* Full Name — editable */}
-          <FieldGroup>
-            <FieldLabel htmlFor="fullName">Full Name</FieldLabel>
-            <FieldBox>
-              <FieldIcon><FiUser /></FieldIcon>
-              <FieldInput
-                id="fullName" name="fullName"
+        <SectionCard>
+          <SectionTitle>Profile Information</SectionTitle>
+          <FormGrid>
+            <FormField>
+              <FormLabel $required>Full Name</FormLabel>
+              <FormInput
+                name="fullName"
                 value={isEditing ? form.fullName : val(p.fullName)}
                 readOnly={!isEditing}
                 onChange={handleChange}
                 disabled={saving}
               />
-            </FieldBox>
-            {errors.fullName && <FieldError>{errors.fullName}</FieldError>}
-          </FieldGroup>
+              {errors.fullName && <FormError error={errors.fullName} />}
+            </FormField>
 
-          {/* Email — read-only system field */}
-          <FieldGroup>
-            <FieldLabel htmlFor="email">Email</FieldLabel>
-            <FieldBox>
-              <FieldIcon><FiMail /></FieldIcon>
-              <FieldInput id="email" value={val(p.email)} readOnly />
-            </FieldBox>
-          </FieldGroup>
+            <FormField>
+              <FormLabel>Email</FormLabel>
+              <FormInput name="email" value={val(p.email)} readOnly disabled />
+            </FormField>
 
-           {/* Mobile Number — editable */}
-           <FieldGroup>
-             <FieldLabel htmlFor="mobileNumber">Phone Number</FieldLabel>
-            <FieldBox>
-              <FieldIcon><FiPhone /></FieldIcon>
-              <FieldInput
-                id="mobileNumber" name="mobileNumber"
+            <FormField>
+              <FormLabel $required>Phone Number</FormLabel>
+              <FormInput
+                name="mobileNumber"
                 value={isEditing ? form.mobileNumber : val(p.mobileNumber)}
                 readOnly={!isEditing}
                 onChange={handleChange}
                 disabled={saving}
               />
-            </FieldBox>
-            {errors.mobileNumber && <FieldError>{errors.mobileNumber}</FieldError>}
-          </FieldGroup>
+              {errors.mobileNumber && <FormError error={errors.mobileNumber} />}
+            </FormField>
 
-           {/* Username — editable */}
-           <FieldGroup>
-             <FieldLabel htmlFor="username">Username</FieldLabel>
-             <FieldBox>
-               <FieldIcon><FiShield /></FieldIcon>
-               <FieldInput
-                 id="username" name="username"
-                 value={isEditing ? form.username : val(p.username)}
-                 readOnly={!isEditing}
-                 onChange={handleChange}
-                 disabled={saving}
-               />
-             </FieldBox>
-             {errors.username && <FieldError>{errors.username}</FieldError>}
-           </FieldGroup>
+            <FormField>
+              <FormLabel $required>Username</FormLabel>
+              <FormInput
+                name="username"
+                value={isEditing ? form.username : val(p.username)}
+                readOnly={!isEditing}
+                onChange={handleChange}
+                disabled={saving}
+              />
+              {errors.username && <FormError error={errors.username} />}
+            </FormField>
 
-           {/* Employee ID — read-only */}
-           <FieldGroup>
-             <FieldLabel htmlFor="employeeId">Employee ID</FieldLabel>
-             <FieldBox>
-               <FieldIcon><FiShield /></FieldIcon>
-               <FieldInput id="employeeId" value={val(p.employeeId || p.employee_code || "—")} readOnly />
-             </FieldBox>
-           </FieldGroup>
+            <FormField>
+              <FormLabel>Employee ID</FormLabel>
+              <FormInput name="employeeId" value={val(p.employeeId || p.employee_code || "—")} readOnly disabled />
+            </FormField>
 
-           {/* Department — read-only */}
-           <FieldGroup>
-             <FieldLabel htmlFor="department">Department</FieldLabel>
-             <FieldBox>
-               <FieldIcon><FiShield /></FieldIcon>
-               <FieldInput id="department" value={val(p.department || "—")} readOnly />
-             </FieldBox>
-           </FieldGroup>
+            <FormField>
+              <FormLabel>Department</FormLabel>
+              <FormInput name="department" value={val(p.department || "—")} readOnly disabled />
+            </FormField>
 
-           {/* Role — read-only system field */}
-           <FieldGroup>
-             <FieldLabel htmlFor="role">Role</FieldLabel>
-             <FieldBox>
-               <FieldIcon><FiShield /></FieldIcon>
-               <FieldInput id="role" value={roleDisplay} readOnly />
-             </FieldBox>
-           </FieldGroup>
+            <FormField>
+              <FormLabel>Role</FormLabel>
+              <FormInput name="role" value={roleDisplay} readOnly disabled />
+            </FormField>
 
-           {/* Account Status — read-only system field */}
-           <FieldGroup>
-             <FieldLabel htmlFor="status">Account Status</FieldLabel>
-             <FieldBox>
-               <FieldIcon><FiLock /></FieldIcon>
-               <FieldInput id="status" value={getStatus(p)} readOnly />
-             </FieldBox>
-           </FieldGroup>
+            <FormField>
+              <FormLabel>Account Status</FormLabel>
+              <FormInput name="status" value={getStatus(p)} readOnly disabled />
+            </FormField>
 
-           {/* Last Login — read-only */}
-           <FieldGroup>
-             <FieldLabel htmlFor="lastLogin">Last Login</FieldLabel>
-             <FieldBox>
-               <FieldIcon><FiClock /></FieldIcon>
-               <FieldInput id="lastLogin" value={val(p.lastLogin || p.last_login || "—")} readOnly />
-             </FieldBox>
-           </FieldGroup>
+            <FormField>
+              <FormLabel>Last Login</FormLabel>
+              <FormInput name="lastLogin" value={val(p.lastLogin || p.last_login || "—")} readOnly disabled />
+            </FormField>
 
-           {/* Join Date — read-only */}
-           <FieldGroup>
-             <FieldLabel htmlFor="joinDate">Join Date</FieldLabel>
-             <FieldBox>
-               <FieldIcon><FiCalendar /></FieldIcon>
-               <FieldInput id="joinDate" value={val(p.joinDate || p.join_date || "—")} readOnly />
-             </FieldBox>
-           </FieldGroup>
-         </InfoGrid>
+            <FormField>
+              <FormLabel>Join Date</FormLabel>
+              <FormInput name="joinDate" value={val(p.joinDate || p.join_date || "—")} readOnly disabled />
+            </FormField>
+          </FormGrid>
+        </SectionCard>
 
-         {/* ── Profile buttons ── */}
-         <ButtonRow>
-           <BackButton type="button" onClick={() => navigate(-1)}>
-             <FiArrowLeft /> Back
-           </BackButton>
-           {!isEditing ? (
-             <>
-               <SecondaryButton type="button" onClick={() => setShowPw((v) => !v)}>
-                 <FiKey /> {showPw ? "Hide Password" : "Change Password"}
-               </SecondaryButton>
-               <PrimaryButton type="button" onClick={startEdit}>
-                 <FiEdit /> Edit Profile
-               </PrimaryButton>
-             </>
-           ) : (
-             <>
-               <SecondaryButton type="button" onClick={() => setIsEditing(false)} disabled={saving}>
-                 <FiX /> Cancel
-               </SecondaryButton>
-               <PrimaryButton type="button" onClick={handleSave} disabled={saving}>
-                 {saving ? <><FiLoader size={16} style={{ animation: "spin 1s linear infinite" }} /> Saving...</> : <><FiSave /> Save Changes</>}
-               </PrimaryButton>
-             </>
-           )}
-         </ButtonRow>
+        <ButtonGroup>
+          <SecondaryButton type="button" onClick={() => navigate(-1)}>
+            <FiArrowLeft /> Back
+          </SecondaryButton>
+          {!isEditing ? (
+            <>
+              <SecondaryButton type="button" onClick={() => setShowPw((v) => !v)}>
+                <FiKey /> {showPw ? "Hide Password" : "Change Password"}
+              </SecondaryButton>
+              <PrimaryButton type="button" onClick={startEdit}>
+                <FiEdit /> Edit Profile
+              </PrimaryButton>
+            </>
+          ) : (
+            <>
+              <SecondaryButton type="button" onClick={() => setIsEditing(false)} disabled={saving}>
+                <FiX /> Cancel
+              </SecondaryButton>
+              <PrimaryButton type="button" onClick={handleSave} disabled={saving}>
+                {saving ? <><FiLoader size={16} style={{ animation: "spin 1s linear infinite" }} /> Saving...</> : <><FiSave /> Save Changes</>}
+              </PrimaryButton>
+            </>
+          )}
+        </ButtonGroup>
 
-        {/* ── Inline Change Password ── */}
         {showPw && (
-          <div style={{
-            marginTop: "2rem", padding: "1.5rem", borderRadius: "1rem",
-            background: "var(--bg)", border: "1px solid var(--border)",
-          }}>
-            <h3 style={{ margin: "0 0 1rem", fontSize: "1.05rem", color: "var(--text)" }}>
-              <FiKey style={{ marginRight: "0.4rem", verticalAlign: "middle" }} />
-              Change Password
-            </h3>
+          <SectionCard>
+            <SectionTitle>Change Password</SectionTitle>
+            <FormGrid>
+              <FormField>
+                <FormLabel $required>Current Password</FormLabel>
+                <div style={{ position: "relative" }}>
+                  <FormInput
+                    type={showOld ? "text" : "password"}
+                    name="oldPassword"
+                    value={pw.oldPassword}
+                    onChange={handlePwChange}
+                    placeholder="Enter current password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowOld(!showOld)}
+                    style={{
+                      position: "absolute",
+                      right: "0.75rem",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "var(--text-secondary)",
+                    }}
+                  >
+                    {showOld ? <FiEyeOff /> : <FiEye />}
+                  </button>
+                </div>
+              </FormField>
 
-            {/* Current Password */}
-            <FieldGroup style={{ marginBottom: "0.75rem" }}>
-              <FieldLabel>Current Password</FieldLabel>
-              <FieldBox>
-                <FieldIcon><FiLock /></FieldIcon>
-                <FieldInput
-                  type={showOld ? "text" : "password"}
-                  name="oldPassword" value={pw.oldPassword}
-                  onChange={handlePwChange} placeholder="Enter current password"
-                />
-                <button type="button" onClick={() => setShowOld(!showOld)}
-                  style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-secondary)" }}>
-                  {showOld ? <FiEyeOff /> : <FiEye />}
-                </button>
-              </FieldBox>
-            </FieldGroup>
+              <FormField>
+                <FormLabel $required>New Password</FormLabel>
+                <div style={{ position: "relative" }}>
+                  <FormInput
+                    type={showNew ? "text" : "password"}
+                    name="newPassword"
+                    value={pw.newPassword}
+                    onChange={handlePwChange}
+                    placeholder="Min 8 chars, upper+lower+number+special"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNew(!showNew)}
+                    style={{
+                      position: "absolute",
+                      right: "0.75rem",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "var(--text-secondary)",
+                    }}
+                  >
+                    {showNew ? <FiEyeOff /> : <FiEye />}
+                  </button>
+                </div>
+              </FormField>
 
-            {/* New Password */}
-            <FieldGroup style={{ marginBottom: "0.75rem" }}>
-              <FieldLabel>New Password</FieldLabel>
-              <FieldBox>
-                <FieldIcon><FiLock /></FieldIcon>
-                <FieldInput
-                  type={showNew ? "text" : "password"}
-                  name="newPassword" value={pw.newPassword}
-                  onChange={handlePwChange} placeholder="Min 8 chars, upper+lower+number+special"
-                />
-                <button type="button" onClick={() => setShowNew(!showNew)}
-                  style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-secondary)" }}>
-                  {showNew ? <FiEyeOff /> : <FiEye />}
-                </button>
-              </FieldBox>
-            </FieldGroup>
+              <FormField>
+                <FormLabel $required>Confirm Password</FormLabel>
+                <div style={{ position: "relative" }}>
+                  <FormInput
+                    type={showCfm ? "text" : "password"}
+                    name="confirm"
+                    value={pw.confirm}
+                    onChange={handlePwChange}
+                    placeholder="Re-enter new password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCfm(!showCfm)}
+                    style={{
+                      position: "absolute",
+                      right: "0.75rem",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "var(--text-secondary)",
+                    }}
+                  >
+                    {showCfm ? <FiEyeOff /> : <FiEye />}
+                  </button>
+                </div>
+              </FormField>
+            </FormGrid>
 
-            {/* Confirm Password */}
-            <FieldGroup style={{ marginBottom: "1rem" }}>
-              <FieldLabel>Confirm Password</FieldLabel>
-              <FieldBox>
-                <FieldIcon><FiLock /></FieldIcon>
-                <FieldInput
-                  type={showCfm ? "text" : "password"}
-                  name="confirm" value={pw.confirm}
-                  onChange={handlePwChange} placeholder="Re-enter new password"
-                />
-                <button type="button" onClick={() => setShowCfm(!showCfm)}
-                  style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-secondary)" }}>
-                  {showCfm ? <FiEyeOff /> : <FiEye />}
-                </button>
-              </FieldBox>
-            </FieldGroup>
-
-            <ButtonRow>
-              <SecondaryButton type="button" onClick={() => { setShowPw(false); setPw({ oldPassword: "", newPassword: "", confirm: "" }); }}>
+            <ButtonGroup>
+              <SecondaryButton
+                type="button"
+                onClick={() => { setShowPw(false); setPw({ oldPassword: "", newPassword: "", confirm: "" }); }}
+              >
                 <FiX /> Cancel
               </SecondaryButton>
               <PrimaryButton type="button" onClick={handlePwSubmit} disabled={pwSaving}>
                 <FiSave /> {pwSaving ? "Updating…" : "Update Password"}
               </PrimaryButton>
-            </ButtonRow>
-          </div>
+            </ButtonGroup>
+          </SectionCard>
         )}
-      </Card>
-    </Page>
+      </FormContainer>
+    </FormPage>
   );
 };
 

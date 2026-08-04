@@ -15,6 +15,7 @@
   --success: #16a34a;
   --warning: #ca8a04;
   --shadow: rgba(15, 23, 42, 0.05);
+  --shadow-medium: rgba(15, 23, 42, 0.08);
   --shadow-lg: rgba(15, 23, 42, 0.12);
   --sidebar-bg: #0f172a;
   --sidebar-text: #cbd5e1;
@@ -63,6 +64,7 @@
   --success: #22c55e;
   --warning: #eab308;
   --shadow: rgba(0, 0, 0, 0.3);
+  --shadow-medium: rgba(0, 0, 0, 0.35);
   --shadow-lg: rgba(0, 0, 0, 0.4);
   --sidebar-bg: #0f172a;
   --sidebar-text: #cbd5e1;

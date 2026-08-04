@@ -51,7 +51,7 @@ export const Header = styled.div`
   position: sticky;
   top: 0;
 
-  background: #fff;
+  background: var(--surface);
 
   z-index: 10;
 `;

@@ -66,7 +66,7 @@ export const Header = styled.div`
   position: sticky;
   top: 0;
 
-  background: #fff;
+  background: var(--surface);
 
   z-index: 5;
 `;
@@ -167,7 +167,9 @@ export const Select = styled.select`
 
   font-size: .95rem;
 
-  background: #fff;
+  background: var(--input-bg);
+
+  color: var(--input-text);
 
   box-sizing: border-box;
 
@@ -215,7 +217,7 @@ export const Footer = styled.div`
 
   bottom: 0;
 
-  background: #fff;
+  background: var(--surface);
 
   padding-top: 1rem;
 
@@ -243,7 +245,7 @@ export const SaveButton = styled.button`
 
   background: var(--primary);
 
-  color: #fff;
+  color: var(--text-on-primary);
 
   padding: .85rem 1.5rem;
 

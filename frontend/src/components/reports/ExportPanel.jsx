@@ -17,17 +17,17 @@ const Grid = styled.div`
 `;
 
 const Card = styled.div`
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1.4rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  box-shadow: 0 4px 12px rgba(15,23,42,0.05);
+  box-shadow: 0 4px 12px var(--shadow);
   transition: box-shadow 0.2s;
-  &:hover { box-shadow: 0 8px 24px rgba(15,23,42,0.1); }
+  &:hover { box-shadow: 0 8px 24px var(--shadow-lg); }
 `;
 
 const CardLeft = styled.div`
@@ -50,8 +50,8 @@ const IconBox = styled.div`
 `;
 
 const Meta = styled.div`
-  p { margin: 0; font-size: 0.78rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
-  h4 { margin: 0.2rem 0 0; font-size: 0.95rem; font-weight: 600; color: #0f172a; }
+  p { margin: 0; font-size: 0.78rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+  h4 { margin: 0.2rem 0 0; font-size: 0.95rem; font-weight: 600; color: var(--text); }
 `;
 
 const Btn = styled.button`
@@ -62,13 +62,13 @@ const Btn = styled.button`
   border: none;
   border-radius: 0.6rem;
   background: ${({ $loading }) => ($loading ? "var(--surface-hover)" : "var(--primary)")};
-  color: ${({ $loading }) => ($loading ? "var(--text-secondary)" : "#ffffff")};
+  color: ${({ $loading }) => ($loading ? "var(--text-secondary)" : "var(--text-on-primary)")};
   font-size: 0.82rem;
   font-weight: 600;
   cursor: ${({ $loading }) => ($loading ? "not-allowed" : "pointer")};
   white-space: nowrap;
   transition: background 0.2s;
-  &:hover:not(:disabled) { background: #1d4ed8; }
+  &:hover:not(:disabled) { background: var(--primary-hover); }
   svg.spin { animation: ${spin} 1s linear infinite; }
 `;
 
@@ -76,7 +76,7 @@ const SectionTitle = styled.h3`
   margin: 0 0 0.75rem;
   font-size: 1rem;
   font-weight: 700;
-  color: #475569;
+  color: var(--text-secondary);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 `;

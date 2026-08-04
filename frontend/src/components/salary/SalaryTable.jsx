@@ -101,7 +101,7 @@ const SalaryTable = ({
 
                     padding: "2rem",
 
-                    color: "#64748b",
+                    color: "var(--text-secondary)",
 
                   }}
 
@@ -167,9 +167,9 @@ const SalaryTable = ({
 
                               borderRadius: "50%",
 
-                              background: "#2563EB",
+                              background: "var(--primary)",
 
-                              color: "#fff",
+                              color: "var(--text-on-primary)",
 
                               display: "flex",
 

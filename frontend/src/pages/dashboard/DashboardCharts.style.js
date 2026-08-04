@@ -23,7 +23,7 @@ export const ChartCard = styled.div`
   box-shadow: 0 0.5rem 1.5rem
     rgba(15, 23, 42, 0.08);
 
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
 `;
 
 export const ChartTitle = styled.h3`
@@ -31,7 +31,7 @@ export const ChartTitle = styled.h3`
 
   font-size: 1rem;
 
-  color: #0f172a;
+  color: var(--text);
 
   font-weight: 600;
 `;

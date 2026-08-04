@@ -9,7 +9,7 @@ export const Card = styled.div`
 
   background: var(--surface);
 
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
 
   border-radius: 0.75rem;
 
@@ -30,7 +30,7 @@ export const Title = styled.h4`
 
   font-weight: 600;
 
-  color: #111827;
+  color: var(--text);
 `;
 
 export const Time = styled.p`
@@ -38,5 +38,5 @@ export const Time = styled.p`
 
   font-size: 0.875rem;
 
-  color: #6b7280;
+  color: var(--text-secondary);
 `;

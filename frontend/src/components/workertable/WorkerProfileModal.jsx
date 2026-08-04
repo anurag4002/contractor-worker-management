@@ -12,13 +12,13 @@ import {
 import Modal from "../modal/Modal";
 
 const labelStyle = {
-  color: "#64748B",
+  color: "var(--text-secondary)",
   fontSize: ".85rem",
   marginBottom: ".25rem",
 };
 
 const valueStyle = {
-  color: "#0F172A",
+  color: "var(--text)",
   fontWeight: "600",
 };
 
@@ -67,11 +67,11 @@ const WorkerProfileModal = ({
             height: "7rem",
             borderRadius: "50%",
             overflow: "hidden",
-            background: "#2563EB",
+            background: "var(--primary)",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            color: "#fff",
+            color: "var(--text-on-primary)",
             fontSize: "2.2rem",
             fontWeight: "700",
           }}
@@ -101,7 +101,7 @@ const WorkerProfileModal = ({
           style={{
             marginTop: "1rem",
             marginBottom: ".25rem",
-            color: "#0F172A",
+            color: "var(--text)",
           }}
         >
           {worker.name}
@@ -109,7 +109,7 @@ const WorkerProfileModal = ({
 
         <p
           style={{
-            color: "#64748B",
+            color: "var(--text-secondary)",
           }}
         >
           {worker._id}
@@ -121,7 +121,7 @@ const WorkerProfileModal = ({
 
         <div style={infoStyle}>
 
-          <FiUser size={20} color="#2563EB"/>
+          <FiUser size={20} color="#2563EB" />
 
           <div>
 
@@ -139,7 +139,7 @@ const WorkerProfileModal = ({
 
         <div style={infoStyle}>
 
-          <FiPhone size={20} color="#2563EB"/>
+          <FiPhone size={20} color="#2563EB" />
 
           <div>
 
@@ -157,7 +157,7 @@ const WorkerProfileModal = ({
 
         <div style={infoStyle}>
 
-          <FiBriefcase size={20} color="#2563EB"/>
+          <FiBriefcase size={20} color="#2563EB" />
 
           <div>
 
@@ -175,7 +175,7 @@ const WorkerProfileModal = ({
 
         <div style={infoStyle}>
 
-          <FiMapPin size={20} color="#2563EB"/>
+          <FiMapPin size={20} color="#2563EB" />
 
           <div>
 
@@ -193,7 +193,7 @@ const WorkerProfileModal = ({
 
         <div style={infoStyle}>
 
-          <FiDollarSign size={20} color="#2563EB"/>
+          <FiDollarSign size={20} color="#2563EB" />
 
           <div>
 
@@ -211,7 +211,7 @@ const WorkerProfileModal = ({
 
         <div style={infoStyle}>
 
-          <FiCalendar size={20} color="#2563EB"/>
+          <FiCalendar size={20} color="#2563EB" />
 
           <div>
 

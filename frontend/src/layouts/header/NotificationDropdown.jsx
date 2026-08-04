@@ -11,24 +11,24 @@ import styled from "styled-components";
 const Header = styled.div`
   display: flex; align-items: center; justify-content: space-between;
   padding: 1rem 1.25rem;
-  font-size: 1rem; font-weight: 700; color: #0f172a;
-  border-bottom: 1px solid #e2e8f0; background: #f8fafc;
+  font-size: 1rem; font-weight: 700; color: var(--text);
+  border-bottom: 1px solid var(--border); background: var(--table-header-bg);
 `;
 
 const MarkAllBtn = styled.button`
-  font-size: 0.78rem; font-weight: 600; color: #2563eb;
+  font-size: 0.78rem; font-weight: 600; color: var(--primary);
   background: none; border: none; cursor: pointer; padding: 0;
   &:hover { text-decoration: underline; }
 `;
 
 const UnreadDot = styled.span`
   width: 8px; height: 8px; border-radius: 50%;
-  background: #2563eb; flex-shrink: 0;
+  background: var(--primary); flex-shrink: 0;
   display: ${({ $show }) => ($show ? "block" : "none")};
 `;
 
 const TimeStamp = styled.p`
-  margin: 0.2rem 0 0; font-size: 0.72rem; color: #94a3b8;
+  margin: 0.2rem 0 0; font-size: 0.72rem; color: var(--text-secondary);
 `;
 
 const ItemActions = styled.div`
@@ -47,7 +47,7 @@ const SmBtn = styled.button`
 const Footer = styled.div`
   padding: 0.75rem 1.25rem; border-top: 1px solid var(--border);
   text-align: center; background: var(--table-header-bg);
-  font-size: 0.8rem; color: #64748b;
+  font-size: 0.8rem; color: var(--text-secondary);
 `;
 
 const ScrollBody = styled.div`
@@ -56,10 +56,10 @@ const ScrollBody = styled.div`
 
 /* ─── Icon per type ──────────────────────────────────────────── */
 const TYPE_META = {
-  INFO: { icon: <FiInfo />, bg: "#eff6ff", color: "#2563eb" },
-  SUCCESS: { icon: <FiCheckCircle />, bg: "#dcfce7", color: "#16a34a" },
-  WARNING: { icon: <FiAlertTriangle />, bg: "#fef9c3", color: "#ca8a04" },
-  ERROR: { icon: <FiAlertCircle />, bg: "#fee2e2", color: "#dc2626" },
+  INFO: { icon: <FiInfo />, bg: "var(--badge-info-bg)", color: "var(--badge-info-fg)" },
+  SUCCESS: { icon: <FiCheckCircle />, bg: "var(--badge-success-bg)", color: "var(--badge-success-fg)" },
+  WARNING: { icon: <FiAlertTriangle />, bg: "var(--badge-warning-bg)", color: "var(--badge-warning-fg)" },
+  ERROR: { icon: <FiAlertCircle />, bg: "var(--badge-danger-bg)", color: "var(--badge-danger-fg)" },
 };
 
 const fmt = (iso) => {
@@ -92,7 +92,7 @@ const NotificationDropdown = ({ onClose }) => {
           Notifications
           {unreadCount > 0 && (
             <span style={{
-              marginLeft: "0.5rem", background: "var(--primary)", color: "#fff",
+              marginLeft: "0.5rem", background: "var(--primary)", color: "var(--text-on-primary)",
               fontSize: "0.7rem", fontWeight: 700, padding: "0.1rem 0.5rem",
               borderRadius: "999px",
             }}>
@@ -110,7 +110,7 @@ const NotificationDropdown = ({ onClose }) => {
           <EmptyState>Loading notifications…</EmptyState>
         ) : data.length === 0 ? (
           <EmptyState>
-              <FiBell style={{ fontSize: "2rem", marginBottom: "0.5rem", color: "var(--border)" }} />
+            <FiBell style={{ fontSize: "2rem", marginBottom: "0.5rem", color: "var(--border)" }} />
             <br />No notifications
           </EmptyState>
         ) : (

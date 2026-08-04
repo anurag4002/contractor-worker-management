@@ -101,7 +101,7 @@ const Select = styled.select`
 `;
 
 const ErrorText = styled.div`
-  color: #dc2626;
+  color: var(--danger);
   font-size: 0.8rem;
   margin-top: 0.25rem;
 `;
@@ -132,7 +132,7 @@ const SecondaryButton = styled(Button)`
 
 const PrimaryButton = styled(Button)`
   background: var(--primary);
-  color: white;
+  color: var(--text-on-primary);
 
   &:disabled {
     opacity: 0.5;

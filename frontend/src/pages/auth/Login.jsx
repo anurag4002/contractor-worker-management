@@ -16,24 +16,20 @@ import { validateLogin } from "../../validators/auth.validator";
 import { showSuccess, showError } from "../../components/common/toast";
 
 import {
-  Page,
-  Card,
-  Logo,
-  Title,
-  Subtitle,
-  Form,
-  InputGroup,
-  Input,
-  Icon,
-  PasswordButton,
-  Options,
-  Checkbox,
-  FooterText,
-} from "./Login.style";
+  FormPage,
+  FormContainer,
+  FormHeader,
+  FormTitle,
+  FormSubtitle,
+  FormField,
+  FormLabel,
+  FormInput,
+  FormCheckbox,
+  PrimaryButton,
+} from "../../components/ui/form";
 
 import useFormErrors from "../../hooks/useFormErrors";
 import FormError from "../../components/ui/FormError";
-import LoadingButton from "../../components/ui/LoadingButton";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -96,69 +92,74 @@ const Login = () => {
   };
 
   return (
-    <Page>
-      <Card>
-        <Logo>
-          Contractor Worker
-        </Logo>
+    <FormPage style={{ background: "linear-gradient(135deg, var(--primary), var(--primary-hover))" }}>
+      <FormContainer style={{ maxWidth: "28rem", padding: "2.5rem" }}>
+        <FormHeader>
+          <div style={{ textAlign: "center", width: "100%" }}>
+            <FormTitle style={{ fontSize: "2rem", textAlign: "center" }}>
+              Welcome Back
+            </FormTitle>
+            <FormSubtitle style={{ textAlign: "center", marginTop: "0.4rem" }}>
+              Login to continue
+            </FormSubtitle>
+          </div>
+        </FormHeader>
 
-        <Title>
-          Welcome Back
-        </Title>
+        <form onSubmit={handleSubmit}>
+          <FormField>
+            <FormLabel $required>Email</FormLabel>
+            <div style={{ position: "relative" }}>
+              <FormInput
+                type="email"
+                name="email"
+                placeholder="Email Address"
+                value={values.email}
+                onChange={handleInputChange}
+                disabled={isSubmitting}
+                style={{ paddingLeft: "2.9rem" }}
+              />
+              <FiMail style={{ position: "absolute", left: "0.9rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary)" }} size={18} />
+            </div>
+            <FormError error={errors.email || apiErrors.email} />
+          </FormField>
 
-        <Subtitle>
-          Login to continue
-        </Subtitle>
+          <FormField>
+            <FormLabel $required>Password</FormLabel>
+            <div style={{ position: "relative" }}>
+              <FormInput
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={values.password}
+                onChange={handleInputChange}
+                disabled={isSubmitting}
+                style={{ paddingLeft: "2.9rem", paddingRight: "2.9rem" }}
+              />
+              <FiLock style={{ position: "absolute", left: "0.9rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary)" }} size={18} />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                disabled={isSubmitting}
+                style={{
+                  position: "absolute",
+                  right: "0.9rem",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: "var(--text-secondary)",
+                  fontSize: "1.1rem",
+                }}
+              >
+                {showPassword ? <FiEyeOff /> : <FiEye />}
+              </button>
+            </div>
+            <FormError error={errors.password || apiErrors.password} />
+          </FormField>
 
-        <Form onSubmit={handleSubmit}>
-          <InputGroup>
-            <Icon>
-              <FiMail />
-            </Icon>
-
-            <Input
-              type="email"
-              name="email"
-              placeholder="Email Address"
-              value={values.email}
-              onChange={handleInputChange}
-              disabled={isSubmitting}
-            />
-          </InputGroup>
-
-          <FormError error={errors.email || apiErrors.email} />
-
-          <InputGroup>
-            <Icon>
-              <FiLock />
-            </Icon>
-
-            <Input
-              type={
-                showPassword
-                  ? "text"
-                  : "password"
-              }
-              name="password"
-              placeholder="Password"
-              value={values.password}
-              onChange={handleInputChange}
-              disabled={isSubmitting}
-            />
-
-            <PasswordButton
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              disabled={isSubmitting}
-            >
-              {showPassword ? <FiEyeOff /> : <FiEye />}
-            </PasswordButton>
-          </InputGroup>
-
-          <FormError error={errors.password || apiErrors.password} />
-
-          <Options>
-            <Checkbox>
+          <FormField style={{ marginTop: "1rem" }}>
+            <FormCheckbox>
               <input
                 type="checkbox"
                 name="remember"
@@ -167,33 +168,25 @@ const Login = () => {
                 disabled={isSubmitting}
               />
               Remember Me
-            </Checkbox>
+            </FormCheckbox>
 
-            <Link to="/forgot-password">
+            <Link to="/forgot-password" style={{ color: "var(--primary)", textDecoration: "none", fontWeight: 600 }}>
               Forgot Password?
             </Link>
-          </Options>
+          </FormField>
 
-          <LoadingButton
-            type="submit"
-            loading={isSubmitting}
-            loadingText="Logging In..."
-            style={{
-              width: "100%", padding: "0.95rem", borderRadius: "0.8rem",
-              background: "#2563EB", color: "white", fontSize: "1rem",
-              fontWeight: 600, border: "none", cursor: "pointer",
-              transition: "0.3s", marginTop: "1rem"
-            }}
-          >
-            Login
-          </LoadingButton>
-        </Form>
+          <div style={{ marginTop: "1rem" }}>
+            <PrimaryButton type="submit" disabled={isSubmitting} style={{ width: "100%" }}>
+              {isSubmitting ? "Logging In..." : "Login"}
+            </PrimaryButton>
+          </div>
+        </form>
 
-        <FooterText>
+        <div style={{ marginTop: "2rem", textAlign: "center", color: "var(--text-secondary)", fontSize: "0.85rem" }}>
           Contractor Worker Management
-        </FooterText>
-      </Card>
-    </Page>
+        </div>
+      </FormContainer>
+    </FormPage>
   );
 };
 

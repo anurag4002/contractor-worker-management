@@ -45,7 +45,7 @@ const AttendanceTable = ({ records = [], onHistory, onMark, onDelete, onChangeSt
                       <div
                         style={{
                           width: "42px", height: "42px", borderRadius: "50%",
-                          background: "#2563EB", color: "#fff", display: "flex",
+                          background: "var(--primary)", color: "var(--text-on-primary)", display: "flex",
                           justifyContent: "center", alignItems: "center", fontWeight: 600,
                         }}
                       >

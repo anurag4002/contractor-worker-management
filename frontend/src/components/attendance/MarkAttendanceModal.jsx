@@ -2,12 +2,28 @@ import React, { useEffect, useState } from "react";
 import useAttendance from "../../hooks/useAttendance";
 import useSites from "../../hooks/useSites";
 import useWorkers from "../../hooks/useWorkers";
-import { Overlay, Modal, Header, Title, CloseButton, Form, FormGroup, Label, Select, TextArea, Footer, CancelButton, SaveButton } from "./MarkAttendanceModal.style";
+import {
+  ModalOverlay,
+  ModalContainer,
+  ModalHeader,
+  ModalTitle,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  FormGrid,
+  FormField,
+  FormLabel,
+  FormSelect,
+  FormInput,
+  FormTextarea,
+  SectionCard,
+  SectionTitle,
+  SecondaryButton,
+  PrimaryButton,
+} from "../ui/form";
 import useFormErrors from "../../hooks/useFormErrors";
-import FormError from "../ui/FormError";
-import LoadingButton from "../ui/LoadingButton";
+import FormError from "../../components/ui/FormError";
 
-// Used for both creating new attendance and editing existing records
 const MarkAttendanceModal = ({ open, record, onClose }) => {
   const { addAttendance, updateAttendance, loading } = useAttendance();
   const { sites } = useSites();
@@ -56,7 +72,7 @@ const MarkAttendanceModal = ({ open, record, onClose }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    clearFieldError(name); // Clear error on change
+    clearFieldError(name);
   };
 
   const handleSubmit = async (e) => {
@@ -83,129 +99,130 @@ const MarkAttendanceModal = ({ open, record, onClose }) => {
   const titleId = "mark-attendance-modal-title";
 
   return (
-    <Overlay role="dialog" aria-modal="true" aria-labelledby={titleId}>
-      <Modal>
-        <Header>
-          <Title id={titleId}>{isEdit ? "Edit Attendance" : "Mark Attendance"}</Title>
-          <CloseButton onClick={onClose} aria-label="Close dialog">×</CloseButton>
-        </Header>
-        <Form onSubmit={handleSubmit}>
-          {!isEdit && (
-            <>
-              <FormGroup>
-                <Label>Worker *</Label>
-                <Select name="worker" value={formData.worker} onChange={handleChange} required>
-                  <option value="">-- Select Worker --</option>
-                  {workersData.map((w) => (
-                    <option key={w._id} value={w._id}>
-                      {w.fullName || `${w.firstName || ''} ${w.lastName || ''}`.trim()}
-                    </option>
-                  ))}
-                </Select>
-                <FormError error={apiErrors.worker} />
-              </FormGroup>
-              <FormGroup>
-                <Label>Site *</Label>
-                <Select name="site" value={formData.site} onChange={handleChange} required>
-                  <option value="">-- Select Site --</option>
-                  {sitesData.map((s) => (
-                    <option key={s._id} value={s._id}>{s.siteName}</option>
-                  ))}
-                </Select>
-                <FormError error={apiErrors.site} />
-              </FormGroup>
-            </>
-          )}
+    <ModalOverlay role="dialog" aria-modal="true" aria-labelledby={titleId}>
+      <ModalContainer>
+        <ModalHeader>
+          <ModalTitle id={titleId}>{isEdit ? "Edit Attendance" : "Mark Attendance"}</ModalTitle>
+          <ModalCloseButton type="button" onClick={onClose} aria-label="Close dialog">×</ModalCloseButton>
+        </ModalHeader>
 
-          {isEdit && (
-            <>
-              <FormGroup>
-                <Label>Worker</Label>
-                <Select disabled>
-                  <option>{record?.worker?.fullName || record?.worker?.firstName || record?.worker || "—"}</option>
-                </Select>
-              </FormGroup>
-              <FormGroup>
-                <Label>Site</Label>
-                <Select disabled>
-                  <option>{record?.site?.siteName || record?.site || "—"}</option>
-                </Select>
-              </FormGroup>
-            </>
-          )}
+        <ModalBody>
+          <form onSubmit={handleSubmit}>
+            <SectionCard>
+              <SectionTitle>Attendance Details</SectionTitle>
+              <FormGrid>
+                {!isEdit && (
+                  <>
+                    <FormField>
+                      <FormLabel $required>Worker</FormLabel>
+                      <FormSelect name="worker" value={formData.worker} onChange={handleChange} required>
+                        <option value="">-- Select Worker --</option>
+                        {workersData.map((w) => (
+                          <option key={w._id} value={w._id}>
+                            {w.fullName || `${w.firstName || ''} ${w.lastName || ''}`.trim()}
+                          </option>
+                        ))}
+                      </FormSelect>
+                      <FormError error={apiErrors.worker} />
+                    </FormField>
+                    <FormField>
+                      <FormLabel $required>Site</FormLabel>
+                      <FormSelect name="site" value={formData.site} onChange={handleChange} required>
+                        <option value="">-- Select Site --</option>
+                        {sitesData.map((s) => (
+                          <option key={s._id} value={s._id}>{s.siteName}</option>
+                        ))}
+                      </FormSelect>
+                      <FormError error={apiErrors.site} />
+                    </FormField>
+                  </>
+                )}
 
-          <FormGroup>
-            <Label>Attendance Date *</Label>
-            <input
-              type="date"
-              name="attendanceDate"
-              value={formData.attendanceDate}
-              onChange={handleChange}
-              required
-              style={{ padding: "0.5rem", borderRadius: "6px", border: "1px solid var(--border)", width: "100%" }}
-            />
-            <FormError error={apiErrors.attendanceDate} />
-          </FormGroup>
+                {isEdit && (
+                  <>
+                    <FormField>
+                      <FormLabel>Worker</FormLabel>
+                      <FormSelect disabled>
+                        <option>{record?.worker?.fullName || record?.worker?.firstName || record?.worker || "—"}</option>
+                      </FormSelect>
+                    </FormField>
+                    <FormField>
+                      <FormLabel>Site</FormLabel>
+                      <FormSelect disabled>
+                        <option>{record?.site?.siteName || record?.site || "—"}</option>
+                      </FormSelect>
+                    </FormField>
+                  </>
+                )}
 
-          <FormGroup>
-            <Label>Attendance Status *</Label>
-            <Select name="status" value={formData.status} onChange={handleChange}>
-              <option value="PRESENT">Present</option>
-              <option value="ABSENT">Absent</option>
-              <option value="HALF_DAY">Half Day</option>
-              <option value="LEAVE">Leave</option>
-              <option value="HOLIDAY">Holiday</option>
-            </Select>
-            <FormError error={apiErrors.status} />
-          </FormGroup>
+                <FormField>
+                  <FormLabel $required>Attendance Date</FormLabel>
+                  <FormInput
+                    type="date"
+                    name="attendanceDate"
+                    value={formData.attendanceDate}
+                    onChange={handleChange}
+                    required
+                  />
+                  <FormError error={apiErrors.attendanceDate} />
+                </FormField>
 
-          <FormGroup>
-            <Label>Regular Hours</Label>
-            <Select name="regularHours" value={formData.regularHours} onChange={handleChange}>
-              {[...Array(13)].map((_, i) => (
-                <option key={i} value={i}>{i} Hours</option>
-              ))}
-            </Select>
-          </FormGroup>
+                <FormField>
+                  <FormLabel $required>Attendance Status</FormLabel>
+                  <FormSelect name="status" value={formData.status} onChange={handleChange}>
+                    <option value="PRESENT">Present</option>
+                    <option value="ABSENT">Absent</option>
+                    <option value="HALF_DAY">Half Day</option>
+                    <option value="LEAVE">Leave</option>
+                    <option value="HOLIDAY">Holiday</option>
+                  </FormSelect>
+                  <FormError error={apiErrors.status} />
+                </FormField>
 
-          <FormGroup>
-            <Label>Overtime Hours</Label>
-            <Select name="overtimeHours" value={formData.overtimeHours} onChange={handleChange}>
-              {[...Array(9)].map((_, i) => (
-                <option key={i} value={i}>{i} Hours</option>
-              ))}
-            </Select>
-          </FormGroup>
+                <FormField>
+                  <FormLabel>Regular Hours</FormLabel>
+                  <FormSelect name="regularHours" value={formData.regularHours} onChange={handleChange}>
+                    {[...Array(13)].map((_, i) => (
+                      <option key={i} value={i}>{i} Hours</option>
+                    ))}
+                  </FormSelect>
+                </FormField>
 
-          <FormGroup>
-            <Label>Remarks</Label>
-            <TextArea
-              rows="3"
-              name="remarks"
-              placeholder="Optional remark"
-              value={formData.remarks}
-              onChange={handleChange}
-            />
-            <FormError error={apiErrors.remarks} />
-          </FormGroup>
+                <FormField>
+                  <FormLabel>Overtime Hours</FormLabel>
+                  <FormSelect name="overtimeHours" value={formData.overtimeHours} onChange={handleChange}>
+                    {[...Array(9)].map((_, i) => (
+                      <option key={i} value={i}>{i} Hours</option>
+                    ))}
+                  </FormSelect>
+                </FormField>
 
-          <Footer>
-            <CancelButton type="button" onClick={onClose} disabled={loading}>Cancel</CancelButton>
-            <LoadingButton
-              type="submit"
-              loading={loading}
-              loadingText={isEdit ? "Updating..." : "Saving..."}
-              style={{
-                padding: "0.55rem 1.25rem", borderRadius: "0.6rem", fontSize: "0.95rem",
-                fontWeight: 600, border: "none", cursor: "pointer", background: "#2563EB", color: "white"
-              }}
-            >
-              {isEdit ? "Update Attendance" : "Save Attendance"}
-            </LoadingButton>
-          </Footer>
-        </Form>
-      </Modal>
-    </Overlay>
+                <FormField style={{ gridColumn: "1 / -1" }}>
+                  <FormLabel>Remarks</FormLabel>
+                  <FormTextarea
+                    rows="3"
+                    name="remarks"
+                    placeholder="Optional remark"
+                    value={formData.remarks}
+                    onChange={handleChange}
+                  />
+                  <FormError error={apiErrors.remarks} />
+                </FormField>
+              </FormGrid>
+            </SectionCard>
+
+            <ModalFooter>
+              <SecondaryButton type="button" onClick={onClose} disabled={loading}>
+                Cancel
+              </SecondaryButton>
+              <PrimaryButton type="submit" disabled={loading}>
+                {loading ? (isEdit ? "Updating..." : "Saving...") : (isEdit ? "Update Attendance" : "Save Attendance")}
+              </PrimaryButton>
+            </ModalFooter>
+          </form>
+        </ModalBody>
+      </ModalContainer>
+    </ModalOverlay>
   );
 };
 
