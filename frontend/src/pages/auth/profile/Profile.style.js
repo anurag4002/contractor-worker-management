@@ -6,7 +6,7 @@ export const Page = styled.div`
   justify-content: center;
   align-items: center;
   padding: 2rem;
-  background: linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
+  background: var(--bg);
 `;
 
 export const Card = styled.div`
@@ -15,8 +15,8 @@ export const Card = styled.div`
   background: var(--surface);
   border-radius: 1.5rem;
   padding: 2.5rem;
-  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.12);
-  border: 1px solid rgba(148, 163, 184, 0.16);
+  box-shadow: 0 28px 60px var(--shadow-lg);
+  border: 1px solid var(--border);
 `;
 
 export const AvatarCircle = styled.div`
@@ -26,8 +26,8 @@ export const AvatarCircle = styled.div`
   display: grid;
   place-items: center;
   margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, var(--primary) 0%, #38bdf8 100%);
-  color: var(--surface);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+  color: var(--text-on-primary);
   box-shadow: 0 15px 35px rgba(37, 99, 235, 0.18);
 `;
 

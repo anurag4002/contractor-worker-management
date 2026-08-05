@@ -8,7 +8,7 @@ import workerService from "../../services/worker.service";
 const Page = styled.div`
   min-height: 100vh;
   padding: 2rem;
-  background: linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
+  background: var(--bg);
 `;
 
 const Card = styled.div`
@@ -18,7 +18,7 @@ const Card = styled.div`
   border: 1px solid var(--border);
   border-radius: 1.5rem;
   padding: 2rem;
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 20px 50px var(--shadow-medium);
 `;
 
 const HeaderRow = styled.div`
@@ -46,7 +46,7 @@ const Avatar = styled.div`
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, var(--primary) 0%, #38bdf8 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
   color: var(--text-on-primary);
   font-weight: 800;
   font-size: 1.4rem;
@@ -66,8 +66,8 @@ const Subtitle = styled.p`
 const StatusBadge = styled.span`
   padding: 0.45rem 0.9rem;
   border-radius: 999px;
-  background: ${({ status }) => (status === "Active" ? "rgba(34, 197, 94, 0.12)" : "rgba(239, 68, 68, 0.12)")};
-  color: ${({ status }) => (status === "Active" ? "#15803d" : "#b91c1c")};
+  background: ${({ status }) => (status === "Active" ? "var(--badge-success-bg)" : "var(--badge-danger-bg)")};
+  color: ${({ status }) => (status === "Active" ? "var(--badge-success-fg)" : "var(--badge-danger-fg)")};
   font-size: 0.82rem;
   font-weight: 700;
 `;
@@ -84,7 +84,7 @@ const InfoGrid = styled.div`
 `;
 
 const FieldCard = styled.div`
-  background: var(--bg);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1rem;
@@ -128,7 +128,7 @@ const SecondaryButton = styled(Button)`
 
 const PrimaryButton = styled(Button)`
   background: var(--primary);
-  color: white;
+  color: var(--text-on-primary);
 `;
 
 const EmptyState = styled.div`

@@ -7,7 +7,7 @@ import styled from "styled-components";
 export const FormPage = styled.div`
   min-height: 100vh;
   padding: 2rem;
-  background: linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
+  background: var(--bg);
 
   @media (max-width: 768px) {
     padding: 1rem;
@@ -154,9 +154,14 @@ const inputStyles = `
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
   }
 
+  &:read-only {
+    background: var(--surface-secondary);
+    color: #cbd5e1;
+  }
+
   &:disabled {
-    background: var(--surface-hover);
-    color: var(--text-secondary);
+    background: var(--surface-secondary);
+    color: #cbd5e1;
     cursor: not-allowed;
   }
 `;

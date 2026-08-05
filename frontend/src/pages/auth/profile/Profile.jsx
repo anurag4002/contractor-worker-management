@@ -4,6 +4,7 @@ import {
   FiEdit, FiSave, FiX, FiKey, FiEye, FiEyeOff, FiClock, FiCalendar, FiArrowLeft, FiLoader,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
 
 import { useAuth } from "../../../context/AuthContext.jsx";
 import { showSuccess, showError } from "../../../components/common/toast";
@@ -25,6 +26,26 @@ import {
   PrimaryButton,
   SecondaryButton,
 } from "../../../components/ui/form";
+
+const PasswordWrapper = styled.div`
+  position: relative;
+`;
+
+const PasswordToggle = styled.button`
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem;
+`;
 
 const EMPTY = "—";
 
@@ -329,7 +350,7 @@ const Profile = () => {
             <FormGrid>
               <FormField>
                 <FormLabel $required>Current Password</FormLabel>
-                <div style={{ position: "relative" }}>
+                <PasswordWrapper>
                   <FormInput
                     type={showOld ? "text" : "password"}
                     name="oldPassword"
@@ -337,28 +358,19 @@ const Profile = () => {
                     onChange={handlePwChange}
                     placeholder="Enter current password"
                   />
-                  <button
+                  <PasswordToggle
                     type="button"
                     onClick={() => setShowOld(!showOld)}
-                    style={{
-                      position: "absolute",
-                      right: "0.75rem",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                      color: "var(--text-secondary)",
-                    }}
+                    aria-label={showOld ? "Hide password" : "Show password"}
                   >
                     {showOld ? <FiEyeOff /> : <FiEye />}
-                  </button>
-                </div>
+                  </PasswordToggle>
+                </PasswordWrapper>
               </FormField>
 
               <FormField>
                 <FormLabel $required>New Password</FormLabel>
-                <div style={{ position: "relative" }}>
+                <PasswordWrapper>
                   <FormInput
                     type={showNew ? "text" : "password"}
                     name="newPassword"
@@ -366,28 +378,19 @@ const Profile = () => {
                     onChange={handlePwChange}
                     placeholder="Min 8 chars, upper+lower+number+special"
                   />
-                  <button
+                  <PasswordToggle
                     type="button"
                     onClick={() => setShowNew(!showNew)}
-                    style={{
-                      position: "absolute",
-                      right: "0.75rem",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                      color: "var(--text-secondary)",
-                    }}
+                    aria-label={showNew ? "Hide password" : "Show password"}
                   >
                     {showNew ? <FiEyeOff /> : <FiEye />}
-                  </button>
-                </div>
+                  </PasswordToggle>
+                </PasswordWrapper>
               </FormField>
 
               <FormField>
                 <FormLabel $required>Confirm Password</FormLabel>
-                <div style={{ position: "relative" }}>
+                <PasswordWrapper>
                   <FormInput
                     type={showCfm ? "text" : "password"}
                     name="confirm"
@@ -395,23 +398,14 @@ const Profile = () => {
                     onChange={handlePwChange}
                     placeholder="Re-enter new password"
                   />
-                  <button
+                  <PasswordToggle
                     type="button"
                     onClick={() => setShowCfm(!showCfm)}
-                    style={{
-                      position: "absolute",
-                      right: "0.75rem",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                      color: "var(--text-secondary)",
-                    }}
+                    aria-label={showCfm ? "Hide password" : "Show password"}
                   >
                     {showCfm ? <FiEyeOff /> : <FiEye />}
-                  </button>
-                </div>
+                  </PasswordToggle>
+                </PasswordWrapper>
               </FormField>
             </FormGrid>
 
