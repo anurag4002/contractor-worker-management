@@ -3,6 +3,7 @@ import { FiDownload, FiPlus, FiChevronLeft, FiChevronRight } from "react-icons/f
 import useWorkers from "../../hooks/useWorkers";
 import useSites from "../../hooks/useSites";
 import useExport from "../../hooks/useExport";
+import { useSearch } from "../../context/SearchContext";
 
 import SiteSummary from "../../components/sites/SiteSummary";
 import SiteFilter from "../../components/sites/SiteFilter";
@@ -21,6 +22,9 @@ const Sites = () => {
   const { workers, attendance, assignWorkerToSite } = useWorkers();
   const { sites, loading, pagination, fetchSites, changeStatus } = useSites();
   const { exportSitesPdf, downloading } = useExport();
+  const { searchQuery } = useSearch();
+
+  console.log("Sites Component Rendered");
 
   const sitesData = Array.isArray(sites) ? sites : [];
   const workersData = Array.isArray(workers) ? workers : [];
@@ -39,17 +43,19 @@ const Sites = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Sites: useEffect triggered, page:", page, "search:", search, "status:", status);
+    console.log("Sites useEffect");
+    console.log("Fetching Sites");
     const params = { page, limit };
     if (search) params.search = search;
     if (status && status !== "All") params.status = status;
 
-    console.log("Sites: calling fetchSites with params:", params);
-    fetchSites(params);
-    console.log("Sites: fetchSites called");
+    fetchSites(params).then(() => {
+      console.log("Sites API Success");
+      console.log("State Updated");
+    });
   }, [page, search, status, fetchSites]);
 
-  console.log("Sites: Current state -> loading:", loading, "sitesData:", sitesData, "workersData:", workersData);
+  console.log("State Updated");
 
   const [selectedSite, setSelectedSite] = useState(null);
 
@@ -70,6 +76,39 @@ const Sites = () => {
       setPage(newPage);
     }
   };
+
+  const filteredSites = useMemo(() => {
+    const keyword = search.trim().toLowerCase();
+    const globalKeyword = searchQuery.trim().toLowerCase();
+    const effectiveKeyword = globalKeyword || keyword;
+
+    if (!effectiveKeyword) {
+      return sitesData;
+    }
+
+    return sitesData.filter((site) => {
+      return (
+        String(site.siteName || "")
+          .toLowerCase()
+          .includes(effectiveKeyword) ||
+        String(site._id || "")
+          .toLowerCase()
+          .includes(effectiveKeyword) ||
+        String(site.clientName || "")
+          .toLowerCase()
+          .includes(effectiveKeyword) ||
+        String(site.projectName || "")
+          .toLowerCase()
+          .includes(effectiveKeyword) ||
+        String(site.location || "")
+          .toLowerCase()
+          .includes(effectiveKeyword) ||
+        String(site.supervisor || "")
+          .toLowerCase()
+          .includes(effectiveKeyword)
+      );
+    });
+  }, [sitesData, search, searchQuery]);
 
   return (
     <SitesContainer>
@@ -108,7 +147,7 @@ const Sites = () => {
           />
 
           <SiteTable
-            sites={sitesData}
+            sites={filteredSites}
             onView={(site) => {
               setSelectedSite(site);
               setDetailsOpen(true);

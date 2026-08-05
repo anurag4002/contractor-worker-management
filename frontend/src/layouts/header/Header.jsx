@@ -1,17 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  FiMenu, FiSearch, FiBell, FiSettings, FiChevronDown, FiSun, FiMoon,
+  FiMenu, FiBell, FiSettings, FiChevronDown, FiSun, FiMoon,
 } from "react-icons/fi";
 
 import NotificationDropdown from "./NotificationDropdown";
 import ProfileDropdown from "./ProfileDropdown";
+import GlobalSearch from "../../components/search/GlobalSearch";
 import useNotification from "../../hooks/useNotification";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
 
 import {
-  HeaderContainer, LeftSection, MenuButton, SearchBar,
+  HeaderContainer, LeftSection, MenuButton,
   RightSection, IconButton, NotificationBadge, UserProfile,
   Avatar, UserInfo, ThemeToggle,
 } from "./Header.style";
@@ -21,13 +22,11 @@ const Header = ({ toggleSidebar }) => {
   const notificationRef = useRef(null);
   const profileRef = useRef(null);
 
-  const [search, setSearch] = useState("");
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
 
   const { theme, toggleTheme } = useTheme();
 
-  /* ── Live unread counter ── */
   const { unreadCount, startPolling, stopPolling } = useNotification();
   const { user } = useAuth();
 
@@ -46,13 +45,18 @@ const Header = ({ toggleSidebar }) => {
     setShowNotifications(false);
   };
 
-  /* ── Click outside ── */
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target)
+      ) {
         setShowNotifications(false);
       }
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(event.target)
+      ) {
         setShowProfile(false);
       }
     };
@@ -66,15 +70,7 @@ const Header = ({ toggleSidebar }) => {
         <MenuButton onClick={toggleSidebar}>
           <FiMenu />
         </MenuButton>
-        <SearchBar>
-          <FiSearch />
-          <input
-            type="text"
-            placeholder="Search workers, sites..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </SearchBar>
+        <GlobalSearch />
       </LeftSection>
 
       <RightSection>

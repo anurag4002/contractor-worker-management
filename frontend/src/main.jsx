@@ -12,6 +12,7 @@ import { PayrollProvider } from "./context/PayrollContext";
 import ReportProvider from "./context/ReportContext";
 import NotificationProvider from "./context/NotificationContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { SearchProvider } from "./context/SearchContext";
 
 import "./index.css";
 import "./styles/themes.css";
@@ -29,7 +30,9 @@ ReactDOM.createRoot(
                 <PayrollProvider>
                   <ReportProvider>
                     <NotificationProvider>
-                      <App />
+                      <SearchProvider>
+                        <App />
+                      </SearchProvider>
                     </NotificationProvider>
                   </ReportProvider>
                 </PayrollProvider>

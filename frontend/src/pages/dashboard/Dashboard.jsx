@@ -8,6 +8,7 @@ import useAttendance from "../../hooks/useAttendance";
 import DashboardCharts from "../../components/dashboardcharts/DashboardCharts";
 import StatCard from "../../components/statcard/StatCard";
 import exportDashboardPDF from "../../utils/exportDashboardPDF";
+import { useSearch } from "../../context/SearchContext";
 
 import {
   DashboardContainer,
@@ -74,6 +75,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const { attendanceRecords } = useAttendance();
+  const { searchQuery, searchResults, isLoading } = useSearch();
 
   const [dashboard, setDashboard] = useState(null);
   const [recentWorkers, setRecentWorkers] = useState([]);
@@ -130,6 +132,63 @@ const Dashboard = () => {
       loadDashboard();
     }
   }, [attendanceRecords]);
+
+  const hasSearchQuery = searchQuery && searchQuery.trim() !== "";
+
+  if (hasSearchQuery && !loading) {
+    return (
+      <DashboardContainer>
+        <DashboardHeader>
+          <HeaderLeft>
+            <h2>Search Results</h2>
+            <p>Showing results for "{searchQuery}"</p>
+          </HeaderLeft>
+        </DashboardHeader>
+        {isLoading ? (
+          <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
+            Searching…
+          </div>
+        ) : searchResults.length === 0 ? (
+          <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
+            No matching results found.
+          </div>
+        ) : (
+          <DashboardGrid>
+            {(() => {
+              const grouped = searchResults.reduce((acc, result) => {
+                const section = result.section || "Results";
+                if (!acc[section]) {
+                  acc[section] = [];
+                }
+                acc[section].push(result);
+                return acc;
+              }, {});
+
+              return Object.entries(grouped).map(([section, items]) => (
+                <Section key={section}>
+                  <SectionTitle>{section}</SectionTitle>
+                  <List>
+                    {items.map((result) => (
+                      <ListItem
+                        key={`${result.type}-${result.data?._id || result.title}`}
+                        onClick={() => navigate(result.route)}
+                      >
+                        <div>
+                          <strong>{result.title}</strong>
+                          <br />
+                          <small>{result.subtitle}</small>
+                        </div>
+                      </ListItem>
+                    ))}
+                  </List>
+                </Section>
+              ));
+            })()}
+          </DashboardGrid>
+        )}
+      </DashboardContainer>
+    );
+  }
 
   const todayAttendance = recentAttendance.filter((item) =>
     isToday(item.attendanceDate)

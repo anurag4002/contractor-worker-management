@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 
 import useWorkers from "../../hooks/useWorkers";
 import useExport from "../../hooks/useExport";
+import { useSearch } from "../../context/SearchContext";
 
 import WorkerTable from "../../components/workertable/WorkerTable";
 import AddWorkerModal from "../../components/workermodal/AddWorkerModal";
@@ -38,6 +39,7 @@ const Workers = () => {
   } = useWorkers();
 
   const { exportWorkersPdf, downloading } = useExport();
+  const { searchQuery } = useSearch();
 
   useEffect(() => {
     fetchWorkers();
@@ -56,65 +58,40 @@ const Workers = () => {
     useState(false);
 
   const filteredWorkers = useMemo(() => {
-
     const keyword =
       search.trim().toLowerCase();
+    const globalKeyword =
+      searchQuery.trim().toLowerCase();
 
-    if (!keyword) {
+    const effectiveKeyword = globalKeyword || keyword;
 
+    if (!effectiveKeyword) {
       return workers;
-
     }
 
     return workers.filter((worker) => {
-
       return (
-
         String(worker._id || "")
           .toLowerCase()
-          .includes(keyword)
-
-        ||
-
+          .includes(effectiveKeyword) ||
         String(worker.name || "")
           .toLowerCase()
-          .includes(keyword)
-
-        ||
-
+          .includes(effectiveKeyword) ||
         String(worker.mobile || "")
           .toLowerCase()
-          .includes(keyword)
-
-        ||
-
+          .includes(effectiveKeyword) ||
         String(worker.skill || "")
           .toLowerCase()
-          .includes(keyword)
-
-        ||
-
+          .includes(effectiveKeyword) ||
         String(worker.workType || "")
           .toLowerCase()
-          .includes(keyword)
-
-        ||
-
+          .includes(effectiveKeyword) ||
         String(worker.site || "")
           .toLowerCase()
-          .includes(keyword)
-
+          .includes(effectiveKeyword)
       );
-
     });
-
-  }, [
-
-    workers,
-
-    search,
-
-  ]);
+  }, [workers, search, searchQuery]);
 
   const handleView = (worker) => {
     navigate(`/workers/${worker._id}`);

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { FiDownload, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import useAttendance from "../../hooks/useAttendance";
 import useSites from "../../hooks/useSites";
 import useExport from "../../hooks/useExport";
+import { useSearch } from "../../context/SearchContext";
 
 import AttendanceSummary from "../../components/attendance/AttendanceSummary";
 import AttendanceFilter from "../../components/attendance/AttendanceFilter";
@@ -19,8 +20,9 @@ const Attendance = () => {
   } = useAttendance();
   const { sites, fetchSites } = useSites();
   const { exportAttendancePdf, downloading } = useExport();
+  const { searchQuery } = useSearch();
 
-  const [search, setSearch] = useState(""); // Not directly mapped in backend attendance validator maybe, we'll try workerId if they type manually or just keep it
+  const [search, setSearch] = useState("");
   const [siteId, setSiteId] = useState("");
   const [status, setStatus] = useState("All");
   const [date, setDate] = useState("");
@@ -28,7 +30,6 @@ const Attendance = () => {
   const limit = 10;
 
   useEffect(() => {
-    // Only fetch sites once if not loaded
     if (!sites || sites.length === 0) {
       fetchSites({ limit: 100 });
     }
@@ -56,6 +57,41 @@ const Attendance = () => {
 
   const attendanceData = Array.isArray(attendanceRecords) ? attendanceRecords : [];
   const sitesData = Array.isArray(sites) ? sites : [];
+
+  const filteredRecords = useMemo(() => {
+    const keyword = search.trim().toLowerCase();
+    const globalKeyword = searchQuery.trim().toLowerCase();
+    const effectiveKeyword = globalKeyword || keyword;
+
+    if (!effectiveKeyword) {
+      return attendanceData;
+    }
+
+    return attendanceData.filter((record) => {
+      const worker = record.worker || {};
+      const site = record.site || {};
+      return (
+        String(worker.fullName || "")
+          .toLowerCase()
+          .includes(effectiveKeyword) ||
+        String(worker._id || "")
+          .toLowerCase()
+          .includes(effectiveKeyword) ||
+        String(worker.employeeCode || "")
+          .toLowerCase()
+          .includes(effectiveKeyword) ||
+        String(site.siteName || "")
+          .toLowerCase()
+          .includes(effectiveKeyword) ||
+        String(record.status || "")
+          .toLowerCase()
+          .includes(effectiveKeyword) ||
+        String(record.date || record.attendanceDate || "")
+          .toLowerCase()
+          .includes(effectiveKeyword)
+      );
+    });
+  }, [attendanceData, search, searchQuery]);
 
   return (
     <AttendanceContainer>
@@ -100,7 +136,7 @@ const Attendance = () => {
           />
 
           <AttendanceTable
-            records={attendanceData}
+            records={filteredRecords}
             onHistory={(record) => {
               setSelectedRecord(record);
               setHistoryOpen(true);

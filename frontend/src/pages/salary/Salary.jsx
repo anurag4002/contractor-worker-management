@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { FiDownload } from "react-icons/fi";
 
 import useWorkers from "../../hooks/useWorkers";
+import { useSearch } from "../../context/SearchContext";
 
 import SalarySummary from "../../components/salary/SalarySummary";
 import SalaryFilter from "../../components/salary/SalaryFilter";
@@ -36,6 +37,8 @@ const Salary = () => {
     sites,
 
   } = useWorkers();
+
+  const { searchQuery } = useSearch();
 
   const salaryData =
     Array.isArray(salarySummary) ? salarySummary : [];
@@ -71,73 +74,55 @@ const Salary = () => {
 
   const filteredWorkers = useMemo(() => {
 
+    const keyword =
+      search.toLowerCase();
+
+    const globalKeyword =
+      searchQuery.trim().toLowerCase();
+
+    const effectiveKeyword = globalKeyword || keyword;
+
     return salaryData.filter((worker) => {
 
-      const keyword =
-        search.toLowerCase();
+      if (!effectiveKeyword) {
+        return true;
+      }
 
-      const searchMatch =
+      return (
 
         worker.name
           ?.toLowerCase()
-          .includes(keyword)
+          .includes(effectiveKeyword)
 
         ||
 
         worker._id
           ?.toLowerCase()
-          .includes(keyword);
+          .includes(effectiveKeyword)
 
-      const siteMatch =
+        ||
 
-        site === "All"
+        worker.wageType
+          ?.toLowerCase()
+          .includes(effectiveKeyword)
 
-          ? true
+        ||
 
-          : worker.site === site;
-
-      const wageMatch =
-
-        wageType === "All"
-
-          ? true
-
-          : worker.wageType === wageType;
-
-      const monthMatch =
-
-        month === ""
-
-          ? true
-
-          : true;
-
-      return (
-
-        searchMatch &&
-
-        siteMatch &&
-
-        wageMatch &&
-
-        monthMatch
+        String(worker.dailyWage || worker.monthlySalary || 0)
+          .toLowerCase()
+          .includes(effectiveKeyword)
 
       );
 
     });
 
   }, [
-
     salaryData,
-
     search,
-
+    searchQuery,
     site,
-
     wageType,
-
     month,
-
   ]);
 
   const handleAdvancePayment = (
