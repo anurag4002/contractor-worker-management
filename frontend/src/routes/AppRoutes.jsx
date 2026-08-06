@@ -26,11 +26,16 @@ import Settings from "../pages/settings/Settings";
 
 import Profile from "../pages/auth/profile/Profile";
 import ChangePassword from "../pages/auth/ChangePassword";
+import LandingPage from "../pages/landing/LandingPage";
 
 const AppRoutes = () => {
   return (
     <Routes>
       {/* Public Routes */}
+      <Route
+        path="/"
+        element={<LandingPage />}
+      />
 
       <Route
         path="/login"
@@ -119,18 +124,6 @@ const AppRoutes = () => {
           />
         </Route>
       </Route>
-
-      {/* Default Route */}
-
-      <Route
-        path="/"
-        element={
-          <Navigate
-            to="/login"
-            replace
-          />
-        }
-      />
 
       {/* 404 */}
 
