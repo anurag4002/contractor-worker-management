@@ -55,6 +55,10 @@ const useGlobalSearch = () => {
     isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = null;
+      }
     };
   }, []);
 

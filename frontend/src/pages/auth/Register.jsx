@@ -70,17 +70,13 @@ const Register = () => {
         password: formData.password,
       };
 
-      const response = await register(payload);
+      await register(payload);
 
-      showSuccess(
-        response.data?.message || "Super Admin created successfully."
-      );
+      showSuccess("Super Admin created successfully.");
 
       navigate("/login");
     } catch (error) {
-      showError(
-        error.response?.data?.message || "Registration failed"
-      );
+      showError(error);
     } finally {
       setLoading(false);
     }

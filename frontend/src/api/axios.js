@@ -1,5 +1,14 @@
 import axios from "axios";
-import { toast } from "react-toastify";
+import { showError } from "../utils/toastService";
+import { getFriendlyMessage } from "../utils/errorMapper";
+
+const PUBLIC_AUTH_PATHS = [
+  "/auth/login",
+  "/auth/register",
+  "/auth/forgot-password",
+  "/auth/reset-password",
+  "/auth/refresh-token",
+];
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -17,6 +26,17 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
+    const isPublicAuth = PUBLIC_AUTH_PATHS.some((path) =>
+      config.url?.startsWith(path)
+    );
+
+    if (isPublicAuth) {
+      if (config.headers) {
+        delete config.headers.Authorization;
+      }
+      return config;
+    }
+
     const token =
       localStorage.getItem("token") ||
       localStorage.getItem("accessToken") ||
@@ -46,13 +66,15 @@ axiosInstance.interceptors.response.use(
   (response) => response,
 
   async (error) => {
+    console.error(error);
+
     const originalRequest = error.config;
 
-    // Access Token Expired
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry
-    ) {
+    const isPublicAuth = PUBLIC_AUTH_PATHS.some((path) =>
+      originalRequest.url?.startsWith(path)
+    );
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isPublicAuth) {
       originalRequest._retry = true;
 
       try {
@@ -97,17 +119,22 @@ axiosInstance.interceptors.response.use(
         localStorage.removeItem("refreshToken");
         localStorage.removeItem("user");
 
-        // Notify user about session expiry
-        toast.error("Session expired. Please login again.");
+        const markedError = new Error(refreshError.message);
+        Object.assign(markedError, refreshError);
+        markedError._sessionExpiredHandled = true;
 
-        // Brief delay to allow toast to render (though location change might kill it, doing our best)
+        showError("Your session has expired. Please log in again to continue.");
+
         setTimeout(() => {
           window.location.href = "/login";
         }, 300);
 
-        return Promise.reject(refreshError);
+        return Promise.reject(markedError);
       }
     }
+
+    const friendlyMessage = getFriendlyMessage(error);
+    showError(friendlyMessage);
 
     return Promise.reject(error);
   }

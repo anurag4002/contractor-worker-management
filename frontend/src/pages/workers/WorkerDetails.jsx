@@ -4,6 +4,7 @@ import { FiArrowLeft, FiEdit, FiLoader, FiMail, FiPhone, FiMapPin, FiUser, FiShi
 import styled from "styled-components";
 
 import workerService from "../../services/worker.service";
+import { getFriendlyMessage } from "../../utils/errorMapper";
 
 const Page = styled.div`
   min-height: 100vh;
@@ -167,13 +168,7 @@ const WorkerDetails = () => {
       const nextWorker = getWorkerPayload(response);
       setWorker(nextWorker);
     } catch (err) {
-      if (err?.response?.status === 404) {
-        setError("Worker not found.");
-      } else if (!err?.response && err?.message?.toLowerCase().includes("network")) {
-        setError("Network Error. Unable to connect to server.");
-      } else {
-        setError("Something went wrong while loading worker details.");
-      }
+      setError(getFriendlyMessage(err));
     } finally {
       setLoading(false);
     }

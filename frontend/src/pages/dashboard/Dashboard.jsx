@@ -114,26 +114,23 @@ const Dashboard = () => {
     } catch (err) {
       console.error(err);
       setError(true);
-      showError(
-        err.response?.data?.message ||
-        "Unable to load dashboard."
-      );
+      showError(err);
     } finally {
       setLoading(false);
     }
   };
+
+  const hasSearchQuery = searchQuery && searchQuery.trim() !== "";
 
   useEffect(() => {
     loadDashboard();
   }, []);
 
   useEffect(() => {
-    if (attendanceRecords && attendanceRecords.length > 0) {
+    if (attendanceRecords && attendanceRecords.length > 0 && !hasSearchQuery) {
       loadDashboard();
     }
-  }, [attendanceRecords]);
-
-  const hasSearchQuery = searchQuery && searchQuery.trim() !== "";
+  }, [attendanceRecords, hasSearchQuery]);
 
   if (hasSearchQuery && !loading) {
     return (

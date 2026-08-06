@@ -73,7 +73,7 @@ const ChangePassword = () => {
       showSuccess("Password changed successfully.");
       setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (err) {
-      showError(err.response?.data?.message || "Failed to change password.");
+      showError(err);
     } finally {
       setLoading(false);
     }

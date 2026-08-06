@@ -1,6 +1,6 @@
-import React from "react";
 import styled from "styled-components";
 import { FiAlertCircle } from "react-icons/fi";
+import { getFriendlyMessage } from "../../utils/errorMapper";
 
 const ErrorText = styled.div`
   color: var(--danger);
@@ -14,9 +14,11 @@ const ErrorText = styled.div`
 const FormError = ({ error }) => {
   if (!error) return null;
 
+  const message = getFriendlyMessage(error);
+
   return (
     <ErrorText role="alert">
-      <FiAlertCircle size={14} /> {error}
+      <FiAlertCircle size={14} /> {message}
     </ErrorText>
   );
 };

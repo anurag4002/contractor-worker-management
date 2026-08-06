@@ -1,10 +1,9 @@
+import mongoose from 'mongoose';
 import connectDatabase, {
   disconnectDatabase,
 } from '../src/database/mongodb.js';
 
 import logger from '../src/common/logger/logger.js';
-
-import mongoose from 'mongoose';
 
 import seedPermissions from '../src/seeders/permission.seeder.js';
 import seedRoles from '../src/seeders/role.seeder.js';
@@ -16,49 +15,36 @@ import seedAttendance from '../src/seeders/attendance.seeder.js';
 import seedPayroll from '../src/seeders/payroll.seeder.js';
 import seedNotifications from '../src/seeders/notification.seeder.js';
 
-const clearDemoData = async () => {
-  logger.info('Clearing existing demo data...');
+const clearDatabase = async () => {
+  logger.info('Clearing existing database...');
 
-  const collections = [
-    'notifications',
-    'payrolls',
-    'attendances',
-    'workers',
-    'sites',
-  ];
+  const collections = await mongoose.connection.db.listCollections().toArray();
+  const collectionNames = collections.map((c) => c.name);
 
-  for (const col of collections) {
-    await mongoose.connection.db.collection(col).deleteMany({});
-    logger.info(`Cleared collection: ${col}`);
+  for (const name of collectionNames) {
+    await mongoose.connection.db.dropCollection(name);
+    logger.info(`Dropped collection: ${name}`);
   }
 
-  const User = mongoose.model('User');
-  const systemEmails = ['admin@contractor.com'];
-  await User.deleteMany({
-    isDeleted: false,
-    email: { $nin: systemEmails },
-  });
-  logger.info('Cleared non-system users');
-
-  logger.info('Demo data cleared successfully.');
+  logger.info('Database cleared successfully.');
 };
 
-const runSeeder = async () => {
-  let totalUsers = 0;
-  let totalWorkers = 0;
-  let totalSites = 0;
-  let totalAttendance = 0;
-  let totalPayroll = 0;
-  let totalNotifications = 0;
+let totalUsers = 0;
+let totalWorkers = 0;
+let totalSites = 0;
+let totalAttendance = 0;
+let totalPayroll = 0;
+let totalNotifications = 0;
 
+const runSeeder = async () => {
   try {
     logger.info('====================================');
-    logger.info('Starting Database Seeder...');
+    logger.info('Starting Database Reset & Seeder...');
     logger.info('====================================');
 
     await connectDatabase();
 
-    await clearDemoData();
+    await clearDatabase();
 
     await seedPermissions();
 
@@ -94,7 +80,7 @@ const runSeeder = async () => {
     logger.info(`Payroll Records: ${totalPayroll}`);
     logger.info(`Notifications Created: ${totalNotifications}`);
     logger.info('====================================');
-    logger.info('Database Seeding Completed Successfully');
+    logger.info('Database Reset & Seeding Completed Successfully');
     logger.info('====================================');
 
     await disconnectDatabase();

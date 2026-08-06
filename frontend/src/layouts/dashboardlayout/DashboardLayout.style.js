@@ -11,6 +11,7 @@ export const ContentWrapper = styled.div`
   min-width: 0;
   display: flex;
   flex-direction: column;
+  background: var(--bg);
 `;
 
 export const MainContent = styled.main`

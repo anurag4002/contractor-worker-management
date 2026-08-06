@@ -12,19 +12,15 @@ export const SiteProvider = ({ children }) => {
 
     const fetchSites = useCallback(async (params = {}) => {
         try {
-            console.log("SiteContext: fetchSites called with params:", params);
             setLoading(true);
             const data = await siteService.getSites(params);
-            console.log("SiteContext: fetchSites response:", data);
             setSites(data?.data || data?.sites || data || []);
             if (data?.pagination) {
                 setPagination(data.pagination);
             }
         } catch (error) {
-            console.error("SiteContext: fetchSites error:", error);
-            showError(error.response?.data?.message || "Failed to fetch sites.");
+            showError(error);
         } finally {
-            console.log("SiteContext: fetchSites done, loading set to false");
             setLoading(false);
         }
     }, []);
@@ -35,7 +31,7 @@ export const SiteProvider = ({ children }) => {
             const data = await siteService.getSiteById(id);
             return data?.data || data?.site || data;
         } catch (error) {
-            showError(error.response?.data?.message || "Failed to fetch site details.");
+            showError(error);
             throw error;
         } finally {
             setLoading(false);
@@ -49,7 +45,7 @@ export const SiteProvider = ({ children }) => {
             showSuccess("Site created successfully");
             await fetchSites();
         } catch (error) {
-            showError(error.response?.data?.message || "Failed to create site.");
+            showError(error);
             throw error;
         } finally {
             setLoading(false);
@@ -63,7 +59,7 @@ export const SiteProvider = ({ children }) => {
             showSuccess("Site updated successfully");
             await fetchSites();
         } catch (error) {
-            showError(error.response?.data?.message || "Failed to update site.");
+            showError(error);
             throw error;
         } finally {
             setLoading(false);
@@ -77,7 +73,7 @@ export const SiteProvider = ({ children }) => {
             showSuccess("Site deleted successfully");
             await fetchSites();
         } catch (error) {
-            showError(error.response?.data?.message || "Failed to delete site.");
+            showError(error);
             throw error;
         } finally {
             setLoading(false);
@@ -91,7 +87,7 @@ export const SiteProvider = ({ children }) => {
             showSuccess("Site status updated");
             await fetchSites();
         } catch (error) {
-            showError(error.response?.data?.message || "Failed to update status.");
+            showError(error);
             throw error;
         } finally {
             setLoading(false);

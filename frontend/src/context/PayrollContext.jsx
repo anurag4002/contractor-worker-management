@@ -18,7 +18,7 @@ export const PayrollProvider = ({ children }) => {
             setPayrolls(data?.data || data?.payrolls || data || []);
             if (data?.pagination) setPagination(data.pagination);
         } catch (error) {
-            showError(error.response?.data?.message || "Failed to fetch payrolls.");
+            showError(error);
         } finally {
             setLoading(false);
         }
@@ -29,7 +29,7 @@ export const PayrollProvider = ({ children }) => {
             const data = await payrollService.getSummary();
             setSummary(data?.data || data);
         } catch (error) {
-            showError(error.response?.data?.message || "Failed to fetch payroll summary.");
+            showError(error);
         }
     }, []);
 
@@ -39,7 +39,7 @@ export const PayrollProvider = ({ children }) => {
             const data = await payrollService.getWorkerPayrollHistory(workerId);
             setWorkerHistory(data?.data || data || []);
         } catch (error) {
-            showError(error.response?.data?.message || "Failed to fetch worker payroll history.");
+            showError(error);
         } finally {
             setLoading(false);
         }
@@ -53,7 +53,7 @@ export const PayrollProvider = ({ children }) => {
             await fetchPayrolls();
             await fetchSummary();
         } catch (error) {
-            showError(error.response?.data?.message || "Failed to create payroll.");
+            showError(error);
             throw error;
         } finally {
             setLoading(false);
@@ -67,7 +67,7 @@ export const PayrollProvider = ({ children }) => {
             showSuccess("Payroll updated successfully");
             await fetchPayrolls();
         } catch (error) {
-            showError(error.response?.data?.message || "Failed to update payroll.");
+            showError(error);
             throw error;
         } finally {
             setLoading(false);
@@ -81,7 +81,7 @@ export const PayrollProvider = ({ children }) => {
             showSuccess("Payroll status updated");
             await fetchPayrolls();
         } catch (error) {
-            showError(error.response?.data?.message || "Failed to update payroll status.");
+            showError(error);
             throw error;
         } finally {
             setLoading(false);
@@ -95,7 +95,7 @@ export const PayrollProvider = ({ children }) => {
             showSuccess("Payroll deleted successfully");
             await fetchPayrolls();
         } catch (error) {
-            showError(error.response?.data?.message || "Failed to delete payroll.");
+            showError(error);
             throw error;
         } finally {
             setLoading(false);

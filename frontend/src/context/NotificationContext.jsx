@@ -1,8 +1,8 @@
-import React, {
+import {
     createContext, useState, useCallback, useRef, useEffect,
 } from "react";
 import notificationService from "../services/notification.service";
-import { toast } from "react-toastify";
+import { showError, showSuccess } from "../components/common/toast";
 
 export const NotificationContext = createContext(null);
 
@@ -13,12 +13,6 @@ export const NotificationProvider = ({ children }) => {
     const [loading, setLoading] = useState(false);
     const intervalRef = useRef(null);
 
-    /* ── helpers ── */
-    const err = (e, fallback) => {
-        const msg = e?.response?.data?.message || fallback;
-        toast.error(msg);
-    };
-
     /* ── fetch list ── */
     const fetchNotifications = useCallback(async (params = {}) => {
         try {
@@ -26,8 +20,8 @@ export const NotificationProvider = ({ children }) => {
             const res = await notificationService.getNotifications(params);
             setNotifications(res.data?.data || []);
             setPagination(res.data?.pagination || {});
-        } catch (e) {
-            err(e, "Failed to load notifications.");
+        } catch (error) {
+            showError(error);
         } finally {
             setLoading(false);
         }
@@ -37,7 +31,6 @@ export const NotificationProvider = ({ children }) => {
     const fetchUnreadCount = useCallback(async () => {
         try {
             const res = await notificationService.getUnreadCount();
-            // Backend may return { data: { count: N } } or { data: N }
             const count =
                 res.data?.data?.count ??
                 res.data?.data ??
@@ -57,8 +50,8 @@ export const NotificationProvider = ({ children }) => {
                 prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
             );
             setUnreadCount((c) => Math.max(0, c - 1));
-        } catch (e) {
-            err(e, "Failed to mark notification as read.");
+        } catch (error) {
+            showError(error);
         }
     }, []);
 
@@ -68,9 +61,9 @@ export const NotificationProvider = ({ children }) => {
             await notificationService.markAllAsRead();
             setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
             setUnreadCount(0);
-            toast.success("All notifications marked as read.");
-        } catch (e) {
-            err(e, "Failed to mark all as read.");
+            showSuccess("All notifications marked as read.");
+        } catch (error) {
+            showError(error);
         }
     }, []);
 
@@ -83,8 +76,8 @@ export const NotificationProvider = ({ children }) => {
                 if (removed && !removed.isRead) setUnreadCount((c) => Math.max(0, c - 1));
                 return prev.filter((n) => n._id !== id);
             });
-        } catch (e) {
-            err(e, "Failed to delete notification.");
+        } catch (error) {
+            showError(error);
         }
     }, []);
 

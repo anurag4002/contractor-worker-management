@@ -103,7 +103,7 @@ const ResetPassword = () => {
       showSuccess("Password Reset Successfully");
       navigate("/login", { replace: true });
     } catch (err) {
-      showError(err.response?.data?.message || "Failed to reset password.");
+      showError(err);
     } finally {
       setLoading(false);
     }

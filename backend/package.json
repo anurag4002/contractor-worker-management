@@ -11,7 +11,8 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "seed": "node scripts/seed.js"
+    "seed": "node scripts/seed.js",
+    "seed:reset": "node scripts/seed-reset.js"
   },
   "keywords": [
     "nodejs",
@@ -29,6 +30,7 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@faker-js/faker": "^10.5.0",
     "bcryptjs": "^3.0.3",
     "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",

@@ -41,7 +41,7 @@ const SearchBar = ({ value, onChange, placeholder = "Search…", ...rest }) => (
     <Wrap>
         <Icon aria-hidden="true"><FiSearch /></Icon>
         <StyledInput
-            type="search"
+            type="text"
             value={value}
             onChange={onChange}
             placeholder={placeholder}

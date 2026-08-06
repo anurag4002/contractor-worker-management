@@ -3,11 +3,12 @@ import React, {
   useState,
 } from "react";
 
-import { toast } from "react-toastify";
 import { FiDownload } from "react-icons/fi";
 
 import useWorkers from "../../hooks/useWorkers";
 import { useSearch } from "../../context/SearchContext";
+
+import { showWarning } from "../../components/common/toast";
 
 import SalarySummary from "../../components/salary/SalarySummary";
 import SalaryFilter from "../../components/salary/SalaryFilter";
@@ -181,7 +182,7 @@ const Salary = () => {
 
           <Button
             onClick={() => {
-              toast.error("Missing Endpoint: GET /api/v1/salary/export — No salary export endpoint exists on the backend.");
+              showWarning("Export is not available for this module yet.");
             }}
           >
             <FiDownload />

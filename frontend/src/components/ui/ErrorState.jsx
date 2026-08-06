@@ -1,6 +1,6 @@
-import React from "react";
 import styled from "styled-components";
 import { FiAlertCircle, FiRefreshCw } from "react-icons/fi";
+import { getFriendlyMessage } from "../../utils/errorMapper";
 
 const Wrap = styled.div`
   display: flex;
@@ -41,7 +41,7 @@ const RetryBtn = styled.button`
 const ErrorState = ({ message = "Something went wrong.", onRetry }) => (
     <Wrap role="alert">
         <IconBox><FiAlertCircle /></IconBox>
-        <Msg>{message}</Msg>
+        <Msg>{getFriendlyMessage(message)}</Msg>
         {onRetry && (
             <RetryBtn onClick={onRetry}>
                 <FiRefreshCw /> Retry

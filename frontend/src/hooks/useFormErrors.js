@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { handleApiError } from "../utils/errorHandler";
-import { toast } from "react-toastify";
+import { showError } from "../components/common/toast";
 
 /**
  * useFormErrors - manages only field-level and global API error state for forms.
@@ -32,21 +32,23 @@ const useFormErrors = () => {
     };
 
     const handleError = (error) => {
+        if (error && typeof error === "object" && error._sessionExpiredHandled) {
+            return;
+        }
+
         const { message, fieldErrors, status } = handleApiError(error);
 
         if (status === 401) {
-            // Global 401 handling is done by the axios interceptor.
-            // Set a local global error for in-form display if needed.
-            setGlobalError("Session expired or invalid credentials.");
+            setGlobalError("Your session has expired. Please log in again to continue.");
         } else if (Object.keys(fieldErrors).length > 0) {
             setErrors(fieldErrors);
-            if (message && message !== "Validation Failed") {
+            if (message) {
                 setGlobalError(message);
-                toast.error(message);
+                showError(message);
             }
         } else {
             setGlobalError(message);
-            toast.error(message);
+            showError(message);
         }
     };
 

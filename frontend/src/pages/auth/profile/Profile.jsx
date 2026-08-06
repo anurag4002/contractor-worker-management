@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import {
-  FiUser, FiMail, FiPhone, FiShield, FiLock,
-  FiEdit, FiSave, FiX, FiKey, FiEye, FiEyeOff, FiClock, FiCalendar, FiArrowLeft, FiLoader,
+  FiEdit, FiSave, FiX, FiKey, FiEye, FiEyeOff, FiArrowLeft, FiLoader,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -129,15 +128,6 @@ const Profile = () => {
     return nextErrors;
   };
 
-  const getErrorMessage = (error) => {
-    if (error?.response?.data?.message) return error.response.data.message;
-    if (Array.isArray(error?.response?.data?.errors) && error.response.data.errors.length > 0) {
-      return error.response.data.errors[0];
-    }
-    if (error?.message) return error.message;
-    return "Something went wrong.";
-  };
-
   const handleSave = async () => {
     const validationErrors = getValidationErrors();
     setErrors(validationErrors);
@@ -174,16 +164,7 @@ const Profile = () => {
       setErrors({ fullName: "", mobileNumber: "", username: "" });
       setIsEditing(false);
     } catch (error) {
-      const apiStatus = error?.response?.status;
-      const message = getErrorMessage(error);
-
-      if (!error?.response && error?.message?.toLowerCase().includes("network")) {
-        showError("Network Error\nUnable to connect to server.\nPlease check your internet connection.");
-      } else if (apiStatus === 500) {
-        showError("Something went wrong.\nPlease try again later.");
-      } else {
-        showError(`Profile Update Failed\n${message}`);
-      }
+      showError(error);
     } finally {
       setSaving(false);
     }
@@ -212,7 +193,7 @@ const Profile = () => {
       setPw({ oldPassword: "", newPassword: "", confirm: "" });
       setShowPw(false);
     } catch (err) {
-      showError(err?.response?.data?.message || "Failed to change password.");
+      showError(err);
     } finally {
       setPwSaving(false);
     }

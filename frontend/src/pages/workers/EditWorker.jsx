@@ -1,15 +1,26 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FiArrowLeft, FiLoader, FiSave } from "react-icons/fi";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 import workerService from "../../services/worker.service";
 import { showSuccess, showError } from "../../components/common/toast";
+import { getFriendlyMessage } from "../../utils/errorMapper";
+
+const spin = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`;
+
+const Spinner = styled(FiLoader)`
+  animation: ${spin} 1s linear infinite;
+`;
 
 const Page = styled.div`
   min-height: 100vh;
   padding: 2rem;
-  background: linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
+  background: var(--bg);
+  overflow-x: hidden;
 `;
 
 const Card = styled.div`
@@ -19,7 +30,7 @@ const Card = styled.div`
   border: 1px solid var(--border);
   border-radius: 1.5rem;
   padding: 2rem;
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 20px 50px var(--shadow-medium);
 `;
 
 const Header = styled.div`
@@ -49,7 +60,7 @@ const Subtitle = styled.p`
 const FormGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+  gap: 1.5rem;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -65,21 +76,42 @@ const Label = styled.label`
   color: var(--text-secondary);
   font-size: 0.86rem;
   font-weight: 700;
+
+  .required-star {
+    color: var(--danger);
+    margin-left: 0.15rem;
+  }
 `;
 
 const Input = styled.input`
   width: 100%;
   padding: 0.9rem 1rem;
   border-radius: 0.9rem;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text);
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--input-text);
   font-size: 0.95rem;
   box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &::placeholder {
+    color: var(--input-placeholder);
+  }
 
   &:focus {
     outline: none;
     border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  }
+
+  &:disabled {
+    background: var(--surface-hover);
+    color: var(--text-secondary);
+    cursor: not-allowed;
+  }
+
+  &:read-only {
+    background: var(--surface-secondary);
   }
 `;
 
@@ -87,16 +119,23 @@ const Select = styled.select`
   width: 100%;
   padding: 0.9rem 1rem;
   border-radius: 0.9rem;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text);
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--input-text);
   font-size: 0.95rem;
   box-sizing: border-box;
   cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
 
   &:focus {
     outline: none;
     border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  }
+
+  option {
+    background: var(--surface);
+    color: var(--text);
   }
 `;
 
@@ -111,7 +150,16 @@ const ButtonRow = styled.div`
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 0.9rem;
-  margin-top: 1.6rem;
+  margin-top: 2rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column-reverse;
+    align-items: stretch;
+
+    button {
+      justify-content: center;
+    }
+  }
 `;
 
 const Button = styled.button`
@@ -123,16 +171,25 @@ const Button = styled.button`
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
+  transition: 0.3s;
 `;
 
 const SecondaryButton = styled(Button)`
   background: var(--border);
   color: var(--text);
+
+  &:hover {
+    background: var(--input-border);
+  }
 `;
 
 const PrimaryButton = styled(Button)`
   background: var(--primary);
   color: var(--text-on-primary);
+
+  &:hover:not(:disabled) {
+    background: var(--primary-hover);
+  }
 
   &:disabled {
     opacity: 0.5;
@@ -150,20 +207,28 @@ const EmptyState = styled.div`
   color: var(--text-secondary);
   text-align: center;
   padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 `;
 
 const SectionCard = styled.div`
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 1.25rem;
-  margin-bottom: 1.25rem;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 `;
 
 const SectionTitle = styled.h4`
   margin: 0 0 1rem;
   color: var(--text);
-  font-size: 0.95rem;
+  font-size: 1.125rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -316,13 +381,7 @@ const EditWorker = () => {
         relationship: w.relationship || "",
       });
     } catch (err) {
-      if (err?.response?.status === 404) {
-        setError("Worker not found.");
-      } else if (!err?.response && err?.message?.toLowerCase().includes("network")) {
-        setError("Network Error. Unable to connect to server.");
-      } else {
-        setError("Unable to load worker details.");
-      }
+      setError(getFriendlyMessage(err));
     } finally {
       setLoading(false);
     }
@@ -479,25 +538,25 @@ const EditWorker = () => {
       showSuccess("Worker updated successfully.");
       navigate(`/workers/${id}`);
     } catch (err) {
-      const message = err?.response?.data?.message || err?.response?.data?.errors?.[0] || err?.message || "Something went wrong.";
-      if (!err?.response && err?.message?.toLowerCase().includes("network")) {
-        showError("Network Error\nUnable to connect to server.\nPlease check your internet connection.");
-      } else if (err?.response?.status === 500) {
-        showError("Something went wrong.\nPlease try again later.");
-      } else {
-        showError(`Worker Update Failed\n${message}`);
-      }
+      showError(err);
     } finally {
       setSaving(false);
     }
   };
+
+  const renderLabel = (text, required) => (
+    <Label>
+      {text}
+      {required && <span className="required-star">*</span>}
+    </Label>
+  );
 
   return (
     <Page>
       <Card>
         {loading ? (
           <EmptyState>
-            <FiLoader size={20} style={{ animation: "spin 1s linear infinite", marginRight: "0.5rem" }} />
+            <Spinner size={20} />
             Loading worker details...
           </EmptyState>
         ) : error ? (
@@ -528,37 +587,37 @@ const EditWorker = () => {
                 <SectionTitle>Personal Information</SectionTitle>
                 <FormGrid>
                   <Field>
-                    <Label>Full Name *</Label>
+                    {renderLabel("Full Name", true)}
                     <Input name="fullName" value={form.fullName} onChange={handleChange} placeholder="Enter full name (e.g. Vikram Singh)" required />
                     {validate().fullName && <ErrorText>{validate().fullName}</ErrorText>}
                   </Field>
 
                   <Field>
-                    <Label>Father's Name *</Label>
+                    {renderLabel("Father's Name", true)}
                     <Input name="fatherName" value={form.fatherName} onChange={handleChange} placeholder="Enter father's name (e.g. Ramesh Singh)" required />
                     {validate().fatherName && <ErrorText>{validate().fatherName}</ErrorText>}
                   </Field>
 
                   <Field>
-                    <Label>Mobile Number *</Label>
+                    {renderLabel("Mobile Number", true)}
                     <Input name="mobileNumber" value={form.mobileNumber} onChange={handleChange} placeholder="10-digit mobile number (e.g. 9123456789)" maxLength={10} required />
                     {validate().mobileNumber && <ErrorText>{validate().mobileNumber}</ErrorText>}
                   </Field>
 
                   <Field>
-                    <Label>Alternate Mobile Number</Label>
+                    {renderLabel("Alternate Mobile Number", false)}
                     <Input name="alternateMobileNumber" value={form.alternateMobileNumber} onChange={handleChange} placeholder="Optional alternate number (e.g. 9876543210)" maxLength={10} />
                     {validate().alternateMobileNumber && <ErrorText>{validate().alternateMobileNumber}</ErrorText>}
                   </Field>
 
                   <Field>
-                    <Label>Email</Label>
+                    {renderLabel("Email", false)}
                     <Input name="email" value={form.email} onChange={handleChange} placeholder="Enter email (e.g. vikram@gmail.com)" />
                     {validate().email && <ErrorText>{validate().email}</ErrorText>}
                   </Field>
 
                   <Field>
-                    <Label>Gender *</Label>
+                    {renderLabel("Gender", true)}
                     <Select name="gender" value={form.gender} onChange={handleChange} required>
                       <option value="">Select Gender</option>
                       {genderOptions.map((opt) => (
@@ -569,13 +628,13 @@ const EditWorker = () => {
                   </Field>
 
                   <Field>
-                    <Label>Date of Birth *</Label>
+                    {renderLabel("Date of Birth", true)}
                     <Input type="date" name="dateOfBirth" value={form.dateOfBirth} onChange={handleChange} required />
                     {validate().dateOfBirth && <ErrorText>{validate().dateOfBirth}</ErrorText>}
                   </Field>
 
                   <Field>
-                    <Label>Blood Group *</Label>
+                    {renderLabel("Blood Group", true)}
                     <Select name="bloodGroup" value={form.bloodGroup} onChange={handleChange} required>
                       <option value="">Select Blood Group</option>
                       {bloodGroupOptions.map((opt) => (
@@ -591,25 +650,25 @@ const EditWorker = () => {
                 <SectionTitle>Identity Information</SectionTitle>
                 <FormGrid>
                   <Field>
-                    <Label>Aadhaar Number *</Label>
+                    {renderLabel("Aadhaar Number", true)}
                     <Input name="aadhaarNumber" value={form.aadhaarNumber} onChange={handleChange} placeholder="12-digit Aadhaar number (e.g. 456789123456)" maxLength={12} required />
                     {validate().aadhaarNumber && <ErrorText>{validate().aadhaarNumber}</ErrorText>}
                   </Field>
 
                   <Field>
-                    <Label>PAN Number</Label>
+                    {renderLabel("PAN Number", false)}
                     <Input name="panNumber" value={form.panNumber} onChange={handleChange} placeholder="PAN format (e.g. ABCDE1234F)" maxLength={10} />
                     {validate().panNumber && <ErrorText>{validate().panNumber}</ErrorText>}
                   </Field>
 
                   <Field>
-                    <Label>ESIC Number</Label>
+                    {renderLabel("ESIC Number", false)}
                     <Input name="esicNumber" value={form.esicNumber} onChange={handleChange} placeholder="Enter ESIC number (e.g. ESIC789654)" />
                     {validate().esicNumber && <ErrorText>{validate().esicNumber}</ErrorText>}
                   </Field>
 
                   <Field>
-                    <Label>PF Number</Label>
+                    {renderLabel("PF Number", false)}
                     <Input name="pfNumber" value={form.pfNumber} onChange={handleChange} placeholder="Enter PF number (e.g. PF789654)" />
                     {validate().pfNumber && <ErrorText>{validate().pfNumber}</ErrorText>}
                   </Field>
@@ -620,31 +679,31 @@ const EditWorker = () => {
                 <SectionTitle>Address</SectionTitle>
                 <FormGrid>
                   <Field>
-                    <Label>Address *</Label>
+                    {renderLabel("Address", true)}
                     <Input name="address" value={form.address} onChange={handleChange} placeholder="House No., Street, Locality" required />
                     {validate().address && <ErrorText>{validate().address}</ErrorText>}
                   </Field>
 
                   <Field>
-                    <Label>State *</Label>
+                    {renderLabel("State", true)}
                     <Input name="state" value={form.state} onChange={handleChange} placeholder="Select State" required />
                     {validate().state && <ErrorText>{validate().state}</ErrorText>}
                   </Field>
 
                   <Field>
-                    <Label>District *</Label>
+                    {renderLabel("District", true)}
                     <Input name="district" value={form.district} onChange={handleChange} placeholder="Enter District" required />
                     {validate().district && <ErrorText>{validate().district}</ErrorText>}
                   </Field>
 
                   <Field>
-                    <Label>City *</Label>
+                    {renderLabel("City", true)}
                     <Input name="city" value={form.city} onChange={handleChange} placeholder="Enter City" required />
                     {validate().city && <ErrorText>{validate().city}</ErrorText>}
                   </Field>
 
                   <Field>
-                    <Label>Pincode *</Label>
+                    {renderLabel("Pincode", true)}
                     <Input name="pincode" value={form.pincode} onChange={handleChange} placeholder="6-digit PIN (e.g. 201308)" maxLength={6} required />
                     {validate().pincode && <ErrorText>{validate().pincode}</ErrorText>}
                   </Field>
@@ -655,7 +714,7 @@ const EditWorker = () => {
                 <SectionTitle>Employment Details</SectionTitle>
                 <FormGrid>
                   <Field>
-                    <Label>Trade *</Label>
+                    {renderLabel("Trade", true)}
                     <Select name="trade" value={form.trade} onChange={handleChange} required>
                       <option value="">Select Trade</option>
                       {tradeOptions.map((opt) => (
@@ -666,7 +725,7 @@ const EditWorker = () => {
                   </Field>
 
                   <Field>
-                    <Label>Skill Level *</Label>
+                    {renderLabel("Skill Level", true)}
                     <Select name="skillLevel" value={form.skillLevel} onChange={handleChange} required>
                       <option value="">Select Skill Level</option>
                       {skillLevelOptions.map((opt) => (
@@ -677,13 +736,13 @@ const EditWorker = () => {
                   </Field>
 
                   <Field>
-                    <Label>Joining Date *</Label>
+                    {renderLabel("Joining Date", true)}
                     <Input type="date" name="joiningDate" value={form.joiningDate} onChange={handleChange} required />
                     {validate().joiningDate && <ErrorText>{validate().joiningDate}</ErrorText>}
                   </Field>
 
                   <Field>
-                    <Label>Salary Type *</Label>
+                    {renderLabel("Salary Type", true)}
                     <Select name="salaryType" value={form.salaryType} onChange={handleChange} required>
                       {salaryTypeOptions.map((opt) => (
                         <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -694,7 +753,7 @@ const EditWorker = () => {
 
                   {form.salaryType === "DAILY" && (
                     <Field>
-                      <Label>Daily Wage *</Label>
+                      {renderLabel("Daily Wage", true)}
                       <Input type="number" name="dailyWage" value={form.dailyWage} onChange={handleChange} placeholder="Enter daily wage (e.g. 950)" min={0} required />
                       {validate().dailyWage && <ErrorText>{validate().dailyWage}</ErrorText>}
                     </Field>
@@ -702,7 +761,7 @@ const EditWorker = () => {
 
                   {form.salaryType === "MONTHLY" && (
                     <Field>
-                      <Label>Monthly Salary *</Label>
+                      {renderLabel("Monthly Salary", true)}
                       <Input type="number" name="monthlySalary" value={form.monthlySalary} onChange={handleChange} placeholder="Enter monthly salary (e.g. 28000)" min={0} required />
                       {validate().monthlySalary && <ErrorText>{validate().monthlySalary}</ErrorText>}
                     </Field>
@@ -714,25 +773,25 @@ const EditWorker = () => {
                 <SectionTitle>Bank Details</SectionTitle>
                 <FormGrid>
                   <Field>
-                    <Label>Bank Name</Label>
+                    {renderLabel("Bank Name", false)}
                     <Input name="bankName" value={form.bankName} onChange={handleChange} placeholder="Enter bank name (e.g. Punjab National Bank)" />
                     {validate().bankName && <ErrorText>{validate().bankName}</ErrorText>}
                   </Field>
 
                   <Field>
-                    <Label>Account Number</Label>
+                    {renderLabel("Account Number", false)}
                     <Input name="accountNumber" value={form.accountNumber} onChange={handleChange} placeholder="Enter account number (e.g. 789456123987)" />
                     {validate().accountNumber && <ErrorText>{validate().accountNumber}</ErrorText>}
                   </Field>
 
                   <Field>
-                    <Label>IFSC Code</Label>
+                    {renderLabel("IFSC Code", false)}
                     <Input name="ifscCode" value={form.ifscCode} onChange={handleChange} placeholder="IFSC format (e.g. PUNB0123456)" maxLength={11} />
                     {validate().ifscCode && <ErrorText>{validate().ifscCode}</ErrorText>}
                   </Field>
 
                   <Field>
-                    <Label>UPI ID</Label>
+                    {renderLabel("UPI ID", false)}
                     <Input name="upiId" value={form.upiId} onChange={handleChange} placeholder="UPI ID (e.g. vikram@okpnb)" />
                     {validate().upiId && <ErrorText>{validate().upiId}</ErrorText>}
                   </Field>
@@ -743,19 +802,19 @@ const EditWorker = () => {
                 <SectionTitle>Emergency Contact</SectionTitle>
                 <FormGrid>
                   <Field>
-                    <Label>Emergency Contact Name *</Label>
+                    {renderLabel("Emergency Contact Name", true)}
                     <Input name="emergencyContactName" value={form.emergencyContactName} onChange={handleChange} placeholder="Enter emergency contact name" required />
                     {validate().emergencyContactName && <ErrorText>{validate().emergencyContactName}</ErrorText>}
                   </Field>
 
                   <Field>
-                    <Label>Emergency Contact Number *</Label>
+                    {renderLabel("Emergency Contact Number", true)}
                     <Input name="emergencyContactNumber" value={form.emergencyContactNumber} onChange={handleChange} placeholder="10-digit mobile number" maxLength={10} required />
                     {validate().emergencyContactNumber && <ErrorText>{validate().emergencyContactNumber}</ErrorText>}
                   </Field>
 
                   <Field>
-                    <Label>Relationship</Label>
+                    {renderLabel("Relationship", false)}
                     <Select name="relationship" value={form.relationship} onChange={handleChange}>
                       <option value="">Select Relationship</option>
                       {relationshipOptions.map((opt) => (
@@ -772,7 +831,8 @@ const EditWorker = () => {
                   <FiArrowLeft /> Cancel
                 </SecondaryButton>
                 <PrimaryButton type="submit" disabled={isSubmitDisabled}>
-                  <FiSave /> {saving ? "Saving..." : "Save Changes"}
+                  {saving ? <Spinner size={18} /> : <FiSave />}
+                  {saving ? "Saving..." : "Save Changes"}
                 </PrimaryButton>
               </ButtonRow>
             </form>

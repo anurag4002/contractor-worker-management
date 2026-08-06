@@ -1,6 +1,7 @@
-import React, { createContext, useState, useCallback } from "react";
+import { createContext, useState, useCallback } from "react";
 import reportService from "../services/report.service";
-import { toast } from "react-toastify";
+import { showError } from "../components/common/toast";
+import { getFriendlyMessage } from "../utils/errorMapper";
 
 export const ReportContext = createContext(null);
 
@@ -20,10 +21,9 @@ export const ReportProvider = ({ children }) => {
             const res = await reportService.getWorkerReport(params);
             setWorkerReport(res.data?.data || []);
             setPagination(res.data?.pagination || {});
-        } catch (err) {
-            const msg = err.response?.data?.message || "Failed to fetch worker report.";
-            setError(msg);
-            toast.error(msg);
+        } catch (error) {
+            setError(getFriendlyMessage(error));
+            showError(error);
         } finally {
             setLoading(false);
         }
@@ -35,10 +35,9 @@ export const ReportProvider = ({ children }) => {
             const res = await reportService.getAttendanceReport(params);
             setAttendanceReport(res.data?.data || []);
             setPagination(res.data?.pagination || {});
-        } catch (err) {
-            const msg = err.response?.data?.message || "Failed to fetch attendance report.";
-            setError(msg);
-            toast.error(msg);
+        } catch (error) {
+            setError(getFriendlyMessage(error));
+            showError(error);
         } finally {
             setLoading(false);
         }
@@ -50,10 +49,9 @@ export const ReportProvider = ({ children }) => {
             const res = await reportService.getPayrollReport(params);
             setPayrollReport(res.data?.data || []);
             setPagination(res.data?.pagination || {});
-        } catch (err) {
-            const msg = err.response?.data?.message || "Failed to fetch payroll report.";
-            setError(msg);
-            toast.error(msg);
+        } catch (error) {
+            setError(getFriendlyMessage(error));
+            showError(error);
         } finally {
             setLoading(false);
         }
@@ -65,10 +63,9 @@ export const ReportProvider = ({ children }) => {
             const res = await reportService.getSiteReport(params);
             setSiteReport(res.data?.data || []);
             setPagination(res.data?.pagination || {});
-        } catch (err) {
-            const msg = err.response?.data?.message || "Failed to fetch site report.";
-            setError(msg);
-            toast.error(msg);
+        } catch (error) {
+            setError(getFriendlyMessage(error));
+            showError(error);
         } finally {
             setLoading(false);
         }
@@ -79,10 +76,9 @@ export const ReportProvider = ({ children }) => {
             setLoading(true);
             const res = await reportService.getDashboardReport();
             setDashboardReport(res.data?.data || null);
-        } catch (err) {
-            const msg = err.response?.data?.message || "Failed to fetch dashboard report.";
-            setError(msg);
-            toast.error(msg);
+        } catch (error) {
+            setError(getFriendlyMessage(error));
+            showError(error);
         } finally {
             setLoading(false);
         }

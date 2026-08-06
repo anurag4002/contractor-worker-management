@@ -13,10 +13,9 @@ export const WorkerProvider = ({ children }) => {
     try {
       setLoading(true);
       const data = await workerService.getWorkers(params);
-      // Depending on API structure, it might be data, data.data, or data.workers
       setWorkers(data?.data || data?.workers || data || []);
     } catch (error) {
-      showError(error.response?.data?.message || "Failed to fetch workers.");
+      showError(error);
     } finally {
       setLoading(false);
     }
@@ -29,8 +28,8 @@ export const WorkerProvider = ({ children }) => {
       showSuccess("Worker added successfully");
       await fetchWorkers();
     } catch (error) {
-      showError(error.response?.data?.message || "Failed to create worker.");
-      throw error; // Throwing error so modal form can catch it and handle loading state
+      showError(error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -43,7 +42,7 @@ export const WorkerProvider = ({ children }) => {
       showSuccess("Worker updated successfully");
       await fetchWorkers();
     } catch (error) {
-      showError(error.response?.data?.message || "Failed to update worker.");
+      showError(error);
       throw error;
     } finally {
       setLoading(false);
@@ -57,7 +56,7 @@ export const WorkerProvider = ({ children }) => {
       showSuccess("Worker deleted successfully");
       await fetchWorkers();
     } catch (error) {
-      showError(error.response?.data?.message || "Failed to delete worker.");
+      showError(error);
       throw error;
     } finally {
       setLoading(false);
@@ -71,7 +70,7 @@ export const WorkerProvider = ({ children }) => {
       showSuccess("Worker status updated");
       await fetchWorkers();
     } catch (error) {
-      showError(error.response?.data?.message || "Failed to update status.");
+      showError(error);
       throw error;
     } finally {
       setLoading(false);

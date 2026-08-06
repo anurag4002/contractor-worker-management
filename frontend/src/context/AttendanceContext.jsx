@@ -21,7 +21,7 @@ export const AttendanceProvider = ({ children }) => {
                 setPagination(data.pagination);
             }
         } catch (error) {
-            showError(error.response?.data?.message || "Failed to fetch attendance.");
+            showError(error);
         } finally {
             setLoading(false);
         }
@@ -33,9 +33,7 @@ export const AttendanceProvider = ({ children }) => {
             const data = await attendanceService.getSummary();
             setSummary(data?.data || data);
         } catch (error) {
-            showError(error.response?.data?.message || "Failed to fetch summary.");
-        } finally {
-            setLoading(false);
+            showError(error);
         }
     }, []);
 
@@ -45,7 +43,7 @@ export const AttendanceProvider = ({ children }) => {
             const data = await attendanceService.getWorkerHistory(workerId);
             setWorkerHistory(data?.data || data || []);
         } catch (error) {
-            showError(error.response?.data?.message || "Failed to fetch history.");
+            showError(error);
         } finally {
             setLoading(false);
         }
@@ -59,7 +57,7 @@ export const AttendanceProvider = ({ children }) => {
             await fetchAttendance();
             await fetchSummary();
         } catch (error) {
-            showError(error.response?.data?.message || "Failed to mark attendance.");
+            showError(error);
             throw error;
         } finally {
             setLoading(false);
@@ -73,7 +71,7 @@ export const AttendanceProvider = ({ children }) => {
             showSuccess("Attendance updated successfully");
             await fetchAttendance();
         } catch (error) {
-            showError(error.response?.data?.message || "Failed to update attendance.");
+            showError(error);
             throw error;
         } finally {
             setLoading(false);
@@ -87,7 +85,7 @@ export const AttendanceProvider = ({ children }) => {
             showSuccess("Attendance status updated");
             await fetchAttendance();
         } catch (error) {
-            showError(error.response?.data?.message || "Failed to update status.");
+            showError(error);
             throw error;
         } finally {
             setLoading(false);
@@ -101,7 +99,7 @@ export const AttendanceProvider = ({ children }) => {
             showSuccess("Attendance deleted successfully");
             await fetchAttendance();
         } catch (error) {
-            showError(error.response?.data?.message || "Failed to delete attendance.");
+            showError(error);
             throw error;
         } finally {
             setLoading(false);

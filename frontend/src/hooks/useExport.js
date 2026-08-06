@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import exportService from "../services/export.service";
-import { toast } from "react-toastify";
+import { showError, showSuccess } from "../components/common/toast";
 
 /**
  * useExport
@@ -17,13 +17,9 @@ const useExport = () => {
         setDownloading((prev) => ({ ...prev, [key]: true }));
         try {
             await fn();
-            toast.success(`${label} downloaded successfully!`);
-        } catch (err) {
-            const msg =
-                err.response?.data?.message ||
-                err.message ||
-                `Failed to export ${label}.`;
-            toast.error(msg);
+            showSuccess(`${label} downloaded successfully!`);
+        } catch (error) {
+            showError(error);
         } finally {
             setDownloading((prev) => ({ ...prev, [key]: false }));
         }

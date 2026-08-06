@@ -132,7 +132,7 @@ const GlobalSearch = () => {
         <FiSearch />
         <input
           ref={inputRef}
-          type="search"
+          type="text"
           placeholder="Search workers, sites, attendance…"
           value={searchQuery}
           onChange={handleInputChange}

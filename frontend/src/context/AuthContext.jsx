@@ -39,6 +39,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (payload) => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("jwt");
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+    sessionStorage.clear();
+
     const response = await authService.login(payload);
     const authPayload = response?.data?.data || response?.data || response || {};
     const { user, accessToken, refreshToken } = authPayload;

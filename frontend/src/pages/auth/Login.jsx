@@ -76,7 +76,7 @@ const Login = () => {
       });
 
       if (!response || response.error) {
-        showError("Login failed.");
+        showError("Unable to log in. Please check your details and try again.");
         return;
       }
 
