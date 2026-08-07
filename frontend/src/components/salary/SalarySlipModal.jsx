@@ -27,13 +27,13 @@ const SalarySlipModal = ({
     Number(worker.grossSalary || 0);
 
   const advance =
-    Number(worker.advance || 0);
+    Number(worker.advanceDeduction || 0);
 
   const paid =
-    Number(worker.paid || 0);
+    worker.status === "PAID" ? Number(worker.netSalary || 0) : 0;
 
   const balance =
-    Number(worker.balance || 0);
+    worker.status === "PAID" ? 0 : Number(worker.netSalary || 0);
 
   const netSalary =
     grossSalary - advance;
@@ -99,7 +99,7 @@ const SalarySlipModal = ({
 
               <Value>
 
-                {worker.name}
+                {worker.worker?.fullName || "-"}
 
               </Value>
 
@@ -131,7 +131,7 @@ const SalarySlipModal = ({
 
               <Value>
 
-                {worker.site || "-"}
+                {worker.site?.siteName || "-"}
 
               </Value>
 
@@ -147,7 +147,7 @@ const SalarySlipModal = ({
 
               <Value>
 
-                {worker.workType || "-"}
+                {worker.worker?.trade || "-"}
 
               </Value>
 
@@ -163,7 +163,11 @@ const SalarySlipModal = ({
 
               <Value>
 
-                {worker.wageType}
+                {
+
+                  "Daily Wage"
+
+                }
 
               </Value>
 
@@ -181,17 +185,7 @@ const SalarySlipModal = ({
 
                 {
 
-                  worker.wageType === "Monthly"
-
-                    ? `₹${Number(
-                        worker.monthlySalary ||
-                        worker.dailyWage ||
-                        0
-                      ).toLocaleString("en-IN")} / Month`
-
-                    : `₹${Number(
-                        worker.dailyWage || 0
-                      ).toLocaleString("en-IN")} / Day`
+                  `₹${Number(worker.dailyWage || 0).toLocaleString("en-IN")} / Day`
 
                 }
 
@@ -209,7 +203,7 @@ const SalarySlipModal = ({
 
               <Value>
 
-                {worker.daysWorked || 0}
+                {worker.workingDays || 0}
 
               </Value>
 

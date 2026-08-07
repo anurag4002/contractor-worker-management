@@ -7,7 +7,7 @@ import dashboardService from "../../services/dashboard.service";
 import useAttendance from "../../hooks/useAttendance";
 import DashboardCharts from "../../components/dashboardcharts/DashboardCharts";
 import StatCard from "../../components/statcard/StatCard";
-import exportDashboardPDF from "../../utils/exportDashboardPDF";
+import exportDashboardPDFFn from "../../utils/exportDashboardPDF";
 import { useSearch } from "../../context/SearchContext";
 
 import {
@@ -34,43 +34,6 @@ import {
   HelperText,
 } from "./Dashboard.style";
 
-const isToday = (dateString) => {
-  if (!dateString) return false;
-  const d = new Date(dateString);
-  const today = new Date();
-  return d.getFullYear() === today.getFullYear() &&
-    d.getMonth() === today.getMonth() &&
-    d.getDate() === today.getDate();
-};
-
-const calculateAttendanceSummary = (records) => {
-  const counts = { present: 0, absent: 0, leave: 0, halfDay: 0, holiday: 0 };
-  if (!Array.isArray(records)) return counts;
-  records.forEach((item) => {
-    const status = item.status;
-    switch (status) {
-      case "PRESENT":
-        counts.present += 1;
-        break;
-      case "ABSENT":
-        counts.absent += 1;
-        break;
-      case "LEAVE":
-        counts.leave += 1;
-        break;
-      case "HALF_DAY":
-        counts.halfDay += 1;
-        break;
-      case "HOLIDAY":
-        counts.holiday += 1;
-        break;
-      default:
-        break;
-    }
-  });
-  return counts;
-};
-
 const Dashboard = () => {
   const navigate = useNavigate();
 
@@ -81,6 +44,7 @@ const Dashboard = () => {
   const [recentWorkers, setRecentWorkers] = useState([]);
   const [recentAttendance, setRecentAttendance] = useState([]);
   const [recentPayroll, setRecentPayroll] = useState([]);
+  const [charts, setCharts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -100,17 +64,20 @@ const Dashboard = () => {
         workersRes,
         attendanceRes,
         payrollRes,
+        chartsRes,
       ] = await Promise.all([
         dashboardService.getDashboard(),
         dashboardService.getRecentWorkers(),
         dashboardService.getRecentAttendance(),
         dashboardService.getRecentPayroll(),
+        dashboardService.getCharts(),
       ]);
 
-      setDashboard(dashboardRes.data);
-      setRecentWorkers(workersRes.data || []);
-      setRecentAttendance(attendanceRes.data || []);
-      setRecentPayroll(payrollRes.data || []);
+      setDashboard(dashboardRes || {});
+      setRecentWorkers(workersRes || []);
+      setRecentAttendance(attendanceRes || []);
+      setRecentPayroll(payrollRes || []);
+      setCharts(chartsRes || {});
     } catch (err) {
       console.error(err);
       setError(true);
@@ -132,6 +99,7 @@ const Dashboard = () => {
     }
   }, [attendanceRecords, hasSearchQuery]);
 
+  // Search results view (independent of dashboard data)
   if (hasSearchQuery && !loading) {
     return (
       <DashboardContainer>
@@ -187,23 +155,7 @@ const Dashboard = () => {
     );
   }
 
-  const todayAttendance = recentAttendance.filter((item) =>
-    isToday(item.attendanceDate)
-  );
-
-  const attendanceSummary = calculateAttendanceSummary(todayAttendance);
-
-  const presentCount = attendanceSummary.present;
-  const absentCount = attendanceSummary.absent;
-  const leaveCount = attendanceSummary.leave;
-  const halfDayCount = attendanceSummary.halfDay;
-  const holidayCount = attendanceSummary.holiday;
-
-  const handleExport = () => {
-    if (!dashboard) return;
-    exportDashboardPDF(dashboard);
-  };
-
+  // Loading state - MUST come before any data access
   if (loading) {
     return (
       <DashboardContainer>
@@ -232,6 +184,7 @@ const Dashboard = () => {
     );
   }
 
+  // Error or no-data state
   if (error || !dashboard) {
     return (
       <DashboardContainer>
@@ -247,16 +200,30 @@ const Dashboard = () => {
     );
   }
 
+  // ==========================================
+  // ALL data-dependent computations AFTER guards
+  // ==========================================
+  const presentCount = dashboard.attendance?.present || 0;
+  const absentCount = dashboard.attendance?.absent || 0;
+  const leaveCount = dashboard.attendance?.leave || 0;
+  const halfDayCount = dashboard.attendance?.halfDay || 0;
+  const holidayCount = dashboard.attendance?.holiday || 0;
+
+  const handleExport = () => {
+    if (!dashboard) return;
+    exportDashboardPDFFn(dashboard);
+  };
+
   const stats = [
     {
       title: "Total Workers",
-      value: dashboard.workers.total,
+      value: dashboard.workers?.total || 0,
       description: "Registered Workers",
       route: "/workers",
     },
     {
       title: "Active Workers",
-      value: dashboard.workers.active,
+      value: dashboard.workers?.active || 0,
       description: "Currently Active",
       route: "/workers",
     },
@@ -268,14 +235,14 @@ const Dashboard = () => {
     },
     {
       title: "Active Sites",
-      value: dashboard.sites.active,
+      value: dashboard.sites?.active || 0,
       description: "Running Sites",
       route: "/sites",
     },
     {
       title: "Pending Salary",
       value: `₹${Number(
-        dashboard.payroll.pendingSalary
+        dashboard.payroll?.pendingSalary || 0
       ).toLocaleString("en-IN")}`,
       description: "Pending Payroll",
       route: "/salary",
@@ -288,34 +255,9 @@ const Dashboard = () => {
 
   const hasAttendance = presentCount > 0 || absentCount > 0 || leaveCount > 0 || halfDayCount > 0 || holidayCount > 0;
 
-  console.log("Today's Attendance Records:", todayAttendance);
-  console.log("Attendance Summary:", attendanceSummary);
-  console.log("Recent Attendance:", recentAttendance);
-
-  const attendanceChart = [
-    { name: "Present", value: recentAttendance.filter((r) => r.status === "PRESENT").length },
-    { name: "Absent", value: recentAttendance.filter((r) => r.status === "ABSENT").length },
-    { name: "Leave", value: recentAttendance.filter((r) => r.status === "LEAVE").length },
-    { name: "Half Day", value: recentAttendance.filter((r) => r.status === "HALF_DAY").length },
-    { name: "Holiday", value: recentAttendance.filter((r) => r.status === "HOLIDAY").length },
-  ];
-
-  const payrollChart = [
-    { name: "Paid", value: recentPayroll.filter((r) => r.status === "PAID").length },
-    { name: "Pending", value: recentPayroll.filter((r) => r.status === "PENDING").length },
-    { name: "Processing", value: recentPayroll.filter((r) => r.status === "GENERATED").length },
-  ];
-
-  const siteWorkersChart = recentWorkers.reduce((acc, worker) => {
-    const siteName = worker.site?.siteName || "Unassigned";
-    const existing = acc.find((s) => s.site === siteName);
-    if (existing) {
-      existing.count += 1;
-    } else {
-      acc.push({ site: siteName, count: 1 });
-    }
-    return acc;
-  }, []);
+  const attendanceChart = charts?.attendanceChart || [];
+  const payrollChart = charts?.payrollStatusChart || [];
+  const siteWorkersChart = charts?.siteWorkerChart || [];
 
   console.log("Attendance Chart:", attendanceChart);
   console.log("Payroll Chart:", payrollChart);

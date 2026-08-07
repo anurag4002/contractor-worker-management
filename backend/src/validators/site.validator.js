@@ -144,6 +144,18 @@ export const changeSiteStatusSchema =
       .required(),
   });
 
+export const assignWorkersSchema = Joi.object({
+  workerIds: Joi.array()
+    .items(Joi.string().hex().length(24))
+    .min(1)
+    .required()
+    .messages({
+      'array.min': 'At least one worker must be selected.',
+      'string.hex': 'Invalid worker ID format.',
+      'string.length': 'Invalid worker ID format.',
+    }),
+});
+
 export const getSitesQuerySchema = Joi.object({
   page: Joi.number()
     .integer()

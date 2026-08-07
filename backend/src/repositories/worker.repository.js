@@ -188,11 +188,33 @@ class WorkerRepository {
       .populate('site')
       .populate('contractor');
   }
+
+  async findManyByIds(workerIds) {
+    return await Worker.find({
+      _id: { $in: workerIds },
+    });
+  }
+
+  async assignToSite(siteId, workerIds, assignedBy, session = null) {
+    return await Worker.updateMany(
+      {
+        _id: { $in: workerIds },
+        isDeleted: false,
+      },
+      {
+        $set: {
+          site: siteId,
+          updatedBy: assignedBy,
+        },
+      },
+      session ? { session } : {}
+    );
+  }
   /**
- * ==========================================
- * Find Latest Worker
- * ==========================================
- */
+  * ==========================================
+  * Find Latest Worker
+  * ==========================================
+  */
 async findLatestWorker() {
   return await Worker.findOne({
     isDeleted: false,

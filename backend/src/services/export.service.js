@@ -960,14 +960,14 @@ async exportAttendancePdf(res) {
  * Export Payroll PDF
  * ==========================================
  */
-async exportPayrollPdf(res) {
-  /**
-   * ------------------------------------------
-   * Fetch Payroll
-   * ------------------------------------------
-   */
-  const payrolls =
-    await exportRepository.getPayroll();
+async exportPayrollPdf(res, query = {}) {
+   /**
+    * ------------------------------------------
+    * Fetch Payroll
+    * ------------------------------------------
+    */
+   const payrolls =
+     await exportRepository.getPayroll(query);
 
   /**
    * ------------------------------------------

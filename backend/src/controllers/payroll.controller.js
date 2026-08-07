@@ -4,6 +4,8 @@ import ApiResponse from '../common/helpers/ApiResponse.js';
 
 import asyncHandler from '../common/helpers/asyncHandler.js';
 
+import PAYROLL_MESSAGES from '../common/constants/payroll.messages.js';
+
 /**
  * ==========================================
  * Create Payroll
@@ -154,28 +156,81 @@ const getSummary = asyncHandler(
  * ==========================================
  */
 const getWorkerPayrollHistory =
-  asyncHandler(async (req, res) => {
-    const result =
-      await payrollService.getWorkerPayrollHistory(
-        req.params.workerId,
-        req.query
-      );
+   asyncHandler(async (req, res) => {
+     const result =
+       await payrollService.getWorkerPayrollHistory(
+         req.params.workerId,
+         req.query
+       );
 
-    return ApiResponse.paginated(
-      res,
-      result.payrolls,
-      result.pagination,
-      'Worker payroll history fetched successfully.'
-    );
-  });
+     return ApiResponse.paginated(
+       res,
+       result.payrolls,
+       result.pagination,
+       'Worker payroll history fetched successfully.'
+     );
+   });
+
+/**
+ * ==========================================
+ * Generate Salary from Attendance
+ * ==========================================
+ */
+const generateSalaryFromAttendance =
+   asyncHandler(async (req, res) => {
+     const { attendanceMonth, attendanceYear } =
+       req.body;
+
+     const result =
+       await payrollService.generateSalaryFromAttendance(
+         Number(attendanceMonth),
+         Number(attendanceYear),
+         req.user.userId
+       );
+
+     return ApiResponse.success(
+       res,
+       result,
+       PAYROLL_MESSAGES.SALARY_GENERATED_SUCCESS
+     );
+   });
+
+/**
+ * ==========================================
+ * Process Advance Payment
+ * ==========================================
+ */
+const processAdvancePayment =
+   asyncHandler(async (req, res) => {
+     const { workerId } = req.params;
+     const { amount, method, remark, date } =
+       req.body;
+
+     const payroll =
+       await payrollService.processAdvancePayment(
+         workerId,
+         Number(amount),
+         method,
+         remark,
+         date
+       );
+
+     return ApiResponse.success(
+       res,
+       payroll,
+       PAYROLL_MESSAGES.ADVANCE_PROCESSED_SUCCESS
+     );
+   });
 
 export default {
-  createPayroll,
-  getPayrolls,
-  getPayrollById,
-  updatePayroll,
-  changePayrollStatus,
-  deletePayroll,
-  getSummary,
-  getWorkerPayrollHistory,
-};
+   createPayroll,
+   getPayrolls,
+   getPayrollById,
+   updatePayroll,
+   changePayrollStatus,
+   deletePayroll,
+   getSummary,
+   getWorkerPayrollHistory,
+   generateSalaryFromAttendance,
+   processAdvancePayment,
+ };

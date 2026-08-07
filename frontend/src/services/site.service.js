@@ -36,6 +36,11 @@ const siteService = {
         const { data } = await axios.delete(`/sites/${id}`);
         return data;
     },
+
+    assignWorkers: async (siteId, workerIds) => {
+        const { data } = await axios.post(`/sites/${siteId}/assign-workers`, { workerIds });
+        return data;
+    },
 };
 
 export default siteService;

@@ -15,6 +15,8 @@ const router = Router();
 
 router.get(
   '/',
+  authMiddleware,
+  authorize('DASHBOARD_READ'),
   dashboardController.getDashboard
 );
 

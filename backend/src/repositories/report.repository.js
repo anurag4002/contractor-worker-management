@@ -154,9 +154,11 @@ async getDashboardReport() {
     activeWorkers,
     totalSites,
     activeSites,
-    totalAttendance,
+    todayAttendance,
     totalPayroll,
-    totalNetSalary,
+    currentMonthPayroll,
+    paidPayrolls,
+    pendingPayrolls,
   ] = await Promise.all([
     Worker.countDocuments({
       isDeleted: false,
@@ -178,6 +180,10 @@ async getDashboardReport() {
 
     Attendance.countDocuments({
       isDeleted: false,
+      attendanceDate: {
+        $gte: new Date(new Date().setHours(0, 0, 0, 0)),
+        $lt: new Date(new Date().setHours(23, 59, 59, 999)),
+      },
     }),
 
     Payroll.countDocuments({
@@ -188,43 +194,44 @@ async getDashboardReport() {
       {
         $match: {
           isDeleted: false,
+          attendanceMonth: new Date().getMonth() + 1,
+          attendanceYear: new Date().getFullYear(),
         },
       },
       {
         $group: {
           _id: null,
-          totalNetSalary: {
+          total: {
             $sum: '$netSalary',
           },
         },
       },
     ]),
+
+    Payroll.countDocuments({
+      status: 'PAID',
+      isDeleted: false,
+    }),
+
+    Payroll.countDocuments({
+      status: 'PENDING',
+      isDeleted: false,
+    }),
   ]);
 
   return {
-    workers: {
-      total: totalWorkers,
-      active: activeWorkers,
-    },
-
-    sites: {
-      total: totalSites,
-      active: activeSites,
-    },
-
-    attendance: {
-      total: totalAttendance,
-    },
-
-    payroll: {
-      total: totalPayroll,
-
-      totalNetSalary:
-        totalNetSalary.length > 0
-          ? totalNetSalary[0]
-              .totalNetSalary
-          : 0,
-    },
+    totalWorkers,
+    activeWorkers,
+    totalSites,
+    activeSites,
+    todayAttendance,
+    totalPayroll,
+    currentMonthPayroll:
+      currentMonthPayroll.length > 0
+        ? currentMonthPayroll[0].total
+        : 0,
+    paidPayrolls,
+    pendingPayrolls,
   };
 }
 

@@ -90,12 +90,51 @@ class DashboardRepository {
         isDeleted: false,
       });
 
+    const holiday =
+      await Attendance.countDocuments({
+        attendanceDate: {
+          $gte: start,
+          $lt: end,
+        },
+        status: 'HOLIDAY',
+        isDeleted: false,
+      });
+
     return {
       present,
       absent,
       leave,
       halfDay,
+      holiday,
     };
+  }
+
+  async getTodayPresentBySite() {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const end = new Date();
+    end.setHours(24, 0, 0, 0);
+
+    return await Attendance.aggregate([
+      {
+        $match: {
+          attendanceDate: {
+            $gte: start,
+            $lt: end,
+          },
+          status: 'PRESENT',
+          isDeleted: false,
+        },
+      },
+      {
+        $group: {
+          _id: '$site',
+          present: {
+            $sum: 1,
+          },
+        },
+      },
+    ]);
   }
 
   /**
@@ -211,6 +250,13 @@ class DashboardRepository {
           },
         },
       },
+      {
+        $project: {
+          _id: 0,
+          name: '$_id',
+          value: 1,
+        },
+      },
     ]);
   }
 
@@ -241,6 +287,13 @@ class DashboardRepository {
           },
         },
       },
+      {
+        $project: {
+          _id: 0,
+          name: '$_id',
+          value: 1,
+        },
+      },
     ]);
   }
 
@@ -262,7 +315,7 @@ class DashboardRepository {
       {
         $group: {
           _id: '$site',
-          totalWorkers: {
+          count: {
             $sum: 1,
           },
         },
@@ -281,8 +334,8 @@ class DashboardRepository {
       {
         $project: {
           _id: 0,
-          siteName: '$site.siteName',
-          totalWorkers: 1,
+          site: '$site.siteName',
+          count: 1,
         },
       },
     ]);

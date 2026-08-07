@@ -14,6 +14,7 @@ import ForgotPassword from "../pages/auth/ForgotPassword";
 import ResetPassword from "../pages/auth/ResetPassword";
 
 import Dashboard from "../pages/dashboard/Dashboard";
+import ErrorBoundary from "../components/common/ErrorBoundary";
 import Workers from "../pages/workers/Workers";
 import WorkerDetails from "../pages/workers/WorkerDetails";
 import EditWorker from "../pages/workers/EditWorker";
@@ -58,7 +59,11 @@ const AppRoutes = () => {
         <Route element={<DashboardLayout />}>
           <Route
             path="/dashboard"
-            element={<Dashboard />}
+            element={
+              <ErrorBoundary>
+                <Dashboard />
+              </ErrorBoundary>
+            }
           />
 
           <Route

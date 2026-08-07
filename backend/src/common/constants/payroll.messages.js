@@ -51,6 +51,18 @@ const PAYROLL_MESSAGES = {
 
   PAYROLL_ALREADY_CANCELLED:
     'Payroll has already been cancelled.',
+
+  SALARY_GENERATED_SUCCESS:
+    'Salary records generated from attendance data successfully.',
+
+  NO_ATTENDANCE_DATA:
+    'No attendance records found to generate salary.',
+
+  ADVANCE_PROCESSED_SUCCESS:
+    'Advance payment processed successfully.',
+
+  WORKER_HAS_NO_ACTIVE_SITE:
+    'Worker has no active site assigned.',
 };
 
 export default PAYROLL_MESSAGES;

@@ -1,14 +1,19 @@
 import React, {
   useMemo,
   useState,
+  useEffect,
+  useCallback,
 } from "react";
 
 import { FiDownload } from "react-icons/fi";
 
-import useWorkers from "../../hooks/useWorkers";
+import usePayroll from "../../hooks/usePayroll";
+import useSites from "../../hooks/useSites";
 import { useSearch } from "../../context/SearchContext";
 
-import { showWarning } from "../../components/common/toast";
+import { showError } from "../../components/common/toast";
+
+import exportService from "../../services/export.service";
 
 import SalarySummary from "../../components/salary/SalarySummary";
 import SalaryFilter from "../../components/salary/SalaryFilter";
@@ -25,175 +30,179 @@ import {
   Button,
 } from "./Salary.style";
 
+const DEFAULT_FILTERS = {
+  search: "",
+  site: "All",
+  month: "",
+};
+
 const Salary = () => {
-
   const {
-
-    salarySummary,
-
+    payrolls,
+    summary,
     loading,
+    fetchPayrolls,
+    fetchSummary,
+    processAdvancePayment,
+  } = usePayroll();
 
-    addAdvancePayment,
-
-    sites,
-
-  } = useWorkers();
+  const { sites, fetchSites } = useSites();
 
   const { searchQuery } = useSearch();
 
-  const salaryData =
-    Array.isArray(salarySummary) ? salarySummary : [];
+  const [filters, setFilters] = useState(DEFAULT_FILTERS);
 
-  const sitesData =
-    Array.isArray(sites) ? sites : [];
-
-  const isLoading = loading ?? false;
-
-  const [search, setSearch] =
-    useState("");
-
-  const [site, setSite] =
-    useState("All");
-
-  const [wageType, setWageType] =
-    useState("All");
-
-  const [month, setMonth] =
-    useState("");
+  const [page, setPage] = useState(1);
 
   const [selectedWorker, setSelectedWorker] =
     useState(null);
 
-  const [slipOpen, setSlipOpen] =
-    useState(false);
+  const [slipOpen, setSlipOpen] = useState(false);
 
-  const [advanceOpen, setAdvanceOpen] =
-    useState(false);
+  const [advanceOpen, setAdvanceOpen] = useState(false);
 
-  const [historyOpen, setHistoryOpen] =
-    useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+
+  const sitesData = Array.isArray(sites) ? sites : [];
+
+  const isLoading = loading ?? false;
+
+  const salaryData = Array.isArray(payrolls) ? payrolls : [];
+
+  useEffect(() => {
+    fetchSummary();
+    if (!sitesData || sitesData.length === 0) {
+      fetchSites({ limit: 100 });
+    }
+    const params = { page, limit: 10 };
+    if (filters.search) params.search = filters.search;
+    if (filters.site && filters.site !== "All") {
+      const siteObj = sitesData.find(
+        (s) => s.siteName === filters.site
+      );
+      if (siteObj) params.site = siteObj._id;
+    }
+    if (filters.month) {
+      const [year, month] = filters.month.split("-");
+      params.attendanceYear = Number(year);
+      params.attendanceMonth = Number(month);
+    }
+    fetchPayrolls(params);
+  }, []);
+
+  useEffect(() => {
+    const params = { page, limit: 10 };
+    if (filters.search) params.search = filters.search;
+    if (filters.site && filters.site !== "All") {
+      const siteObj = sitesData.find(
+        (s) => s.siteName === filters.site
+      );
+      if (siteObj) params.site = siteObj._id;
+    }
+    if (filters.month) {
+      const [year, month] = filters.month.split("-");
+      params.attendanceYear = Number(year);
+      params.attendanceMonth = Number(month);
+    }
+    fetchPayrolls(params);
+  }, [page, filters, sitesData]);
 
   const filteredWorkers = useMemo(() => {
-
-    const keyword =
-      search.toLowerCase();
-
-    const globalKeyword =
-      searchQuery.trim().toLowerCase();
-
+    const keyword = filters.search.toLowerCase();
+    const globalKeyword = searchQuery.trim().toLowerCase();
     const effectiveKeyword = globalKeyword || keyword;
 
-    return salaryData.filter((worker) => {
+    let result = salaryData;
 
-      if (!effectiveKeyword) {
-        return true;
-      }
-
-      return (
-
-        worker.name
-          ?.toLowerCase()
-          .includes(effectiveKeyword)
-
-        ||
-
-        worker._id
-          ?.toLowerCase()
-          .includes(effectiveKeyword)
-
-        ||
-
-        worker.wageType
-          ?.toLowerCase()
-          .includes(effectiveKeyword)
-
-        ||
-
-        String(worker.dailyWage || worker.monthlySalary || 0)
-          .toLowerCase()
-          .includes(effectiveKeyword)
-
+    if (effectiveKeyword) {
+      result = result.filter(
+        (worker) =>
+          worker.worker?.fullName
+            ?.toLowerCase()
+            .includes(effectiveKeyword) ||
+          worker._id
+            ?.toLowerCase()
+            .includes(effectiveKeyword) ||
+          worker.site?.siteName
+            ?.toLowerCase()
+            .includes(effectiveKeyword) ||
+          String(worker.dailyWage || 0)
+            .toLowerCase()
+            .includes(effectiveKeyword)
       );
+    }
 
-    });
+    return result;
+  }, [salaryData, filters.search, searchQuery]);
 
-  }, [
-    salaryData,
-    search,
-    searchQuery,
-    site,
-    wageType,
-    month,
-  ]);
-
-  const handleAdvancePayment = (
-
-    id,
-
-    amount,
-
-    method,
-
-    remark
-
-  ) => {
-
-    addAdvancePayment(id, {
-
-      amount: Number(amount),
-
-      method,
-
-      remark,
-
-      date: new Date()
-
-        .toISOString()
-
-        .split("T")[0],
-
-    });
-
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+    setPage(1);
   };
 
+  const handleFilterReset = () => {
+    setFilters(DEFAULT_FILTERS);
+    setPage(1);
+  };
+
+  const handleAdvancePayment = useCallback(
+    async (id, amount, method, remark) => {
+      try {
+        await processAdvancePayment(id, {
+          amount: Number(amount),
+          method,
+          remark,
+          date: new Date()
+            .toISOString()
+            .split("T")[0],
+        });
+      } catch (error) {
+        showError(error);
+      }
+    },
+    [processAdvancePayment]
+  );
+
+  const handleExport = useCallback(async () => {
+    try {
+      const params = {};
+      if (filters.search) params.search = filters.search;
+      if (filters.site && filters.site !== "All") {
+        const siteObj = sitesData.find(
+          (s) => s.siteName === filters.site
+        );
+        if (siteObj) params.site = siteObj._id;
+      }
+      if (filters.month) {
+        const [year, month] = filters.month.split("-");
+        params.attendanceYear = Number(year);
+        params.attendanceMonth = Number(month);
+      }
+      await exportService.exportPayrollPdf(params);
+    } catch (error) {
+      showError(error);
+    }
+  }, [filters, sitesData]);
+
   return (
-
     <SalaryContainer>
-
       <Header>
-
         <TitleSection>
-
-          <h2>
-
-            Salary Management
-
-          </h2>
-
+          <h2>Salary Management</h2>
           <p>
-
             Daily wages, advances and salary records
-
           </p>
-
         </TitleSection>
 
         <ActionSection>
-
-          <Button
-            onClick={() => {
-              showWarning("Export is not available for this module yet.");
-            }}
-          >
+          <Button onClick={handleExport}>
             <FiDownload />
             Export Report
           </Button>
-
         </ActionSection>
-
       </Header>
 
-      {isLoading ? (
+      {isLoading && !salaryData.length ? (
         <div
           style={{
             padding: "2rem",
@@ -210,117 +219,64 @@ const Salary = () => {
           />
 
           <SalaryFilter
+            search={filters.search}
+            setSearch={(value) =>
+              handleFilterChange("search", value)
+            }
+            site={filters.site}
+            setSite={(value) =>
+              handleFilterChange("site", value)
+            }
+            wageType="All"
+            setWageType={() => {}}
+            month={filters.month}
+            setMonth={(value) =>
+              handleFilterChange("month", value)
+            }
+            sites={[
+              "All",
+              ...sitesData.map((item) => item.siteName),
+            ]}
+          />
 
-        search={search}
+          <SalaryTable
+            workers={filteredWorkers}
+            onView={(worker) => {
+              setSelectedWorker(worker);
+              setSlipOpen(true);
+            }}
+            onAdvance={(worker) => {
+              setSelectedWorker(worker);
+              setAdvanceOpen(true);
+            }}
+            onHistory={(worker) => {
+              setSelectedWorker(worker);
+              setHistoryOpen(true);
+            }}
+          />
 
-        setSearch={setSearch}
+          <SalarySlipModal
+            open={slipOpen}
+            worker={selectedWorker}
+            onClose={() => setSlipOpen(false)}
+          />
 
-        site={site}
-
-        setSite={setSite}
-
-        wageType={wageType}
-
-        setWageType={setWageType}
-
-        month={month}
-
-        setMonth={setMonth}
-
-        sites={[
-
-          "All",
-
-          ...sitesData.map(
-
-            (item) => item.name
-
-          ),
-
-        ]}
-
-      />
-
-      <SalaryTable
-
-        workers={filteredWorkers}
-
-        onView={(worker) => {
-
-          setSelectedWorker(worker);
-
-          setSlipOpen(true);
-
-        }}
-
-        onAdvance={(worker) => {
-
-          setSelectedWorker(worker);
-
-          setAdvanceOpen(true);
-
-        }}
-
-        onHistory={(worker) => {
-
-          setSelectedWorker(worker);
-
-          setHistoryOpen(true);
-
-        }}
-
-      />
-
-      <SalarySlipModal
-
-        open={slipOpen}
-
-        worker={selectedWorker}
-
-        onClose={() =>
-
-          setSlipOpen(false)
-
-        }
-
-      />
-
-      <AdvancePaymentModal
-
-        open={advanceOpen}
-
-        worker={selectedWorker}
-
-        onClose={() =>
-
-          setAdvanceOpen(false)
-
-        }
-
-        onSave={handleAdvancePayment}
-
-      />
+          <AdvancePaymentModal
+            open={advanceOpen}
+            worker={selectedWorker}
+            onClose={() => setAdvanceOpen(false)}
+            onSave={handleAdvancePayment}
+          />
 
           <PaymentHistoryModal
-
             open={historyOpen}
-
             worker={selectedWorker}
-
-            onClose={() =>
-
-              setHistoryOpen(false)
-
-            }
-
+            onClose={() => setHistoryOpen(false)}
           />
         </>
       )}
-
     </SalaryContainer>
-
   );
-
 };
 
 export default Salary;

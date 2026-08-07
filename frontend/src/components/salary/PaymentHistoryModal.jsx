@@ -61,7 +61,7 @@ const PaymentHistoryModal = ({
               }}
             >
 
-              {worker.name}
+              {worker.worker?.fullName || "Unknown"}
 
             </h3>
 
@@ -83,7 +83,7 @@ const PaymentHistoryModal = ({
               }}
             >
 
-              Site : {worker.site || "-"}
+              Site : {worker.site?.siteName || "-"}
 
             </p>
 

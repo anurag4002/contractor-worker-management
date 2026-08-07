@@ -12,7 +12,7 @@ const dashboardService = {
       "/dashboard"
     );
 
-    return data;
+    return data.data;
   },
 
   /*
@@ -26,7 +26,7 @@ const dashboardService = {
       "/dashboard/recent-workers"
     );
 
-    return data;
+    return data.data;
   },
 
   /*
@@ -40,7 +40,7 @@ const dashboardService = {
       "/dashboard/recent-attendance"
     );
 
-    return data;
+    return data.data;
   },
 
   /*
@@ -54,7 +54,7 @@ const dashboardService = {
       "/dashboard/recent-payroll"
     );
 
-    return data;
+    return data.data;
   },
 
   /*
@@ -68,7 +68,7 @@ const dashboardService = {
       "/dashboard/charts"
     );
 
-    return data;
+    return data.data;
   },
 };
 

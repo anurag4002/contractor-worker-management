@@ -308,6 +308,10 @@ export const getWorkersQuerySchema =
             .length(24)
             .allow(''),
 
+        available: Joi.string()
+            .valid('true', 'false')
+            .allow(''),
+
         sortBy: Joi.string()
             .valid(
                 'employeeCode',

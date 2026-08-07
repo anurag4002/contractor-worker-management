@@ -66,8 +66,11 @@ const exportService = {
     /**
      * GET /export/payroll  → PDF
      */
-    exportPayrollPdf: async () => {
-        const res = await axios.get(`${BASE}/payroll`, { responseType: "blob" });
+    exportPayrollPdf: async (params = {}) => {
+        const res = await axios.get(`${BASE}/payroll`, {
+            responseType: "blob",
+            params,
+        });
         triggerDownload(res.data, "payroll.pdf");
     },
 

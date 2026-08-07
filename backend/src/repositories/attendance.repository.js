@@ -79,17 +79,51 @@ async findByWorkerAndMonth(
     999
   );
 
-  return await Attendance.find({
-    worker: workerId,
-    attendanceDate: {
-      $gte: startDate,
-      $lte: endDate,
-    },
-    isDeleted: false,
-  });
-}
+return await Attendance.find({
+     worker: workerId,
+     attendanceDate: {
+       $gte: startDate,
+       $lte: endDate,
+     },
+     isDeleted: false,
+   });
+ }
 
-  /**
+   /**
+    * ==========================================
+    * Find Attendance By Month & Year
+    * ==========================================
+    */
+   async findByMonthAndYear(
+     attendanceMonth,
+     attendanceYear
+   ) {
+     const startDate = new Date(
+       attendanceYear,
+       attendanceMonth - 1,
+       1
+     );
+
+     const endDate = new Date(
+       attendanceYear,
+       attendanceMonth,
+       0,
+       23,
+       59,
+       59,
+       999
+     );
+
+     return await Attendance.find({
+       attendanceDate: {
+         $gte: startDate,
+         $lte: endDate,
+       },
+       isDeleted: false,
+     });
+   }
+
+   /**
    * ==========================================
    * Get Attendance List
    * ==========================================

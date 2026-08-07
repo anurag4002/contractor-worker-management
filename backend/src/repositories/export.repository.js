@@ -172,30 +172,58 @@ async getAttendance(filter = {}) {
  * Get Payroll
  * ==========================================
  */
-async getPayroll(filter = {}) {
-  return await Payroll.find({
-    isDeleted: false,
-    ...filter,
-  })
-    .populate(
-      'worker',
-      'employeeCode fullName'
-    )
-    .populate(
-      'site',
-      'siteCode siteName'
-    )
-    .populate(
-      'createdBy',
-      'fullName email'
-    )
-    .populate(
-      'updatedBy',
-      'fullName email'
-    )
-    .sort({
-      createdAt: -1,
-    });
+async getPayroll(query = {}) {
+   const filter = { isDeleted: false };
+
+   if (query.search) {
+       const WorkerModel = await import('../models/Worker.js');
+       const workers = await WorkerModel.default.find({
+           isDeleted: false,
+           $or: [
+               { fullName: { $regex: query.search, $options: 'i' } },
+               { employeeCode: { $regex: query.search, $options: 'i' } },
+           ],
+       });
+       const workerIds = workers.map((w) => w._id);
+       filter.worker = { $in: workerIds };
+   }
+
+   if (query.site) {
+       filter.site = query.site;
+   }
+
+   if (query.attendanceMonth) {
+       filter.attendanceMonth = Number(query.attendanceMonth);
+   }
+
+   if (query.attendanceYear) {
+       filter.attendanceYear = Number(query.attendanceYear);
+   }
+
+   if (query.status) {
+       filter.status = query.status;
+   }
+
+   return await Payroll.find(filter)
+       .populate(
+           'worker',
+           'employeeCode fullName'
+       )
+       .populate(
+           'site',
+           'siteCode siteName'
+       )
+       .populate(
+           'createdBy',
+           'fullName email'
+       )
+       .populate(
+           'updatedBy',
+           'fullName email'
+       )
+       .sort({
+           createdAt: -1,
+       });
 }
 /**
  * ==========================================

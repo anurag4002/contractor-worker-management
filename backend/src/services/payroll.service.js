@@ -579,6 +579,207 @@ class PayrollService {
 
         return result;
     }
+    /**
+     * ==========================================
+     * Generate Salary from Attendance
+     * ==========================================
+     */
+    async generateSalaryFromAttendance(attendanceMonth, attendanceYear, createdBy) {
+        const attendanceRecords =
+            await attendanceRepository.findByMonthAndYear(
+                attendanceMonth,
+                attendanceYear
+            );
+
+        if (attendanceRecords.length === 0) {
+            throw new ApiError(
+                StatusCodes.NOT_FOUND,
+                PAYROLL_MESSAGES.NO_ATTENDANCE_DATA
+            );
+        }
+
+        const workerMap = new Map();
+        for (const record of attendanceRecords) {
+            const workerId = record.worker.toString();
+            if (!workerMap.has(workerId)) {
+                workerMap.set(workerId, []);
+            }
+            workerMap.get(workerId).push(record);
+        }
+
+        const generatedPayrolls = [];
+
+        for (const [workerId, records] of workerMap) {
+            const worker =
+                await workerRepository.findById(workerId);
+
+            if (!worker) {
+                continue;
+            }
+
+            const siteId = worker.site;
+            if (!siteId) {
+                continue;
+            }
+
+            const site =
+                await siteRepository.findActiveById(siteId);
+
+            if (!site) {
+                continue;
+            }
+
+            const existingPayroll =
+                await payrollRepository.findByWorkerAndMonth(
+                    workerId,
+                    attendanceMonth,
+                    attendanceYear
+                );
+
+            if (existingPayroll) {
+                continue;
+            }
+
+            let workingDays = 0;
+            let presentDays = 0;
+            let absentDays = 0;
+            let halfDays = 0;
+            let leaveDays = 0;
+            let regularHours = 0;
+            let overtimeHours = 0;
+
+            records.forEach((attendance) => {
+                workingDays++;
+
+                switch (attendance.status) {
+                    case 'PRESENT':
+                        presentDays++;
+                        regularHours += attendance.regularHours || 8;
+                        break;
+
+                    case 'ABSENT':
+                        absentDays++;
+                        break;
+
+                    case 'HALF_DAY':
+                        halfDays++;
+                        regularHours += attendance.regularHours || 4;
+                        break;
+
+                    case 'LEAVE':
+                        leaveDays++;
+                        break;
+                }
+
+                overtimeHours += attendance.overtimeHours || 0;
+            });
+
+            const dailyWage = worker.dailyWage || 800;
+            const overtimeRate = dailyWage / 8;
+
+            const basicSalary =
+                worker.salaryType === 'MONTHLY'
+                    ? worker.monthlySalary || 30000
+                    : dailyWage * presentDays;
+
+            const overtimeAmount = overtimeHours * overtimeRate;
+            const grossSalary = basicSalary + overtimeAmount;
+
+            const netSalary = grossSalary;
+
+            const payroll =
+                await payrollRepository.create({
+                    worker: workerId,
+                    site: siteId,
+                    attendanceMonth,
+                    attendanceYear,
+                    workingDays,
+                    presentDays,
+                    absentDays,
+                    halfDays,
+                    leaveDays,
+                    regularHours,
+                    overtimeHours,
+                    dailyWage,
+                    overtimeRate,
+                    basicSalary,
+                    overtimeAmount,
+                    bonus: 0,
+                    deduction: 0,
+                    advanceDeduction: 0,
+                    grossSalary,
+                    netSalary,
+                    status: 'GENERATED',
+                    createdBy,
+                });
+
+            const populatedPayroll =
+                await payrollRepository.findById(payroll._id);
+
+            generatedPayrolls.push(populatedPayroll);
+        }
+
+        return {
+            count: generatedPayrolls.length,
+            payrolls: generatedPayrolls,
+        };
+    }
+    /**
+     * ==========================================
+     * Process Advance Payment
+     * ==========================================
+     */
+    async processAdvancePayment(workerId, amount, method, remark, date) {
+        const worker =
+            await workerRepository.findById(workerId);
+
+        if (!worker) {
+            throw new ApiError(
+                StatusCodes.NOT_FOUND,
+                PAYROLL_MESSAGES.WORKER_NOT_FOUND
+            );
+        }
+
+        const payroll =
+            await payrollRepository.findByWorkerAndMonth(
+                workerId,
+                new Date(date).getMonth() + 1,
+                new Date(date).getFullYear()
+            );
+
+        if (!payroll) {
+            throw new ApiError(
+                StatusCodes.NOT_FOUND,
+                'No payroll record found for the selected month.'
+            );
+        }
+
+        if (payroll.status === 'PAID') {
+            throw new ApiError(
+                StatusCodes.BAD_REQUEST,
+                PAYROLL_MESSAGES.PAYROLL_ALREADY_PAID
+            );
+        }
+
+        const advanceDeduction =
+            (payroll.advanceDeduction || 0) + Number(amount);
+
+        const netSalary =
+            (payroll.grossSalary || 0) -
+            (payroll.deduction || 0) -
+            advanceDeduction;
+
+        const updatedPayroll =
+            await payrollRepository.update(
+                payroll._id,
+                {
+                    advanceDeduction,
+                    netSalary: Math.max(0, netSalary),
+                }
+            );
+
+        return updatedPayroll;
+    }
 }
 
 export default new PayrollService();

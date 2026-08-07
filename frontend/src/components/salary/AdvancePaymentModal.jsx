@@ -74,7 +74,7 @@ const AdvancePaymentModal = ({
 
     }
 
-    if (paymentAmount > Number(worker.balance || 0)) {
+    if (paymentAmount > Number(worker.status === "PAID" ? 0 : worker.netSalary || 0)) {
 
       setError(
         "Payment amount cannot exceed remaining balance."
@@ -90,7 +90,7 @@ const AdvancePaymentModal = ({
 
       workerId: worker._id,
 
-      workerName: worker.name,
+      workerName: worker.worker?.fullName || "",
 
       date: new Date()
 
@@ -144,13 +144,13 @@ const AdvancePaymentModal = ({
 
             </Label>
 
-            <Input
+              <Input
 
-              value={worker.name}
+                value={worker.worker?.fullName || ""}
 
-              disabled
+                disabled
 
-            />
+              />
 
           </FormGroup>
 
@@ -198,13 +198,13 @@ const AdvancePaymentModal = ({
 
             </Label>
 
-            <Input
+              <Input
 
-              value={`₹${Number(worker.balance || 0).toLocaleString("en-IN")}`}
+                value={`₹${Number(worker.status === "PAID" ? 0 : worker.netSalary || 0).toLocaleString("en-IN")}`}
 
-              disabled
+                disabled
 
-            />
+              />
 
           </FormGroup>
 

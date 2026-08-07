@@ -102,12 +102,43 @@ export const PayrollProvider = ({ children }) => {
         }
     }, [fetchPayrolls]);
 
+    const generateSalaryFromAttendance = useCallback(async (payload) => {
+        try {
+            setLoading(true);
+            await payrollService.generateSalaryFromAttendance(payload);
+            showSuccess("Salary records generated successfully");
+            await fetchPayrolls();
+            await fetchSummary();
+        } catch (error) {
+            showError(error);
+            throw error;
+        } finally {
+            setLoading(false);
+        }
+    }, [fetchPayrolls, fetchSummary]);
+
+    const processAdvancePayment = useCallback(async (workerId, payload) => {
+        try {
+            setLoading(true);
+            await payrollService.processAdvancePayment(workerId, payload);
+            showSuccess("Advance payment processed successfully");
+            await fetchPayrolls();
+            await fetchSummary();
+        } catch (error) {
+            showError(error);
+            throw error;
+        } finally {
+            setLoading(false);
+        }
+    }, [fetchPayrolls, fetchSummary]);
+
     return (
         <PayrollContext.Provider
             value={{
                 payrolls, summary, workerHistory, pagination, loading,
                 fetchPayrolls, fetchSummary, fetchWorkerHistory,
                 createPayroll, updatePayroll, changeStatus, deletePayroll,
+                generateSalaryFromAttendance, processAdvancePayment,
             }}
         >
             {children}

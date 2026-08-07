@@ -27,11 +27,11 @@ const AttendanceChart = () => {
 
   const loadChart = async () => {
     try {
-      const response =
+      const charts =
         await dashboardService.getCharts();
 
       setData(
-        response.data.attendanceChart || []
+        charts?.attendanceChart || []
       );
     } catch (error) {
       console.error(error);

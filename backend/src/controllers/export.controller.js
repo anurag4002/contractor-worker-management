@@ -44,11 +44,12 @@ const exportAttendancePdf =
  * ==========================================
  */
 const exportPayrollPdf =
-  asyncHandler(async (req, res) => {
-    await exportService.exportPayrollPdf(
-      res
-    );
-  });
+   asyncHandler(async (req, res) => {
+     await exportService.exportPayrollPdf(
+       res,
+       req.query
+     );
+   });
 
 /**
  * ==========================================

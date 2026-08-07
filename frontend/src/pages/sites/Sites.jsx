@@ -19,7 +19,7 @@ import DeleteSiteModal from "../../components/sitemodal/DeleteSiteModal";
 import { SitesContainer, Header, TitleSection, ActionSection, Button } from "./Sites.style";
 
 const Sites = () => {
-  const { workers, attendance, assignWorkerToSite } = useWorkers();
+  const { workers, fetchWorkers } = useWorkers();
   const { sites, loading, pagination, fetchSites, changeStatus } = useSites();
   const { exportSitesPdf, downloading } = useExport();
   const { searchQuery } = useSearch();
@@ -28,7 +28,6 @@ const Sites = () => {
 
   const sitesData = Array.isArray(sites) ? sites : [];
   const workersData = Array.isArray(workers) ? workers : [];
-  const attendanceData = Array.isArray(attendance) ? attendance : [];
 
   console.log("Sites: rendered. sites length:", sitesData?.length, "loading:", loading);
 
@@ -75,6 +74,13 @@ const Sites = () => {
     if (newPage >= 1 && newPage <= (pagination?.totalPages || 1)) {
       setPage(newPage);
     }
+  };
+
+  const handleAssigned = async () => {
+    await Promise.all([
+      fetchSites({ page, limit, search, status }),
+      fetchWorkers(),
+    ]);
   };
 
   const filteredSites = useMemo(() => {
@@ -189,7 +195,7 @@ const Sites = () => {
             open={detailsOpen}
             site={selectedSite}
             workers={workersData}
-            attendance={attendanceData}
+            attendance={[]}
             onClose={() => setDetailsOpen(false)}
           />
 
@@ -197,14 +203,14 @@ const Sites = () => {
             open={assignOpen}
             site={selectedSite}
             workers={workersData}
-            onAssign={assignWorkerToSite}
+            onAssigned={handleAssigned}
             onClose={() => setAssignOpen(false)}
           />
 
           <SiteAttendanceModal
             open={attendanceOpen}
             site={selectedSite}
-            attendance={attendanceData}
+            attendance={[]}
             onClose={() => setAttendanceOpen(false)}
           />
 

@@ -23,15 +23,15 @@ const SalaryTable = ({
 
   const getStatus = (worker) => {
 
-    if (worker.balance <= 0) {
+    if (worker.status === "PAID") {
 
       return "Paid";
 
     }
 
-    if (worker.paid > 0) {
+    if (worker.status === "GENERATED" || worker.status === "PENDING") {
 
-      return "Partial";
+      return "Pending";
 
     }
 
@@ -139,7 +139,7 @@ const SalaryTable = ({
 
                             src={worker.photo}
 
-                            alt={worker.name}
+                             alt={worker.worker?.fullName || "Worker"}
 
                             style={{
 
@@ -183,15 +183,15 @@ const SalaryTable = ({
 
                           >
 
-                            {
+                      {
 
-                              worker.name
+                        worker.worker?.fullName
 
-                                ?.charAt(0)
+                          ?.charAt(0)
 
-                                ?.toUpperCase()
+                          ?.toUpperCase()
 
-                            }
+                      }
 
                           </div>
 
@@ -209,25 +209,19 @@ const SalaryTable = ({
 
                     <td>
 
-                      {worker.name}
+                      {worker.worker?.fullName || "-"}
 
                     </td>
 
                     <td>
 
-                      {worker.site || "-"}
+                      {worker.site?.siteName || "-"}
 
                     </td>
 
                     <td>
 
-                      {worker.workType || "-"}
-
-                    </td>
-
-                    <td>
-
-                      {worker.wageType}
+                      {worker.worker?.trade || "-"}
 
                     </td>
 
@@ -235,11 +229,7 @@ const SalaryTable = ({
 
                       {
 
-                        worker.wageType === "Monthly"
-
-                          ? `₹${Number(worker.monthlySalary || worker.dailyWage || 0).toLocaleString("en-IN")}/Month`
-
-                          : `₹${Number(worker.dailyWage || 0).toLocaleString("en-IN")}/Day`
+                        "Daily Wage"
 
                       }
 
@@ -247,7 +237,17 @@ const SalaryTable = ({
 
                     <td>
 
-                      {worker.daysWorked || 0}
+                      {
+
+                        `₹${Number(worker.dailyWage || 0).toLocaleString("en-IN")}/Day`
+
+                      }
+
+                    </td>
+
+                    <td>
+
+                      {worker.workingDays || 0}
 
                     </td>
 
@@ -267,7 +267,7 @@ const SalaryTable = ({
 
                       ₹{
 
-                        Number(worker.advance || 0)
+                        Number(worker.advanceDeduction || 0)
 
                           .toLocaleString("en-IN")
 
@@ -279,7 +279,7 @@ const SalaryTable = ({
 
                       ₹{
 
-                        Number(worker.paid || 0)
+                        Number(worker.status === "PAID" ? worker.netSalary || 0 : 0)
 
                           .toLocaleString("en-IN")
 
@@ -291,7 +291,7 @@ const SalaryTable = ({
 
                       ₹{
 
-                        Number(worker.balance || 0)
+                        Number(worker.status === "PAID" ? 0 : worker.netSalary || 0)
 
                           .toLocaleString("en-IN")
 

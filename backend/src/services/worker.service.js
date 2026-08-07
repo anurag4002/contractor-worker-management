@@ -143,6 +143,7 @@ async getWorkers(query) {
     trade,
     salaryType,
     site,
+    available,
     sortBy = 'createdAt',
     sortOrder = 'desc',
   } = query;
@@ -193,6 +194,12 @@ async getWorkers(query) {
   // Site Filter
   if (site) {
     filter.site = site;
+  }
+
+  // Available Filter (unassigned workers)
+  if (available === 'true') {
+    filter.site = null;
+    filter.status = 'ACTIVE';
   }
 
   const skip = (page - 1) * limit;

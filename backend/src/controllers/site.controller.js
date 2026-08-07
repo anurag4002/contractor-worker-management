@@ -122,6 +122,28 @@ const deleteSite = asyncHandler(
   }
 );
 
+/**
+ * ==========================================
+ * Assign Workers to Site
+ * ==========================================
+ */
+const assignWorkers = asyncHandler(
+  async (req, res) => {
+    const result =
+      await siteService.assignWorkers(
+        req.params.id,
+        req.body.workerIds,
+        req.user.userId
+      );
+
+    return ApiResponse.success(
+      res,
+      result,
+      result.message
+    );
+  }
+);
+
 export default {
   createSite,
   getSites,
@@ -129,4 +151,5 @@ export default {
   updateSite,
   changeSiteStatus,
   deleteSite,
+  assignWorkers,
 };

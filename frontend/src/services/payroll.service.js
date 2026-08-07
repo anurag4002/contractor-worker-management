@@ -40,6 +40,16 @@ const payrollService = {
         const { data } = await axios.delete(`/payroll/${id}`);
         return data;
     },
+
+    generateSalaryFromAttendance: async (payload) => {
+        const { data } = await axios.post("/payroll/generate-salary", payload);
+        return data;
+    },
+
+    processAdvancePayment: async (workerId, payload) => {
+        const { data } = await axios.patch(`/payroll/${workerId}/advance`, payload);
+        return data;
+    },
 };
 
 export default payrollService;

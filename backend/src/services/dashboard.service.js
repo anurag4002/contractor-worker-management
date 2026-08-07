@@ -38,34 +38,37 @@ async getDashboard() {
   return {
     workers: {
       total:
-        workerStats.totalWorkers,
+        workerStats.totalWorkers || 0,
 
       active:
-        workerStats.activeWorkers,
+        workerStats.activeWorkers || 0,
     },
 
     sites: {
       active:
-        siteStats.activeSites,
+        siteStats.activeSites || 0,
     },
 
     attendance: {
       present:
-        attendanceStats.present,
+        attendanceStats.present || 0,
 
       absent:
-        attendanceStats.absent,
+        attendanceStats.absent || 0,
 
       leave:
-        attendanceStats.leave,
+        attendanceStats.leave || 0,
 
       halfDay:
-        attendanceStats.halfDay,
+        attendanceStats.halfDay || 0,
+
+      holiday:
+        attendanceStats.holiday || 0,
     },
 
     payroll: {
       pendingSalary:
-        payrollStats.pendingSalary,
+        payrollStats.pendingSalary || 0,
     },
   };
 }
@@ -108,36 +111,74 @@ async getRecentPayroll() {
  * ==========================================
  */
 async getCharts() {
-  // Today's Date Range
-  const start = new Date();
+    // Today's Date Range
+    const start = new Date();
 
-  start.setHours(0, 0, 0, 0);
+    start.setHours(0, 0, 0, 0);
 
-  const end = new Date();
+    const end = new Date();
 
-  end.setHours(24, 0, 0, 0);
+    end.setHours(24, 0, 0, 0);
 
-  const [
-    attendanceChart,
-    payrollStatusChart,
-    siteWorkerChart,
-  ] = await Promise.all([
-    dashboardRepository.getAttendanceChart(
-      start,
-      end
-    ),
+    const [
+      attendanceChart,
+      payrollStatusChart,
+      siteWorkerChart,
+    ] = await Promise.all([
+      dashboardRepository.getAttendanceChart(
+        start,
+        end
+      ),
 
-    dashboardRepository.getPayrollStatusChart(),
+      dashboardRepository.getPayrollStatusChart(),
 
-    dashboardRepository.getSiteWorkerChart(),
-  ]);
+      dashboardRepository.getSiteWorkerChart(),
+    ]);
 
-  return {
-    attendanceChart,
-    payrollStatusChart,
-    siteWorkerChart,
-  };
-}
+    const formatName = (name) => {
+      if (!name) return name;
+      return name
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+    };
+
+    const expectedStatuses = [
+      'PRESENT',
+      'ABSENT',
+      'LEAVE',
+      'HALF_DAY',
+      'HOLIDAY',
+    ];
+
+    const attendanceMap = new Map(
+      attendanceChart.map((item) => [
+        item.name,
+        item.value,
+      ])
+    );
+
+    return {
+      attendanceChart: expectedStatuses.map((status) => ({
+        name: formatName(status),
+        value: attendanceMap.get(status) || 0,
+      })),
+
+      payrollStatusChart: payrollStatusChart.map(
+        (item) => ({
+          name: formatName(item.name),
+          value: item.value,
+        })
+      ),
+
+      siteWorkerChart: siteWorkerChart.map(
+        (item) => ({
+          site: item.site,
+          count: item.count,
+        })
+      ),
+    };
+  }
 
 }
 

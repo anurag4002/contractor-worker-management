@@ -62,12 +62,38 @@ router.post(
 */
 
 router.get(
-  '/',
-  authMiddleware,
-  authorize('PAYROLL_READ'),
-  validate(getPayrollQuerySchema, 'query'),
-  payrollController.getPayrolls
-);
+   '/',
+   authMiddleware,
+   authorize('PAYROLL_READ'),
+   validate(getPayrollQuerySchema, 'query'),
+   payrollController.getPayrolls
+ );
+
+ /*
+ |--------------------------------------------------------------------------
+ | Generate Salary from Attendance
+ |--------------------------------------------------------------------------
+ */
+
+ router.post(
+   '/generate-salary',
+   authMiddleware,
+   authorize('PAYROLL_CREATE'),
+   payrollController.generateSalaryFromAttendance
+ );
+
+ /*
+ |--------------------------------------------------------------------------
+ | Process Advance Payment
+ |--------------------------------------------------------------------------
+ */
+
+ router.patch(
+   '/:workerId/advance',
+   authMiddleware,
+   authorize('PAYROLL_UPDATE'),
+   payrollController.processAdvancePayment
+ );
 
 /*
 |--------------------------------------------------------------------------

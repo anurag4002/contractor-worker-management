@@ -10,6 +10,7 @@ import {
   createSiteSchema,
   updateSiteSchema,
   changeSiteStatusSchema,
+  assignWorkersSchema,
   getSitesQuerySchema,
 } from '../validators/site.validator.js';
 
@@ -95,6 +96,20 @@ router.delete(
   authMiddleware,
   authorize('SITE_DELETE'),
   siteController.deleteSite
+);
+
+/*
+|--------------------------------------------------------------------------
+| Assign Workers to Site
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+  '/:id/assign-workers',
+  authMiddleware,
+  authorize('SITE_UPDATE'),
+  validate(assignWorkersSchema),
+  siteController.assignWorkers
 );
 
 export default router;

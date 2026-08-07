@@ -131,6 +131,12 @@ const siteSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+
+    workers: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: 'Worker',
+      default: [],
+    },
   },
   {
     timestamps: true,

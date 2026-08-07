@@ -192,6 +192,26 @@ async findActiveById(siteId) {
       isDeleted: false,
     });
   }
+
+  async addWorkers(siteId, workerIds, session = null) {
+    return await Site.findOneAndUpdate(
+      {
+        _id: siteId,
+        isDeleted: false,
+      },
+      {
+        $addToSet: {
+          workers: {
+            $each: workerIds,
+          },
+        },
+      },
+      {
+        returnDocument: 'after',
+        session,
+      }
+    );
+  }
 }
 
 export default new SiteRepository();

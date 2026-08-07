@@ -1,10 +1,16 @@
 import { StatusCodes } from 'http-status-codes';
 
+import mongoose from 'mongoose';
+
 import siteRepository from '../repositories/site.repository.js';
+
+import workerRepository from '../repositories/worker.repository.js';
 
 import ApiError from '../common/errors/ApiError.js';
 
 import SITE_MESSAGES from '../common/constants/site.messages.js';
+
+import dashboardRepository from '../repositories/dashboard.repository.js';
 
 /**
  * ==========================================
@@ -211,8 +217,29 @@ async getSites(query) {
   const total =
     await siteRepository.count(filter);
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setHours(24, 0, 0, 0);
+
+  const presentBySite =
+    await dashboardRepository.getTodayPresentBySite();
+
+  const presentMap = new Map();
+  presentBySite.forEach((item) => {
+    presentMap.set(
+      item._id.toString(),
+      item.present
+    );
+  });
+
+  const sitesWithPresent = sites.map((site) => ({
+    ...site.toObject(),
+    present: presentMap.get(site._id.toString()) || 0,
+  }));
+
   return {
-    sites,
+    sites: sitesWithPresent,
     pagination: {
       total,
       page: Number(page),
@@ -401,6 +428,105 @@ async deleteSite(siteId) {
     message:
       SITE_MESSAGES.DELETED_SUCCESS,
   };
+}
+/**
+ * ==========================================
+ * Assign Workers to Site
+ * ==========================================
+ */
+async assignWorkers(siteId, workerIds, assignedBy) {
+  // Check Site Exists
+  const site =
+    await siteRepository.findActiveById(siteId);
+
+  if (!site) {
+    throw new ApiError(
+      StatusCodes.NOT_FOUND,
+      SITE_MESSAGES.NOT_FOUND
+    );
+  }
+
+  if (!Array.isArray(workerIds) || workerIds.length === 0) {
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      'No workers provided for assignment.'
+    );
+  }
+
+  // Validate Workers
+  const workers =
+    await workerRepository.findManyByIds(
+      workerIds
+    );
+
+  if (workers.length !== workerIds.length) {
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      'One or more workers do not exist.'
+    );
+  }
+
+  // Check for deleted or inactive workers
+  const invalidWorkers = workers.filter(
+    (w) => w.isDeleted || w.status !== 'ACTIVE'
+  );
+
+  if (invalidWorkers.length > 0) {
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      'One or more workers are inactive or deleted.'
+    );
+  }
+
+  // Check for already assigned workers
+  const alreadyAssigned = workers.filter(
+    (w) => w.site && w.site.toString() !== siteId
+  );
+
+  if (alreadyAssigned.length > 0) {
+    throw new ApiError(
+      StatusCodes.CONFLICT,
+      'One or more workers are already assigned to another site.'
+    );
+  }
+
+  // Remove duplicates
+  const uniqueWorkerIds = [
+    ...new Set(workerIds.map((id) => id.toString())),
+  ];
+
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    // Update workers site field
+    await workerRepository.assignToSite(
+      siteId,
+      uniqueWorkerIds,
+      assignedBy,
+      session
+    );
+
+    // Update site workers array
+    await siteRepository.addWorkers(
+      siteId,
+      uniqueWorkerIds,
+      session
+    );
+
+    await session.commitTransaction();
+
+    return {
+      message: `${uniqueWorkerIds.length} worker(s) assigned successfully.`,
+      assignedCount: uniqueWorkerIds.length,
+    };
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
 }
 
 }

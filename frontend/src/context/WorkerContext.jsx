@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import workerService from "../services/worker.service";
+import siteService from "../services/site.service";
 import { showSuccess, showError } from "../components/common/toast";
 
 const WorkerContext = createContext(null);
@@ -77,6 +78,20 @@ export const WorkerProvider = ({ children }) => {
     }
   }, [fetchWorkers]);
 
+  const assignWorkerToSite = useCallback(async (siteId, workerId) => {
+    try {
+      setLoading(true);
+      await siteService.assignWorkers(siteId, [workerId]);
+      showSuccess("Worker assigned successfully");
+      await fetchWorkers();
+    } catch (error) {
+      showError(error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchWorkers]);
+
   return (
     <WorkerContext.Provider
       value={{
@@ -91,6 +106,7 @@ export const WorkerProvider = ({ children }) => {
         updateWorker,
         deleteWorker,
         changeStatus,
+        assignWorkerToSite,
       }}
     >
       {children}
