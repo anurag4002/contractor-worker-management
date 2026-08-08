@@ -15,7 +15,7 @@ class PayrollRepository {
    * Find Payroll By Id
    * ==========================================
    */
-  async findById(payrollId) {
+  async findById(payrollId, session = null) {
     return await Payroll.findOne({
       _id: payrollId,
       isDeleted: false,
@@ -35,7 +35,15 @@ class PayrollRepository {
       .populate(
         'updatedBy',
         'fullName email'
-      );
+      )
+      .populate({
+        path: 'payments',
+        match: { isDeleted: false },
+        options: {
+          sort: { paymentDate: -1 },
+          ...(session ? { session } : {}),
+        },
+      });
   }
 
   /**
@@ -79,6 +87,11 @@ class PayrollRepository {
         'updatedBy',
         'fullName email'
       )
+      .populate({
+        path: 'payments',
+        match: { isDeleted: false, status: 'COMPLETED' },
+        options: { sort: { paymentDate: -1 }, limit: 50 },
+      })
       .sort(options.sort)
       .skip(options.skip)
       .limit(options.limit);
@@ -100,7 +113,8 @@ class PayrollRepository {
    */
   async update(
     payrollId,
-    updateData
+    updateData,
+    session = null
   ) {
     return await Payroll.findOneAndUpdate(
       {
@@ -111,6 +125,7 @@ class PayrollRepository {
       {
         returnDocument: 'after',
         runValidators: true,
+        ...(session ? { session } : {}),
       }
     )
       .populate(
@@ -128,7 +143,33 @@ class PayrollRepository {
       .populate(
         'updatedBy',
         'fullName email'
-      );
+      )
+      .populate({
+        path: 'payments',
+        match: { isDeleted: false },
+        options: { sort: { paymentDate: -1 } },
+      });
+  }
+
+  /**
+   * ==========================================
+   * Get Payroll Payments
+   * ==========================================
+   */
+  async findPaymentsByPayroll(payrollId, options = {}) {
+    const { skip = 0, limit = 10, sort = { paymentDate: -1 } } = options;
+
+    return await Payroll.findOne({
+      _id: payrollId,
+      isDeleted: false,
+    })
+      .populate({
+        path: 'payments',
+        match: { isDeleted: false },
+        options: { sort, skip, limit },
+      })
+      .populate('worker', 'employeeCode fullName mobileNumber trade')
+      .populate('site', 'siteCode siteName');
   }
 
   /**

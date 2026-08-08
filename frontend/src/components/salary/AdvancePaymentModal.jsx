@@ -38,6 +38,8 @@ const AdvancePaymentModal = ({
 
   const [error, setError] = useState("");
 
+  const [saving, setSaving] = useState(false);
+
   useEffect(() => {
 
     if (open) {
@@ -52,63 +54,96 @@ const AdvancePaymentModal = ({
 
       setError("");
 
+      setSaving(false);
+
     }
 
   }, [open]);
 
   if (!open || !worker) return null;
 
-  const handleSubmit = (e) => {
+  const grossSalary = Number(worker.grossSalary || 0);
+
+  const advanceDeduction = Number(worker.advanceDeduction || 0);
+
+  const paid = Number(worker.paid || 0);
+
+  const remainingBalance = Math.max(
+    grossSalary -
+    (worker.deduction || 0) -
+    advanceDeduction -
+    paid,
+    0
+  );
+
+  const paymentAmount = Number(amount);
+
+  const isAmountInvalid =
+    !paymentAmount ||
+    paymentAmount <= 0 ||
+    paymentAmount > remainingBalance;
+
+  const handleSubmit = async (e) => {
 
     e.preventDefault();
 
-    const paymentAmount = Number(amount);
+    setError("");
 
     if (!paymentAmount || paymentAmount <= 0) {
 
       setError(
-        "Please enter a valid payment amount."
+        "Please enter a valid advance amount."
       );
 
       return;
 
     }
 
-    if (paymentAmount > Number(worker.status === "PAID" ? 0 : worker.netSalary || 0)) {
+    if (paymentAmount > remainingBalance) {
 
       setError(
-        "Payment amount cannot exceed remaining balance."
+        `Advance payment cannot exceed the remaining balance of ₹${remainingBalance.toLocaleString("en-IN")}.`
       );
 
       return;
 
     }
 
-    onSave(worker._id, {
+    try {
 
-      paymentId: `PAY-${Date.now()}`,
+      setSaving(true);
 
-      workerId: worker._id,
+      const paymentMethodMap = {
 
-      workerName: worker.worker?.fullName || "",
+        'Cash': 'CASH',
 
-      date: new Date()
+        'UPI': 'UPI',
 
-        .toISOString()
+        'Bank Transfer': 'BANK_TRANSFER',
 
-        .split("T")[0],
+        'Cheque': 'CHEQUE',
 
-      amount: paymentAmount,
+      };
 
-      method,
+      await onSave(worker._id, {
 
-      transactionId,
+        amount: paymentAmount,
 
-      remark,
+        paymentMethod: paymentMethodMap[method] || 'CASH',
 
-    });
+        transactionId,
 
-    onClose();
+        remark,
+
+      });
+
+      onClose();
+
+    } catch (err) {
+
+      setSaving(false);
+
+    }
 
   };
 
@@ -182,7 +217,7 @@ const AdvancePaymentModal = ({
 
             <Input
 
-              value={`₹${Number(worker.grossSalary || 0).toLocaleString("en-IN")}`}
+              value={`₹${grossSalary.toLocaleString("en-IN")}`}
 
               disabled
 
@@ -200,7 +235,7 @@ const AdvancePaymentModal = ({
 
               <Input
 
-                value={`₹${Number(worker.status === "PAID" ? 0 : worker.netSalary || 0).toLocaleString("en-IN")}`}
+                value={`₹${remainingBalance.toLocaleString("en-IN")}`}
 
                 disabled
 
@@ -224,13 +259,44 @@ const AdvancePaymentModal = ({
 
               value={amount}
 
-              onChange={(e) =>
-                setAmount(e.target.value)
-              }
+              onChange={(e) => {
+
+                setAmount(e.target.value);
+
+                if (error) {
+
+                  setError("");
+
+                }
+
+              }}
 
               required
 
+              min="0"
+
+              step="0.01"
+
             />
+
+            {
+              amount &&
+              paymentAmount > remainingBalance && (
+
+                <p
+                  style={{
+                    color: "#DC2626",
+                    marginTop: ".35rem",
+                    fontSize: ".85rem",
+                  }}
+                >
+
+                  Advance payment cannot exceed the remaining balance of ₹{remainingBalance.toLocaleString("en-IN")}.
+
+                </p>
+
+              )
+            }
 
           </FormGroup>
 
@@ -308,14 +374,14 @@ const AdvancePaymentModal = ({
                 setRemark(e.target.value)
               }
 
+              maxLength={500}
+
             />
 
           </FormGroup>
 
           {
-
             error && (
-
               <p
                 style={{
                   color: "#DC2626",
@@ -323,33 +389,23 @@ const AdvancePaymentModal = ({
                   fontSize: ".9rem",
                 }}
               >
-
                 {error}
-
               </p>
-
             )
-
           }
 
           <Footer>
 
             <CancelButton
-
               type="button"
-
               onClick={onClose}
-
+              disabled={saving}
             >
-
               Cancel
-
             </CancelButton>
 
-            <SaveButton type="submit">
-
-              Save Payment
-
+            <SaveButton type="submit" disabled={saving || isAmountInvalid}>
+              {saving ? "Saving Payment..." : "Save Payment"}
             </SaveButton>
 
           </Footer>

@@ -182,6 +182,13 @@ const Login = () => {
           </div>
         </form>
 
+        <div style={{ marginTop: "1.25rem", textAlign: "center", color: "var(--text-secondary)", fontSize: "0.85rem" }}>
+          Don't have an account?{" "}
+          <Link to="/register" style={{ color: "var(--primary)", textDecoration: "none", fontWeight: 600 }}>
+            Register
+          </Link>
+        </div>
+
         <div style={{ marginTop: "2rem", textAlign: "center", color: "var(--text-secondary)", fontSize: "0.85rem" }}>
           Contractor Worker Management
         </div>

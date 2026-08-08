@@ -146,18 +146,17 @@ const Salary = () => {
   };
 
   const handleAdvancePayment = useCallback(
-    async (id, amount, method, remark) => {
+    async (payrollId, payload) => {
       try {
-        await processAdvancePayment(id, {
-          amount: Number(amount),
-          method,
-          remark,
-          date: new Date()
-            .toISOString()
-            .split("T")[0],
+        await processAdvancePayment(payrollId, {
+          amount: Number(payload.amount),
+          paymentMethod: payload.paymentMethod,
+          transactionId: payload.transactionId,
+          remark: payload.remark,
         });
       } catch (error) {
         showError(error);
+        throw error;
       }
     },
     [processAdvancePayment]

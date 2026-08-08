@@ -279,7 +279,7 @@ const SalaryTable = ({
 
                       ₹{
 
-                        Number(worker.status === "PAID" ? worker.netSalary || 0 : 0)
+                        Number((worker.paid || 0) + (worker.advanceDeduction || 0))
 
                           .toLocaleString("en-IN")
 

@@ -117,13 +117,14 @@ export const PayrollProvider = ({ children }) => {
         }
     }, [fetchPayrolls, fetchSummary]);
 
-    const processAdvancePayment = useCallback(async (workerId, payload) => {
+    const processAdvancePayment = useCallback(async (payrollId, payload) => {
         try {
             setLoading(true);
-            await payrollService.processAdvancePayment(workerId, payload);
-            showSuccess("Advance payment processed successfully");
+            const data = await payrollService.processAdvancePayment(payrollId, payload);
+            showSuccess(`Advance payment of ₹${Number(payload.amount || 0).toLocaleString("en-IN")} recorded successfully.`);
             await fetchPayrolls();
             await fetchSummary();
+            return data;
         } catch (error) {
             showError(error);
             throw error;

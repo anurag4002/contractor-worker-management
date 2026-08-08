@@ -123,6 +123,12 @@ const payrollSchema = new mongoose.Schema(
       min: 0,
     },
 
+    paid: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
     status: {
       type: String,
       enum: [
@@ -203,6 +209,20 @@ payrollSchema.index({
 
 payrollSchema.index({
   isDeleted: 1,
+});
+
+payrollSchema.virtual('payments', {
+  ref: 'Payment',
+  localField: '_id',
+  foreignField: 'payroll',
+});
+
+payrollSchema.set('toJSON', {
+  virtuals: true,
+});
+
+payrollSchema.set('toObject', {
+  virtuals: true,
 });
 
 const Payroll = mongoose.model(

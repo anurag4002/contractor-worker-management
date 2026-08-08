@@ -16,7 +16,14 @@ import {
   FiGithub,
   FiLinkedin,
   FiTwitter,
+  FiSun,
+  FiMoon,
 } from "react-icons/fi";
+
+import { useTheme } from "../../context/ThemeContext";
+import {
+  ThemeToggle,
+} from "../../layouts/header/Header.style";
 
 import {
   PageWrapper,
@@ -90,8 +97,8 @@ export const GlobalStyle = createGlobalStyle`
 
   body{
     font-family:'Inter',system-ui,-apple-system,sans-serif;
-    background:#f8fafc;
-    color:#111827;
+    background:var(--bg);
+    color:var(--text);
   }
 
   a{
@@ -195,9 +202,14 @@ const workflowSteps = [
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
 
   const handleLoginClick = () => {
     navigate("/login");
+  };
+
+  const handleRegisterClick = () => {
+    navigate("/register");
   };
 
   const scrollToSection = (id) => {
@@ -233,9 +245,15 @@ const LandingPage = () => {
             </NavMenu>
 
             <NavActions>
+              <ThemeToggle onClick={toggleTheme} aria-label="Toggle theme" title={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}>
+                {theme === "light" ? <FiMoon size={18} /> : <FiSun size={18} />}
+              </ThemeToggle>
               <PrimaryButton onClick={handleLoginClick}>
                 Login <FiArrowRight size={16} />
               </PrimaryButton>
+              <SecondaryButton onClick={handleRegisterClick}>
+                Register
+              </SecondaryButton>
             </NavActions>
           </NavInner>
         </Container>
@@ -260,6 +278,10 @@ const LandingPage = () => {
             <PrimaryButton onClick={handleLoginClick} style={{ padding: "12px 24px", fontSize: "0.95rem" }}>
               Login to Dashboard <FiArrowRight size={18} />
             </PrimaryButton>
+
+            <SecondaryButton onClick={handleRegisterClick} style={{ padding: "12px 24px", fontSize: "0.95rem" }}>
+              Create Account
+            </SecondaryButton>
 
             <SecondaryButton onClick={() => scrollToSection("features")} style={{ padding: "12px 24px", fontSize: "0.95rem" }}>
               Explore Features

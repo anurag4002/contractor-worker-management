@@ -202,25 +202,26 @@ const generateSalaryFromAttendance =
  */
 const processAdvancePayment =
    asyncHandler(async (req, res) => {
-     const { workerId } = req.params;
-     const { amount, method, remark, date } =
-       req.body;
+      const { payrollId } = req.params;
+      const { amount, paymentMethod, transactionId, remark } =
+        req.body;
 
-     const payroll =
-       await payrollService.processAdvancePayment(
-         workerId,
-         Number(amount),
-         method,
-         remark,
-         date
-       );
+      const result =
+        await payrollService.processAdvancePayment(
+          payrollId,
+          Number(amount),
+          paymentMethod,
+          transactionId,
+          remark,
+          req.user.userId
+        );
 
-     return ApiResponse.success(
-       res,
-       payroll,
-       PAYROLL_MESSAGES.ADVANCE_PROCESSED_SUCCESS
-     );
-   });
+      return ApiResponse.success(
+        res,
+        result,
+        PAYROLL_MESSAGES.ADVANCE_PROCESSED_SUCCESS
+      );
+    });
 
 export default {
    createPayroll,

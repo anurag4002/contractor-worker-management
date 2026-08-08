@@ -21,7 +21,7 @@ const PaymentHistoryModal = ({
 
   if (!open || !worker) return null;
 
-  const history = worker.paymentHistory || [];
+  const history = worker.payments || [];
 
   return (
 

@@ -25,11 +25,11 @@ const SalarySummary = ({
 
       acc.totalDue += Number(worker.grossSalary || 0);
 
-      acc.totalPaid += worker.status === "PAID" ? Number(worker.netSalary || 0) : 0;
+      acc.totalPaid += Number((worker.paid || 0) + (worker.advanceDeduction || 0));
 
       acc.totalAdvance += Number(worker.advanceDeduction || 0);
 
-      acc.totalBalance += worker.status === "PAID" ? 0 : Number(worker.netSalary || 0);
+      acc.totalBalance += Number(worker.status === "PAID" ? 0 : worker.netSalary || 0);
 
       return acc;
 

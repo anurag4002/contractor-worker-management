@@ -240,6 +240,10 @@ const mapByText = (text) => {
     return "Something went wrong while communicating with the server.";
   }
 
+  if (lower.includes("public registration is disabled")) {
+    return "An administrator account already exists. Please use the login page.";
+  }
+
   if (lower.includes("internal server error")) {
     return statusMessages[500];
   }
@@ -328,6 +332,35 @@ const mapAxiosError = (errorOrMessage) => {
   const rawText = getRawText(errorOrMessage);
   const requestUrl = getRequestUrl(errorOrMessage);
   const fieldErrors = sanitizeFieldErrors(getRawFieldErrors(errorOrMessage));
+
+  // Network-level Axios error (no HTTP response received)
+  if (
+    errorOrMessage &&
+    typeof errorOrMessage === "object" &&
+    !errorOrMessage.response &&
+    (errorOrMessage.code === "ERR_NETWORK" || errorOrMessage.code === "ECONNREFUSED")
+  ) {
+    const lowerUrl = normalizeText(requestUrl).toLowerCase();
+
+    if (lowerUrl.includes("localhost") || lowerUrl.includes("127.0.0.1")) {
+      return {
+        userMessage:
+          "Unable to connect to the backend server. Please check that the server is running.",
+        status: null,
+        fieldErrors,
+        isOperational: true,
+      };
+    }
+
+    return {
+      userMessage:
+        "No internet connection detected. Please check your connection and try again.",
+      status: null,
+      fieldErrors,
+      isOperational: true,
+    };
+  }
+
   const mappedMessage =
     mapByStatus(status, rawText, requestUrl) ||
     mapByText(rawText) ||

@@ -30,7 +30,7 @@ const SalarySlipModal = ({
     Number(worker.advanceDeduction || 0);
 
   const paid =
-    worker.status === "PAID" ? Number(worker.netSalary || 0) : 0;
+    Number(worker.paid || 0) + Number(worker.advanceDeduction || 0);
 
   const balance =
     worker.status === "PAID" ? 0 : Number(worker.netSalary || 0);

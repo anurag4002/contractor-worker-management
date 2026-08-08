@@ -2,8 +2,8 @@ import styled from "styled-components";
 
 export const PageWrapper = styled.div`
   min-height: 100vh;
-  background-color: #f8fafc;
-  color: #111827;
+  background-color: var(--bg);
+  color: var(--text);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   overflow-x: hidden;
@@ -14,7 +14,7 @@ export const Container = styled.div`
   width: 100%;
   margin: 0 auto;
   padding: 0 24px;
-  box-sizing: border-border-box;
+  box-sizing: border-box;
 
   @media (max-width: 640px) {
     padding: 0 16px;
@@ -51,9 +51,9 @@ export const StickyHeader = styled.header`
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.96);
+  background: var(--surface);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border);
 `;
 
 export const NavInner = styled.div`
@@ -89,7 +89,7 @@ export const LogoText = styled.div`
     display: block;
     font-size: 1.05rem;
     font-weight: 800;
-    color: #111827;
+    color: var(--text);
     letter-spacing: -0.02em;
     line-height: 1.2;
   }
@@ -97,7 +97,7 @@ export const LogoText = styled.div`
     display: block;
     font-size: 0.72rem;
     font-weight: 600;
-    color: #6b7280;
+    color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
@@ -109,14 +109,14 @@ export const NavMenu = styled.nav`
   gap: 32px;
 
   a {
-    color: #4b5563;
+    color: var(--text-secondary);
     text-decoration: none;
     font-size: 0.92rem;
     font-weight: 600;
     transition: color 200ms ease;
 
     &:hover {
-      color: #2563eb;
+      color: var(--primary);
     }
   }
 
@@ -158,9 +158,9 @@ export const PrimaryButton = styled.button`
 `;
 
 export const SecondaryButton = styled.button`
-  background-color: #ffffff;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background-color: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 10px 20px;
   font-size: 0.92rem;
@@ -172,9 +172,9 @@ export const SecondaryButton = styled.button`
   transition: all 200ms ease;
 
   &:hover {
-    background-color: #f3f4f6;
-    border-color: #9ca3af;
-    color: #111827;
+    background-color: var(--surface-hover);
+    border-color: var(--text-secondary);
+    color: var(--text);
   }
 `;
 
@@ -190,9 +190,9 @@ export const Badge = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background-color: #eff6ff;
-  border: 1px solid #bfdbfe;
-  color: #1d4ed8;
+  background-color: var(--primary-light);
+  border: 1px solid var(--primary);
+  color: var(--primary);
   padding: 6px 14px;
   border-radius: 9999px;
   font-size: 0.82rem;
@@ -203,7 +203,7 @@ export const Badge = styled.div`
 export const HeroTitle = styled.h1`
   font-size: clamp(2.1rem, 4vw, 3.25rem);
   font-weight: 800;
-  color: #111827;
+  color: var(--text);
   letter-spacing: -0.03em;
   line-height: 1.2;
   max-width: 960px;
@@ -212,7 +212,7 @@ export const HeroTitle = styled.h1`
 
 export const HeroDescription = styled.p`
   font-size: clamp(1rem, 1.4vw, 1.15rem);
-  color: #6b7280;
+  color: var(--text-secondary);
   max-width: 720px;
   margin: 0 auto 28px;
   line-height: 1.6;
@@ -229,10 +229,10 @@ export const HeroButtonGroup = styled.div`
 
 /* REALISTIC DASHBOARD PREVIEW MOCK */
 export const DashboardMockWrapper = styled.div`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
-  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.06);
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
   text-align: left;
   width: 100%;
@@ -240,8 +240,8 @@ export const DashboardMockWrapper = styled.div`
 `;
 
 export const MockHeader = styled.div`
-  background: #f8fafc;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--surface-secondary);
+  border-bottom: 1px solid var(--border);
   padding: 12px 20px;
   display: flex;
   align-items: center;
@@ -264,12 +264,12 @@ export const MockDots = styled.div`
 export const MockTitle = styled.span`
   font-size: 0.82rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--text-secondary);
 `;
 
 export const MockBody = styled.div`
   padding: 24px;
-  background: #f8fafc;
+  background: var(--surface-secondary);
 `;
 
 export const MockGrid = styled.div`
@@ -284,8 +284,8 @@ export const MockGrid = styled.div`
 `;
 
 export const MockCard = styled.div`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 16px;
   display: flex;
@@ -293,8 +293,8 @@ export const MockCard = styled.div`
   justify-content: space-between;
 
   .meta {
-    span { display: block; font-size: 0.78rem; font-weight: 600; color: #6b7280; }
-    h4 { margin: 6px 0 0; font-size: 1.35rem; font-weight: 800; color: #111827; }
+    span { display: block; font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); }
+    h4 { margin: 6px 0 0; font-size: 1.35rem; font-weight: 800; color: var(--text); }
   }
 
   .icon-box {
@@ -308,8 +308,8 @@ export const MockCard = styled.div`
 `;
 
 export const MockTableCard = styled.div`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 16px;
   overflow-x: auto;
@@ -318,7 +318,7 @@ export const MockTableCard = styled.div`
     margin: 0 0 12px;
     font-size: 0.9rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--text);
   }
 
   table {
@@ -329,16 +329,16 @@ export const MockTableCard = styled.div`
     th {
       text-align: left;
       padding: 8px 12px;
-      color: #6b7280;
+      color: var(--text-secondary);
       font-weight: 600;
-      border-bottom: 1px solid #e5e7eb;
-      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+      background: var(--table-header-bg);
     }
 
     td {
       padding: 10px 12px;
-      border-bottom: 1px solid #f1f5f9;
-      color: #374151;
+      border-bottom: 1px solid var(--table-border);
+      color: var(--text);
     }
 
     tr:last-child td {
@@ -353,9 +353,9 @@ export const MockBadge = styled.span`
   font-size: 0.72rem;
   font-weight: 700;
   background: ${({ type }) =>
-    type === 'active' ? '#dcfce7' : type === 'present' ? '#dbeafe' : '#fef9c3'};
+    type === 'active' ? 'var(--badge-success-bg)' : type === 'present' ? 'var(--badge-info-bg)' : 'var(--badge-warning-bg)'};
   color: ${({ type }) =>
-    type === 'active' ? '#15803d' : type === 'present' ? '#1d4ed8' : '#a16207'};
+    type === 'active' ? 'var(--badge-success-fg)' : type === 'present' ? 'var(--badge-info-fg)' : 'var(--badge-warning-fg)'};
 `;
 
 /* ==========================================================================
@@ -363,9 +363,9 @@ export const MockBadge = styled.span`
    ========================================================================== */
 export const TrustSection = styled.section`
   padding: 40px 0;
-  border-top: 1px solid #e5e7eb;
-  border-bottom: 1px solid #e5e7eb;
-  background: #ffffff;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
 `;
 
 export const TrustGrid = styled.div`
@@ -389,7 +389,7 @@ export const TrustCard = styled.div`
   h3 {
     font-size: 2rem;
     font-weight: 800;
-    color: #2563eb;
+    color: var(--primary);
     margin: 0 0 4px;
     letter-spacing: -0.02em;
   }
@@ -397,7 +397,7 @@ export const TrustCard = styled.div`
   p {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #6b7280;
+    color: var(--text-secondary);
     margin: 0;
   }
 `;
@@ -413,14 +413,14 @@ export const SectionHeader = styled.div`
   h2 {
     font-size: clamp(1.6rem, 3vw, 2.25rem);
     font-weight: 800;
-    color: #111827;
+    color: var(--text);
     letter-spacing: -0.02em;
     margin: 0 0 10px;
   }
 
   p {
     font-size: 0.98rem;
-    color: #6b7280;
+    color: var(--text-secondary);
     margin: 0;
     line-height: 1.5;
   }
@@ -448,8 +448,8 @@ export const FeaturesGrid = styled.div`
 `;
 
 export const FeatureCard = styled.div`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 24px;
   display: flex;
@@ -459,8 +459,8 @@ export const FeatureCard = styled.div`
   transition: all 200ms ease;
 
   &:hover {
-    border-color: #cbd5e1;
-    box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.06);
+    border-color: var(--border);
+    box-shadow: var(--shadow);
     transform: translateY(-2px);
   }
 `;
@@ -469,8 +469,8 @@ export const FeatureIconBox = styled.div`
   width: 42px;
   height: 42px;
   border-radius: 10px;
-  background: #eff6ff;
-  color: #2563eb;
+  background: var(--primary-light);
+  color: var(--primary);
   display: grid;
   place-items: center;
   font-size: 1.2rem;
@@ -480,13 +480,13 @@ export const FeatureIconBox = styled.div`
 export const FeatureCardTitle = styled.h3`
   font-size: 1.08rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--text);
   margin: 0 0 8px;
 `;
 
 export const FeatureCardDesc = styled.p`
   font-size: 0.9rem;
-  color: #6b7280;
+  color: var(--text-secondary);
   line-height: 1.55;
   margin: 0;
 `;
@@ -496,9 +496,9 @@ export const FeatureCardDesc = styled.p`
    ========================================================================== */
 export const ModulesSection = styled.section`
   padding: 72px 0;
-  background: #ffffff;
-  border-top: 1px solid #e5e7eb;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 `;
 
 export const ModulesGrid = styled.div`
@@ -516,16 +516,16 @@ export const ModulesGrid = styled.div`
 `;
 
 export const ModuleCard = styled.div`
-  background: #f8fafc;
-  border: 1px solid #e5e7eb;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 24px;
   transition: all 200ms ease;
 
   &:hover {
-    background: #ffffff;
-    border-color: #2563eb;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+    background: var(--surface);
+    border-color: var(--primary);
+    box-shadow: var(--shadow);
   }
 
   .top {
@@ -537,14 +537,14 @@ export const ModuleCard = styled.div`
 
   .module-icon {
     font-size: 1.35rem;
-    color: #2563eb;
+    color: var(--primary);
   }
 
   .tag {
     font-size: 0.72rem;
     font-weight: 700;
-    color: #1e40af;
-    background: #dbeafe;
+    color: var(--badge-info-fg);
+    background: var(--badge-info-bg);
     padding: 3px 10px;
     border-radius: 9999px;
     text-transform: uppercase;
@@ -553,13 +553,13 @@ export const ModuleCard = styled.div`
   h4 {
     font-size: 1.05rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--text);
     margin: 0 0 6px;
   }
 
   p {
     font-size: 0.88rem;
-    color: #6b7280;
+    color: var(--text-secondary);
     margin: 0;
     line-height: 1.5;
   }
@@ -587,8 +587,8 @@ export const WorkflowGrid = styled.div`
 `;
 
 export const WorkflowStepCard = styled.div`
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 24px 20px;
   position: relative;
@@ -609,13 +609,13 @@ export const WorkflowStepCard = styled.div`
   h4 {
     font-size: 1rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--text);
     margin: 0 0 8px;
   }
 
   p {
     font-size: 0.86rem;
-    color: #6b7280;
+    color: var(--text-secondary);
     margin: 0;
     line-height: 1.5;
   }
@@ -626,9 +626,9 @@ export const WorkflowStepCard = styled.div`
    ========================================================================== */
 export const ComparisonSection = styled.section`
   padding: 72px 0;
-  background: #ffffff;
-  border-top: 1px solid #e5e7eb;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 `;
 
 export const ComparisonGrid = styled.div`
@@ -644,13 +644,13 @@ export const ComparisonGrid = styled.div`
 export const ComparisonCard = styled.div`
   border-radius: 12px;
   padding: 28px 24px;
-  border: 1px solid ${({ type }) => (type === 'modern' ? '#bfdbfe' : '#e5e7eb')};
-  background: ${({ type }) => (type === 'modern' ? '#f0f9ff' : '#f8fafc')};
+  border: 1px solid var(--border);
+  background: var(--surface);
 
   h3 {
     font-size: 1.15rem;
     font-weight: 800;
-    color: ${({ type }) => (type === 'modern' ? '#1e40af' : '#4b5563')};
+    color: var(--text);
     margin: 0 0 18px;
     display: flex;
     align-items: center;
@@ -672,13 +672,13 @@ export const ComparisonItem = styled.li`
   align-items: flex-start;
   gap: 12px;
   font-size: 0.9rem;
-  color: #374151;
+  color: var(--text);
 
   .icon {
     font-size: 1.1rem;
     margin-top: 2px;
     flex-shrink: 0;
-    color: ${({ type }) => (type === 'modern' ? '#16a34a' : '#dc2626')};
+    color: ${({ type }) => (type === 'modern' ? 'var(--success)' : 'var(--danger)')};
   }
 
   span {
@@ -753,6 +753,7 @@ export const FooterCol = styled.div`
     font-size: 0.88rem;
     line-height: 1.6;
     margin: 12px 0 0;
+    color: var(--text-secondary);
   }
 
   ul {
@@ -764,7 +765,7 @@ export const FooterCol = styled.div`
       margin-bottom: 10px;
 
       a {
-        color: #9ca3af;
+        color: var(--text-secondary);
         text-decoration: none;
         font-size: 0.88rem;
         transition: color 200ms ease;
@@ -786,8 +787,8 @@ export const SocialRow = styled.div`
     width: 34px;
     height: 34px;
     border-radius: 6px;
-    background: #1e293b;
-    color: #cbd5e1;
+    background: var(--surface-secondary);
+    color: var(--text-secondary);
     display: grid;
     place-items: center;
     font-size: 1rem;
@@ -801,13 +802,13 @@ export const SocialRow = styled.div`
 `;
 
 export const FooterBottom = styled.div`
-  border-top: 1px solid #1e293b;
+  border-top: 1px solid var(--border);
   padding-top: 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: 0.82rem;
-  color: #6b7280;
+  color: var(--text-secondary);
   flex-wrap: wrap;
   gap: 12px;
 `;

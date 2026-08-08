@@ -1,6 +1,9 @@
 import { StatusCodes } from 'http-status-codes';
 
+import mongoose from 'mongoose';
+
 import payrollRepository from '../repositories/payroll.repository.js';
+import paymentRepository from '../repositories/payment.repository.js';
 import attendanceRepository from '../repositories/attendance.repository.js';
 import workerRepository from '../repositories/worker.repository.js';
 import siteRepository from '../repositories/site.repository.js';
@@ -729,28 +732,25 @@ class PayrollService {
      * Process Advance Payment
      * ==========================================
      */
-    async processAdvancePayment(workerId, amount, method, remark, date) {
-        const worker =
-            await workerRepository.findById(workerId);
-
-        if (!worker) {
+    async processAdvancePayment(payrollId, amount, paymentMethod, transactionId, remark, createdBy) {
+        if (
+            !Number.isFinite(amount) ||
+            Number.isNaN(amount) ||
+            amount <= 0
+        ) {
             throw new ApiError(
-                StatusCodes.NOT_FOUND,
-                PAYROLL_MESSAGES.WORKER_NOT_FOUND
+                StatusCodes.BAD_REQUEST,
+                PAYROLL_MESSAGES.ADVANCE_AMOUNT_INVALID
             );
         }
 
         const payroll =
-            await payrollRepository.findByWorkerAndMonth(
-                workerId,
-                new Date(date).getMonth() + 1,
-                new Date(date).getFullYear()
-            );
+            await payrollRepository.findById(payrollId);
 
         if (!payroll) {
             throw new ApiError(
                 StatusCodes.NOT_FOUND,
-                'No payroll record found for the selected month.'
+                PAYROLL_MESSAGES.NOT_FOUND
             );
         }
 
@@ -761,24 +761,81 @@ class PayrollService {
             );
         }
 
-        const advanceDeduction =
-            (payroll.advanceDeduction || 0) + Number(amount);
-
-        const netSalary =
+        const currentBalance =
             (payroll.grossSalary || 0) -
             (payroll.deduction || 0) -
-            advanceDeduction;
+            (payroll.advanceDeduction || 0) -
+            (payroll.paid || 0);
 
-        const updatedPayroll =
-            await payrollRepository.update(
-                payroll._id,
-                {
-                    advanceDeduction,
-                    netSalary: Math.max(0, netSalary),
-                }
+        if (currentBalance <= 0) {
+            throw new ApiError(
+                StatusCodes.BAD_REQUEST,
+                PAYROLL_MESSAGES.ADVANCE_ZERO_BALANCE
             );
+        }
 
-        return updatedPayroll;
+        if (amount > currentBalance) {
+            throw new ApiError(
+                StatusCodes.BAD_REQUEST,
+                PAYROLL_MESSAGES.ADVANCE_EXCEEDS_BALANCE
+            );
+        }
+
+        const session = await mongoose.startSession();
+
+        try {
+            session.startTransaction();
+
+            const paymentData = {
+                        payroll: payroll._id,
+                        worker: payroll.worker?._id,
+                        site: payroll.site?._id,
+                        amount,
+                        paymentType: 'ADVANCE',
+                        paymentMethod: paymentMethod || 'CASH',
+                        transactionId: transactionId ? String(transactionId).trim() : '',
+                        remark: remark ? String(remark).trim() : '',
+                        status: 'COMPLETED',
+                        createdBy,
+                    };
+
+            const payment =
+                await paymentRepository.create(
+                    paymentData,
+                    session
+                );
+
+            const newAdvanceDeduction =
+                (payroll.advanceDeduction || 0) + amount;
+
+            const newNetSalary =
+                (payroll.grossSalary || 0) -
+                (payroll.deduction || 0) -
+                newAdvanceDeduction -
+                (payroll.paid || 0);
+
+            const updatedPayroll =
+                await payrollRepository.update(
+                    payroll._id,
+                    {
+                        advanceDeduction: newAdvanceDeduction,
+                        netSalary: Math.max(0, newNetSalary),
+                    },
+                    session
+                );
+
+            await session.commitTransaction();
+
+            return {
+                payment,
+                payroll: updatedPayroll,
+            };
+        } catch (error) {
+            await session.abortTransaction();
+            throw error;
+        } finally {
+            session.endSession();
+        }
     }
 }
 

@@ -61,6 +61,30 @@ const PAYROLL_MESSAGES = {
   ADVANCE_PROCESSED_SUCCESS:
     'Advance payment processed successfully.',
 
+  ADVANCE_AMOUNT_REQUIRED:
+    'Advance amount is required.',
+
+  ADVANCE_AMOUNT_INVALID:
+    'Please enter a valid advance amount.',
+
+  ADVANCE_AMOUNT_MUST_BE_GREATER_THAN_ZERO:
+    'Advance amount must be greater than ₹0.',
+
+  ADVANCE_EXCEEDS_BALANCE:
+    'Advance payment cannot exceed the remaining salary balance.',
+
+  ADVANCE_ZERO_BALANCE:
+    'Cannot make an advance payment because the remaining balance is ₹0.',
+
+  PAYMENT_METHOD_REQUIRED:
+    'Please select a payment method.',
+
+  TRANSACTION_ID_REQUIRED:
+    'Transaction ID is required for this payment method.',
+
+  ADVANCE_PAYMENT_FAILED:
+    'We could not save the advance payment. Please try again.',
+
   WORKER_HAS_NO_ACTIVE_SITE:
     'Worker has no active site assigned.',
 };

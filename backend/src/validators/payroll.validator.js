@@ -1,5 +1,7 @@
 import Joi from 'joi';
 
+import PAYROLL_MESSAGES from '../common/constants/payroll.messages.js';
+
 export const createPayrollSchema = Joi.object({
   worker: Joi.string()
     .hex()
@@ -129,3 +131,32 @@ export const getPayrollQuerySchema =
       .valid('asc', 'desc')
       .default('desc'),
   });
+
+export const advancePaymentSchema = Joi.object({
+  amount: Joi.number()
+    .required()
+    .min(0.01)
+    .messages({
+      'any.required': PAYROLL_MESSAGES.ADVANCE_AMOUNT_REQUIRED,
+      'number.min': PAYROLL_MESSAGES.ADVANCE_AMOUNT_MUST_BE_GREATER_THAN_ZERO,
+    }),
+
+  paymentMethod: Joi.string()
+    .valid('CASH', 'UPI', 'BANK_TRANSFER', 'CHEQUE')
+    .required()
+    .messages({
+      'any.required': PAYROLL_MESSAGES.PAYMENT_METHOD_REQUIRED,
+      'any.only': PAYROLL_MESSAGES.PAYMENT_METHOD_REQUIRED,
+    }),
+
+  transactionId: Joi.string()
+    .trim()
+    .allow('', null)
+    .default(''),
+
+  remark: Joi.string()
+    .trim()
+    .max(500)
+    .allow('', null)
+    .default(''),
+});

@@ -11,6 +11,7 @@ import {
   updatePayrollSchema,
   changePayrollStatusSchema,
   getPayrollQuerySchema,
+  advancePaymentSchema,
 } from '../validators/payroll.validator.js';
 
 const router = Router();
@@ -88,12 +89,13 @@ router.get(
  |--------------------------------------------------------------------------
  */
 
- router.patch(
-   '/:workerId/advance',
-   authMiddleware,
-   authorize('PAYROLL_UPDATE'),
-   payrollController.processAdvancePayment
- );
+  router.patch(
+    '/:payrollId/advance',
+    authMiddleware,
+    authorize('PAYROLL_UPDATE'),
+    validate(advancePaymentSchema),
+    payrollController.processAdvancePayment
+  );
 
 /*
 |--------------------------------------------------------------------------

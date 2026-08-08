@@ -46,8 +46,8 @@ const payrollService = {
         return data;
     },
 
-    processAdvancePayment: async (workerId, payload) => {
-        const { data } = await axios.patch(`/payroll/${workerId}/advance`, payload);
+    processAdvancePayment: async (payrollId, payload) => {
+        const { data } = await axios.patch(`/payroll/${payrollId}/advance`, payload);
         return data;
     },
 };
