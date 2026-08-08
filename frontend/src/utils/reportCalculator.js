@@ -44,15 +44,15 @@ export const getWorkerReport = (
 
       id: worker._id,
 
-      name: worker.name,
+      name: worker.fullName,
 
       site: worker.site,
 
-      skill: worker.skill,
+      skill: worker.trade,
 
-      workType: worker.workType,
+      workType: worker.skillLevel,
 
-      wageType: worker.wageType,
+      wageType: worker.salaryType,
 
       attendance:
 
@@ -134,13 +134,13 @@ export const getSalaryReport = (
 
       workerId: worker._id,
 
-      workerName: worker.name,
+      workerName: worker.fullName,
 
       site: worker.site,
 
-      workType: worker.workType,
+      workType: worker.skillLevel,
 
-      wageType: worker.wageType,
+      wageType: worker.salaryType,
 
       attendance:
 

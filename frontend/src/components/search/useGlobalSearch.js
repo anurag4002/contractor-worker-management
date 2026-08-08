@@ -71,11 +71,11 @@ const useGlobalSearch = () => {
     (query) => {
       return workers.filter(
         (w) =>
-          matchText(w.name, query) ||
+          matchText(w.fullName, query) ||
           matchText(w._id, query) ||
-          matchText(w.mobile, query) ||
-          matchText(w.skill, query) ||
-          matchText(w.workType, query) ||
+          matchText(w.mobileNumber, query) ||
+          matchText(w.trade, query) ||
+          matchText(w.skillLevel, query) ||
           matchText(w.site, query) ||
           matchText(w.employeeCode, query)
       );
@@ -156,8 +156,8 @@ const useGlobalSearch = () => {
         const workerMatches = filterWorkers(q).map((w) => ({
           type: "workers",
           label: "Workers",
-          title: w.name,
-          subtitle: `ID: ${w._id} | ${w.mobile} | ${w.site || "Unassigned"}`,
+          title: w.fullName,
+          subtitle: `ID: ${w._id} | ${w.mobileNumber} | ${w.site || "Unassigned"}`,
           route: `/workers/${w._id}`,
           data: w,
         }));
@@ -207,8 +207,8 @@ const useGlobalSearch = () => {
         results = filterWorkers(q).map((w) => ({
           type: "workers",
           label: "Workers",
-          title: w.name,
-          subtitle: `ID: ${w._id} | ${w.mobile} | ${w.site || "Unassigned"} | ${w.skill}`,
+          title: w.fullName,
+          subtitle: `ID: ${w._id} | ${w.mobileNumber} | ${w.site || "Unassigned"} | ${w.trade}`,
           route: `/workers/${w._id}`,
           data: w,
           section: "Workers",

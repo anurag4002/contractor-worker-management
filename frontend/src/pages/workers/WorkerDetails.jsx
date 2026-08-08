@@ -184,17 +184,17 @@ const WorkerDetails = () => {
     if (!worker) return [];
 
     return [
-      { label: "Worker Name", value: valueOrDash(worker.name || worker.fullName), icon: <FiUser /> },
+      { label: "Worker Name", value: valueOrDash(worker.fullName), icon: <FiUser /> },
       { label: "Employee ID", value: valueOrDash(worker.employeeId || worker.employee_code || worker._id), icon: <FiShield /> },
-      { label: "Mobile Number", value: valueOrDash(worker.mobile || worker.mobileNumber), icon: <FiPhone /> },
+      { label: "Mobile Number", value: valueOrDash(worker.mobileNumber), icon: <FiPhone /> },
       { label: "Email", value: valueOrDash(worker.email), icon: <FiMail /> },
       { label: "Site", value: valueOrDash(worker.site || worker.siteName), icon: <FiMapPin /> },
       { label: "Department", value: valueOrDash(worker.department), icon: <FiShield /> },
-      { label: "Role", value: valueOrDash(worker.role || worker.workType), icon: <FiUser /> },
+      { label: "Role", value: valueOrDash(worker.trade || worker.skillLevel), icon: <FiUser /> },
       { label: "Status", value: valueOrDash(worker.status), icon: <FiShield /> },
       { label: "Joining Date", value: formatDate(worker.joiningDate || worker.joining_date), icon: <FiCalendar /> },
       { label: "Address", value: valueOrDash(worker.address), icon: <FiMapPin /> },
-      { label: "Emergency Contact", value: valueOrDash(worker.emergencyContact || worker.emergencyPhone), icon: <FiPhone /> },
+      { label: "Emergency Contact", value: valueOrDash(worker.emergencyContactNumber), icon: <FiPhone /> },
       { label: "Created Date", value: formatDate(worker.createdAt), icon: <FiClock /> },
       { label: "Updated Date", value: formatDate(worker.updatedAt), icon: <FiClock /> },
     ];
@@ -226,9 +226,9 @@ const WorkerDetails = () => {
           <>
             <HeaderRow>
               <TitleBlock>
-                <Avatar>{(worker.name || worker.fullName || "W").charAt(0).toUpperCase()}</Avatar>
+                <Avatar>{worker.fullName?.charAt(0).toUpperCase()}</Avatar>
                 <div>
-                  <Title>{valueOrDash(worker.name || worker.fullName)}</Title>
+                  <Title>{valueOrDash(worker.fullName)}</Title>
                   <Subtitle>{valueOrDash(worker.employeeId || worker.employee_code || worker._id)}</Subtitle>
                 </div>
               </TitleBlock>

@@ -197,7 +197,7 @@ const SiteAttendanceModal = ({
 
                     <td>
 
-                      {worker.name}
+                      {worker.fullName}
 
                     </td>
 

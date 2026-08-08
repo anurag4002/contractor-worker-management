@@ -15,6 +15,12 @@ const SKILL_LEVELS = ['UNSKILLED', 'SEMI_SKILLED', 'SKILLED'];
 
 const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
+const DEPARTMENTS = [
+  'Construction', 'Electrical', 'Plumbing', 'Carpentry',
+  'Painting', 'Welding', 'Steel Fixing', 'Operating',
+  'Site Supervision', 'General',
+];
+
 const INDIAN_FIRST_NAMES = [
   'Amit', 'Rahul', 'Priya', 'Sunita', 'Rajesh', 'Meena', 'Suresh', 'Kavita',
   'Anil', 'Rekha', 'Vikram', 'Deepa', 'Manoj', 'Lakshmi', 'Arun', 'Shalini',
@@ -134,6 +140,7 @@ const seedWorkers = async () => {
       pincode: String(Math.floor(Math.random() * 90000) + 10000),
       trade: TRADES[i % TRADES.length],
       skillLevel: SKILL_LEVELS[i % SKILL_LEVELS.length],
+      department: DEPARTMENTS[i % DEPARTMENTS.length],
       site: isWithoutSite ? null : sites[i % sites.length]._id,
       contractor: createdBy,
       joiningDate: faker.date.past({ years: 3, refDate: '2026-01-01' }),

@@ -133,6 +133,8 @@ export const createWorkerSchema = Joi.object({
         'SKILLED'
     ),
 
+    department: Joi.string().trim().allow('', null),
+
     site: Joi.string()
         .hex()
         .length(24)
@@ -228,6 +230,7 @@ export const updateWorkerSchema =
                 'salaryType',
                 'emergencyContactName',
                 'emergencyContactNumber',
+                'department',
             ],
             (schema) => schema.optional()
         )

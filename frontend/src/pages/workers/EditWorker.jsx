@@ -328,6 +328,7 @@ const EditWorker = () => {
     pincode: "",
     trade: "",
     skillLevel: "",
+    department: "",
     joiningDate: "",
     salaryType: "DAILY",
     dailyWage: "",
@@ -368,6 +369,7 @@ const EditWorker = () => {
         pincode: w.pincode || "",
         trade: w.trade || "",
         skillLevel: w.skillLevel || "",
+        department: w.department || "",
         joiningDate: w.joiningDate ? w.joiningDate.split("T")[0] : "",
         salaryType: w.salaryType || "DAILY",
         dailyWage: w.dailyWage != null ? String(w.dailyWage) : "",
@@ -519,6 +521,7 @@ const EditWorker = () => {
       pincode: form.pincode,
       trade: form.trade,
       skillLevel: form.skillLevel,
+      department: form.department || null,
       joiningDate: form.joiningDate,
       salaryType: form.salaryType,
       dailyWage: form.salaryType === "DAILY" ? Number(form.dailyWage) : 0,
@@ -733,10 +736,16 @@ const EditWorker = () => {
                       ))}
                     </Select>
                     {validate().skillLevel && <ErrorText>{validate().skillLevel}</ErrorText>}
-                  </Field>
+                   </Field>
 
-                  <Field>
-                    {renderLabel("Joining Date", true)}
+                   <Field>
+                     {renderLabel("Department", false)}
+                     <Input name="department" value={form.department} onChange={handleChange} placeholder="e.g. Construction, Electrical" />
+                     {validate().department && <ErrorText>{validate().department}</ErrorText>}
+                   </Field>
+
+                   <Field>
+                     {renderLabel("Joining Date", true)}
                     <Input type="date" name="joiningDate" value={form.joiningDate} onChange={handleChange} required />
                     {validate().joiningDate && <ErrorText>{validate().joiningDate}</ErrorText>}
                   </Field>

@@ -28,7 +28,7 @@ const WorkerProfileModal = ({
   if (!open || !worker) return null;
 
   const wage =
-    worker.wageType === "Daily"
+    worker.salaryType === "DAILY"
       ? `₹${Number(
           worker.dailyWage || 0
         ).toLocaleString("en-IN")}/Day`
@@ -66,12 +66,12 @@ const WorkerProfileModal = ({
 
             {
 
-              worker.photo ? (
+              worker.documents?.photo ? (
 
-                <img
-                  src={worker.photo}
-                  alt={worker.name}
-                />
+                 <img
+                   src={worker.documents?.photo}
+                   alt={worker.fullName}
+                 />
 
               ) : (
 
@@ -79,9 +79,9 @@ const WorkerProfileModal = ({
 
                   {
 
-                    worker.name
+                     worker.fullName
 
-                      ?.charAt(0)
+                       ?.charAt(0)
 
                       ?.toUpperCase() || "W"
 
@@ -99,13 +99,13 @@ const WorkerProfileModal = ({
 
             <h2>
 
-              {worker.name}
+              {worker.fullName}
 
             </h2>
 
             <p>
 
-              {worker.skill}
+              {worker.trade}
 
             </p>
 
@@ -149,7 +149,7 @@ const WorkerProfileModal = ({
 
             <Value>
 
-              {worker.mobile || "-"}
+              {worker.mobileNumber || "-"}
 
             </Value>
 
@@ -165,7 +165,7 @@ const WorkerProfileModal = ({
 
             <Value>
 
-              {worker.skill || "-"}
+              {worker.trade || "-"}
 
             </Value>
 
@@ -181,7 +181,7 @@ const WorkerProfileModal = ({
 
             <Value>
 
-              {worker.workType || "-"}
+              {worker.skillLevel || "-"}
 
             </Value>
 
@@ -197,7 +197,7 @@ const WorkerProfileModal = ({
 
             <Value>
 
-              {worker.wageType || "-"}
+              {worker.salaryType || "-"}
 
             </Value>
 

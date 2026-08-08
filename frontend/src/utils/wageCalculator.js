@@ -57,7 +57,7 @@ export const calculateGrossSalary = (
       attendance
     );
 
-  if (worker.wageType === "Monthly") {
+  if (worker.salaryType === "MONTHLY") {
 
     return Number(
       worker.monthlySalary || 0

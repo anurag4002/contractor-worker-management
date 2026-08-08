@@ -107,11 +107,23 @@
 html {
   background-color: var(--bg);
   color: var(--text);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
 }
 
 body {
   background-color: var(--bg);
   color: var(--text);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+body::-webkit-scrollbar {
+  display: none;
 }
 
 ::-webkit-scrollbar {

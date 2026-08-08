@@ -114,13 +114,13 @@ const WorkerTable = ({
 
                       {
 
-                        worker.photo ? (
+                         worker.documents?.photo ? (
 
                           <img
 
-                            src={worker.photo}
+                            src={worker.documents?.photo}
 
-                            alt={worker.name}
+                            alt={worker.fullName}
 
                             width="42"
 
@@ -142,9 +142,9 @@ const WorkerTable = ({
 
                             {
 
-                              worker.name
+                               worker.fullName
 
-                                ?.charAt(0)
+                                 ?.charAt(0)
 
                                 ?.toUpperCase() || "W"
 
@@ -168,25 +168,25 @@ const WorkerTable = ({
 
                   <td>
 
-                    {worker.name}
+                     {worker.fullName}
 
                   </td>
 
                   <td>
 
-                    {worker.mobile}
+                     {worker.mobileNumber}
 
                   </td>
 
                   <td>
 
-                    {worker.skill}
+                     {worker.trade}
 
                   </td>
 
                   <td>
 
-                    {worker.workType}
+                     {worker.skillLevel}
 
                   </td>
 
@@ -198,7 +198,7 @@ const WorkerTable = ({
 
                   <td>
 
-                    {worker.wageType}
+                    {worker.salaryType}
 
                   </td>
 
@@ -206,7 +206,7 @@ const WorkerTable = ({
 
                     {
 
-                      worker.wageType === "Daily"
+                      worker.salaryType === "DAILY"
 
                         ? `₹${Number(
 

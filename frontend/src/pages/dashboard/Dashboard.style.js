@@ -223,6 +223,12 @@ export const List = styled.div`
   overflow-y: auto;
   flex: 1;
   max-height: 20rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 export const ListItem = styled.div`

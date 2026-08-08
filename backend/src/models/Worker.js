@@ -151,6 +151,12 @@ const workerSchema = new mongoose.Schema(
             default: 'UNSKILLED',
         },
 
+        department: {
+            type: String,
+            trim: true,
+            default: null,
+        },
+
         site: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Site',

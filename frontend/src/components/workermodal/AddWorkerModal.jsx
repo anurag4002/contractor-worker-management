@@ -47,6 +47,7 @@ const initialState = {
   pincode: "",
   trade: "",
   skillLevel: "",
+  department: "",
   joiningDate: "",
   salaryType: "DAILY",
   dailyWage: "",
@@ -267,6 +268,7 @@ const AddWorkerModal = ({
       pincode: form.pincode,
       trade: form.trade,
       skillLevel: form.skillLevel,
+      department: form.department || null,
       joiningDate: form.joiningDate,
       salaryType: form.salaryType,
       dailyWage: form.salaryType === "DAILY" ? Number(form.dailyWage) : 0,
@@ -533,18 +535,29 @@ const AddWorkerModal = ({
                   <FormError error={apiErrors.trade} />
                 </FormField>
 
-                <FormField>
-                  <FormLabel $required>Skill Level</FormLabel>
-                  <FormSelect name="skillLevel" value={form.skillLevel} onChange={handleChange} required>
-                    <option value="">Select Skill Level</option>
-                    {skillLevelOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                  </FormSelect>
-                  <FormError error={apiErrors.skillLevel} />
-                </FormField>
+                 <FormField>
+                   <FormLabel $required>Skill Level</FormLabel>
+                   <FormSelect name="skillLevel" value={form.skillLevel} onChange={handleChange} required>
+                     <option value="">Select Skill Level</option>
+                     {skillLevelOptions.map((opt) => (
+                       <option key={opt.value} value={opt.value}>{opt.label}</option>
+                     ))}
+                   </FormSelect>
+                   <FormError error={apiErrors.skillLevel} />
+                 </FormField>
 
-                <FormField>
+                 <FormField>
+                   <FormLabel>Department</FormLabel>
+                   <FormInput
+                     name="department"
+                     value={form.department}
+                     onChange={handleChange}
+                     placeholder="e.g. Construction, Electrical, Plumbing"
+                   />
+                   <FormError error={apiErrors.department} />
+                 </FormField>
+
+                 <FormField>
                   <FormLabel $required>Joining Date</FormLabel>
                   <FormDatePicker type="date" name="joiningDate" value={form.joiningDate} onChange={handleChange} required />
                   <FormError error={apiErrors.joiningDate} />

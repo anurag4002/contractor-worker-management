@@ -74,16 +74,16 @@ const Workers = () => {
         String(worker._id || "")
           .toLowerCase()
           .includes(effectiveKeyword) ||
-        String(worker.name || "")
+        String(worker.fullName || "")
           .toLowerCase()
           .includes(effectiveKeyword) ||
-        String(worker.mobile || "")
+        String(worker.mobileNumber || "")
           .toLowerCase()
           .includes(effectiveKeyword) ||
-        String(worker.skill || "")
+        String(worker.trade || "")
           .toLowerCase()
           .includes(effectiveKeyword) ||
-        String(worker.workType || "")
+        String(worker.skillLevel || "")
           .toLowerCase()
           .includes(effectiveKeyword) ||
         String(worker.site || "")

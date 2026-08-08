@@ -56,12 +56,12 @@ const DeleteWorkerModal = ({
             <br />
             <br />
             <WorkerName>
-              {worker.name}
+              {worker.fullName}
             </WorkerName>
             <br />
             <strong>Worker ID :</strong> {worker._id}
             <br />
-            <strong>Mobile :</strong> {worker.mobile}
+            <strong>Mobile :</strong> {worker.mobileNumber}
             <br />
             <strong>Site :</strong> {worker.site || "-"}
             <br />
