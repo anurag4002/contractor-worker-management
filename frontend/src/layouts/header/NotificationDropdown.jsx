@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FiBell, FiCheckCircle, FiAlertCircle, FiInfo, FiAlertTriangle, FiTrash2, FiCheck } from "react-icons/fi";
 import useNotification from "../../hooks/useNotification";
 import {
@@ -77,13 +77,20 @@ const fmt = (iso) => {
 const NotificationDropdown = ({ onClose }) => {
   const {
     notifications, unreadCount, loading, pagination,
-    fetchNotifications, markAsRead, markAllAsRead, deleteNotification,
+    fetchNotifications, markAsRead, markAllAsRead, deleteNotification, clearAll,
   } = useNotification();
 
   /* fetch on open */
   useEffect(() => { fetchNotifications({ limit: 20, sortBy: "createdAt", sortOrder: "desc" }); }, []);
 
   const data = Array.isArray(notifications) ? notifications : [];
+  const [clearing, setClearing] = useState(false);
+
+  const handleClearAll = async () => {
+    setClearing(true);
+    await clearAll();
+    setClearing(false);
+  };
 
   return (
     <Dropdown>
@@ -158,9 +165,13 @@ const NotificationDropdown = ({ onClose }) => {
       </ScrollBody>
 
       <Footer>
-        {pagination?.total
-          ? `Showing ${data.length} of ${pagination.total} notifications`
-          : "All notifications"}
+        <MarkAllBtn
+          onClick={handleClearAll}
+          disabled={clearing || data.length === 0}
+          style={{ opacity: (clearing || data.length === 0) ? 0.5 : 1 }}
+        >
+          {clearing ? "Clearing…" : "Clear all notifications"}
+        </MarkAllBtn>
       </Footer>
     </Dropdown>
   );

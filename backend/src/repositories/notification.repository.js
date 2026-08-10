@@ -15,11 +15,17 @@ class NotificationRepository {
    * Find All Notifications
    * ==========================================
    */
-  async findAll(filter = {}) {
-    return await Notification.find({
+  async findAll(filter = {}, cutoffDate = null) {
+    const query = {
       isDeleted: false,
       ...filter,
-    })
+    };
+
+    if (cutoffDate) {
+      query.createdAt = { $gt: cutoffDate };
+    }
+
+    return await Notification.find(query)
       .populate(
         'recipient',
         'fullName email'
@@ -66,12 +72,18 @@ class NotificationRepository {
    * Count Unread Notifications
    * ==========================================
    */
-  async countUnread(filter = {}) {
-    return await Notification.countDocuments({
+  async countUnread(filter = {}, cutoffDate = null) {
+    const query = {
       isDeleted: false,
       isRead: false,
       ...filter,
-    });
+    };
+
+    if (cutoffDate) {
+      query.createdAt = { $gt: cutoffDate };
+    }
+
+    return await Notification.countDocuments(query);
   }
 
   /**
@@ -136,6 +148,26 @@ class NotificationRepository {
       },
       {
         new: true,
+      }
+    );
+  }
+
+  /**
+   * ==========================================
+   * Clear All Notifications For User
+   * ==========================================
+   */
+  async clearAll(recipient, deletedAt) {
+    return await Notification.updateMany(
+      {
+        recipient,
+        isDeleted: false,
+      },
+      {
+        $set: {
+          isDeleted: true,
+          deletedAt,
+        },
       }
     );
   }

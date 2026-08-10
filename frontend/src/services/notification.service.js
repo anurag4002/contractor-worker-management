@@ -30,6 +30,10 @@ const notificationService = {
     /** DELETE /notifications/:id */
     deleteNotification: (id) =>
         axios.delete(`${BASE}/${id}`),
+
+    /** DELETE /notifications */
+    clearAllNotifications: () =>
+        axios.delete(BASE),
 };
 
 export default notificationService;

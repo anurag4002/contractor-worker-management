@@ -2,6 +2,8 @@ import { StatusCodes } from 'http-status-codes';
 
 import notificationRepository from '../repositories/notification.repository.js';
 
+import userRepository from '../repositories/user.repository.js';
+
 import notificationMessages from '../common/constants/notification.messages.js';
 
 import ApiError from '../common/errors/ApiError.js';
@@ -36,10 +38,20 @@ async createNotification(payload) {
  * Get Notifications
  * ==========================================
  */
-async getNotifications(filter = {}) {
+async getNotifications(filter = {}, userId = null) {
+  let cutoffDate = null;
+
+  if (userId) {
+    const user = await userRepository.findById(userId);
+    if (user?.notificationsClearedAt) {
+      cutoffDate = user.notificationsClearedAt;
+    }
+  }
+
   const notifications =
     await notificationRepository.findAll(
-      filter
+      filter,
+      cutoffDate
     );
 
   return {
@@ -77,10 +89,20 @@ async getNotificationById(id) {
  * Get Unread Notification Count
  * ==========================================
  */
-async getUnreadCount(filter = {}) {
+async getUnreadCount(filter = {}, userId = null) {
+  let cutoffDate = null;
+
+  if (userId) {
+    const user = await userRepository.findById(userId);
+    if (user?.notificationsClearedAt) {
+      cutoffDate = user.notificationsClearedAt;
+    }
+  }
+
   const count =
     await notificationRepository.countUnread(
-      filter
+      filter,
+      cutoffDate
     );
 
   return {
@@ -159,37 +181,57 @@ async markAllAsRead(
  * Delete Notification
  * ==========================================
  */
-async deleteNotification(id) {
-  const notification =
-    await notificationRepository.findById(
-      id
-    );
+  async deleteNotification(id) {
+    const notification =
+      await notificationRepository.findById(
+        id
+      );
 
-  if (!notification) {
-    throw new ApiError(
-      StatusCodes.NOT_FOUND,
-      notificationMessages.NOT_FOUND
-    );
+    if (!notification) {
+      throw new ApiError(
+        StatusCodes.NOT_FOUND,
+        notificationMessages.NOT_FOUND
+      );
+    }
+
+    const deletedNotification =
+      await notificationRepository.softDelete(
+        id,
+        new Date()
+      );
+
+    if (!deletedNotification) {
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        notificationMessages.DELETE_FAILED
+      );
+    }
+
+    return {
+      message:
+        notificationMessages.DELETED,
+      data: deletedNotification,
+    };
   }
 
-  const deletedNotification =
-    await notificationRepository.softDelete(
-      id,
-      new Date()
-    );
+  /**
+   * ==========================================
+   * Clear All Notifications
+   * ==========================================
+   */
+  async clearAll(userId) {
+    await userRepository.update(userId, {
+      notificationsClearedAt: new Date(),
+    });
 
-  if (!deletedNotification) {
-    throw new ApiError(
-      StatusCodes.BAD_REQUEST,
-      notificationMessages.DELETE_FAILED
-    );
+    return {
+      message:
+        notificationMessages.CLEARED,
+      data: {
+        matchedCount: 0,
+        modifiedCount: 0,
+      },
+    };
   }
-
-  return {
-    message:
-      notificationMessages.DELETED,
-    data: deletedNotification,
-  };
-}
 };
 export default new NotificationService();

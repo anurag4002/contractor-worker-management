@@ -46,7 +46,8 @@ const getNotifications =
 
     const result =
       await notificationService.getNotifications(
-        filter
+        filter,
+        req.user._id
       );
 
    return ApiResponse.success(
@@ -93,7 +94,8 @@ const getUnreadCount =
 
     const result =
       await notificationService.getUnreadCount(
-        filter
+        filter,
+        req.user._id
       );
 
    return ApiResponse.success(
@@ -158,20 +160,40 @@ const markAllAsRead =
  * Delete Notification
  * ==========================================
  */
-const deleteNotification =
-  asyncHandler(async (req, res) => {
-    const result =
-      await notificationService.deleteNotification(
-        req.params.id
-      );
+  const deleteNotification =
+   asyncHandler(async (req, res) => {
+     const result =
+       await notificationService.deleteNotification(
+         req.params.id
+       );
 
-    return ApiResponse.success(
-  res,
-  result.data,
-  result.message,
-  result.statusCode
-);
-  });
+     return ApiResponse.success(
+   res,
+   result.data,
+   result.message,
+   result.statusCode
+ );
+   });
+
+ /**
+  * ==========================================
+  * Clear All Notifications
+  * ==========================================
+  */
+ const clearAllNotifications =
+   asyncHandler(async (req, res) => {
+     const result =
+       await notificationService.clearAll(
+         req.user._id
+       );
+
+     return ApiResponse.success(
+   res,
+   result.data,
+   result.message,
+   result.statusCode
+ );
+   });
 
 export default {
   createNotification,
@@ -181,4 +203,5 @@ export default {
   markAsRead,
   markAllAsRead,
   deleteNotification,
+  clearAllNotifications,
 };

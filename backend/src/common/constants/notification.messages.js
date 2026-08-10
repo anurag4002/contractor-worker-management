@@ -27,6 +27,10 @@ const notificationMessages = {
 
   MARK_ALL_READ_FAILED:
     'Failed to mark all notifications as read.',
+
+  CLEARED: 'All notifications cleared successfully.',
+
+  CLEAR_FAILED: 'Failed to clear notifications.',
 };
 
 export default notificationMessages;

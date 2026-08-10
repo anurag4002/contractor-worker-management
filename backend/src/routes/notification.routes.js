@@ -94,6 +94,18 @@ router.patch(
 
 /**
  * =========================================
+ * Clear All Notifications
+ * =========================================
+ */
+router.delete(
+  '/',
+  authMiddleware,
+  authorize('NOTIFICATION_DELETE'),
+  notificationController.clearAllNotifications
+);
+
+/**
+ * =========================================
  * Delete Notification
  * =========================================
  */

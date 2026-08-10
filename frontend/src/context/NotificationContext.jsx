@@ -31,12 +31,13 @@ export const NotificationProvider = ({ children }) => {
     const fetchUnreadCount = useCallback(async () => {
         try {
             const res = await notificationService.getUnreadCount();
-            const count =
+            const count = Number(
+                res.data?.data?.unreadCount ??
                 res.data?.data?.count ??
-                res.data?.data ??
                 res.data?.count ??
-                0;
-            setUnreadCount(Number(count));
+                0
+            );
+            setUnreadCount(count);
         } catch {
             // silent — badge just won't update
         }
@@ -81,6 +82,18 @@ export const NotificationProvider = ({ children }) => {
         }
     }, []);
 
+    /* ── clear all ── */
+    const clearAll = useCallback(async () => {
+        try {
+            await notificationService.clearAllNotifications();
+            setNotifications([]);
+            setUnreadCount(0);
+            showSuccess("All notifications cleared.");
+        } catch (error) {
+            showError(error);
+        }
+    }, []);
+
     /* ── auto-poll: refresh unread count every 30 s ── */
     const startPolling = useCallback(() => {
         if (intervalRef.current) return;
@@ -102,7 +115,7 @@ export const NotificationProvider = ({ children }) => {
             value={{
                 notifications, unreadCount, pagination, loading,
                 fetchNotifications, fetchUnreadCount,
-                markAsRead, markAllAsRead, deleteNotification,
+                markAsRead, markAllAsRead, deleteNotification, clearAll,
                 startPolling, stopPolling,
             }}
         >

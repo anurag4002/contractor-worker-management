@@ -16,14 +16,16 @@ export const ThemeProvider = ({ children }) => {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved === "dark" || saved === "light") return saved;
     }
-    return "light";
+    return "dark";
   });
 
   useEffect(() => {
     const root = document.documentElement;
     if (theme === "dark") {
       root.classList.add("dark");
+      root.classList.remove("light");
     } else {
+      root.classList.add("light");
       root.classList.remove("dark");
     }
   }, [theme]);

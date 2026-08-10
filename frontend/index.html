@@ -4,7 +4,75 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>Contractor Worker Management System</title>
+    <script>
+      (function() {
+        var h = document.documentElement;
+        h.classList.add('dark');
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'light') {
+            h.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --surface: #1e293b;
+        --surface-secondary: #334155;
+        --surface-hover: #334155;
+        --text: #f1f5f9;
+        --text-secondary: #94a3b8;
+        --border: #334155;
+        --primary: #3b82f6;
+        --primary-hover: #2563eb;
+        --primary-light: #1e3a5f;
+        --text-on-primary: #ffffff;
+        --text-on-danger: #ffffff;
+        --danger: #ef4444;
+        --danger-hover: #dc2626;
+        --success: #22c55e;
+        --warning: #eab308;
+        --shadow: rgba(0, 0, 0, 0.3);
+        --shadow-medium: rgba(0, 0, 0, 0.35);
+        --shadow-lg: rgba(0, 0, 0, 0.4);
+        --sidebar-bg: #0f172a;
+        --sidebar-text: #cbd5e1;
+        --sidebar-active-bg: #2563eb;
+        --sidebar-hover-bg: #1e293b;
+        --input-bg: #1e293b;
+        --input-border: #475569;
+        --input-text: #f1f5f9;
+        --input-placeholder: #64748b;
+        --table-header-bg: #1e293b;
+        --table-row-hover: #1e293b;
+        --table-border: #334155;
+        --badge-success-bg: #14532d;
+        --badge-success-fg: #86efac;
+        --badge-danger-bg: #7f1d1d;
+        --badge-danger-fg: #fca5a5;
+        --badge-warning-bg: #713f12;
+        --badge-warning-fg: #fde047;
+        --badge-info-bg: #1e3a5f;
+        --badge-info-fg: #93c5fd;
+        --badge-purple-bg: #4c1d95;
+        --badge-purple-fg: #c4b5fd;
+        --toggle-bg: #334155;
+        --toggle-border: #475569;
+        --chart-grid: #334155;
+        --chart-axis: #94a3b8;
+        --tooltip-bg: #f1f5f9;
+        --tooltip-fg: #0f172a;
+        --modal-overlay: rgba(0, 0, 0, 0.6);
+        --scrollbar-thumb: #475569;
+        --scrollbar-track: #1e293b;
+      }
+      html { background-color: var(--bg); color: var(--text); }
+      body { margin: 0; background-color: var(--bg); color: var(--text); font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+      #root { min-height: 100vh; }
+    </style>
   </head>
   <body>
     <div id="root"></div>

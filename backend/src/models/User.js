@@ -121,6 +121,11 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+
+    notificationsClearedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
