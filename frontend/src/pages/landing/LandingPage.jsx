@@ -1,9 +1,6 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ScrollReveal } from "./ScrollReveal";
-import { CountUp } from "../../components/countup/CountUp";
-import useCountUp from "../../hooks/useCountUp";
 import {
   FiUsers,
   FiMapPin,
@@ -32,7 +29,6 @@ import {
 import {
   PageWrapper,
   Container,
-  AnnouncementBar,
   StickyHeader,
   NavInner,
   LogoGroup,
@@ -86,29 +82,6 @@ import {
   FooterBottom,
 } from "./LandingPage.style";
 
-import { createGlobalStyle } from "styled-components";
-
-export const GlobalStyle = createGlobalStyle`
-  *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-  }
-
-  html{
-    scroll-behavior:smooth;
-  }
-
-  body{
-    font-family:'Inter',system-ui,-apple-system,sans-serif;
-    background:var(--bg);
-    color:var(--text);
-  }
-
-  a{
-    text-decoration:none;
-  }
-`;
 const features = [
   {
     icon: <FiUsers />,
@@ -445,49 +418,49 @@ const LandingPage = () => {
               <MockBody>
                 <MockGrid>
                   <motion.div variants={metricCardVariants} initial="hidden" animate="visible" transition={{ delay: 0.1 }}>
-                  <MockCard>
-                    <div className="meta">
-                      <span>Total Workers</span>
-                      <h4>{useCountUp(148, 400, true)}</h4>
-                    </div>
-                    <div className="icon-box" style={{ background: "#eff6ff", color: "#2563eb" }}>
-                      <FiUsers />
-                    </div>
-                  </MockCard>
-                </motion.div>
-                <motion.div variants={metricCardVariants} initial="hidden" animate="visible" transition={{ delay: 0.18 }}>
-                  <MockCard>
-                    <div className="meta">
-                      <span>Present Today</span>
-                      <h4>{useCountUp(126, 400, true)}</h4>
-                    </div>
-                    <div className="icon-box" style={{ background: "#dcfce7", color: "#16a34a" }}>
-                      <FiCheckCircle />
-                    </div>
-                  </MockCard>
-                </motion.div>
-                <motion.div variants={metricCardVariants} initial="hidden" animate="visible" transition={{ delay: 0.26 }}>
-                  <MockCard>
-                    <div className="meta">
-                      <span>Active Sites</span>
-                      <h4>{useCountUp(12, 350, true)}</h4>
-                    </div>
-                    <div className="icon-box" style={{ background: "#fef3c7", color: "#d97706" }}>
-                      <FiMapPin />
-                    </div>
-                  </MockCard>
-                </motion.div>
-                <motion.div variants={metricCardVariants} initial="hidden" animate="visible" transition={{ delay: 0.34 }}>
-                  <MockCard>
-                    <div className="meta">
-                      <span>Pending Salary</span>
-                      <h4>₹{useCountUp(184500, 500, true).toLocaleString()}</h4>
-                    </div>
-                    <div className="icon-box" style={{ background: "#f3e8ff", color: "#7c3aed" }}>
-                      <FiDollarSign />
-                    </div>
-                  </MockCard>
-                </motion.div>
+                    <MockCard>
+                      <div className="meta">
+                        <span>Total Workers</span>
+                        <h4>148</h4>
+                      </div>
+                      <div className="icon-box" style={{ background: "#eff6ff", color: "#2563eb" }}>
+                        <FiUsers />
+                      </div>
+                    </MockCard>
+                  </motion.div>
+                  <motion.div variants={metricCardVariants} initial="hidden" animate="visible" transition={{ delay: 0.18 }}>
+                    <MockCard>
+                      <div className="meta">
+                        <span>Present Today</span>
+                        <h4>126</h4>
+                      </div>
+                      <div className="icon-box" style={{ background: "#dcfce7", color: "#16a34a" }}>
+                        <FiCheckCircle />
+                      </div>
+                    </MockCard>
+                  </motion.div>
+                  <motion.div variants={metricCardVariants} initial="hidden" animate="visible" transition={{ delay: 0.26 }}>
+                    <MockCard>
+                      <div className="meta">
+                        <span>Active Sites</span>
+                        <h4>12</h4>
+                      </div>
+                      <div className="icon-box" style={{ background: "#fef3c7", color: "#d97706" }}>
+                        <FiMapPin />
+                      </div>
+                    </MockCard>
+                  </motion.div>
+                  <motion.div variants={metricCardVariants} initial="hidden" animate="visible" transition={{ delay: 0.34 }}>
+                    <MockCard>
+                      <div className="meta">
+                        <span>Pending Salary</span>
+                        <h4>₹1,84,500</h4>
+                      </div>
+                      <div className="icon-box" style={{ background: "#f3e8ff", color: "#7c3aed" }}>
+                        <FiDollarSign />
+                      </div>
+                    </MockCard>
+                  </motion.div>
                 </MockGrid>
 
                 <motion.div variants={tableVariants} initial="hidden" animate="visible" transition={{ delay: 0.55 }}>
@@ -541,27 +514,19 @@ const LandingPage = () => {
           <Container>
             <TrustGrid>
               <TrustCard>
-                <h3>
-                  <CountUp value={5000} suffix="+" duration={1500} delay={0.15} shouldStart={true} />
-                </h3>
+                <h3>5000+</h3>
                 <p>Workers Managed</p>
               </TrustCard>
               <TrustCard>
-                <h3>
-                  <CountUp value={99.9} decimals={1} suffix="%" duration={1500} delay={0.25} shouldStart={true} />
-                </h3>
+                <h3>99.9%</h3>
                 <p>Attendance Accuracy</p>
               </TrustCard>
               <TrustCard>
-                <h3>
-                  <CountUp value={120} suffix="+" duration={1500} delay={0.35} shouldStart={true} />
-                </h3>
+                <h3>120+</h3>
                 <p>Active Project Sites</p>
               </TrustCard>
               <TrustCard>
-                <h3>
-                  <CountUp value={2.5} decimals={1} prefix="₹" suffix="Cr+" duration={1500} delay={0.45} shouldStart={true} />
-                </h3>
+                <h3>₹2.5Cr+</h3>
                 <p>Payroll Processed</p>
               </TrustCard>
             </TrustGrid>
