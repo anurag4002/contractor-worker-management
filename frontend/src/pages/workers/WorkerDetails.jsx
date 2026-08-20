@@ -8,7 +8,8 @@ import { getFriendlyMessage } from "../../utils/errorMapper";
 
 const Page = styled.div`
   min-height: 100vh;
-  padding: 2rem;
+  min-height: 100dvh;
+  padding: var(--content-padding);
   background: var(--bg);
 `;
 
@@ -18,8 +19,13 @@ const Card = styled.div`
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 1.5rem;
-  padding: 2rem;
+  padding: var(--content-padding);
   box-shadow: 0 20px 50px var(--shadow-medium);
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    border-radius: 1rem;
+  }
 `;
 
 const HeaderRow = styled.div`
@@ -32,6 +38,7 @@ const HeaderRow = styled.div`
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: flex-start;
+    gap: 1rem;
   }
 `;
 
@@ -109,6 +116,16 @@ const ButtonRow = styled.div`
   flex-wrap: wrap;
   gap: 0.9rem;
   margin-top: 1.8rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column-reverse;
+    align-items: stretch;
+
+    button {
+      justify-content: center;
+      width: 100%;
+    }
+  }
 `;
 
 const Button = styled.button`
@@ -245,10 +262,10 @@ const WorkerDetails = () => {
             </InfoGrid>
 
             <ButtonRow>
-              <SecondaryButton type="button" onClick={() => navigate(-1)}>
+              <SecondaryButton type="button" onClick={() => navigate(-1)} style={{ flex: 1, justifyContent: 'center' }}>
                 <FiArrowLeft /> Back
               </SecondaryButton>
-              <PrimaryButton type="button" onClick={() => navigate(`/workers/${id}/edit`)}>
+              <PrimaryButton type="button" onClick={() => navigate(`/workers/${id}/edit`)} style={{ flex: 1, justifyContent: 'center' }}>
                 <FiEdit /> Edit Worker
               </PrimaryButton>
             </ButtonRow>

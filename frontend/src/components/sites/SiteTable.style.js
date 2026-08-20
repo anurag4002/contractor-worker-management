@@ -11,7 +11,6 @@ export const TableCard = styled.div`
 
   box-shadow: 0 8px 24px rgba(15, 23, 42, .05);
 `;
-
 export const Table = styled.table`
   width: 100%;
 
@@ -37,6 +36,7 @@ export const Table = styled.table`
     border-bottom: 1px solid var(--border);
 
     white-space: nowrap;
+
   }
 
   td {
@@ -47,13 +47,17 @@ export const Table = styled.table`
     border-bottom: 1px solid var(--surface-hover);
 
     white-space: nowrap;
+
   }
 
   tbody tr:hover {
     background: var(--bg);
   }
-`;
 
+  @media (max-width: 768px) {
+    min-width: 900px;
+  }
+`;
 export const Status = styled.span`
   display: inline-flex;
 
@@ -115,5 +119,11 @@ export const IconButton = styled.button`
 
     color: var(--surface);
 
+  }
+
+  @media (max-width: 768px) {
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 0.7rem;
   }
 `;

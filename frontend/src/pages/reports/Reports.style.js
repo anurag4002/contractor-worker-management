@@ -22,7 +22,7 @@ export const Header = styled.div`
 export const TitleSection = styled.div`
   h2 {
     margin: 0;
-    font-size: 2rem;
+    font-size: clamp(1.25rem, 2.5vw, 2rem);
     font-weight: 700;
     color: var(--text);
   }
@@ -30,7 +30,7 @@ export const TitleSection = styled.div`
   p {
     margin-top: 0.5rem;
     color: var(--text-secondary);
-    font-size: 0.95rem;
+    font-size: clamp(0.8rem, 1.5vw, 0.95rem);
   }
 `;
 
@@ -38,6 +38,7 @@ export const ActionSection = styled.div`
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
+  width: 100%;
 `;
 
 export const Button = styled.button`
@@ -69,7 +70,11 @@ export const Button = styled.button`
 export const Section = styled.section`
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    gap: 0.75rem;
+  }
 `;
 
 export const Card = styled.div`
@@ -79,7 +84,12 @@ export const Card = styled.div`
 
   border-radius: 1rem;
 
-  padding: 1.5rem;
+  padding: var(--content-padding);
 
   box-shadow: 0 8px 24px rgba(15, 23, 42, .05);
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    border-radius: 0.75rem;
+  }
 `;

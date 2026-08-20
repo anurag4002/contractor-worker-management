@@ -86,7 +86,7 @@ const Payroll = () => {
             />
 
             {loading && !payrollData.length ? (
-                <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
+                <div style={{ padding: "var(--content-padding)", textAlign: "center", color: "var(--text-secondary)" }}>
                     Loading payrolls...
                 </div>
             ) : (
@@ -100,7 +100,7 @@ const Payroll = () => {
             )}
 
             {pagination && pagination.totalPages > 1 && (
-                <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "0.5rem" }}>
+                <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "0.5rem", flexWrap: "wrap" }}>
                     <Button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
                         <FiChevronLeft /> Prev
                     </Button>

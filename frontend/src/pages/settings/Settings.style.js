@@ -10,14 +10,14 @@ export const Header = styled.div`
   h2 {
     margin: 0;
     color: var(--text);
-    font-size: 2rem;
+    font-size: clamp(1.25rem, 2.5vw, 2rem);
     font-weight: 700;
   }
 
   p {
     margin-top: .5rem;
     color: var(--text-secondary);
-    font-size: .95rem;
+    font-size: clamp(0.8rem, 1.5vw, .95rem);
   }
 `;
 export const CardTitle = styled.h3`

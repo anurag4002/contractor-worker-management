@@ -358,8 +358,9 @@ export const OptionsRow = styled.div`
   justify-content: space-between;
   align-items: center;
   font-size: 0.9rem;
+  flex-wrap: nowrap;
 
-  @media (max-width: 560px) {
+  @media (max-width: 360px) {
     flex-wrap: wrap;
     gap: 0.75rem;
     justify-content: flex-start;
@@ -375,6 +376,7 @@ export const RememberLabel = styled.label`
   font-weight: 600;
   cursor: pointer;
   user-select: none;
+  white-space: nowrap;
 
   input {
     width: 1.05rem;
@@ -393,6 +395,7 @@ export const ForgotLink = styled(Link)`
   color: var(--primary);
   text-decoration: none;
   font-weight: 600;
+  white-space: nowrap;
 
   &:hover {
     text-decoration: underline;
@@ -434,12 +437,18 @@ export const RegisterLink = styled.div`
   text-align: center;
   font-size: 0.9rem;
   color: var(--text-secondary);
+  white-space: nowrap;
+
+  @media (max-width: 360px) {
+    white-space: normal;
+  }
 `;
 
 export const RegisterAnchor = styled(Link)`
   color: var(--primary);
   text-decoration: none;
   font-weight: 600;
+  white-space: nowrap;
 
   &:hover {
     text-decoration: underline;

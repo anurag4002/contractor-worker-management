@@ -204,9 +204,9 @@ const Salary = () => {
       {isLoading && !salaryData.length ? (
         <div
           style={{
-            padding: "2rem",
+            padding: "var(--content-padding)",
             textAlign: "center",
-            color: "#64748b",
+            color: "var(--text-secondary)",
           }}
         >
           Loading salary records...

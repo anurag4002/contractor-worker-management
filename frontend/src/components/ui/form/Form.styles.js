@@ -6,7 +6,8 @@ import styled from "styled-components";
 
 export const FormPage = styled.div`
   min-height: 100vh;
-  padding: 2rem;
+  min-height: 100dvh;
+  padding: var(--content-padding);
   background: var(--bg);
 
   @media (max-width: 768px) {
@@ -20,8 +21,13 @@ export const FormContainer = styled.div`
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 1.5rem;
-  padding: 2rem;
+  padding: var(--content-padding);
   box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    border-radius: 1rem;
+  }
 `;
 
 export const FormHeader = styled.div`
@@ -59,6 +65,7 @@ export const FormGrid = styled.div`
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
   }
 `;
 
@@ -116,6 +123,11 @@ export const SectionCard = styled.div`
   border-radius: 0.75rem;
   padding: 1.25rem;
   margin-bottom: 1.25rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    border-radius: 0.6rem;
+  }
 `;
 
 export const SectionTitle = styled.h4`
@@ -367,6 +379,7 @@ export const ModalOverlay = styled.div`
 
   @media (max-width: 768px) {
     padding: 1rem;
+    align-items: flex-end;
   }
 `;
 
@@ -379,6 +392,7 @@ export const ModalContainer = styled.div`
   border-radius: 1.5rem;
   box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
   max-height: calc(100vh - 4rem);
+  max-height: calc(100dvh - 4rem);
   display: flex;
   flex-direction: column;
   animation: popup 0.25s ease;
@@ -397,7 +411,9 @@ export const ModalContainer = styled.div`
   @media (max-width: 768px) {
     max-width: 100%;
     max-height: calc(100vh - 2rem);
-    border-radius: 1.25rem;
+    max-height: calc(100dvh - 2rem);
+    border-radius: 1.25rem 1.25rem 0 0;
+    margin-bottom: 0;
   }
 `;
 
@@ -454,6 +470,7 @@ export const ModalFooter = styled.div`
   @media (max-width: 768px) {
     flex-direction: column-reverse;
     flex-wrap: nowrap;
+    padding: 1rem;
   }
 `;
 

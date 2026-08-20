@@ -1,22 +1,30 @@
 import styled from "styled-components";
 
 export const HeaderContainer = styled.header`
-  height: 5rem;
+  height: var(--header-height);
   background: var(--surface);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 2rem;
+  padding: 0 var(--content-padding);
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
-  z-index: 999;
+  z-index: 998;
+  gap: 1rem;
+
+  @media (max-width: 640px) {
+    padding: 0 1rem;
+    gap: 0.5rem;
+  }
 `;
 
 export const LeftSection = styled.div`
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
+  min-width: 0;
+  flex: 1;
 `;
 
 export const MenuButton = styled.button`
@@ -32,10 +40,17 @@ export const MenuButton = styled.button`
   font-size: 1.2rem;
   color: var(--text);
   transition: 0.3s;
+  flex-shrink: 0;
 
   &:hover {
     background: var(--primary);
     color: white;
+  }
+
+  @media (max-width: 640px) {
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 0.6rem;
   }
 `;
 
@@ -61,10 +76,15 @@ export const SearchBar = styled.div`
     font-size: 0.95rem;
     background: transparent;
     color: var(--input-text);
+    min-width: 0;
 
     &::placeholder {
       color: var(--input-placeholder);
     }
+  }
+
+  @media (max-width: 1024px) {
+    width: 16rem;
   }
 
   @media (max-width: 768px) {
@@ -76,6 +96,7 @@ export const RightSection = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-shrink: 0;
 `;
 
 export const IconButton = styled.button`
@@ -96,6 +117,13 @@ export const IconButton = styled.button`
   &:hover {
     background: var(--primary);
     color: white;
+  }
+
+  @media (max-width: 640px) {
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 0.6rem;
+    font-size: 1rem;
   }
 `;
 
@@ -119,6 +147,13 @@ export const ThemeToggle = styled.button`
     color: white;
     border-color: var(--primary);
   }
+
+  @media (max-width: 640px) {
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 0.6rem;
+    font-size: 1rem;
+  }
 `;
 
 export const NotificationBadge = styled.span`
@@ -141,6 +176,10 @@ export const UserProfile = styled.div`
   align-items: center;
   gap: 0.8rem;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    gap: 0.4rem;
+  }
 `;
 
 export const Avatar = styled.div`
@@ -153,6 +192,13 @@ export const Avatar = styled.div`
   justify-content: center;
   align-items: center;
   font-weight: 700;
+  flex-shrink: 0;
+
+  @media (max-width: 640px) {
+    width: 2.4rem;
+    height: 2.4rem;
+    font-size: 0.9rem;
+  }
 `;
 
 export const UserInfo = styled.div`

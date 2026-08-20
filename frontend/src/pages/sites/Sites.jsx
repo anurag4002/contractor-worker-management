@@ -24,12 +24,8 @@ const Sites = () => {
   const { exportSitesPdf, downloading } = useExport();
   const { searchQuery } = useSearch();
 
-  console.log("Sites Component Rendered");
-
   const sitesData = Array.isArray(sites) ? sites : [];
   const workersData = Array.isArray(workers) ? workers : [];
-
-  console.log("Sites: rendered. sites length:", sitesData?.length, "loading:", loading);
 
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
@@ -42,19 +38,12 @@ const Sites = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Sites useEffect");
-    console.log("Fetching Sites");
     const params = { page, limit };
     if (search) params.search = search;
     if (status && status !== "All") params.status = status;
 
-    fetchSites(params).then(() => {
-      console.log("Sites API Success");
-      console.log("State Updated");
-    });
+    fetchSites(params);
   }, [page, search, status, fetchSites]);
-
-  console.log("State Updated");
 
   const [selectedSite, setSelectedSite] = useState(null);
 
@@ -138,7 +127,7 @@ const Sites = () => {
       </Header>
 
       {loading && !sitesData.length ? (
-        <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
+        <div style={{ padding: "var(--content-padding)", textAlign: "center", color: "var(--text-secondary)" }}>
           Loading sites...
         </div>
       ) : (
@@ -178,7 +167,7 @@ const Sites = () => {
           />
 
           {pagination && pagination.totalPages > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
               <Button disabled={page === 1} onClick={() => handlePageChange(page - 1)}>
                 <FiChevronLeft /> Prev
               </Button>

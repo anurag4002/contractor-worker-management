@@ -110,11 +110,11 @@ const Dashboard = () => {
           </HeaderLeft>
         </DashboardHeader>
         {isLoading ? (
-          <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
+          <div style={{ padding: "var(--content-padding)", textAlign: "center", color: "var(--text-secondary)" }}>
             Searching…
           </div>
         ) : searchResults.length === 0 ? (
-          <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
+          <div style={{ padding: "var(--content-padding)", textAlign: "center", color: "var(--text-secondary)" }}>
             No matching results found.
           </div>
         ) : (
@@ -175,7 +175,7 @@ const Dashboard = () => {
         <StatsGrid>
           {[1, 2, 3, 4, 5].map(i => <SkeletonBlock key={i} height="8rem" />)}
         </StatsGrid>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(24rem, 1fr))', gap: '1.5rem', marginTop: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 24rem), 1fr))', gap: '1rem', marginTop: '1rem' }}>
           <SkeletonBlock height="22rem" radius="1rem" />
           <SkeletonBlock height="22rem" radius="1rem" />
           <SkeletonBlock height="22rem" radius="1rem" />
@@ -249,19 +249,11 @@ const Dashboard = () => {
     },
   ];
 
-  console.log("Dashboard API Response:", dashboard);
-  console.log("Sites data:", dashboard?.sites);
-  console.log("Active Sites count:", dashboard?.sites?.active);
-
   const hasAttendance = presentCount > 0 || absentCount > 0 || leaveCount > 0 || halfDayCount > 0 || holidayCount > 0;
 
   const attendanceChart = charts?.attendanceChart || [];
   const payrollChart = charts?.payrollStatusChart || [];
   const siteWorkersChart = charts?.siteWorkerChart || [];
-
-  console.log("Attendance Chart:", attendanceChart);
-  console.log("Payroll Chart:", payrollChart);
-  console.log("Site Workers Chart:", siteWorkersChart);
 
   return (
     <DashboardContainer>

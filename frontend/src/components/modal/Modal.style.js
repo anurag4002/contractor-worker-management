@@ -23,6 +23,11 @@ export const Overlay = styled.div`
       opacity:1;
     }
   }
+
+  @media (max-width: 768px) {
+    align-items: flex-end;
+    padding: 0;
+  }
 `;
 
 export const ModalCard = styled.div`
@@ -52,7 +57,10 @@ export const ModalCard = styled.div`
   }
 
   @media(max-width:768px){
-      width:95%;
+      width:100%;
+      max-height: 90vh;
+      max-height: 90dvh;
+      border-radius: 1.25rem 1.25rem 0 0;
   }
 `;
 

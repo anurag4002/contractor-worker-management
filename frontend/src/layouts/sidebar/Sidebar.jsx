@@ -37,6 +37,7 @@ import {
   LogoutConfirmActions,
   LogoutConfirmBtn,
   LogoutCancelBtn,
+  SidebarBackdrop,
 } from "./Sidebar.style";
 
 const iconMap = {
@@ -49,7 +50,7 @@ const iconMap = {
   FiSettings,
 };
 
-const Sidebar = ({ sidebarOpen }) => {
+const Sidebar = ({ sidebarOpen, onClose }) => {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -75,29 +76,30 @@ const Sidebar = ({ sidebarOpen }) => {
   };
 
   return (
-    <SidebarContainer $sidebarOpen={sidebarOpen}>
-      <TopSection>
+    <>
+      <SidebarContainer $sidebarOpen={sidebarOpen}>
+        <TopSection>
 
-        <LogoSection>
+          <LogoSection>
 
-          <LogoIcon>C</LogoIcon>
+            <LogoIcon>C</LogoIcon>
 
-          <LogoText $sidebarOpen={sidebarOpen}>
-            <h2>Contractor</h2>
-            <p>Worker Management</p>
-          </LogoText>
+            <LogoText $sidebarOpen={sidebarOpen}>
+              <h2>Contractor</h2>
+              <p>Worker Management</p>
+            </LogoText>
 
-        </LogoSection>
+          </LogoSection>
 
-        <Menu>
+          <Menu>
 
-          {sidebarData.menu.map((item) => {
+            {sidebarData.menu.map((item) => {
 
-            const Icon = iconMap[item.icon];
+              const Icon = iconMap[item.icon];
 
-            return (
+              return (
 
-              <MenuItem key={item.id}>
+                <MenuItem key={item.id}>
 
                 <NavLink
                   to={item.path}
@@ -105,111 +107,120 @@ const Sidebar = ({ sidebarOpen }) => {
                     textDecoration: "none",
                     display: "block",
                   }}
+                  onClick={() => {
+                    if (window.innerWidth <= 768 && onClose) {
+                      onClose();
+                    }
+                  }}
                 >
-                  {({ isActive }) => (
+                    {({ isActive }) => (
 
-                    <MenuButton
-                      type="button"
-                      $active={isActive}
-                      $sidebarOpen={sidebarOpen}
-                    >
+                      <MenuButton
+                        type="button"
+                        $active={isActive}
+                        $sidebarOpen={sidebarOpen}
+                      >
 
-                      <Icon />
+                        <Icon />
 
-                      <span>{item.title}</span>
+                        <span>{item.title}</span>
 
-                    </MenuButton>
+                      </MenuButton>
 
-                  )}
-                </NavLink>
+                    )}
+                  </NavLink>
 
-              </MenuItem>
+                </MenuItem>
 
-            );
+              );
 
-          })}
+            })}
 
-        </Menu>
+          </Menu>
 
-      </TopSection>
+        </TopSection>
 
-      <BottomSection>
+        <BottomSection>
 
-        <UserCard
-          as={NavLink}
-          to="/profile"
-          onClick={() => {
-            if (!sidebarOpen) {
-              /* allow navigation when sidebar is collapsed */
-            }
-          }}
-        >
+          <UserCard
+            as={NavLink}
+            to="/profile"
+            onClick={() => {
+              if (!sidebarOpen) {
+                /* allow navigation when sidebar is collapsed */
+              }
+            }}
+          >
 
-          <Avatar>A</Avatar>
+            <Avatar>A</Avatar>
 
-          <UserInfo $sidebarOpen={sidebarOpen}>
+            <UserInfo $sidebarOpen={sidebarOpen}>
 
-            <h4>Admin User</h4>
+              <h4>Admin User</h4>
 
-            <p>Administrator</p>
+              <p>Administrator</p>
 
-          </UserInfo>
+            </UserInfo>
 
-        </UserCard>
+          </UserCard>
 
-        {sidebarOpen && (
+          {sidebarOpen && (
 
-          <>
+            <>
 
-            <LogoutButton
-              type="button"
-              onClick={handleLogoutClick}
-            >
+              <LogoutButton
+                type="button"
+                onClick={handleLogoutClick}
+              >
 
-              <FiLogOut />
+                <FiLogOut />
 
-              Logout
+                Logout
 
-            </LogoutButton>
+              </LogoutButton>
 
-            {showLogoutConfirm && (
+              {showLogoutConfirm && (
 
-              <LogoutConfirm>
+                <LogoutConfirm>
 
-                <LogoutConfirmOverlay />
+                  <LogoutConfirmOverlay />
 
-                <LogoutConfirmCard>
+                  <LogoutConfirmCard>
 
-                  <LogoutConfirmTitle>Confirm Logout</LogoutConfirmTitle>
+                    <LogoutConfirmTitle>Confirm Logout</LogoutConfirmTitle>
 
-                  <LogoutConfirmText>
-                    Are you sure you want to logout?
-                  </LogoutConfirmText>
+                    <LogoutConfirmText>
+                      Are you sure you want to logout?
+                    </LogoutConfirmText>
 
-                  <LogoutConfirmActions>
+                    <LogoutConfirmActions>
 
-                    <LogoutCancelBtn onClick={handleLogoutCancel}>
-                      Cancel
-                    </LogoutCancelBtn>
+                      <LogoutCancelBtn onClick={handleLogoutCancel}>
+                        Cancel
+                      </LogoutCancelBtn>
 
-                    <LogoutConfirmBtn onClick={handleLogoutConfirm}>
-                      Logout
-                    </LogoutConfirmBtn>
+                      <LogoutConfirmBtn onClick={handleLogoutConfirm}>
+                        Logout
+                      </LogoutConfirmBtn>
 
-                  </LogoutConfirmActions>
+                    </LogoutConfirmActions>
 
-                </LogoutConfirmCard>
+                  </LogoutConfirmCard>
 
-              </LogoutConfirm>
+                </LogoutConfirm>
 
-            )}
-          </>
+              )}
+            </>
+          )}
 
-        )}
+        </BottomSection>
 
-      </BottomSection>
+      </SidebarContainer>
 
-    </SidebarContainer>
+      {sidebarOpen && (
+        <SidebarBackdrop onClick={onClose} />
+      )}
+    </>
   );
 };
 

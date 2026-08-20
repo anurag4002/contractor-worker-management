@@ -15,7 +15,7 @@ export const TableCard = styled.div`
 export const Table = styled.table`
   width: 100%;
 
-  min-width: 1250px;
+  min-width: 1100px;
 
   border-collapse: collapse;
 
@@ -49,8 +49,6 @@ export const Table = styled.table`
 
     color: var(--text);
 
-    font-size: .9rem;
-
     border-bottom: 1px solid var(--surface-hover);
 
     white-space: nowrap;
@@ -67,6 +65,10 @@ export const Table = styled.table`
 
     background: var(--table-header-bg);
 
+  }
+
+  @media (max-width: 768px) {
+    min-width: 900px;
   }
 `;
 
@@ -149,5 +151,11 @@ export const IconButton = styled.button`
 
     color: var(--surface);
 
+  }
+
+  @media (max-width: 768px) {
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 0.7rem;
   }
 `;

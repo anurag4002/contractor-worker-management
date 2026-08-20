@@ -18,24 +18,25 @@ import {
 } from "./Reports.style";
 
 const TABS = [
-  { id: "dashboard", label: "📊 Dashboard" },
-  { id: "workers", label: "👷 Workers" },
-  { id: "attendance", label: "📅 Attendance" },
-  { id: "payroll", label: "💰 Payroll" },
-  { id: "sites", label: "🏗 Sites" },
-  { id: "export", label: "📥 Export" },
+  { id: "dashboard", label: "Dashboard" },
+  { id: "workers", label: "Workers" },
+  { id: "attendance", label: "Attendance" },
+  { id: "payroll", label: "Payroll" },
+  { id: "sites", label: "Sites" },
+  { id: "export", label: "Export" },
 ];
 
 const tabStyle = (active) => ({
   padding: "0.65rem 1.35rem",
   border: "none",
   borderRadius: "0.65rem",
-  background: active ? "#2563eb" : "#f1f5f9",
-  color: active ? "var(--text-on-primary)" : "#475569",
+  background: active ? "var(--primary)" : "var(--surface-hover)",
+  color: active ? "var(--text-on-primary)" : "var(--text)",
   fontWeight: active ? 700 : 500,
-  fontSize: "0.9rem",
+  fontSize: "0.85rem",
   cursor: "pointer",
   transition: "0.2s",
+  whiteSpace: "nowrap",
 });
 
 const Reports = () => {
@@ -57,7 +58,7 @@ const Reports = () => {
         </TitleSection>
         <ActionSection>
           {/* Tab bar */}
-          <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: "0.5rem", overflowX: "auto", paddingBottom: "0.25rem", width: "100%", WebkitOverflowScrolling: "touch" }}>
             {TABS.map((t) => (
               <button
                 key={t.id}

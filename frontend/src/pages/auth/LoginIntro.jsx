@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { FiCheckCircle } from "react-icons/fi";
 
@@ -362,20 +362,48 @@ const AnimatedFeatureList = ({ visibleCount }) => {
    ============================================================ */
 
 const AnimatedStat = ({ label, value, duration, delay, popDelay, labelDelay, isCurrency }) => {
-  const display = useCountUp(
-    value,
-    duration,
-    delay,
+  const [started, setStarted] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (started) return;
+    const timer = setTimeout(() => setStarted(true), delay || 0);
+    return () => clearTimeout(timer);
+  }, [delay, started]);
+
+  const formatter = useCallback(
     isCurrency
-      ? (v) => `₹${Number(v).toLocaleString("en-IN")}`
-      : (v) => String(v)
+      ? (v) => `₹${Number(Math.round(v)).toLocaleString("en-IN")}`
+      : (v) => String(Math.round(v)),
+    [isCurrency]
   );
 
+  const display = useCountUp(value, duration, started, formatter);
+
+  if (shouldReduceMotion) {
+    return (
+      <DashboardStat>
+        <DashboardStatLabel $labelDelay={labelDelay}>{label}</DashboardStatLabel>
+        <DashboardStatValue $popDelay={popDelay}>{display}</DashboardStatValue>
+      </DashboardStat>
+    );
+  }
+
   return (
-    <DashboardStat>
-      <DashboardStatLabel $labelDelay={labelDelay}>{label}</DashboardStatLabel>
-      <DashboardStatValue $popDelay={popDelay}>{display}</DashboardStatValue>
-    </DashboardStat>
+    <motion.div
+      animate={{ y: [0, -6, 0] }}
+      transition={{
+        duration: 3,
+        delay: (delay || 0) / 1000,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+    >
+      <DashboardStat>
+        <DashboardStatLabel $labelDelay={labelDelay}>{label}</DashboardStatLabel>
+        <DashboardStatValue $popDelay={popDelay}>{display}</DashboardStatValue>
+      </DashboardStat>
+    </motion.div>
   );
 };
 

@@ -74,13 +74,13 @@ export const Title = styled.p`
 export const Value = styled.h2`
   margin: 0.6rem 0;
   color: var(--text);
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 700;
   line-height: 1.2;
   word-break: break-word;
 
   @media (max-width: 768px) {
-    font-size: 1.65rem;
+    font-size: clamp(1.25rem, 4vw, 1.65rem);
   }
 `;
 

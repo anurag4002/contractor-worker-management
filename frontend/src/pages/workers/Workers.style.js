@@ -5,7 +5,7 @@ export const WorkersContainer = styled.div`
 
   flex-direction: column;
 
-  gap: 2rem;
+  gap: 1.5rem;
 
   width: 100%;
 
@@ -20,14 +20,14 @@ export const Header = styled.div`
 
   @media (max-width:768px){
     flex-direction:column;
-    align-items:flex-start;
+    align-items:stretch;
   }
 `;
 
 export const TitleSection = styled.div`
   h2{
     margin:0;
-    font-size:2rem;
+    font-size:clamp(1.25rem, 2.5vw, 2rem);
     color:var(--text);
     font-weight:700;
   }
@@ -35,12 +35,13 @@ export const TitleSection = styled.div`
   p{
     margin:.5rem 0 0;
     color:var(--text-secondary);
+    font-size:clamp(0.8rem, 1.5vw, 0.95rem);
   }
 `;
 
 export const ActionSection = styled.div`
   display:flex;
-  gap:1rem;
+  gap:0.75rem;
   flex-wrap:wrap;
 `;
 
@@ -83,8 +84,20 @@ export const Button = styled.button`
 
   transition:.3s;
 
+  white-space: nowrap;
+
   &:hover{
       background:var(--primary-hover);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 640px) {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
   }
 `;
 
@@ -199,8 +212,18 @@ export const IconButton = styled.button`
 
   transition:.3s;
 
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
   &:hover{
       background:var(--primary);
       color:white;
+  }
+
+  @media (max-width: 768px) {
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 0.7rem;
   }
 `;

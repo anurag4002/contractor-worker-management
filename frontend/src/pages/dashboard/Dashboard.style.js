@@ -62,7 +62,7 @@ export const HelperText = styled.p`
 export const DashboardContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
 `;
 
 export const DashboardHeader = styled.div`
@@ -70,15 +70,17 @@ export const DashboardHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   background: var(--surface);
-  padding: 1.5rem 2rem;
+  padding: 1.25rem 1.5rem;
   border-radius: 1rem;
   border: 1px solid var(--border);
   box-shadow: 0 0.25rem 0.75rem var(--shadow);
+  gap: 1rem;
 
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    padding: 1rem;
+    gap: 0.75rem;
   }
 `;
 
@@ -86,23 +88,29 @@ export const HeaderLeft = styled.div`
   h2 {
     margin: 0;
     color: var(--text);
-    font-size: 2rem;
+    font-size: clamp(1.25rem, 2.5vw, 2rem);
     font-weight: 700;
   }
 
   p {
-    margin: 0.5rem 0 0;
+    margin: 0.35rem 0 0;
     color: var(--text-secondary);
+    font-size: clamp(0.8rem, 1.5vw, 0.95rem);
   }
 `;
 
 export const HeaderRight = styled.div`
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   color: var(--text-secondary);
   font-weight: 500;
   flex-wrap: wrap;
+
+  @media (max-width: 640px) {
+    width: 100%;
+    justify-content: space-between;
+  }
 `;
 
 export const ExportButton = styled.button`
@@ -112,11 +120,12 @@ export const ExportButton = styled.button`
   border: none;
   background: var(--primary);
   color: var(--text);
-  padding: 0.85rem 1.4rem;
+  padding: 0.75rem 1.2rem;
   border-radius: 0.75rem;
   cursor: pointer;
   font-weight: 600;
   transition: 0.25s;
+  font-size: 0.9rem;
 
   &:hover {
     background: var(--primary-hover);
@@ -128,24 +137,33 @@ export const ExportButton = styled.button`
     outline: 3px solid rgba(37, 99, 235, 0.25);
     outline-offset: 2px;
   }
+
+  @media (max-width: 640px) {
+    padding: 0.65rem 1rem;
+    font-size: 0.85rem;
+  }
 `;
 
 export const StatsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(
     auto-fit,
-    minmax(15rem, 1fr)
+    minmax(min(100%, 14rem), 1fr)
   );
-  gap: 1.5rem;
+  gap: 1rem;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 export const DashboardGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(
     auto-fit,
-    minmax(22rem, 1fr)
+    minmax(min(100%, 20rem), 1fr)
   );
-  gap: 1.5rem;
+  gap: 1rem;
   align-items: start;
 `;
 
@@ -155,24 +173,29 @@ export const Section = styled.div`
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 1rem;
-  padding: 1.5rem;
-  min-height: 22rem;
+  padding: 1.25rem;
+  min-height: 18rem;
   box-shadow: 0 0.25rem 0.75rem var(--shadow);
+
+  @media (max-width: 640px) {
+    padding: 1rem;
+    min-height: auto;
+  }
 `;
 
 export const SectionTitle = styled.h3`
-  margin: 0 0 1.5rem;
+  margin: 0 0 1rem;
   color: var(--text);
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 700;
 `;
 
 export const QuickActions = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  gap: 0.75rem;
 
-  @media (max-width: 600px) {
+  @media (max-width: 480px) {
     grid-template-columns: 1fr;
   }
 `;
@@ -182,12 +205,12 @@ export const ActionCard = styled.button`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.9rem;
+  gap: 0.75rem;
   width: 100%;
   border: 1px solid var(--border);
   background: var(--bg);
   border-radius: 1rem;
-  padding: 1.6rem;
+  padding: 1.25rem;
   cursor: pointer;
   color: var(--text);
   transition: 0.3s;

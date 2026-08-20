@@ -42,7 +42,7 @@ export const TableCard = styled.div`
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 1rem;
-  overflow: hidden;
+  overflow-x: auto;
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
 `;
 
@@ -67,6 +67,10 @@ export const Table = styled.table`
   }
   tbody tr:hover { background: var(--bg); }
   tbody tr:last-child td { border-bottom: none; }
+
+  @media (max-width: 768px) {
+    min-width: 800px;
+  }
 `;
 
 export const Status = styled.span`
@@ -104,6 +108,11 @@ export const IconButton = styled.button`
   font-size: 0.85rem;
   transition: 0.2s;
   &:hover { background: var(--surface-hover); color: var(--text); }
+
+  @media (max-width: 768px) {
+    padding: 0.5rem 0.7rem;
+    font-size: 0.9rem;
+  }
 `;
 
 export const FilterBar = styled.div`

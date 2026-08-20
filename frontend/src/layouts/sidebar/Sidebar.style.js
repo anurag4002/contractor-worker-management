@@ -4,8 +4,9 @@ export const SidebarContainer = styled.aside`
   position: sticky;
   top: 0;
   width: ${({ $sidebarOpen }) =>
-    $sidebarOpen ? "16rem" : "5rem"};
+    $sidebarOpen ? "var(--sidebar-width)" : "var(--sidebar-collapsed-width)"};
   height: 100vh;
+  height: 100dvh;
   background: var(--sidebar-bg);
   display: flex;
   flex-direction: column;
@@ -19,11 +20,15 @@ export const SidebarContainer = styled.aside`
   @media (max-width:768px){
     position: fixed;
     left: 0;
+    top: 0;
+    height: 100vh;
+    height: 100dvh;
     transform: ${({ $sidebarOpen }) =>
     $sidebarOpen
       ? "translateX(0)"
       : "translateX(-100%)"};
-    width: 16rem;
+    width: var(--sidebar-width);
+    box-shadow: 4px 0 24px rgba(0,0,0,.4);
   }
 `;
 
@@ -303,5 +308,17 @@ export const LogoutCancelBtn = styled.button`
   &:focus-visible {
     outline: 2px solid var(--primary);
     outline-offset: 2px;
+  }
+`;
+
+export const SidebarBackdrop = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
   }
 `;

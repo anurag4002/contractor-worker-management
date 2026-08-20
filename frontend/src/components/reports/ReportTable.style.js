@@ -59,6 +59,10 @@ export const Table = styled.table`
   tbody tr:hover {
     background: var(--table-row-hover);
   }
+
+  @media (max-width: 768px) {
+    min-width: 900px;
+  }
 `;
 
 export const Status = styled.span`
@@ -96,7 +100,7 @@ export const IconButton = styled.button`
   width: 2.4rem;
   height: 2.4rem;
   border: none;
-  border-radius: 0.65rem;
+  border-radius: .65rem;
   background: var(--primary-light);
   color: var(--primary);
   display: flex;
@@ -108,5 +112,11 @@ export const IconButton = styled.button`
   &:hover {
     background: var(--primary);
     color: var(--text-on-primary);
+  }
+
+  @media (max-width: 768px) {
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 0.7rem;
   }
 `;

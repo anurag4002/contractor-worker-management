@@ -21,7 +21,7 @@ export const Header = styled.div`
 export const TitleSection = styled.div`
   h2 {
     margin: 0;
-    font-size: 2rem;
+    font-size: clamp(1.25rem, 2.5vw, 2rem);
     color: var(--text);
     font-weight: 700;
   }
@@ -29,6 +29,7 @@ export const TitleSection = styled.div`
   p {
     margin-top: 0.5rem;
     color: var(--text-secondary);
+    font-size: clamp(0.8rem, 1.5vw, 0.95rem);
   }
 `;
 

@@ -20,7 +20,7 @@ const DashboardLayout = () => {
   return (
     <LayoutWrapper>
 
-      <Sidebar sidebarOpen={sidebarOpen} />
+      <Sidebar sidebarOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <ContentWrapper sidebarOpen={sidebarOpen}>
 

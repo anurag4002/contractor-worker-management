@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 
 import {
   ResponsiveContainer,
@@ -33,19 +33,9 @@ const DashboardCharts = ({
   payrollChart,
   siteWorkersChart,
 }) => {
-  const [attendance, setAttendance] = useState([]);
-  const [payroll, setPayroll] = useState([]);
-  const [sites, setSites] = useState([]);
-
-  useEffect(() => {
-    console.log("Attendance Chart Prop:", attendanceChart);
-    console.log("Payroll Chart Prop:", payrollChart);
-    console.log("Site Workers Chart Prop:", siteWorkersChart);
-
-    setAttendance(attendanceChart || []);
-    setPayroll(payrollChart || []);
-    setSites(siteWorkersChart || []);
-  }, [attendanceChart, payrollChart, siteWorkersChart]);
+  const attendance = useMemo(() => attendanceChart || [], [attendanceChart]);
+  const payroll = useMemo(() => payrollChart || [], [payrollChart]);
+  const sites = useMemo(() => siteWorkersChart || [], [siteWorkersChart]);
 
   return (
     <ChartsGrid>
@@ -56,13 +46,13 @@ const DashboardCharts = ({
         </ChartTitle>
 
         {attendance.length === 0 ? (
-          <div style={{ height: 300, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)" }}>
+          <div style={{ height: 250, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)" }}>
             No attendance data available.
           </div>
         ) : (
           <ResponsiveContainer
             width="100%"
-            height={300}
+            height={250}
           >
             <BarChart data={attendance}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -89,21 +79,21 @@ const DashboardCharts = ({
         </ChartTitle>
 
         {payroll.length === 0 ? (
-          <div style={{ height: 300, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)" }}>
+          <div style={{ height: 250, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)" }}>
             No payroll data available.
           </div>
         ) : (
           <ResponsiveContainer
             width="100%"
-            height={300}
+            height={250}
           >
             <PieChart>
               <Pie
                 data={payroll}
                 dataKey="value"
                 nameKey="name"
-                outerRadius={100}
-                label
+                outerRadius={80}
+                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
               >
                 {payroll.map(
                   (_, index) => (
@@ -131,13 +121,13 @@ const DashboardCharts = ({
         </ChartTitle>
 
         {sites.length === 0 ? (
-          <div style={{ height: 300, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)" }}>
+          <div style={{ height: 250, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)" }}>
             No site worker data available.
           </div>
         ) : (
           <ResponsiveContainer
             width="100%"
-            height={300}
+            height={250}
           >
             <BarChart data={sites}>
               <CartesianGrid strokeDasharray="3 3" />

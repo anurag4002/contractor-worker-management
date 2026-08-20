@@ -15,6 +15,17 @@ import {
   ActionButtons,
   IconButton,
   SkeletonRow,
+  WorkerCardList,
+  WorkerCard,
+  WorkerCardHeader,
+  WorkerCardIdentity,
+  WorkerCardName,
+  WorkerCardMeta,
+  WorkerCardBody,
+  WorkerCardField,
+  WorkerCardLabel,
+  WorkerCardValue,
+  WorkerCardActions,
 } from "./WorkerTable.style";
 
 const WorkerTable = ({
@@ -24,6 +35,66 @@ const WorkerTable = ({
   onEdit,
   onDelete,
 }) => {
+
+  const renderMobileCard = (worker, index) => (
+    <WorkerCard key={`card-${worker._id}`}>
+      <WorkerCardHeader>
+        <WorkerCardIdentity>
+          <Avatar>
+            {worker.fullName?.charAt(0)?.toUpperCase() || "W"}
+          </Avatar>
+          <div>
+            <WorkerCardName>{worker.fullName}</WorkerCardName>
+            <WorkerCardMeta>{worker.employeeCode || worker._id}</WorkerCardMeta>
+          </div>
+        </WorkerCardIdentity>
+        <Status status={worker.status || "Active"}>
+          {worker.status || "Active"}
+        </Status>
+      </WorkerCardHeader>
+      <WorkerCardBody>
+        <WorkerCardField>
+          <WorkerCardLabel>Mobile</WorkerCardLabel>
+          <WorkerCardValue>{worker.mobileNumber || "-"}</WorkerCardValue>
+        </WorkerCardField>
+        <WorkerCardField>
+          <WorkerCardLabel>Trade</WorkerCardLabel>
+          <WorkerCardValue>{worker.trade || "-"}</WorkerCardValue>
+        </WorkerCardField>
+        <WorkerCardField>
+          <WorkerCardLabel>Skill</WorkerCardLabel>
+          <WorkerCardValue>{worker.skillLevel || "-"}</WorkerCardValue>
+        </WorkerCardField>
+        <WorkerCardField>
+          <WorkerCardLabel>Site</WorkerCardLabel>
+          <WorkerCardValue>{worker.site || "-"}</WorkerCardValue>
+        </WorkerCardField>
+        <WorkerCardField>
+          <WorkerCardLabel>Wage</WorkerCardLabel>
+          <WorkerCardValue>
+            {worker.salaryType === "DAILY"
+              ? `₹${Number(worker.dailyWage || 0).toLocaleString("en-IN")}/Day`
+              : `₹${Number(worker.monthlySalary || 0).toLocaleString("en-IN")}/Month`}
+          </WorkerCardValue>
+        </WorkerCardField>
+        <WorkerCardField>
+          <WorkerCardLabel>Joined</WorkerCardLabel>
+          <WorkerCardValue>{worker.joiningDate || "-"}</WorkerCardValue>
+        </WorkerCardField>
+      </WorkerCardBody>
+      <WorkerCardActions>
+        <IconButton title="View Profile" onClick={() => onView(worker)}>
+          <FiEye />
+        </IconButton>
+        <IconButton title="Edit Worker" onClick={() => onEdit(worker)}>
+          <FiEdit />
+        </IconButton>
+        <IconButton title="Delete Worker" onClick={() => onDelete(worker)} style={{ color: 'var(--danger)' }}>
+          <FiTrash2 />
+        </IconButton>
+      </WorkerCardActions>
+    </WorkerCard>
+  );
 
   return (
 
@@ -116,51 +187,55 @@ const WorkerTable = ({
 
                          worker.documents?.photo ? (
 
-                          <img
+                           <img
 
-                            src={worker.documents?.photo}
+                             src={worker.documents?.photo}
 
-                            alt={worker.fullName}
+                             alt={worker.fullName}
 
-                            width="42"
+                             width="42"
 
-                            height="42"
+                             height="42"
 
-                            style={{
+                             style={
 
-                              borderRadius: "50%",
+                               {
 
-                              objectFit: "cover",
+                                 borderRadius: "50%",
 
-                            }}
+                                 objectFit: "cover",
 
-                          />
+                               }
 
-                        ) : (
+                             }
 
-                          <Avatar>
+                           />
 
-                            {
+                         ) : (
 
-                               worker.fullName
+                           <Avatar>
 
-                                 ?.charAt(0)
+                             {
 
-                                ?.toUpperCase() || "W"
+                                worker.fullName
 
-                            }
+                                  ?.charAt(0)
 
-                          </Avatar>
+                                 ?.toUpperCase() || "W"
 
-                        )
+                             }
 
-                      }
+                           </Avatar>
+
+                         )
+
+                       }
 
                     </WorkerInfo>
 
                   </td>
 
-<td>
+                  <td>
 
                       {worker._id}
 
@@ -180,13 +255,13 @@ const WorkerTable = ({
 
                   <td>
 
-                     {worker.trade}
+                    {worker.trade}
 
                   </td>
 
                   <td>
 
-                     {worker.skillLevel}
+                    {worker.skillLevel}
 
                   </td>
 
@@ -320,10 +395,21 @@ const WorkerTable = ({
 
       </Table>
 
+      <WorkerCardList>
+        {loading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <WorkerCard key={`skel-${i}`}>
+              <SkeletonRow />
+            </WorkerCard>
+          ))
+        ) : (
+          workers.map((worker, index) => renderMobileCard(worker, index))
+        )}
+      </WorkerCardList>
+
     </TableCard>
 
   );
-
 };
 
 export default WorkerTable;

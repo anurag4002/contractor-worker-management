@@ -115,7 +115,7 @@ const Attendance = () => {
       </Header>
 
       {loading && !attendanceData.length ? (
-        <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
+        <div style={{ padding: "var(--content-padding)", textAlign: "center", color: "var(--text-secondary)" }}>
           Loading attendance records...
         </div>
       ) : (
@@ -154,7 +154,7 @@ const Attendance = () => {
           />
 
           {pagination && pagination.totalPages > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
               <Button disabled={page === 1} onClick={() => handlePageChange(page - 1)}>
                 <FiChevronLeft /> Prev
               </Button>

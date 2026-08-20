@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { useEffect } from "react";
+import { motion, useReducedMotion, useAnimation } from "framer-motion";
 import { ScrollReveal } from "./ScrollReveal";
+import { AnimatedStat } from "../../components/countup/AnimatedStat";
+import { AnimatedNumber } from "../../components/countup/AnimatedNumber";
 import {
   FiUsers,
   FiMapPin,
@@ -194,13 +197,113 @@ const badgeVariants = {
   },
 };
 
-const headingVariants = {
-  hidden: { opacity: 0, y: 25 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: "easeOut" },
-  },
+const HERO_WORDS_LINE_1 = ["Manage", "Workers,", "Attendance,", "Sites", "&"];
+const HERO_WORDS_LINE_2 = ["Payroll", "from", "One", "Dashboard"];
+
+const AnimatedHeroHeading = () => {
+  const controls = useAnimation();
+  const reducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (reducedMotion) return;
+
+    let mounted = true;
+
+    const runLoop = async () => {
+      while (mounted) {
+        await controls.start("visible");
+        if (!mounted) return;
+
+        await new Promise((r) => setTimeout(r, 1500));
+        if (!mounted) return;
+
+        await controls.start("hidden");
+        if (!mounted) return;
+
+        await new Promise((r) => setTimeout(r, 300));
+        if (!mounted) return;
+      }
+    };
+
+    runLoop();
+
+    return () => {
+      mounted = false;
+      controls.stop();
+    };
+  }, [controls, reducedMotion]);
+
+  if (reducedMotion) {
+    return (
+      <HeroTitle>
+        Manage Workers, Attendance, Sites & Payroll from One Dashboard
+      </HeroTitle>
+    );
+  }
+
+  const wordVariants = {
+    hidden: {
+      opacity: 0,
+      y: 12,
+      filter: "blur(4px)",
+      transition: { duration: 0.25, ease: "easeIn" },
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      transition: { duration: 0.38, ease: "easeOut" },
+    },
+  };
+
+  const line1Variants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.12,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const line2Variants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.12,
+        delayChildren: 0.75,
+      },
+    },
+  };
+
+  return (
+    <HeroTitle>
+      <motion.span
+        variants={line1Variants}
+        initial="hidden"
+        animate={controls}
+        style={{ display: "block" }}
+      >
+        {HERO_WORDS_LINE_1.map((word, i) => (
+          <motion.span key={i} variants={wordVariants} style={{ display: "inline" }}>
+            {word}{" "}
+          </motion.span>
+        ))}
+      </motion.span>
+      <motion.span
+        variants={line2Variants}
+        initial="hidden"
+        animate={controls}
+        style={{ display: "block" }}
+      >
+        {HERO_WORDS_LINE_2.map((word, i) => (
+          <motion.span key={i} variants={wordVariants} style={{ display: "inline" }}>
+            {word}{" "}
+          </motion.span>
+        ))}
+      </motion.span>
+    </HeroTitle>
+  );
 };
 
 const descriptionVariants = {
@@ -288,6 +391,7 @@ const statusBadgeVariants = {
 const LandingPage = () => {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const shouldReduceMotion = useReducedMotion();
 
   const handleLoginClick = () => {
     navigate("/login");
@@ -359,12 +463,7 @@ const LandingPage = () => {
             </motion.div>
 
             <HeroTitle>
-              <motion.div variants={headingVariants}>
-                Manage Workers, Attendance, Sites &
-              </motion.div>
-              <motion.div variants={headingVariants}>
-                Payroll from One Dashboard
-              </motion.div>
+              <AnimatedHeroHeading />
             </HeroTitle>
 
             <motion.div variants={descriptionVariants}>
@@ -400,7 +499,16 @@ const LandingPage = () => {
             animate="visible"
             transition={{ delay: 0.7 }}
           >
-            <DashboardMockWrapper>
+            <motion.div
+              animate={shouldReduceMotion ? { y: 0 } : { y: [0, -8, 0] }}
+              transition={{
+                duration: 4,
+                delay: 1.5,
+                repeat: shouldReduceMotion ? 0 : Infinity,
+                ease: "easeInOut",
+              }}
+            >
+              <DashboardMockWrapper>
               <MockHeader>
                 <motion.div variants={dashboardHeaderVariants} initial="hidden" animate="visible">
                   <MockDots>
@@ -421,7 +529,7 @@ const LandingPage = () => {
                     <MockCard>
                       <div className="meta">
                         <span>Total Workers</span>
-                        <h4>148</h4>
+                        <h4><AnimatedNumber value={148} /></h4>
                       </div>
                       <div className="icon-box" style={{ background: "#eff6ff", color: "#2563eb" }}>
                         <FiUsers />
@@ -432,7 +540,7 @@ const LandingPage = () => {
                     <MockCard>
                       <div className="meta">
                         <span>Present Today</span>
-                        <h4>126</h4>
+                        <h4><AnimatedNumber value={126} /></h4>
                       </div>
                       <div className="icon-box" style={{ background: "#dcfce7", color: "#16a34a" }}>
                         <FiCheckCircle />
@@ -443,7 +551,7 @@ const LandingPage = () => {
                     <MockCard>
                       <div className="meta">
                         <span>Active Sites</span>
-                        <h4>12</h4>
+                        <h4><AnimatedNumber value={12} /></h4>
                       </div>
                       <div className="icon-box" style={{ background: "#fef3c7", color: "#d97706" }}>
                         <FiMapPin />
@@ -454,7 +562,7 @@ const LandingPage = () => {
                     <MockCard>
                       <div className="meta">
                         <span>Pending Salary</span>
-                        <h4>₹1,84,500</h4>
+                        <h4><AnimatedNumber value={184500} format="currency" /></h4>
                       </div>
                       <div className="icon-box" style={{ background: "#f3e8ff", color: "#7c3aed" }}>
                         <FiDollarSign />
@@ -504,6 +612,7 @@ const LandingPage = () => {
                 </motion.div>
               </MockBody>
             </DashboardMockWrapper>
+            </motion.div>
           </motion.div>
         </Container>
       </HeroSection>
@@ -514,19 +623,19 @@ const LandingPage = () => {
           <Container>
             <TrustGrid>
               <TrustCard>
-                <h3>5000+</h3>
+                <h3><AnimatedStat value={5000} suffix="+" /></h3>
                 <p>Workers Managed</p>
               </TrustCard>
               <TrustCard>
-                <h3>99.9%</h3>
+                <h3><AnimatedStat value={99.9} decimals={1} suffix="%" /></h3>
                 <p>Attendance Accuracy</p>
               </TrustCard>
               <TrustCard>
-                <h3>120+</h3>
+                <h3><AnimatedStat value={120} suffix="+" /></h3>
                 <p>Active Project Sites</p>
               </TrustCard>
               <TrustCard>
-                <h3>₹2.5Cr+</h3>
+                <h3><AnimatedStat value={25000000} formatter={(val) => `₹${(val / 10000000).toFixed(1)}Cr+`} /></h3>
                 <p>Payroll Processed</p>
               </TrustCard>
             </TrustGrid>
@@ -553,11 +662,21 @@ const LandingPage = () => {
                   transition={{ duration: 0.55, ease: "easeOut", delay: idx * 0.08 }}
                   whileHover={{ y: -4, scale: 1.01 }}
                 >
-                  <FeatureCard>
-                    <FeatureIconBox>{item.icon}</FeatureIconBox>
-                    <FeatureCardTitle>{item.title}</FeatureCardTitle>
-                    <FeatureCardDesc>{item.desc}</FeatureCardDesc>
-                  </FeatureCard>
+                  <motion.div
+                    animate={shouldReduceMotion ? { y: 0 } : { y: [0, -6, 0] }}
+                    transition={{
+                      duration: 4.5,
+                      delay: 1.2 + idx * 0.15,
+                      repeat: shouldReduceMotion ? 0 : Infinity,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <FeatureCard>
+                      <FeatureIconBox>{item.icon}</FeatureIconBox>
+                      <FeatureCardTitle>{item.title}</FeatureCardTitle>
+                      <FeatureCardDesc>{item.desc}</FeatureCardDesc>
+                    </FeatureCard>
+                  </motion.div>
                 </motion.div>
               ))}
             </FeaturesGrid>
@@ -584,14 +703,24 @@ const LandingPage = () => {
                   transition={{ duration: 0.55, ease: "easeOut", delay: idx * 0.08 }}
                   whileHover={{ y: -4, scale: 1.01 }}
                 >
-                  <ModuleCard>
-                    <div className="top">
-                      <div className="module-icon">{item.icon}</div>
-                      <span className="tag">{item.tag}</span>
-                    </div>
-                    <h4>{item.title}</h4>
-                    <p>{item.desc}</p>
-                  </ModuleCard>
+                  <motion.div
+                    animate={shouldReduceMotion ? { y: 0 } : { y: [0, -7, 0] }}
+                    transition={{
+                      duration: 5,
+                      delay: 1.2 + idx * 0.12,
+                      repeat: shouldReduceMotion ? 0 : Infinity,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <ModuleCard>
+                      <div className="top">
+                        <div className="module-icon">{item.icon}</div>
+                        <span className="tag">{item.tag}</span>
+                      </div>
+                      <h4>{item.title}</h4>
+                      <p>{item.desc}</p>
+                    </ModuleCard>
+                  </motion.div>
                 </motion.div>
               ))}
             </ModulesGrid>
@@ -617,11 +746,21 @@ const LandingPage = () => {
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.55, ease: "easeOut", delay: idx * 0.12 }}
                 >
-                  <WorkflowStepCard>
-                    <div className="step-num">{item.step}</div>
-                    <h4>{item.title}</h4>
-                    <p>{item.desc}</p>
-                  </WorkflowStepCard>
+                  <motion.div
+                    animate={shouldReduceMotion ? { y: 0 } : { y: [0, -5, 0] }}
+                    transition={{
+                      duration: 4.5,
+                      delay: 1.2 + idx * 0.15,
+                      repeat: shouldReduceMotion ? 0 : Infinity,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <WorkflowStepCard>
+                      <div className="step-num">{item.step}</div>
+                      <h4>{item.title}</h4>
+                      <p>{item.desc}</p>
+                    </WorkflowStepCard>
+                  </motion.div>
                 </motion.div>
               ))}
             </WorkflowGrid>
