@@ -15,6 +15,11 @@ export const Overlay = styled.div`
   overflow-y: auto;
 
   z-index: 9999;
+
+  @media (max-width: 768px) {
+    padding: 0.75rem;
+    align-items: flex-end;
+  }
 `;
 
 export const Modal = styled.div`
@@ -30,6 +35,7 @@ export const Modal = styled.div`
   box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
 
   max-height: calc(100vh - 4rem);
+  max-height: calc(100dvh - 4rem);
 
   overflow-y: auto;
 
@@ -49,7 +55,8 @@ export const Modal = styled.div`
 
   @media (max-width: 768px) {
     max-width: 100%;
-    max-height: calc(100vh - 2rem);
+    max-height: calc(100vh - 1.5rem);
+    max-height: calc(100dvh - 1.5rem);
     border-radius: .75rem;
   }
 `;

@@ -68,7 +68,7 @@ export const Table = styled.table`
   }
 
   @media (max-width: 768px) {
-    min-width: 900px;
+    min-width: 1100px;
   }
 `;
 

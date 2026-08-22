@@ -7,6 +7,15 @@ export const Page = styled.div`
   align-items: center;
   padding: 2rem;
   background: var(--bg);
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    align-items: flex-start;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+  }
 `;
 
 export const Card = styled.div`
@@ -17,6 +26,16 @@ export const Card = styled.div`
   padding: 2.5rem;
   box-shadow: 0 28px 60px var(--shadow-lg);
   border: 1px solid var(--border);
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    border-radius: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+  }
 `;
 
 export const AvatarCircle = styled.div`
@@ -90,6 +109,11 @@ export const FieldBox = styled.div`
   border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 0.9rem 1rem;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
 `;
 
 export const FieldIcon = styled.div`

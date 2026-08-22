@@ -43,10 +43,13 @@ export const ActionSection = styled.div`
   display:flex;
   gap:0.75rem;
   flex-wrap:wrap;
+  align-items: center;
 `;
 
 export const SearchBox = styled.div`
-  width:20rem;
+  flex: 1;
+  min-width: 0;
+  max-width: 20rem;
   position:relative;
 
   input{
@@ -63,7 +66,7 @@ export const SearchBox = styled.div`
   }
 
   @media(max-width:768px){
-      width:100%;
+      max-width: 100%;
   }
 `;
 

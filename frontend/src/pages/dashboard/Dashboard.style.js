@@ -106,6 +106,13 @@ export const HeaderRight = styled.div`
   color: var(--text-secondary);
   font-weight: 500;
   flex-wrap: wrap;
+  min-width: 0;
+
+  span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
 
   @media (max-width: 640px) {
     width: 100%;

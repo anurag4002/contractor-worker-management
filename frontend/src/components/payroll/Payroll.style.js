@@ -69,7 +69,7 @@ export const Table = styled.table`
   tbody tr:last-child td { border-bottom: none; }
 
   @media (max-width: 768px) {
-    min-width: 800px;
+    min-width: 0;
   }
 `;
 

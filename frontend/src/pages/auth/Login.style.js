@@ -44,6 +44,11 @@ export const LoginPage = styled.div`
   }
   @media (max-width: 768px) {
     padding: 1rem;
+    align-items: flex-start;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
   }
 `;
 
@@ -226,8 +231,13 @@ export const LoginCard = styled.div`
   box-shadow: 0 20px 50px var(--shadow-lg);
 
   @media (max-width: 560px) {
-    padding: 2rem;
+    padding: 1.5rem;
     border-radius: 1rem;
+  }
+
+  @media (max-width: 400px) {
+    padding: 1.25rem;
+    border-radius: 0.75rem;
   }
 `;
 

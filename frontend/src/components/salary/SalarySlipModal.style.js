@@ -8,6 +8,7 @@ export const Overlay = styled.div`
   justify-content:center;
   align-items:center;
   z-index:999;
+  padding: 1rem;
 `;
 
 export const Modal = styled.div`
@@ -17,6 +18,14 @@ export const Modal = styled.div`
   border-radius:1rem;
   overflow:hidden;
   box-shadow:0 20px 60px rgba(15,23,42,.18);
+  max-height: calc(100dvh - 2rem);
+  display: flex;
+  flex-direction: column;
+
+  @media(max-width:768px){
+    max-height: calc(100dvh - 1rem);
+    border-radius: .75rem;
+  }
 `;
 
 export const Header = styled.div`
@@ -40,7 +49,8 @@ export const CloseButton = styled.button`
 `;
 
 export const Body = styled.div`
-  padding:2rem;
+  padding: 2rem;
+  overflow-y: auto;
 `;
 
 export const Grid = styled.div`
@@ -68,6 +78,8 @@ export const Value = styled.span`
   font-size:1rem;
   font-weight:600;
   color:var(--text);
+  word-break: break-word;
+  overflow-wrap: anywhere;
 `;
 
 export const Footer = styled.div`
@@ -75,6 +87,14 @@ export const Footer = styled.div`
   justify-content:flex-end;
   padding:1.5rem;
   border-top:1px solid var(--border);
+
+  @media (max-width: 768px) {
+    justify-content: stretch;
+
+    button {
+      width: 100%;
+    }
+  }
 `;
 
 export const Button = styled.button`

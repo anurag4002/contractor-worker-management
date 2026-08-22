@@ -11,6 +11,14 @@ const Page = styled.div`
   min-height: 100dvh;
   padding: var(--content-padding);
   background: var(--bg);
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+  }
 `;
 
 const Card = styled.div`
@@ -25,6 +33,11 @@ const Card = styled.div`
   @media (max-width: 768px) {
     padding: 1rem;
     border-radius: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+    border-radius: 0.75rem;
   }
 `;
 

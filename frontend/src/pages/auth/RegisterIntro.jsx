@@ -148,6 +148,17 @@ const useReducedMotion = () => {
   return reduced;
 };
 
+const useWindowWidth = () => {
+  const [width, setWidth] = useState(() => (typeof window !== 'undefined' ? window.innerWidth : 0));
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handler = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+  return width;
+};
+
 /* ============================================================
    ANIMATED HEADING
    ============================================================ */
@@ -190,7 +201,9 @@ const AnimatedHeading = ({ animate, loop }) => {
             key={lineIdx}
             style={{
               display: "block",
-              whiteSpace: "pre",
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
               font: "inherit",
               fontWeight: 800,
               fontSize: "clamp(2.5rem, 4vw, 3.5rem)",
@@ -219,7 +232,9 @@ const AnimatedHeading = ({ animate, loop }) => {
           key={lineIdx}
           style={{
             display: "block",
-            whiteSpace: "pre",
+            whiteSpace: "normal",
+            wordBreak: "break-word",
+            overflowWrap: "break-word",
             font: "inherit",
             fontWeight: 800,
             fontSize: "clamp(2.5rem, 4vw, 3.5rem)",
@@ -416,14 +431,16 @@ const TravelingLight = ({ step, containerRef }) => {
    ANIMATED STEP
    ============================================================ */
 
-const AnimatedStep = ({ stepData, index, animate }) => {
+const AnimatedStep = ({ stepData, index, animate, width }) => {
+  const isMobile = width <= 768;
+
   if (animate === "hidden") {
     return (
       <div
         data-step={index}
         style={{
           position: "relative",
-          paddingLeft: "2.6rem",
+          paddingLeft: isMobile ? "0" : "2.6rem",
           paddingBottom: "1.15rem",
           opacity: 0,
           transform: "translateX(-10px)",
@@ -431,9 +448,9 @@ const AnimatedStep = ({ stepData, index, animate }) => {
       >
         <span
           style={{
-            position: "absolute",
-            left: "0.3rem",
-            top: "0.1rem",
+            position: isMobile ? "static" : "absolute",
+            left: isMobile ? "0" : "0.3rem",
+            top: isMobile ? "0" : "0.1rem",
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
@@ -445,6 +462,7 @@ const AnimatedStep = ({ stepData, index, animate }) => {
             fontSize: "0.85rem",
             fontWeight: 700,
             zIndex: 2,
+            marginBottom: isMobile ? "0.3rem" : "0",
           }}
         >
           {stepData.number}
@@ -481,14 +499,18 @@ const AnimatedStep = ({ stepData, index, animate }) => {
       initial="hidden"
       animate={animate}
       data-step={index}
-      style={{ position: "relative", paddingLeft: "2.6rem", paddingBottom: "1.15rem" }}
+      style={{
+        position: "relative",
+        paddingLeft: isMobile ? "0" : "2.6rem",
+        paddingBottom: "1.15rem",
+      }}
     >
       <motion.span variants={stepNumberVariants}>
         <span
           style={{
-            position: "absolute",
-            left: "0.3rem",
-            top: "0.1rem",
+            position: isMobile ? "static" : "absolute",
+            left: isMobile ? "0" : "0.3rem",
+            top: isMobile ? "0" : "0.1rem",
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
@@ -500,6 +522,7 @@ const AnimatedStep = ({ stepData, index, animate }) => {
             fontSize: "0.85rem",
             fontWeight: 700,
             zIndex: 2,
+            marginBottom: isMobile ? "0.3rem" : "0",
           }}
         >
           {stepData.number}
@@ -542,13 +565,14 @@ const AnimatedStep = ({ stepData, index, animate }) => {
 const AnimatedSteps = ({ visibleCount }) => {
   const reducedMotion = useReducedMotion();
   const containerRef = useRef(null);
+  const width = useWindowWidth();
 
   if (reducedMotion) {
     return (
       <StepsSection ref={containerRef} aria-label="Registration overview">
         <StepsConnector />
         {ONBOARDING_STEPS.map((step, i) => (
-          <AnimatedStep key={i} stepData={step} index={i} animate="visible" />
+          <AnimatedStep key={i} stepData={step} index={i} animate="visible" width={width} />
         ))}
       </StepsSection>
     );
@@ -564,6 +588,7 @@ const AnimatedSteps = ({ visibleCount }) => {
           stepData={step}
           index={i}
           animate={i < visibleCount ? "visible" : "hidden"}
+          width={width}
         />
       ))}
     </StepsSection>

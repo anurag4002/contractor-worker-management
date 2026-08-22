@@ -14,7 +14,8 @@ export const Header = styled.div`
 
   @media (max-width: 768px) {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: 0.75rem;
   }
 `;
 
@@ -37,6 +38,18 @@ export const ActionSection = styled.div`
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
+  justify-content: flex-end;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: stretch;
+
+    button {
+      flex: 1 1 auto;
+      min-width: 0;
+      width: 100%;
+    }
+  }
 `;
 
 export const Button = styled.button`

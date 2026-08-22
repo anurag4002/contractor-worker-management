@@ -32,7 +32,9 @@ export const Title = styled.h3`
 `;
 
 export const SearchBox = styled.div`
-  width: 20rem;
+  flex: 1;
+  min-width: 0;
+  max-width: 20rem;
   position: relative;
 
   svg {
@@ -58,7 +60,7 @@ export const SearchBox = styled.div`
   }
 
   @media (max-width: 768px) {
-    width: 100%;
+    max-width: 100%;
   }
 `;
 

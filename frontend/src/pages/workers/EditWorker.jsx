@@ -18,9 +18,18 @@ const Spinner = styled(FiLoader)`
 
 const Page = styled.div`
   min-height: 100vh;
+  min-height: 100dvh;
   padding: 2rem;
   background: var(--bg);
   overflow-x: hidden;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+  }
 `;
 
 const Card = styled.div`
@@ -31,6 +40,16 @@ const Card = styled.div`
   border-radius: 1.5rem;
   padding: 2rem;
   box-shadow: 0 20px 50px var(--shadow-medium);
+
+  @media (max-width: 768px) {
+    padding: 1.25rem;
+    border-radius: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1rem;
+    border-radius: 0.75rem;
+  }
 `;
 
 const Header = styled.div`

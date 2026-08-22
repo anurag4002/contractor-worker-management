@@ -26,7 +26,7 @@ export const Overlay = styled.div`
 
   @media (max-width: 768px) {
     align-items: flex-end;
-    padding: 0;
+    padding: 0.75rem;
   }
 `;
 

@@ -5,6 +5,7 @@ export const Dropdown = styled.div`
   top: 3.8rem;
   right: 0;
   width: 18rem;
+  max-width: calc(100vw - 2rem);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 1rem;
@@ -13,8 +14,8 @@ export const Dropdown = styled.div`
   z-index: 1000;
 
   @media (max-width:768px) {
-    width: 16rem;
-    right: -1rem;
+    width: min(16rem, calc(100vw - 2rem));
+    right: 0;
   }
 `;
 

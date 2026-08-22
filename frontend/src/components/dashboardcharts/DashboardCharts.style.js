@@ -14,9 +14,22 @@ export const ChartCard = styled.div`
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 1rem;
-  padding: 1rem;
+  padding: 1.5rem;
   box-shadow: 0 0.25rem 0.75rem var(--shadow);
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  > div:last-child {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  @media (max-width: 640px) {
+    padding: 1rem;
+  }
 `;
 
 export const ChartTitle = styled.h3`

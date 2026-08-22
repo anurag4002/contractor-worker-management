@@ -10,6 +10,12 @@ export const Overlay = styled.div`
   align-items:center;
 
   z-index:999;
+  padding: 1rem;
+
+  @media (max-width: 768px) {
+    padding: 0.75rem;
+    align-items: flex-end;
+  }
 `;
 
 export const Modal = styled.div`
@@ -23,6 +29,14 @@ export const Modal = styled.div`
   overflow:hidden;
 
   box-shadow:0 20px 60px rgba(15,23,42,.18);
+  max-height: calc(100dvh - 2rem);
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: 768px) {
+    max-height: calc(100dvh - 1.5rem);
+    border-radius: .75rem;
+  }
 `;
 
 export const Header = styled.div`

@@ -55,7 +55,9 @@ export const MenuButton = styled.button`
 `;
 
 export const SearchBar = styled.div`
-  width: 24rem;
+  flex: 1;
+  min-width: 0;
+  max-width: 24rem;
   display: flex;
   align-items: center;
   gap: 0.8rem;
@@ -84,7 +86,7 @@ export const SearchBar = styled.div`
   }
 
   @media (max-width: 1024px) {
-    width: 16rem;
+    max-width: 16rem;
   }
 
   @media (max-width: 768px) {
@@ -96,7 +98,12 @@ export const RightSection = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  flex-shrink: 0;
+  flex-shrink: 1;
+  min-width: 0;
+
+  @media (max-width: 640px) {
+    gap: 0.25rem;
+  }
 `;
 
 export const IconButton = styled.button`
@@ -174,11 +181,12 @@ export const NotificationBadge = styled.span`
 export const UserProfile = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.4rem;
   cursor: pointer;
+  min-width: 0;
 
   @media (max-width: 768px) {
-    gap: 0.4rem;
+    gap: 0;
   }
 `;
 

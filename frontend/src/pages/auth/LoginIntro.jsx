@@ -188,7 +188,9 @@ const AnimatedHeading = () => {
             key={lineIdx}
             style={{
               display: "block",
-              whiteSpace: "pre",
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
               font: "inherit",
               fontWeight: 800,
               fontSize: "clamp(2.5rem, 4vw, 3.5rem)",
@@ -217,7 +219,9 @@ const AnimatedHeading = () => {
           key={lineIdx}
           style={{
             display: "block",
-            whiteSpace: "pre",
+            whiteSpace: "normal",
+            wordBreak: "break-word",
+            overflowWrap: "break-word",
             font: "inherit",
             fontWeight: 800,
             fontSize: "clamp(2.5rem, 4vw, 3.5rem)",

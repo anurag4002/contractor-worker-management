@@ -11,6 +11,7 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
+  Legend,
 } from "recharts";
 
 import {
@@ -93,7 +94,6 @@ const DashboardCharts = ({
                 dataKey="value"
                 nameKey="name"
                 outerRadius={80}
-                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
               >
                 {payroll.map(
                   (_, index) => (
@@ -110,6 +110,7 @@ const DashboardCharts = ({
                 )}
               </Pie>
               <Tooltip />
+              <Legend />
             </PieChart>
           </ResponsiveContainer>
         )}
