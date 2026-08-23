@@ -66,8 +66,11 @@ const Sites = () => {
   };
 
   const handleAssigned = async () => {
+    const params = { page, limit };
+    if (search) params.search = search;
+    if (status && status !== "All") params.status = status;
     await Promise.all([
-      fetchSites({ page, limit, search, status }),
+      fetchSites(params),
       fetchWorkers(),
     ]);
   };
@@ -183,8 +186,6 @@ const Sites = () => {
           <SiteDetailsModal
             open={detailsOpen}
             site={selectedSite}
-            workers={workersData}
-            attendance={[]}
             onClose={() => setDetailsOpen(false)}
           />
 
@@ -199,6 +200,7 @@ const Sites = () => {
             key={`${selectedSite?._id}-${attendanceOpen}`}
             open={attendanceOpen}
             site={selectedSite}
+            onSaved={handleAssigned}
             onClose={() => setAttendanceOpen(false)}
           />
 

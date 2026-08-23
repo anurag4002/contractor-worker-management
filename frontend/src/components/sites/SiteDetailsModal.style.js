@@ -91,15 +91,48 @@ export const Footer = styled.div`
   border-top:1px solid var(--border);
 `;
 
-export const Button = styled.button`
-  border:none;
-  background:var(--primary);
-  color: var(--text-on-primary);
-  padding:.9rem 1.6rem;
-  border-radius:.75rem;
-  cursor:pointer;
+export const WorkerList = styled.ul`
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 500;
+  list-style: disc;
+`;
 
-  &:hover{
-    background:var(--primary-hover);
+export const WorkerItem = styled.li`
+  line-height: 1.4;
+
+  span {
+    color: var(--text-secondary);
+    font-weight: 400;
+    font-size: 0.82rem;
+    margin-left: 0.4rem;
+  }
+`;
+
+export const Message = styled.div`
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+`;
+
+export const ErrorText = styled.div`
+  color: var(--danger);
+  font-size: 0.95rem;
+`;
+
+export const Button = styled.button`
+  border: none;
+  background: var(--primary);
+  color: var(--text-on-primary);
+  padding: 0.9rem 1.6rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--primary-hover);
   }
 `;

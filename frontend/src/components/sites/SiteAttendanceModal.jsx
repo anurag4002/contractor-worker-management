@@ -51,7 +51,7 @@ const extractArray = (res) => {
   return [];
 };
 
-const SiteAttendanceModal = ({ open, site, onClose }) => {
+const SiteAttendanceModal = ({ open, site, onClose, onSaved }) => {
   const [workers, setWorkers] = useState([]);
   const [attendance, setAttendance] = useState([]);
   const [statusMap, setStatusMap] = useState({});
@@ -170,6 +170,7 @@ const SiteAttendanceModal = ({ open, site, onClose }) => {
       await Promise.all(calls);
       showSuccess("Attendance saved successfully.");
       setRefreshKey((k) => k + 1);
+      if (onSaved) onSaved();
     } catch (err) {
       showError(err);
     } finally {
