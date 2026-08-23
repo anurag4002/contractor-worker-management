@@ -73,20 +73,20 @@ export const Status = styled.span`
   border-radius: 999px;
   font-size: 0.78rem;
   font-weight: 600;
-  background: ${({ status }) =>
-    status === "ACTIVE" || status === "PRESENT" || status === "PAID" ? "var(--badge-success-bg)" :
-      status === "GENERATED" || status === "HALF_DAY" ? "var(--badge-info-bg)" :
-        status === "PENDING" || status === "LEAVE" || status === "HOLIDAY" ? "var(--badge-warning-bg)" :
-          status === "INACTIVE" || status === "ABSENT" || status === "CANCELLED" ? "var(--badge-danger-bg)" :
-            status === "COMPLETED" ? "var(--badge-purple-bg)" :
+  background: ${({ $status }) =>
+    $status === "ACTIVE" || $status === "PRESENT" || $status === "PAID" ? "var(--badge-success-bg)" :
+      $status === "GENERATED" || $status === "HALF_DAY" ? "var(--badge-info-bg)" :
+        $status === "PENDING" || $status === "LEAVE" || $status === "HOLIDAY" ? "var(--badge-warning-bg)" :
+          $status === "INACTIVE" || $status === "ABSENT" || $status === "CANCELLED" ? "var(--badge-danger-bg)" :
+            $status === "COMPLETED" ? "var(--badge-purple-bg)" :
               "var(--surface-hover)"
   };
-  color: ${({ status }) =>
-    status === "ACTIVE" || status === "PRESENT" || status === "PAID" ? "var(--badge-success-fg)" :
-      status === "GENERATED" || status === "HALF_DAY" ? "var(--badge-info-fg)" :
-        status === "PENDING" || status === "LEAVE" || status === "HOLIDAY" ? "var(--badge-warning-fg)" :
-          status === "INACTIVE" || status === "ABSENT" || status === "CANCELLED" ? "var(--badge-danger-fg)" :
-            status === "COMPLETED" ? "var(--badge-purple-fg)" :
+  color: ${({ $status }) =>
+    $status === "ACTIVE" || $status === "PRESENT" || $status === "PAID" ? "var(--badge-success-fg)" :
+      $status === "GENERATED" || $status === "HALF_DAY" ? "var(--badge-info-fg)" :
+        $status === "PENDING" || $status === "LEAVE" || $status === "HOLIDAY" ? "var(--badge-warning-fg)" :
+          $status === "INACTIVE" || $status === "ABSENT" || $status === "CANCELLED" ? "var(--badge-danger-fg)" :
+            $status === "COMPLETED" ? "var(--badge-purple-fg)" :
               "var(--text-secondary)"
   };
 `;

@@ -87,13 +87,13 @@ export const Status = styled.span`
 
   font-weight: 600;
 
-  background: ${({ status }) =>
+  background: ${({ $status }) =>
 
-    status === "Paid"
+    $status === "Paid"
 
       ? "var(--badge-success-bg)"
 
-      : status === "Partial"
+      : $status === "Partial"
 
       ? "#FEF3C7"
 
@@ -101,13 +101,13 @@ export const Status = styled.span`
 
   };
 
-  color: ${({ status }) =>
+  color: ${({ $status }) =>
 
-    status === "Paid"
+    $status === "Paid"
 
       ? "#15803D"
 
-      : status === "Partial"
+      : $status === "Partial"
 
       ? "#B45309"
 

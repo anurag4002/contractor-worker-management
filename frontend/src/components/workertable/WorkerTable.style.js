@@ -70,12 +70,12 @@ export const Status = styled.span`
   border-radius:999px;
   font-size:.75rem;
   font-weight:600;
-  background:${({ status }) =>
-    status === "Active"
+  background:${({ $status }) =>
+    $status === "Active"
       ? "var(--badge-success-bg)"
       : "var(--badge-danger-bg)"};
-  color:${({ status }) =>
-    status === "Active"
+  color:${({ $status }) =>
+    $status === "Active"
       ? "var(--success)"
       : "var(--danger)"};
 `;

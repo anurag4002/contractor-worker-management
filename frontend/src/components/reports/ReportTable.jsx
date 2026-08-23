@@ -169,7 +169,7 @@ const ReportTable = ({
 
                     <td>
 
-                      <Status status={status}>
+                      <Status $status={status}>
 
                         {status}
 

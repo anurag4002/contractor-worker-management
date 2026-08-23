@@ -53,54 +53,79 @@ export const CloseButton = styled.button`
 `;
 
 export const SearchInput = styled.input`
-  width:calc(100% - 3rem);
+  width: calc(100% - 3rem);
+  margin: 1.5rem;
+  padding: .9rem 1rem;
+  border: 1px solid var(--input-border);
+  border-radius: .75rem;
+  outline: none;
+  min-width: 0;
 
-  margin:1.5rem;
+  &:focus {
+    border-color: var(--primary);
+  }
 
-  padding:.9rem 1rem;
-
-  border:1px solid var(--input-border);
-
-  border-radius:.75rem;
-
-  outline:none;
-
-  &:focus{
-
-    border-color:var(--primary);
-
+  @media (max-width: 768px) {
+    width: calc(100% - 2rem);
+    margin: 1rem;
+    padding: .8rem .9rem;
   }
 `;
 
 export const WorkerList = styled.div`
-  max-height:20rem;
+  max-height: 20rem;
+  overflow: auto;
+  padding: 0 1.5rem 1.5rem;
 
-  overflow:auto;
-
-  padding:0 1.5rem 1.5rem;
+  @media (max-width: 768px) {
+    max-height: 18rem;
+    padding: 0 1rem 1rem;
+  }
 `;
 
 export const WorkerItem = styled.div`
-  padding:1rem 0;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--surface-hover);
 
-  border-bottom:1px solid var(--surface-hover);
+  @media (max-width: 768px) {
+    padding: .85rem 0;
+  }
 `;
 
 export const Checkbox = styled.label`
-  display:flex;
+  display: flex;
+  align-items: flex-start;
+  gap: .8rem;
+  cursor: pointer;
 
-  align-items:center;
+  span {
+    color: var(--text);
+    font-weight: 500;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
 
-  gap:.8rem;
+  input[type="checkbox"] {
+    width: 1.1rem;
+    height: 1.1rem;
+    min-width: 1.1rem;
+    margin-top: 0.15rem;
+    cursor: pointer;
+  }
 
-  cursor:pointer;
+  @media (max-width: 768px) {
+    gap: .6rem;
 
-  span{
+    input[type="checkbox"] {
+      width: 1rem;
+      height: 1rem;
+      min-width: 1rem;
+    }
 
-    color:var(--text);
-
-    font-weight:500;
-
+    span {
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
   }
 `;
 
@@ -114,6 +139,11 @@ export const Footer = styled.div`
   padding:1.5rem;
 
   border-top:1px solid var(--border);
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
 `;
 
 export const CancelButton = styled.button`
@@ -128,6 +158,11 @@ export const CancelButton = styled.button`
   border-radius:.75rem;
 
   cursor:pointer;
+
+  @media (max-width: 768px) {
+    padding: .75rem 1.2rem;
+    font-size: 0.9rem;
+  }
 `;
 
 export const SaveButton = styled.button`
@@ -147,5 +182,10 @@ export const SaveButton = styled.button`
 
     background:var(--primary-hover);
 
+  }
+
+  @media (max-width: 768px) {
+    padding: .75rem 1.2rem;
+    font-size: 0.9rem;
   }
 `;

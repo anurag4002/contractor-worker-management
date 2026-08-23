@@ -41,7 +41,7 @@ const PayrollTable = ({ payrolls = [], onEdit, onDelete, onViewHistory, onChange
                                 <td>₹{(p.dailyWage || 0).toLocaleString("en-IN")}</td>
                                 <td style={{ fontWeight: 600 }}>₹{(p.netPayable || 0).toLocaleString("en-IN")}</td>
                                 <td>
-                                    <Status status={p.status}>{p.status || "PENDING"}</Status>
+                                    <Status $status={p.status}>{p.status || "PENDING"}</Status>
                                 </td>
                                 <td>
                                     <ActionButtons>

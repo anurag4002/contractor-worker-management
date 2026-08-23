@@ -27,12 +27,12 @@ const AssignWorkerModal = ({
   open,
   site,
   onClose,
-  workers: propWorkers,
   onAssigned,
 }) => {
   const [workers, setWorkers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [assigning, setAssigning] = useState(false);
+  const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState([]);
 
@@ -41,6 +41,8 @@ const AssignWorkerModal = ({
 
     setSelected([]);
     setSearch("");
+    setError(null);
+    setWorkers([]);
 
     const fetchAvailableWorkers = async () => {
       try {
@@ -52,23 +54,16 @@ const AssignWorkerModal = ({
         });
         const list = data?.data?.workers || data?.workers || data?.data || data || [];
         setWorkers(Array.isArray(list) ? list : []);
-      } catch (error) {
-        showError(error);
+      } catch (err) {
+        setError(err);
         setWorkers([]);
       } finally {
         setLoading(false);
       }
     };
 
-    if (Array.isArray(propWorkers) && propWorkers.length > 0) {
-      const available = propWorkers.filter(
-        (w) => !w.site || w.site === null || w.site === undefined
-      );
-      setWorkers(available);
-    } else {
-      fetchAvailableWorkers();
-    }
-  }, [open, site, propWorkers]);
+    fetchAvailableWorkers();
+  }, [open, site]);
 
   const filteredWorkers = useMemo(() => {
     const keyword = search.toLowerCase().trim();
@@ -134,7 +129,17 @@ const AssignWorkerModal = ({
         <WorkerList>
           {loading ? (
             <p style={{ padding: "1rem", textAlign: "center", color: "var(--text-secondary)" }}>
-              Loading workers...
+              Loading available workers...
+            </p>
+          ) : error ? (
+            <p
+              style={{
+                padding: "1rem",
+                textAlign: "center",
+                color: "var(--danger)",
+              }}
+            >
+              Unable to load available workers. Please try again.
             </p>
           ) : filteredWorkers.length === 0 ? (
             <p

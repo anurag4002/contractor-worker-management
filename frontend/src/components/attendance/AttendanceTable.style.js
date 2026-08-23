@@ -151,17 +151,17 @@ export const Status = styled.span`
 
   font-weight: 600;
 
-  background: ${({ status }) =>
-    status === "Present"
+  background: ${({ $status }) =>
+    $status === "Present"
       ? "var(--badge-success-bg)"
-      : status === "Absent"
+      : $status === "Absent"
       ? "var(--badge-danger-bg)"
       : "#FEF3C7"};
 
-  color: ${({ status }) =>
-    status === "Present"
+  color: ${({ $status }) =>
+    $status === "Present"
       ? "#15803D"
-      : status === "Absent"
+      : $status === "Absent"
       ? "var(--danger)"
       : "#B45309"};
 `;

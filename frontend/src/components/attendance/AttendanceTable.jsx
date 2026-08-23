@@ -28,7 +28,7 @@ const AttendanceTable = ({ records = [], onHistory, onMark, onDelete, onChangeSt
               <AttendanceCardMeta>{site.siteName || record.site || "No Site"}</AttendanceCardMeta>
             </div>
           </AttendanceCardIdentity>
-          <Status status={record.status} style={{ cursor: onChangeStatus ? 'pointer' : 'default' }}
+          <Status $status={record.status} style={{ cursor: onChangeStatus ? 'pointer' : 'default' }}
             onClick={() => onChangeStatus && onChangeStatus(record._id, record.status === "Present" ? "Absent" : "Present")}>
             {record.status || "Pending"}
           </Status>
@@ -112,7 +112,7 @@ const AttendanceTable = ({ records = [], onHistory, onMark, onDelete, onChangeSt
                   </td>
                   <td>
                     <Status
-                      status={record.status}
+                      $status={record.status}
                       style={{ cursor: onChangeStatus ? 'pointer' : 'default' }}
                       onClick={() => onChangeStatus && onChangeStatus(record._id, record.status === "Present" ? "Absent" : "Present")}
                     >

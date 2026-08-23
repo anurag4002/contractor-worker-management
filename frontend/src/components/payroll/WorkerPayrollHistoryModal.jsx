@@ -57,7 +57,7 @@ const WorkerPayrollHistoryModal = ({ open, onClose, payroll }) => {
                                             <td>{MONTHS[p.attendanceMonth]} {p.attendanceYear}</td>
                                             <td>₹{(p.dailyWage || 0).toLocaleString("en-IN")}</td>
                                             <td style={{ fontWeight: 600 }}>₹{(p.netPayable || 0).toLocaleString("en-IN")}</td>
-                                            <td><Status status={p.status}>{p.status}</Status></td>
+                                            <td><Status $status={p.status}>{p.status}</Status></td>
                                         </tr>
                                     ))}
                                 </tbody>

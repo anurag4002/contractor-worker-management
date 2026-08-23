@@ -78,15 +78,16 @@ export const StatusBadge = styled.span`
 
   border-radius:999px;
 
-  background:${({status}) =>
-    status === "Active"
+  background:${({$status}) =>
+    $status === "Active"
       ? "var(--badge-success-bg)"
       : "var(--badge-danger-bg)"};
 
-  color:${({status}) =>
-    status === "Active"
-      ? "#15803D"
+  color:${({$status}) =>
+    $status === "Active"
+      ? "var(--success)"
       : "var(--danger)"};
+
 
   font-size:.8rem;
 

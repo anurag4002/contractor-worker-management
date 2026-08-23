@@ -301,7 +301,7 @@ const SalaryTable = ({
 
                     <td>
 
-                      <Status status={status}>
+                      <Status $status={status}>
 
                         {status}
 

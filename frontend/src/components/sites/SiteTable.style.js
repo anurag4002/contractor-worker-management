@@ -73,15 +73,15 @@ export const Status = styled.span`
 
   font-weight: 600;
 
-  background: ${({ status }) =>
-    status === "Active"
+  background: ${({ $status }) =>
+    $status === "Active"
       ? "var(--badge-success-bg)"
-      : "var(--border)"};
+      : "var(--badge-warning-bg)"};
 
-  color: ${({ status }) =>
-    status === "Active"
-      ? "#15803D"
-      : "var(--text)"};
+  color: ${({ $status }) =>
+    $status === "Active"
+      ? "var(--success)"
+      : "var(--warning)"};
 `;
 
 export const ActionButtons = styled.div`

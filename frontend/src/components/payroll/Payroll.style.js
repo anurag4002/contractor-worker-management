@@ -80,16 +80,16 @@ export const Status = styled.span`
   border-radius: 999px;
   font-size: 0.78rem;
   font-weight: 600;
-  background: ${({ status }) =>
-    status === "PAID" ? "var(--badge-success-bg)" :
-      status === "GENERATED" ? "var(--badge-info-bg)" :
-        status === "PENDING" ? "var(--badge-warning-bg)" :
-          status === "CANCELLED" ? "var(--badge-danger-bg)" : "var(--surface-hover)"};
-  color: ${({ status }) =>
-    status === "PAID" ? "var(--success)" :
-      status === "GENERATED" ? "var(--primary)" :
-        status === "PENDING" ? "var(--warning)" :
-          status === "CANCELLED" ? "var(--danger)" : "var(--text-secondary)"};
+  background: ${({ $status }) =>
+    $status === "PAID" ? "var(--badge-success-bg)" :
+      $status === "GENERATED" ? "var(--badge-info-bg)" :
+        $status === "PENDING" ? "var(--badge-warning-bg)" :
+          $status === "CANCELLED" ? "var(--badge-danger-bg)" : "var(--surface-hover)"};
+  color: ${({ $status }) =>
+    $status === "PAID" ? "var(--success)" :
+      $status === "GENERATED" ? "var(--primary)" :
+        $status === "PENDING" ? "var(--warning)" :
+          $status === "CANCELLED" ? "var(--danger)" : "var(--text-secondary)"};
 `;
 
 export const ActionButtons = styled.div`

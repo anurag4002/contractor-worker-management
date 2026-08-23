@@ -48,7 +48,7 @@ const WorkerTable = ({
             <WorkerCardMeta>{worker.employeeCode || worker._id}</WorkerCardMeta>
           </div>
         </WorkerCardIdentity>
-        <Status status={worker.status || "Active"}>
+        <Status $status={worker.status || "Active"}>
           {worker.status || "Active"}
         </Status>
       </WorkerCardHeader>
@@ -309,7 +309,7 @@ const WorkerTable = ({
 
                     <Status
 
-                      status={
+                      $status={
 
                         worker.status || "Active"
 

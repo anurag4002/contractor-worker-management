@@ -179,13 +179,13 @@ export const Status = styled.span`
 
   border-radius:999px;
 
-  background:${({status})=>
-    status==="Present"
+  background:${({$status})=>
+    $status==="Present"
     ? "var(--badge-success-bg)"
     : "var(--badge-danger-bg)"};
 
-  color:${({status})=>
-    status==="Present"
+  color:${({$status})=>
+    $status==="Present"
     ? "#15803D"
     : "var(--danger)"};
 

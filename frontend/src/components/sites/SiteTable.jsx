@@ -151,7 +151,7 @@ const SiteTable = ({
                     <td>
 
                       <Status
-                        status={site.status}
+                        $status={site.status}
                         style={{ cursor: 'pointer' }}
                         onClick={() => onToggleStatus && onToggleStatus(site._id, site.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE')}
                       >

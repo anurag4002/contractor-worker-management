@@ -110,7 +110,7 @@ const WorkerProfileModal = ({
             </p>
 
             <StatusBadge
-              status={worker.status}
+              $status={worker.status}
             >
 
               {worker.status || "Active"}
@@ -260,7 +260,7 @@ const WorkerProfileModal = ({
             </Label>
 
             <StatusBadge
-              status={worker.status}
+              $status={worker.status}
             >
 
               {worker.status || "Active"}

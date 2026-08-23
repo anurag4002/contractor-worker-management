@@ -22,7 +22,7 @@ const DashboardLayout = () => {
 
       <Sidebar sidebarOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <ContentWrapper sidebarOpen={sidebarOpen}>
+      <ContentWrapper>
 
         <Header toggleSidebar={toggleSidebar} />
 

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { FiDownload, FiPlus, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import useWorkers from "../../hooks/useWorkers";
 import useSites from "../../hooks/useSites";
@@ -191,15 +191,14 @@ const Sites = () => {
           <AssignWorkerModal
             open={assignOpen}
             site={selectedSite}
-            workers={workersData}
             onAssigned={handleAssigned}
             onClose={() => setAssignOpen(false)}
           />
 
           <SiteAttendanceModal
+            key={`${selectedSite?._id}-${attendanceOpen}`}
             open={attendanceOpen}
             site={selectedSite}
-            attendance={[]}
             onClose={() => setAttendanceOpen(false)}
           />
 
