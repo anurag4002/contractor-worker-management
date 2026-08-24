@@ -1,6 +1,8 @@
 import Payroll from '../models/Payroll.js';
 import Worker from '../models/Worker.js';
 import Site from '../models/Site.js';
+import User from '../models/User.js';
+import Tenant from '../models/Tenant.js';
 
 import logger from '../common/logger/logger.js';
 
@@ -13,6 +15,8 @@ const seedPayroll = async () => {
 
   const workers = await Worker.find({ isDeleted: false });
   const sites = await Site.find({ isDeleted: false });
+  const adminUser = await User.findOne({ email: 'admin@contractor.com', isDeleted: false });
+  const adminTenant = await Tenant.findOne({ owner: adminUser?._id, isDeleted: false });
 
   const monthsToGenerate = 6;
   const endMonth = 8;
@@ -64,6 +68,7 @@ const seedPayroll = async () => {
       records.push({
         worker: worker._id,
         site: workerSite,
+        tenant: adminTenant?._id || worker.tenant || null,
         attendanceMonth: month,
         attendanceYear: year,
         workingDays,

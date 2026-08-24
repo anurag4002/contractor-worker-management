@@ -15,11 +15,17 @@ class PayrollRepository {
    * Find Payroll By Id
    * ==========================================
    */
-  async findById(payrollId, session = null) {
-    return await Payroll.findOne({
+  async findById(payrollId, tenantId = null) {
+    const query = {
       _id: payrollId,
       isDeleted: false,
-    })
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Payroll.findOne(query)
       .populate(
         'worker',
         'employeeCode fullName mobileNumber trade'
@@ -41,7 +47,6 @@ class PayrollRepository {
         match: { isDeleted: false },
         options: {
           sort: { paymentDate: -1 },
-          ...(session ? { session } : {}),
         },
       });
   }
@@ -54,14 +59,21 @@ class PayrollRepository {
   async findByWorkerAndMonth(
     worker,
     attendanceMonth,
-    attendanceYear
+    attendanceYear,
+    tenantId = null
   ) {
-    return await Payroll.findOne({
+    const query = {
       worker,
       attendanceMonth,
       attendanceYear,
       isDeleted: false,
-    });
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Payroll.findOne(query);
   }
 
   /**
@@ -69,8 +81,10 @@ class PayrollRepository {
    * Get Payroll List
    * ==========================================
    */
-  async findAll(filter, options) {
-    return await Payroll.find(filter)
+  async findAll(filter, options, tenantId = null) {
+    const query = tenantId ? { ...filter, tenant: tenantId } : filter;
+
+    return await Payroll.find(query)
       .populate(
         'worker',
         'employeeCode fullName mobileNumber trade'
@@ -102,8 +116,10 @@ class PayrollRepository {
    * Count Payroll
    * ==========================================
    */
-  async count(filter) {
-    return await Payroll.countDocuments(filter);
+  async count(filter, tenantId = null) {
+    const query = tenantId ? { ...filter, tenant: tenantId } : filter;
+
+    return await Payroll.countDocuments(query);
   }
 
   /**
@@ -114,13 +130,20 @@ class PayrollRepository {
   async update(
     payrollId,
     updateData,
+    tenantId = null,
     session = null
   ) {
+    const query = {
+      _id: payrollId,
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
     return await Payroll.findOneAndUpdate(
-      {
-        _id: payrollId,
-        isDeleted: false,
-      },
+      query,
       updateData,
       {
         returnDocument: 'after',
@@ -156,13 +179,19 @@ class PayrollRepository {
    * Get Payroll Payments
    * ==========================================
    */
-  async findPaymentsByPayroll(payrollId, options = {}) {
+  async findPaymentsByPayroll(payrollId, tenantId = null, options = {}) {
     const { skip = 0, limit = 10, sort = { paymentDate: -1 } } = options;
 
-    return await Payroll.findOne({
+    const query = {
       _id: payrollId,
       isDeleted: false,
-    })
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Payroll.findOne(query)
       .populate({
         path: 'payments',
         match: { isDeleted: false },
@@ -179,13 +208,20 @@ class PayrollRepository {
    */
   async changeStatus(
     payrollId,
-    status
+    status,
+    tenantId = null
   ) {
+    const query = {
+      _id: payrollId,
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
     return await Payroll.findOneAndUpdate(
-      {
-        _id: payrollId,
-        isDeleted: false,
-      },
+      query,
       {
         status,
       },
@@ -200,12 +236,18 @@ class PayrollRepository {
    * Soft Delete Payroll
    * ==========================================
    */
-  async softDelete(payrollId) {
+  async softDelete(payrollId, tenantId = null) {
+    const query = {
+      _id: payrollId,
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
     return await Payroll.findOneAndUpdate(
-      {
-        _id: payrollId,
-        isDeleted: false,
-      },
+      query,
       {
         isDeleted: true,
         deletedAt: new Date(),
@@ -223,12 +265,19 @@ class PayrollRepository {
    */
   async findWorkerPayrolls(
     workerId,
-    options
+    options,
+    tenantId = null
   ) {
-    return await Payroll.find({
+    const query = {
       worker: workerId,
       isDeleted: false,
-    })
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Payroll.find(query)
       .populate(
         'site',
         'siteCode siteName'
@@ -246,10 +295,12 @@ class PayrollRepository {
    * Payroll Summary
    * ==========================================
    */
-  async getSummary(filter) {
+  async getSummary(filter, tenantId = null) {
+    const query = tenantId ? { ...filter, tenant: tenantId } : filter;
+
     return await Payroll.aggregate([
       {
-        $match: filter,
+        $match: query,
       },
       {
         $group: {

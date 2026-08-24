@@ -15,36 +15,54 @@ class SiteRepository {
    * Find Site By Id
    * ==========================================
    */
-  async findById(siteId) {
-    return await Site.findOne({
+  async findById(siteId, tenantId = null) {
+    const query = {
       _id: siteId,
       isDeleted: false,
-    })
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Site.findOne(query)
       .populate('createdBy', 'fullName email')
       .populate('updatedBy', 'fullName email');
   }
-/**
- * ==========================================
- * Check Site Exists
- * ==========================================
- */
-async findActiveById(siteId) {
-  return await Site.findOne({
-    _id: siteId,
-    isDeleted: false,
-    status: 'ACTIVE',
-  });
-}
+  /**
+   * ==========================================
+   * Check Site Exists
+   * ==========================================
+   */
+  async findActiveById(siteId, tenantId = null) {
+    const query = {
+      _id: siteId,
+      isDeleted: false,
+      status: 'ACTIVE',
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Site.findOne(query);
+  }
   /**
    * ==========================================
    * Find By Site Code
    * ==========================================
    */
-  async findBySiteCode(siteCode) {
-    return await Site.findOne({
+  async findBySiteCode(siteCode, tenantId = null) {
+    const query = {
       siteCode,
       isDeleted: false,
-    });
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Site.findOne(query);
   }
 
   /**
@@ -52,11 +70,17 @@ async findActiveById(siteId) {
    * Find By Site Name
    * ==========================================
    */
-  async findBySiteName(siteName) {
-    return await Site.findOne({
+  async findBySiteName(siteName, tenantId = null) {
+    const query = {
       siteName,
       isDeleted: false,
-    });
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Site.findOne(query);
   }
 
   /**
@@ -64,11 +88,17 @@ async findActiveById(siteId) {
    * Find By Contact Number
    * ==========================================
    */
-  async findByContactNumber(contactNumber) {
-    return await Site.findOne({
+  async findByContactNumber(contactNumber, tenantId = null) {
+    const query = {
       contactNumber,
       isDeleted: false,
-    });
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Site.findOne(query);
   }
 
   /**
@@ -76,11 +106,17 @@ async findActiveById(siteId) {
    * Find By Email
    * ==========================================
    */
-  async findByEmail(email) {
-    return await Site.findOne({
+  async findByEmail(email, tenantId = null) {
+    const query = {
       email,
       isDeleted: false,
-    });
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Site.findOne(query);
   }
 
   /**
@@ -88,10 +124,16 @@ async findActiveById(siteId) {
    * Find Latest Site
    * ==========================================
    */
-  async findLatestSite() {
-    return await Site.findOne({
+  async findLatestSite(tenantId = null) {
+    const query = {
       isDeleted: false,
-    }).sort({
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Site.findOne(query).sort({
       siteCode: -1,
     });
   }
@@ -101,8 +143,10 @@ async findActiveById(siteId) {
    * Get All Sites
    * ==========================================
    */
-  async findAll(filter, options) {
-    return await Site.find(filter)
+  async findAll(filter, options, tenantId = null) {
+    const query = tenantId ? { ...filter, tenant: tenantId } : filter;
+
+    return await Site.find(query)
       .populate('createdBy', 'fullName email')
       .populate('updatedBy', 'fullName email')
       .sort(options.sort)
@@ -115,8 +159,10 @@ async findActiveById(siteId) {
    * Count Sites
    * ==========================================
    */
-  async count(filter) {
-    return await Site.countDocuments(filter);
+  async count(filter, tenantId = null) {
+    const query = tenantId ? { ...filter, tenant: tenantId } : filter;
+
+    return await Site.countDocuments(query);
   }
 
   /**
@@ -124,12 +170,18 @@ async findActiveById(siteId) {
    * Update Site
    * ==========================================
    */
-  async update(siteId, updateData) {
+  async update(siteId, updateData, tenantId = null) {
+    const query = {
+      _id: siteId,
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
     return await Site.findOneAndUpdate(
-      {
-        _id: siteId,
-        isDeleted: false,
-      },
+      query,
       updateData,
       {
         returnDocument: 'after',
@@ -145,12 +197,18 @@ async findActiveById(siteId) {
    * Change Site Status
    * ==========================================
    */
-  async changeStatus(siteId, status) {
+  async changeStatus(siteId, status, tenantId = null) {
+    const query = {
+      _id: siteId,
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
     return await Site.findOneAndUpdate(
-      {
-        _id: siteId,
-        isDeleted: false,
-      },
+      query,
       {
         status,
       },
@@ -165,12 +223,18 @@ async findActiveById(siteId) {
    * Soft Delete Site
    * ==========================================
    */
-  async softDelete(siteId) {
+  async softDelete(siteId, tenantId = null) {
+    const query = {
+      _id: siteId,
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
     return await Site.findOneAndUpdate(
-      {
-        _id: siteId,
-        isDeleted: false,
-      },
+      query,
       {
         isDeleted: true,
         deletedAt: new Date(),
@@ -186,19 +250,31 @@ async findActiveById(siteId) {
    * Get Active Sites
    * ==========================================
    */
-  async findActiveSites() {
-    return await Site.find({
+  async findActiveSites(tenantId = null) {
+    const query = {
       status: 'ACTIVE',
       isDeleted: false,
-    });
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Site.find(query);
   }
 
-  async addWorkers(siteId, workerIds, session = null) {
+  async addWorkers(siteId, workerIds, session = null, tenantId = null) {
+    const query = {
+      _id: siteId,
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
     return await Site.findOneAndUpdate(
-      {
-        _id: siteId,
-        isDeleted: false,
-      },
+      query,
       {
         $addToSet: {
           workers: {

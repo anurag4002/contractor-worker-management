@@ -87,6 +87,12 @@ const siteSchema = new mongoose.Schema(
       default: null,
     },
 
+    tenant: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tenant',
+      required: [true, 'Tenant is required'],
+    },
+
     startDate: {
       type: Date,
       required: true,
@@ -151,7 +157,7 @@ const siteSchema = new mongoose.Schema(
 */
 
 // Unique index
-siteSchema.index({ siteCode: 1 }, { unique: true });
+siteSchema.index({ tenant: 1, siteCode: 1 }, { unique: true });
 
 // Frequently queried fields
 siteSchema.index({ siteName: 1 });
@@ -159,8 +165,10 @@ siteSchema.index({ clientName: 1 });
 siteSchema.index({ projectName: 1 });
 siteSchema.index({ status: 1 });
 siteSchema.index({ isDeleted: 1 });
+siteSchema.index({ tenant: 1 });
 
-// Full-text search
+// Compound indexes
+siteSchema.index({ tenant: 1, isDeleted: 1 });
 siteSchema.index({
   siteName: 'text',
   clientName: 'text',

@@ -19,7 +19,15 @@ const seedRoles = async () => {
     {
       name: 'Super Admin',
       code: 'SUPER_ADMIN',
-      description: 'System Super Administrator',
+      description: 'System Super Administrator with platform-level access',
+      permissions: permissionIds,
+      isSystemRole: true,
+    },
+
+    {
+      name: 'Tenant Admin',
+      code: 'TENANT_ADMIN',
+      description: 'Tenant Administrator with full tenant management access',
       permissions: permissionIds,
       isSystemRole: true,
     },
@@ -27,7 +35,7 @@ const seedRoles = async () => {
     {
       name: 'Admin',
       code: 'ADMIN',
-      description: 'Application Administrator',
+      description: 'Application Administrator (legacy)',
       permissions: permissionIds,
       isSystemRole: true,
     },

@@ -35,6 +35,7 @@ const permissionSchema = new mongoose.Schema(
         'report',
         'notification',
         'audit-log',
+        'tenant',
       ],
     },
 

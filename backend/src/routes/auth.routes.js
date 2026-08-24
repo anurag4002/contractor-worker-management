@@ -4,6 +4,7 @@ import authController from "../controllers/auth.controller.js";
 
 import validate from "../middlewares/validate.middleware.js";
 import authMiddleware from "../middlewares/auth.middleware.js";
+import { registerLimiter, loginLimiter } from "../middlewares/rateLimit.middleware.js";
 
 import {
   registerSchema,
@@ -24,12 +25,14 @@ const router = Router();
 
 router.post(
   "/register",
+  registerLimiter,
   validate(registerSchema),
   authController.register
 );
 
 router.post(
   "/login",
+  loginLimiter,
   validate(loginSchema),
   authController.login
 );

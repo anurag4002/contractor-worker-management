@@ -9,17 +9,23 @@ class DashboardRepository {
    * Worker Statistics
    * ==========================================
    */
-  async getWorkerStats() {
+  async getWorkerStats(tenantId = null) {
+    const workerQuery = { isDeleted: false };
+    const activeWorkerQuery = {
+      status: 'ACTIVE',
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      workerQuery.tenant = tenantId;
+      activeWorkerQuery.tenant = tenantId;
+    }
+
     const totalWorkers =
-      await Worker.countDocuments({
-        isDeleted: false,
-      });
+      await Worker.countDocuments(workerQuery);
 
     const activeWorkers =
-      await Worker.countDocuments({
-        status: 'ACTIVE',
-        isDeleted: false,
-      });
+      await Worker.countDocuments(activeWorkerQuery);
 
     return {
       totalWorkers,
@@ -32,12 +38,18 @@ class DashboardRepository {
    * Site Statistics
    * ==========================================
    */
-  async getSiteStats() {
+  async getSiteStats(tenantId = null) {
+    const query = {
+      status: 'ACTIVE',
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
     const activeSites =
-      await Site.countDocuments({
-        status: 'ACTIVE',
-        isDeleted: false,
-      });
+      await Site.countDocuments(query);
 
     return {
       activeSites,
@@ -49,55 +61,47 @@ class DashboardRepository {
    * Today's Attendance
    * ==========================================
    */
-  async getTodayAttendance(start, end) {
+  async getTodayAttendance(start, end, tenantId = null) {
+    const baseMatch = {
+      attendanceDate: {
+        $gte: start,
+        $lt: end,
+      },
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      baseMatch.tenant = tenantId;
+    }
+
     const present =
       await Attendance.countDocuments({
-        attendanceDate: {
-          $gte: start,
-          $lt: end,
-        },
+        ...baseMatch,
         status: 'PRESENT',
-        isDeleted: false,
       });
 
     const absent =
       await Attendance.countDocuments({
-        attendanceDate: {
-          $gte: start,
-          $lt: end,
-        },
+        ...baseMatch,
         status: 'ABSENT',
-        isDeleted: false,
       });
 
     const leave =
       await Attendance.countDocuments({
-        attendanceDate: {
-          $gte: start,
-          $lt: end,
-        },
+        ...baseMatch,
         status: 'LEAVE',
-        isDeleted: false,
       });
 
     const halfDay =
       await Attendance.countDocuments({
-        attendanceDate: {
-          $gte: start,
-          $lt: end,
-        },
+        ...baseMatch,
         status: 'HALF_DAY',
-        isDeleted: false,
       });
 
     const holiday =
       await Attendance.countDocuments({
-        attendanceDate: {
-          $gte: start,
-          $lt: end,
-        },
+        ...baseMatch,
         status: 'HOLIDAY',
-        isDeleted: false,
       });
 
     return {
@@ -109,22 +113,28 @@ class DashboardRepository {
     };
   }
 
-  async getTodayPresentBySite() {
+  async getTodayPresentBySite(tenantId = null) {
     const start = new Date();
     start.setHours(0, 0, 0, 0);
     const end = new Date();
     end.setHours(24, 0, 0, 0);
 
+    const match = {
+      attendanceDate: {
+        $gte: start,
+        $lt: end,
+      },
+      status: 'PRESENT',
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      match.tenant = tenantId;
+    }
+
     return await Attendance.aggregate([
       {
-        $match: {
-          attendanceDate: {
-            $gte: start,
-            $lt: end,
-          },
-          status: 'PRESENT',
-          isDeleted: false,
-        },
+        $match: match,
       },
       {
         $group: {
@@ -142,14 +152,20 @@ class DashboardRepository {
    * Payroll Statistics
    * ==========================================
    */
-  async getPayrollStats() {
+  async getPayrollStats(tenantId = null) {
+    const match = {
+      status: 'GENERATED',
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      match.tenant = tenantId;
+    }
+
     const pendingSalary =
       await Payroll.aggregate([
         {
-          $match: {
-            status: 'GENERATED',
-            isDeleted: false,
-          },
+          $match: match,
         },
         {
           $group: {
@@ -174,10 +190,16 @@ class DashboardRepository {
    * Recent Workers
    * ==========================================
    */
-  async getRecentWorkers(limit = 5) {
-    return await Worker.find({
+  async getRecentWorkers(limit = 5, tenantId = null) {
+    const query = {
       isDeleted: false,
-    })
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Worker.find(query)
       .sort({
         createdAt: -1,
       })
@@ -189,10 +211,16 @@ class DashboardRepository {
    * Recent Attendance
    * ==========================================
    */
-  async getRecentAttendance(limit = 5) {
-    return await Attendance.find({
+  async getRecentAttendance(limit = 5, tenantId = null) {
+    const query = {
       isDeleted: false,
-    })
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Attendance.find(query)
       .populate(
         'worker',
         'employeeCode fullName'
@@ -212,10 +240,16 @@ class DashboardRepository {
    * Recent Payroll
    * ==========================================
    */
-  async getRecentPayroll(limit = 5) {
-    return await Payroll.find({
+  async getRecentPayroll(limit = 5, tenantId = null) {
+    const query = {
       isDeleted: false,
-    })
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Payroll.find(query)
       .populate(
         'worker',
         'employeeCode fullName'
@@ -235,12 +269,18 @@ class DashboardRepository {
    * Payroll Status Chart
    * ==========================================
    */
-  async getPayrollStatusChart() {
+  async getPayrollStatusChart(tenantId = null) {
+    const match = {
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      match.tenant = tenantId;
+    }
+
     return await Payroll.aggregate([
       {
-        $match: {
-          isDeleted: false,
-        },
+        $match: match,
       },
       {
         $group: {
@@ -267,17 +307,24 @@ class DashboardRepository {
    */
   async getAttendanceChart(
     start,
-    end
+    end,
+    tenantId = null
   ) {
+    const match = {
+      attendanceDate: {
+        $gte: start,
+        $lt: end,
+      },
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      match.tenant = tenantId;
+    }
+
     return await Attendance.aggregate([
       {
-        $match: {
-          attendanceDate: {
-            $gte: start,
-            $lt: end,
-          },
-          isDeleted: false,
-        },
+        $match: match,
       },
       {
         $group: {
@@ -302,15 +349,21 @@ class DashboardRepository {
    * Site Worker Chart
    * ==========================================
    */
-  async getSiteWorkerChart() {
+  async getSiteWorkerChart(tenantId = null) {
+    const match = {
+      isDeleted: false,
+      site: {
+        $ne: null,
+      },
+    };
+
+    if (tenantId) {
+      match.tenant = tenantId;
+    }
+
     return await Worker.aggregate([
       {
-        $match: {
-          isDeleted: false,
-          site: {
-            $ne: null,
-          },
-        },
+        $match: match,
       },
       {
         $group: {

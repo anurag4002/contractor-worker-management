@@ -4,6 +4,7 @@ import exportController from '../controllers/export.controller.js';
 
 import authMiddleware from '../middlewares/auth.middleware.js';
 import authorize from '../middlewares/authorize.middleware.js';
+import requireActiveSubscription from '../middlewares/subscription.middleware.js';
 
 const router = Router();
 
@@ -16,6 +17,7 @@ const router = Router();
 router.get(
   '/dashboard',
   authMiddleware,
+  requireActiveSubscription,
   authorize('REPORT_EXPORT'),
   exportController.exportDashboardExcel
 );
@@ -29,6 +31,7 @@ router.get(
 router.get(
   '/workers',
   authMiddleware,
+  requireActiveSubscription,
   authorize('REPORT_EXPORT'),
   exportController.exportWorkersPdf
 );
@@ -42,6 +45,7 @@ router.get(
 router.get(
   '/attendance',
   authMiddleware,
+  requireActiveSubscription,
   authorize('REPORT_EXPORT'),
   exportController.exportAttendancePdf
 );
@@ -55,6 +59,7 @@ router.get(
 router.get(
   '/payroll',
   authMiddleware,
+  requireActiveSubscription,
   authorize('REPORT_EXPORT'),
   exportController.exportPayrollPdf
 );
@@ -68,6 +73,7 @@ router.get(
 router.get(
   '/sites',
   authMiddleware,
+  requireActiveSubscription,
   authorize('REPORT_EXPORT'),
   exportController.exportSitesPdf
 );
@@ -81,6 +87,7 @@ router.get(
 router.get(
   '/dashboard/pdf',
   authMiddleware,
+  requireActiveSubscription,
   authorize('REPORT_EXPORT'),
   exportController.exportDashboardPdf
 );

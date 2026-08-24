@@ -1,5 +1,6 @@
 import Site from '../models/Site.js';
 import User from '../models/User.js';
+import Tenant from '../models/Tenant.js';
 
 import logger from '../common/logger/logger.js';
 
@@ -462,6 +463,7 @@ const seedSites = async () => {
   logger.info('Seeding sites...');
 
   const adminUser = await User.findOne({ email: 'admin@contractor.com', isDeleted: false });
+  const adminTenant = await Tenant.findOne({ owner: adminUser?._id, isDeleted: false });
   const createdBy = adminUser ? adminUser._id : null;
 
   let createdCount = 0;
@@ -484,6 +486,7 @@ const seedSites = async () => {
       startDate: faker.date.past({ years: 2, refDate: '2026-01-01' }),
       endDate: faker.date.future({ years: 1, refDate: '2026-01-01' }),
       status: Math.random() > 0.2 ? 'ACTIVE' : 'INACTIVE',
+      tenant: adminTenant?._id || null,
       createdBy,
       updatedBy: createdBy,
     });

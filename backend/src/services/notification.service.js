@@ -14,11 +14,14 @@ class NotificationService {
  * Create Notification
  * ==========================================
  */
-async createNotification(payload) {
-  const notification =
-    await notificationRepository.create(
-      payload
-    );
+ async createNotification(payload, tenantId) {
+   const notification =
+     await notificationRepository.create(
+       {
+         ...payload,
+         tenant: tenantId,
+       }
+     );
 
   if (!notification) {
     throw new ApiError(
@@ -38,7 +41,7 @@ async createNotification(payload) {
  * Get Notifications
  * ==========================================
  */
-async getNotifications(filter = {}, userId = null) {
+async getNotifications(filter = {}, userId = null, tenantId = null) {
   let cutoffDate = null;
 
   if (userId) {
@@ -51,7 +54,8 @@ async getNotifications(filter = {}, userId = null) {
   const notifications =
     await notificationRepository.findAll(
       filter,
-      cutoffDate
+      cutoffDate,
+      tenantId
     );
 
   return {
@@ -65,10 +69,11 @@ async getNotifications(filter = {}, userId = null) {
  * Get Notification By Id
  * ==========================================
  */
-async getNotificationById(id) {
+async getNotificationById(id, tenantId) {
   const notification =
     await notificationRepository.findById(
-      id
+      id,
+      tenantId
     );
 
   if (!notification) {
@@ -89,7 +94,7 @@ async getNotificationById(id) {
  * Get Unread Notification Count
  * ==========================================
  */
-async getUnreadCount(filter = {}, userId = null) {
+async getUnreadCount(filter = {}, userId = null, tenantId = null) {
   let cutoffDate = null;
 
   if (userId) {
@@ -102,7 +107,8 @@ async getUnreadCount(filter = {}, userId = null) {
   const count =
     await notificationRepository.countUnread(
       filter,
-      cutoffDate
+      cutoffDate,
+      tenantId
     );
 
   return {
@@ -118,10 +124,11 @@ async getUnreadCount(filter = {}, userId = null) {
  * Mark Notification As Read
  * ==========================================
  */
-async markAsRead(id, updatedBy) {
+async markAsRead(id, updatedBy, tenantId) {
   const notification =
     await notificationRepository.findById(
-      id
+      id,
+      tenantId
     );
 
   if (!notification) {
@@ -134,7 +141,8 @@ async markAsRead(id, updatedBy) {
   const updatedNotification =
     await notificationRepository.markAsRead(
       id,
-      updatedBy
+      updatedBy,
+      tenantId
     );
 
   if (!updatedNotification) {
@@ -157,17 +165,19 @@ async markAsRead(id, updatedBy) {
  */
 async markAllAsRead(
   filter = {},
-  updatedBy
+  updatedBy,
+  tenantId
 ) {
   const result =
     await notificationRepository.markAllAsRead(
       filter,
-      updatedBy
+      updatedBy,
+      tenantId
     );
 
   return {
     message:
-      notificationMessages.MARKED_ALL_READ,
+      notificationMessages.MARKED_READ,
     data: {
       matchedCount:
         result.matchedCount,
@@ -181,10 +191,11 @@ async markAllAsRead(
  * Delete Notification
  * ==========================================
  */
-  async deleteNotification(id) {
+  async deleteNotification(id, tenantId) {
     const notification =
       await notificationRepository.findById(
-        id
+        id,
+        tenantId
       );
 
     if (!notification) {
@@ -197,7 +208,8 @@ async markAllAsRead(
     const deletedNotification =
       await notificationRepository.softDelete(
         id,
-        new Date()
+        new Date(),
+        tenantId
       );
 
     if (!deletedNotification) {
@@ -219,10 +231,16 @@ async markAllAsRead(
    * Clear All Notifications
    * ==========================================
    */
-  async clearAll(userId) {
+  async clearAll(userId, tenantId) {
     await userRepository.update(userId, {
       notificationsClearedAt: new Date(),
     });
+
+    await notificationRepository.clearAll(
+      userId,
+      new Date(),
+      tenantId
+    );
 
     return {
       message:

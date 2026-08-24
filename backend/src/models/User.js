@@ -41,6 +41,12 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
+    tenant: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tenant',
+      default: null,
+    },
+
     status: {
       type: String,
       enum: ['ACTIVE', 'INACTIVE', 'SUSPENDED'],
@@ -152,6 +158,7 @@ userSchema.index(
 
 // Frequently queried fields
 userSchema.index({ role: 1 });
+userSchema.index({ tenant: 1 });
 userSchema.index({ status: 1 });
 userSchema.index({ isDeleted: 1 });
 
@@ -159,6 +166,8 @@ userSchema.index({ isDeleted: 1 });
 userSchema.index({ email: 1, isDeleted: 1 });
 userSchema.index({ mobileNumber: 1, isDeleted: 1 });
 userSchema.index({ username: 1, isDeleted: 1 });
+userSchema.index({ tenant: 1, isDeleted: 1 });
+userSchema.index({ tenant: 1, role: 1 });
 
 const User = mongoose.model('User', userSchema);
 

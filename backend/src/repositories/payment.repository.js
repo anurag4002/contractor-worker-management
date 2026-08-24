@@ -11,24 +11,36 @@ class PaymentRepository {
     return await Payment.create(paymentData);
   }
 
-  async findById(paymentId) {
-    return await Payment.findOne({
+  async findById(paymentId, tenantId = null) {
+    const query = {
       _id: paymentId,
       isDeleted: false,
-    })
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Payment.findOne(query)
       .populate('payroll', 'grossSalary netSalary advanceDeduction status')
       .populate('worker', 'employeeCode fullName mobileNumber trade')
       .populate('site', 'siteCode siteName')
       .populate('createdBy', 'fullName email');
   }
 
-  async findByPayroll(payrollId, options = {}) {
+  async findByPayroll(payrollId, tenantId = null, options = {}) {
     const { skip = 0, limit = 10, sort = { paymentDate: -1 } } = options;
 
-    return await Payment.find({
+    const query = {
       payroll: payrollId,
       isDeleted: false,
-    })
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Payment.find(query)
       .populate('worker', 'employeeCode fullName mobileNumber trade')
       .populate('site', 'siteCode siteName')
       .populate('createdBy', 'fullName email')
@@ -37,13 +49,19 @@ class PaymentRepository {
       .limit(limit);
   }
 
-  async findByWorker(workerId, options = {}) {
+  async findByWorker(workerId, tenantId = null, options = {}) {
     const { skip = 0, limit = 10, sort = { paymentDate: -1 } } = options;
 
-    return await Payment.find({
+    const query = {
       worker: workerId,
       isDeleted: false,
-    })
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Payment.find(query)
       .populate('payroll', 'grossSalary netSalary advanceDeduction status attendanceMonth attendanceYear')
       .populate('site', 'siteCode siteName')
       .populate('createdBy', 'fullName email')
@@ -52,21 +70,33 @@ class PaymentRepository {
       .limit(limit);
   }
 
-  async countByPayroll(payrollId) {
-    return await Payment.countDocuments({
+  async countByPayroll(payrollId, tenantId = null) {
+    const query = {
       payroll: payrollId,
       isDeleted: false,
-    });
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Payment.countDocuments(query);
   }
 
-  async getTotalPaidByPayroll(payrollId) {
+  async getTotalPaidByPayroll(payrollId, tenantId = null) {
+    const query = {
+      payroll: new mongoose.Types.ObjectId(payrollId),
+      status: 'COMPLETED',
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
     const result = await Payment.aggregate([
       {
-        $match: {
-          payroll: new mongoose.Types.ObjectId(payrollId),
-          status: 'COMPLETED',
-          isDeleted: false,
-        },
+        $match: query,
       },
       {
         $group: {
@@ -81,9 +111,18 @@ class PaymentRepository {
     return result.length > 0 ? result[0].totalPaid : 0;
   }
 
-  async softDelete(paymentId) {
+  async softDelete(paymentId, tenantId = null) {
+    const query = {
+      _id: paymentId,
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
     return await Payment.findOneAndUpdate(
-      { _id: paymentId, isDeleted: false },
+      query,
       {
         isDeleted: true,
         deletedAt: new Date(),

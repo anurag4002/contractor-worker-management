@@ -1,8 +1,10 @@
 import { StatusCodes } from 'http-status-codes';
 
 import authRepository from '../repositories/auth.repository.js';
-
+import Tenant from '../models/Tenant.js';
+import User from '../models/User.js';
 import ApiError from '../common/errors/ApiError.js';
+import mongoose from 'mongoose';
 
 import logger from '../common/logger/logger.js';
 
@@ -25,9 +27,13 @@ import AUTH_CONSTANTS from '../common/constants/auth.constants.js';
 
 import AUTH_MESSAGES from '../common/constants/auth.messages.js';
 
+import subscriptionService from '../services/subscription.service.js';
+
 class AuthService {
   /**
-   * Register First Super Admin
+   * Register User
+   * - First user: SUPER_ADMIN (platform-level)
+   * - Subsequent users: TENANT_ADMIN (creates new tenant)
    */
   async register(registerData) {
     const {
@@ -36,71 +42,15 @@ class AuthService {
       mobileNumber,
       username,
       password,
+      companyName,
+      address,
+      city,
+      district,
+      state,
+      pincode,
     } = registerData;
 
-    /**
-     * Allow registration only for first user
-     */
-    const totalUsers =
-      await authRepository.countUsers();
-
-    if (totalUsers > 0) {
-      throw new ApiError(
-        StatusCodes.FORBIDDEN,
-        'Public registration is disabled. Please contact the administrator.'
-      );
-    }
-
-    /**
-     * Check Email
-     */
-    const existingEmail =
-      await authRepository.findByEmail(email);
-
-    if (existingEmail) {
-      throw new ApiError(
-        StatusCodes.CONFLICT,
-        'Email already exists.'
-      );
-    }
-
-    /**
-     * Check Mobile
-     */
-    const existingMobile =
-      await authRepository.findByMobileNumber(
-        mobileNumber
-      );
-
-    if (existingMobile) {
-      throw new ApiError(
-        StatusCodes.CONFLICT,
-        'Mobile number already exists.'
-      );
-    }
-
-    /**
-     * Check Username
-     */
-    const existingUsername =
-      await authRepository.findByUsername(
-        username
-      );
-
-    if (existingUsername) {
-      throw new ApiError(
-        StatusCodes.CONFLICT,
-        'Username already exists.'
-      );
-    }
-
-    /**
-     * Get SUPER_ADMIN Role
-     */
-    const superAdminRole =
-      await authRepository.findRoleByCode(
-        'SUPER_ADMIN'
-      );
+    const superAdminRole = await authRepository.findRoleByCode('SUPER_ADMIN');
 
     if (!superAdminRole) {
       throw new ApiError(
@@ -109,34 +59,189 @@ class AuthService {
       );
     }
 
-    /**
-     * Hash Password
-     */
-    const hashedPassword =
-      await hashPassword(password);
+    const existingSuperAdmin = await User.findOne({
+      role: superAdminRole._id,
+      isDeleted: false,
+    });
 
-    /**
-     * Create First Admin
-     */
-    const createdUser =
-      await authRepository.create({
+    if (!existingSuperAdmin) {
+      return this._registerSuperAdmin({
         fullName,
         email,
         mobileNumber,
         username,
+        password,
+      }, superAdminRole);
+    }
+
+    return this._registerTenantAdmin({
+      fullName,
+      email,
+      mobileNumber,
+      username,
+      password,
+      companyName,
+      address,
+      city,
+      district,
+      state,
+      pincode,
+    });
+  }
+
+  /**
+   * Register first SUPER_ADMIN (platform-level, no tenant)
+   */
+  async _registerSuperAdmin({ fullName, email, mobileNumber, password }, superAdminRole) {
+    const existingEmail = await authRepository.findByEmail(email);
+    if (existingEmail) {
+      throw new ApiError(StatusCodes.CONFLICT, 'Email already exists.');
+    }
+
+    const existingMobile = await authRepository.findByMobileNumber(mobileNumber);
+    if (existingMobile) {
+      throw new ApiError(StatusCodes.CONFLICT, 'Mobile number already exists.');
+    }
+
+    const hashedPassword = await hashPassword(password);
+
+    try {
+      const createdUser = await authRepository.create({
+        fullName,
+        email,
+        mobileNumber,
         password: hashedPassword,
         role: superAdminRole._id,
+        tenant: null,
       });
 
-    /**
-     * Fetch User
-     */
-    const user =
-      await authRepository.findById(
-        createdUser._id
-      );
+      const user = await authRepository.findById(createdUser._id);
 
-    return user;
+      return {
+        user,
+        accessToken: null,
+        refreshToken: null,
+      };
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new ApiError(StatusCodes.CONFLICT, 'Email, mobile number, or username already exists.');
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Register TENANT_ADMIN (creates new tenant + tenant admin user)
+   */
+  async _registerTenantAdmin({
+    fullName,
+    email,
+    mobileNumber,
+    username,
+    password,
+    companyName,
+    address,
+    city,
+    district,
+    state,
+    pincode,
+  }) {
+    if (!companyName) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Company name is required for tenant registration.');
+    }
+
+    const existingEmail = await authRepository.findByEmail(email);
+    if (existingEmail) {
+      throw new ApiError(StatusCodes.CONFLICT, 'Email already exists.');
+    }
+
+    const existingMobile = await authRepository.findByMobileNumber(mobileNumber);
+    if (existingMobile) {
+      throw new ApiError(StatusCodes.CONFLICT, 'Mobile number already exists.');
+    }
+
+    const tenantAdminRole = await authRepository.findRoleByCode('TENANT_ADMIN');
+    if (!tenantAdminRole) {
+      throw new ApiError(
+        StatusCodes.NOT_FOUND,
+        'TENANT_ADMIN role not found. Please run role seeder.'
+      );
+    }
+
+    const hashedPassword = await hashPassword(password);
+
+    const session = await mongoose.startSession();
+    let tenant;
+    let createdUser;
+
+    try {
+      await session.withTransaction(async () => {
+        tenant = await Tenant.create([{
+          companyName,
+          email,
+          mobileNumber,
+          address: address || null,
+          city: city || null,
+          district: district || null,
+          state: state || null,
+          pincode: pincode || null,
+          status: 'ACTIVE',
+        }], { session });
+
+        createdUser = await authRepository.create([{
+          fullName,
+          email,
+          mobileNumber,
+          username,
+          password: hashedPassword,
+          role: tenantAdminRole._id,
+          tenant: tenant[0]._id,
+        }], { session });
+
+        await Tenant.findByIdAndUpdate(tenant[0]._id, {
+          owner: createdUser[0]._id,
+        }, { session });
+      });
+
+      await session.endSession();
+    } catch (error) {
+      await session.endSession();
+
+      if (error.code === 11000) {
+        throw new ApiError(StatusCodes.CONFLICT, 'Email, mobile number, or company already exists.');
+      }
+      throw error;
+    }
+
+    const payload = {
+      userId: createdUser[0]._id,
+      email: createdUser[0].email,
+      role: tenantAdminRole.code,
+      tenantId: tenant[0]._id,
+    };
+
+    try {
+      await subscriptionService.createTrialSubscription(tenant[0]._id);
+    } catch (error) {
+      if (error.statusCode !== StatusCodes.CONFLICT) {
+        throw error;
+      }
+    }
+
+    const accessToken = generateAccessToken(payload);
+    const refreshToken = generateRefreshToken(payload);
+
+    const hashedRefreshToken = await hashPassword(refreshToken);
+    await authRepository.saveRefreshToken(createdUser[0]._id, hashedRefreshToken);
+    await authRepository.updateLastLogin(createdUser[0]._id);
+
+    const user = await authRepository.findById(createdUser[0]._id);
+
+    return {
+      user,
+      accessToken,
+      refreshToken,
+    };
   }
 
   /**
@@ -242,11 +347,14 @@ class AuthService {
       user._id
     );
 
+    const tenantId = user.tenant ? user.tenant._id || user.tenant : null;
+
     // Prepare JWT Payload
     const payload = {
       userId: user._id,
       email: user.email,
-      role: user.role._id,
+      role: user.role.code,
+      tenantId,
     };
 
     // Generate Tokens
@@ -281,6 +389,7 @@ class AuthService {
       user: loggedInUser,
       accessToken,
       refreshToken,
+      tenantId,
     };
   }
 
@@ -355,10 +464,13 @@ class AuthService {
     }
 
     // JWT Payload
+    const tenantId = user.tenant ? user.tenant._id || user.tenant : null;
+
     const payload = {
       userId: user._id,
       email: user.email,
-      role: user.role._id,
+      role: user.role.code,
+      tenantId,
     };
 
     // Generate New Tokens

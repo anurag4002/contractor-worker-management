@@ -9,14 +9,14 @@ class ExportService {
  * Export Dashboard Excel
  * ==========================================
  */
-    async exportDashboardExcel(res) {
+    async exportDashboardExcel(res, tenantId) {
         /**
          * ------------------------------------------
          * Fetch Dashboard Data
          * ------------------------------------------
          */
         const dashboard =
-            await exportRepository.getDashboardData();
+            await exportRepository.getDashboardData(tenantId);
 
         /**
          * ------------------------------------------
@@ -281,14 +281,14 @@ class ExportService {
  * Export Workers PDF
  * ==========================================
  */
-async exportWorkersPdf(res) {
+async exportWorkersPdf(res, tenantId) {
   /**
    * ------------------------------------------
    * Fetch Workers
    * ------------------------------------------
    */
   const workers =
-    await exportRepository.getWorkers();
+    await exportRepository.getWorkers({}, tenantId);
 
   /**
    * ------------------------------------------
@@ -589,14 +589,14 @@ async exportWorkersPdf(res) {
  * Export Attendance PDF
  * ==========================================
  */
-async exportAttendancePdf(res) {
+async exportAttendancePdf(res, tenantId) {
   /**
    * ------------------------------------------
    * Fetch Attendance
    * ------------------------------------------
    */
   const attendance =
-    await exportRepository.getAttendance();
+    await exportRepository.getAttendance({}, tenantId);
 
   /**
    * ------------------------------------------
@@ -960,14 +960,14 @@ async exportAttendancePdf(res) {
  * Export Payroll PDF
  * ==========================================
  */
-async exportPayrollPdf(res, query = {}) {
+async exportPayrollPdf(res, query = {}, tenantId) {
    /**
     * ------------------------------------------
     * Fetch Payroll
     * ------------------------------------------
     */
    const payrolls =
-     await exportRepository.getPayroll(query);
+     await exportRepository.getPayroll(query, tenantId);
 
   /**
    * ------------------------------------------
@@ -1333,14 +1333,14 @@ async exportPayrollPdf(res, query = {}) {
  * Export Sites PDF
  * ==========================================
  */
-async exportSitesPdf(res) {
+async exportSitesPdf(res, tenantId) {
   /**
    * ------------------------------------------
    * Fetch Sites
    * ------------------------------------------
    */
   const sites =
-    await exportRepository.getSites();
+    await exportRepository.getSites({}, tenantId);
 
   /**
    * ------------------------------------------
@@ -1680,14 +1680,14 @@ async exportSitesPdf(res) {
  * Export Dashboard PDF
  * ==========================================
  */
-async exportDashboardPdf(res) {
+async exportDashboardPdf(res, tenantId) {
   /**
    * ------------------------------------------
    * Fetch Dashboard Data
    * ------------------------------------------
    */
   const dashboard =
-    await exportRepository.getDashboardData();
+    await exportRepository.getDashboardData(tenantId);
 
   /**
    * ------------------------------------------

@@ -15,11 +15,15 @@ class NotificationRepository {
    * Find All Notifications
    * ==========================================
    */
-  async findAll(filter = {}, cutoffDate = null) {
+  async findAll(filter = {}, cutoffDate = null, tenantId = null) {
     const query = {
       isDeleted: false,
       ...filter,
     };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
 
     if (cutoffDate) {
       query.createdAt = { $gt: cutoffDate };
@@ -48,11 +52,17 @@ class NotificationRepository {
    * Find Notification By Id
    * ==========================================
    */
-  async findById(id) {
-    return await Notification.findOne({
+  async findById(id, tenantId = null) {
+    const query = {
       _id: id,
       isDeleted: false,
-    })
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Notification.findOne(query)
       .populate(
         'recipient',
         'fullName email'
@@ -72,12 +82,16 @@ class NotificationRepository {
    * Count Unread Notifications
    * ==========================================
    */
-  async countUnread(filter = {}, cutoffDate = null) {
+  async countUnread(filter = {}, cutoffDate = null, tenantId = null) {
     const query = {
       isDeleted: false,
       isRead: false,
       ...filter,
     };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
 
     if (cutoffDate) {
       query.createdAt = { $gt: cutoffDate };
@@ -91,12 +105,18 @@ class NotificationRepository {
    * Mark Notification As Read
    * ==========================================
    */
-  async markAsRead(id, updatedBy) {
+  async markAsRead(id, updatedBy, tenantId = null) {
+    const query = {
+      _id: id,
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
     return await Notification.findOneAndUpdate(
-      {
-        _id: id,
-        isDeleted: false,
-      },
+      query,
       {
         isRead: true,
         updatedBy,
@@ -114,14 +134,21 @@ class NotificationRepository {
    */
   async markAllAsRead(
     filter = {},
-    updatedBy
+    updatedBy,
+    tenantId = null
   ) {
+    const query = {
+      isDeleted: false,
+      isRead: false,
+      ...filter,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
     return await Notification.updateMany(
-      {
-        isDeleted: false,
-        isRead: false,
-        ...filter,
-      },
+      query,
       {
         $set: {
           isRead: true,
@@ -136,12 +163,18 @@ class NotificationRepository {
    * Soft Delete Notification
    * ==========================================
    */
-  async softDelete(id, deletedAt) {
+  async softDelete(id, deletedAt, tenantId = null) {
+    const query = {
+      _id: id,
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
     return await Notification.findOneAndUpdate(
-      {
-        _id: id,
-        isDeleted: false,
-      },
+      query,
       {
         isDeleted: true,
         deletedAt,
@@ -157,12 +190,18 @@ class NotificationRepository {
    * Clear All Notifications For User
    * ==========================================
    */
-  async clearAll(recipient, deletedAt) {
+  async clearAll(recipient, deletedAt, tenantId = null) {
+    const query = {
+      recipient,
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
     return await Notification.updateMany(
-      {
-        recipient,
-        isDeleted: false,
-      },
+      query,
       {
         $set: {
           isDeleted: true,

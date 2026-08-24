@@ -5,6 +5,7 @@ import siteController from '../controllers/site.controller.js';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import authorize from '../middlewares/authorize.middleware.js';
 import validate from '../middlewares/validate.middleware.js';
+import requireActiveSubscription from '../middlewares/subscription.middleware.js';
 
 import {
   createSiteSchema,
@@ -25,6 +26,7 @@ const router = Router();
 router.post(
   '/',
   authMiddleware,
+  requireActiveSubscription,
   authorize('SITE_CREATE'),
   validate(createSiteSchema),
   siteController.createSite
@@ -39,6 +41,7 @@ router.post(
 router.get(
   '/',
   authMiddleware,
+  requireActiveSubscription,
   authorize('SITE_READ'),
   validate(getSitesQuerySchema, 'query'),
   siteController.getSites
@@ -53,6 +56,7 @@ router.get(
 router.get(
   '/:id',
   authMiddleware,
+  requireActiveSubscription,
   authorize('SITE_READ'),
   siteController.getSiteById
 );
@@ -66,6 +70,7 @@ router.get(
 router.put(
   '/:id',
   authMiddleware,
+  requireActiveSubscription,
   authorize('SITE_UPDATE'),
   validate(updateSiteSchema),
   siteController.updateSite
@@ -80,6 +85,7 @@ router.put(
 router.patch(
   '/:id/status',
   authMiddleware,
+  requireActiveSubscription,
   authorize('SITE_UPDATE'),
   validate(changeSiteStatusSchema),
   siteController.changeSiteStatus
@@ -94,6 +100,7 @@ router.patch(
 router.delete(
   '/:id',
   authMiddleware,
+  requireActiveSubscription,
   authorize('SITE_DELETE'),
   siteController.deleteSite
 );
@@ -107,6 +114,7 @@ router.delete(
 router.post(
   '/:id/assign-workers',
   authMiddleware,
+  requireActiveSubscription,
   authorize('SITE_UPDATE'),
   validate(assignWorkersSchema),
   siteController.assignWorkers

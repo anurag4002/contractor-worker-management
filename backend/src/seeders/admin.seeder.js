@@ -1,5 +1,6 @@
 import User from '../models/User.js';
 import Role from '../models/Role.js';
+import Tenant from '../models/Tenant.js';
 
 import { hashPassword } from '../common/utils/password.util.js';
 
@@ -35,7 +36,7 @@ const seedAdmin = async () => {
     'Admin@123'
   );
 
-  await User.create({
+  const admin = await User.create({
     fullName: 'Super Admin',
 
     email: 'admin@contractor.com',
@@ -53,6 +54,21 @@ const seedAdmin = async () => {
     isEmailVerified: true,
 
     isMobileVerified: true,
+  });
+
+  const tenant = await Tenant.create({
+    companyName: 'Default Tenant',
+    owner: admin._id,
+    email: 'admin@contractor.com',
+    mobileNumber: '9999999999',
+    status: 'ACTIVE',
+    isDeleted: false,
+    createdBy: admin._id,
+    updatedBy: admin._id,
+  });
+
+  await User.findByIdAndUpdate(admin._id, {
+    tenant: tenant._id,
   });
 
   logger.info(

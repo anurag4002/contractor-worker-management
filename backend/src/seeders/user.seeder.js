@@ -7,6 +7,8 @@ import { hashPassword } from '../common/utils/password.util.js';
 
 import logger from '../common/logger/logger.js';
 
+import Tenant from '../models/Tenant.js';
+
 const ROLE_CONFIGS = [
   {
     name: 'Administrator',
@@ -101,6 +103,7 @@ const seedUsers = async () => {
   const createdUsers = [];
 
   const superAdmin = await User.findOne({ email: 'admin@contractor.com', isDeleted: false });
+  const adminTenant = await Tenant.findOne({ owner: superAdmin?._id, isDeleted: false });
 
   for (const config of ROLE_CONFIGS) {
     let role = await Role.findOne({ code: config.code, isDeleted: false, status: 'ACTIVE' });
@@ -131,6 +134,7 @@ const seedUsers = async () => {
         username,
         password: hashedPassword,
         role: role._id,
+        tenant: adminTenant?._id || null,
         status: 'ACTIVE',
         isEmailVerified: true,
         isMobileVerified: true,

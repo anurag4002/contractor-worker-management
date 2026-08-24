@@ -10,7 +10,8 @@ import asyncHandler from '../common/helpers/asyncHandler.js';
 const exportDashboardExcel =
   asyncHandler(async (req, res) => {
     await exportService.exportDashboardExcel(
-      res
+      res,
+      req.user.tenantId
     );
   });
 
@@ -22,7 +23,8 @@ const exportDashboardExcel =
 const exportWorkersPdf =
   asyncHandler(async (req, res) => {
     await exportService.exportWorkersPdf(
-      res
+      res,
+      req.user.tenantId
     );
   });
 
@@ -34,7 +36,8 @@ const exportWorkersPdf =
 const exportAttendancePdf =
   asyncHandler(async (req, res) => {
     await exportService.exportAttendancePdf(
-      res
+      res,
+      req.user.tenantId
     );
   });
 
@@ -47,7 +50,8 @@ const exportPayrollPdf =
    asyncHandler(async (req, res) => {
      await exportService.exportPayrollPdf(
        res,
-       req.query
+       req.query,
+       req.user.tenantId
      );
    });
 
@@ -59,7 +63,8 @@ const exportPayrollPdf =
 const exportSitesPdf =
   asyncHandler(async (req, res) => {
     await exportService.exportSitesPdf(
-      res
+      res,
+      req.user.tenantId
     );
   });
 
@@ -71,7 +76,8 @@ const exportSitesPdf =
 const exportDashboardPdf =
   asyncHandler(async (req, res) => {
     await exportService.exportDashboardPdf(
-      res
+      res,
+      req.user.tenantId
     );
   });
 

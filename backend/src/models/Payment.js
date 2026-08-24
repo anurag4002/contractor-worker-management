@@ -51,6 +51,12 @@ const paymentSchema = new mongoose.Schema(
       default: '',
     },
 
+    tenant: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tenant',
+      required: [true, 'Tenant is required'],
+    },
+
     paymentDate: {
       type: Date,
       default: Date.now,
@@ -83,6 +89,10 @@ const paymentSchema = new mongoose.Schema(
     versionKey: false,
   }
 );
+
+paymentSchema.index({
+  tenant: 1,
+});
 
 paymentSchema.index({
   payroll: 1,

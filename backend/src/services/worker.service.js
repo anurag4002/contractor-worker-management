@@ -6,8 +6,6 @@ import ApiError from '../common/errors/ApiError.js';
 
 import WORKER_MESSAGES from '../common/constants/worker.messages.js';
 
-import Site from '../models/Site.js';
-
 import siteRepository from '../repositories/site.repository.js';
 
 import {
@@ -20,7 +18,7 @@ class WorkerService {
  * Create Worker
  * ==========================================
  */
-async createWorker(workerData, createdBy) {
+ async createWorker(workerData, createdBy, tenantId) {
   // Generate Employee Code
   const employeeCode =
     await generateEmployeeCode();
@@ -28,7 +26,8 @@ async createWorker(workerData, createdBy) {
   // Duplicate Mobile Number
   const existingMobile =
     await workerRepository.findByMobileNumber(
-      workerData.mobileNumber
+      workerData.mobileNumber,
+      tenantId
     );
 
   if (existingMobile) {
@@ -41,7 +40,8 @@ async createWorker(workerData, createdBy) {
   // Duplicate Aadhaar Number
   const existingAadhaar =
     await workerRepository.findByAadhaarNumber(
-      workerData.aadhaarNumber
+      workerData.aadhaarNumber,
+      tenantId
     );
 
   if (existingAadhaar) {
@@ -55,7 +55,8 @@ async createWorker(workerData, createdBy) {
   if (workerData.panNumber) {
     const existingPan =
       await workerRepository.findByPanNumber(
-        workerData.panNumber
+        workerData.panNumber,
+        tenantId
       );
 
     if (existingPan) {
@@ -66,36 +67,21 @@ async createWorker(workerData, createdBy) {
     }
   }
 
- // Validate Site
-if (workerData.site) {
-  const site = await Site.findOne({
-    _id: workerData.site,
-    isDeleted: false,
-    status: 'ACTIVE',
-  });
+  // Validate Site
+  if (workerData.site) {
+    const site =
+      await siteRepository.findActiveById(
+        workerData.site,
+        tenantId
+      );
 
-  if (!site) {
-    throw new ApiError(
-      StatusCodes.NOT_FOUND,
-      WORKER_MESSAGES.SITE_NOT_FOUND
-    );
+    if (!site) {
+      throw new ApiError(
+        StatusCodes.NOT_FOUND,
+        WORKER_MESSAGES.SITE_NOT_FOUND
+      );
+    }
   }
-}
-//findActiveById
-
-if (workerData.site) {
-  const site =
-    await siteRepository.findActiveById(
-      workerData.site
-    );
-
-  if (!site) {
-    throw new ApiError(
-      StatusCodes.NOT_FOUND,
-      WORKER_MESSAGES.SITE_NOT_FOUND
-    );
-  }
-}
   /*
   |--------------------------------------------------------------------------
   | TODO: Contractor Validation
@@ -123,10 +109,12 @@ if (workerData.site) {
       ...workerData,
       employeeCode,
       createdBy,
+      tenant: tenantId,
     });
 
   return await workerRepository.findById(
-    worker._id
+    worker._id,
+    tenantId
   );
 }
 /**
@@ -134,7 +122,7 @@ if (workerData.site) {
  * Get Workers
  * ==========================================
  */
-async getWorkers(query) {
+async getWorkers(query, tenantId) {
   const {
     page = 1,
     limit = 10,
@@ -151,6 +139,10 @@ async getWorkers(query) {
   const filter = {
     isDeleted: false,
   };
+
+  if (tenantId) {
+    filter.tenant = tenantId;
+  }
 
   // Search
   if (search) {
@@ -216,11 +208,12 @@ async getWorkers(query) {
   const workers =
     await workerRepository.findAll(
       filter,
-      options
+      options,
+      null
     );
 
   const total =
-    await workerRepository.count(filter);
+    await workerRepository.count(filter, null);
 
   return {
     workers,
@@ -239,9 +232,9 @@ async getWorkers(query) {
  * Get Worker By Id
  * ==========================================
  */
-async getWorkerById(workerId) {
+async getWorkerById(workerId, tenantId) {
   const worker =
-    await workerRepository.findById(workerId);
+    await workerRepository.findById(workerId, tenantId);
 
   if (!worker) {
     throw new ApiError(
@@ -257,10 +250,10 @@ async getWorkerById(workerId) {
  * Update Worker
  * ==========================================
  */
-async updateWorker(workerId, updateData, updatedBy) {
+async updateWorker(workerId, updateData, updatedBy, tenantId) {
   // Check Worker Exists
   const worker =
-    await workerRepository.findById(workerId);
+    await workerRepository.findById(workerId, tenantId);
 
   if (!worker) {
     throw new ApiError(
@@ -277,7 +270,8 @@ async updateWorker(workerId, updateData, updatedBy) {
   ) {
     const existingMobile =
       await workerRepository.findByMobileNumber(
-        updateData.mobileNumber
+        updateData.mobileNumber,
+        tenantId
       );
 
     if (
@@ -300,7 +294,8 @@ async updateWorker(workerId, updateData, updatedBy) {
   ) {
     const existingAadhaar =
       await workerRepository.findByAadhaarNumber(
-        updateData.aadhaarNumber
+        updateData.aadhaarNumber,
+        tenantId
       );
 
     if (
@@ -323,7 +318,8 @@ async updateWorker(workerId, updateData, updatedBy) {
   ) {
     const existingPan =
       await workerRepository.findByPanNumber(
-        updateData.panNumber
+        updateData.panNumber,
+        tenantId
       );
 
     if (
@@ -338,77 +334,63 @@ async updateWorker(workerId, updateData, updatedBy) {
     }
   }
 
- // Validate Site
-if (updateData.site) {
-  const site = await Site.findOne({
-    _id: updateData.site,
-    isDeleted: false,
-    status: 'ACTIVE',
-  });
+  // Validate Site
+  if (updateData.site) {
+    const site =
+      await siteRepository.findActiveById(
+        updateData.site,
+        tenantId
+      );
 
-  if (!site) {
-    throw new ApiError(
-      StatusCodes.NOT_FOUND,
-      WORKER_MESSAGES.SITE_NOT_FOUND
-    );
+    if (!site) {
+      throw new ApiError(
+        StatusCodes.NOT_FOUND,
+        WORKER_MESSAGES.SITE_NOT_FOUND
+      );
+    }
   }
-}
-//findActiveById
+   /*
+   |--------------------------------------------------------------------------
+   | TODO: Contractor Validation
+   |--------------------------------------------------------------------------
+   |
+   | Uncomment after Contractor Module implementation.
+   |
+   | const contractor =
+   |   await userRepository.findById(
+   |     updateData.contractor
+   |   );
+   |
+   | if (!contractor) {
+   |   throw new ApiError(
+   |     StatusCodes.NOT_FOUND,
+   |     WORKER_MESSAGES.CONTRACTOR_NOT_FOUND
+   |   );
+   | }
+   |
+   |--------------------------------------------------------------------------
+   */
 
-if (updateData.site) {
-  const site =
-    await siteRepository.findActiveById(
-      updateData.site
-    );
+   const updatedWorker =
+     await workerRepository.update(
+       workerId,
+       {
+         ...updateData,
+         updatedBy,
+       },
+       tenantId
+     );
 
-  if (!site) {
-    throw new ApiError(
-      StatusCodes.NOT_FOUND,
-      WORKER_MESSAGES.SITE_NOT_FOUND
-    );
-  }
-}
-  /*
-  |--------------------------------------------------------------------------
-  | TODO: Contractor Validation
-  |--------------------------------------------------------------------------
-  |
-  | Uncomment after Contractor Module implementation.
-  |
-  | const contractor =
-  |   await userRepository.findById(
-  |     updateData.contractor
-  |   );
-  |
-  | if (!contractor) {
-  |   throw new ApiError(
-  |     StatusCodes.NOT_FOUND,
-  |     WORKER_MESSAGES.CONTRACTOR_NOT_FOUND
-  |   );
-  | }
-  |
-  |--------------------------------------------------------------------------
-  */
-
-  const updatedWorker =
-    await workerRepository.update(
-      workerId,
-      {
-        ...updateData,
-        updatedBy,
-      }
-    );
-
-  return updatedWorker;
+   return updatedWorker;
 }
 /**
  * ==========================================
  * Change Worker Status
  * ==========================================
  */
-async changeStatus(workerId, status) {
+async changeStatus(workerId, status, tenantId) {
   const worker =
-    await workerRepository.findById(workerId);
+    await workerRepository.findById(workerId, tenantId);
 
   if (!worker) {
     throw new ApiError(
@@ -419,7 +401,8 @@ async changeStatus(workerId, status) {
 
   return await workerRepository.changeStatus(
     workerId,
-    status
+    status,
+    tenantId
   );
 }
 /**
@@ -427,9 +410,9 @@ async changeStatus(workerId, status) {
  * Delete Worker
  * ==========================================
  */
-async deleteWorker(workerId) {
+async deleteWorker(workerId, tenantId) {
   const worker =
-    await workerRepository.findById(workerId);
+    await workerRepository.findById(workerId, tenantId);
 
   if (!worker) {
     throw new ApiError(
@@ -439,7 +422,8 @@ async deleteWorker(workerId) {
   }
 
   await workerRepository.softDelete(
-    workerId
+    workerId,
+    tenantId
   );
 
   return {

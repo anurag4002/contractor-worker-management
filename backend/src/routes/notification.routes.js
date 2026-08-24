@@ -5,6 +5,7 @@ import notificationController from '../controllers/notification.controller.js';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import authorize from '../middlewares/authorize.middleware.js';
 import validate from '../middlewares/validate.middleware.js';
+import requireActiveSubscription from '../middlewares/subscription.middleware.js';
 
 import {
   createNotificationSchema,
@@ -22,6 +23,7 @@ const router = Router();
 router.post(
   '/',
   authMiddleware,
+  requireActiveSubscription,
   authorize('NOTIFICATION_CREATE'),
   validate(createNotificationSchema, 'body'),
   notificationController.createNotification
@@ -35,6 +37,7 @@ router.post(
 router.get(
   '/',
   authMiddleware,
+  requireActiveSubscription,
   authorize('NOTIFICATION_READ'),
   validate(notificationQuerySchema, 'query'),
   notificationController.getNotifications
@@ -48,6 +51,7 @@ router.get(
 router.get(
   '/unread-count',
   authMiddleware,
+  requireActiveSubscription,
   authorize('NOTIFICATION_READ'),
   validate(notificationQuerySchema, 'query'),
   notificationController.getUnreadCount
@@ -61,6 +65,7 @@ router.get(
 router.get(
   '/:id',
   authMiddleware,
+  requireActiveSubscription,
   authorize('NOTIFICATION_READ'),
   validate(notificationIdSchema, 'params'),
   notificationController.getNotificationById
@@ -74,6 +79,7 @@ router.get(
 router.patch(
   '/:id/read',
   authMiddleware,
+  requireActiveSubscription,
   authorize('NOTIFICATION_UPDATE'),
   validate(notificationIdSchema, 'params'),
   notificationController.markAsRead
@@ -87,6 +93,7 @@ router.patch(
 router.patch(
   '/read-all',
   authMiddleware,
+  requireActiveSubscription,
   authorize('NOTIFICATION_UPDATE'),
   validate(notificationQuerySchema, 'query'),
   notificationController.markAllAsRead
@@ -100,6 +107,7 @@ router.patch(
 router.delete(
   '/',
   authMiddleware,
+  requireActiveSubscription,
   authorize('NOTIFICATION_DELETE'),
   notificationController.clearAllNotifications
 );
@@ -112,6 +120,7 @@ router.delete(
 router.delete(
   '/:id',
   authMiddleware,
+  requireActiveSubscription,
   authorize('NOTIFICATION_DELETE'),
   validate(notificationIdSchema, 'params'),
   notificationController.deleteNotification

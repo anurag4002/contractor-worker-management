@@ -4,6 +4,7 @@ import reportController from '../controllers/report.controller.js';
 
 import authMiddleware from '../middlewares/auth.middleware.js';
 import authorize from '../middlewares/authorize.middleware.js';
+import requireActiveSubscription from '../middlewares/subscription.middleware.js';
 
 const router = Router();
 
@@ -16,6 +17,7 @@ const router = Router();
 router.get(
   '/workers',
   authMiddleware,
+  requireActiveSubscription,
   authorize('REPORT_READ'),
   reportController.getWorkerReport
 );
@@ -29,6 +31,7 @@ router.get(
 router.get(
   '/attendance',
   authMiddleware,
+  requireActiveSubscription,
   authorize('REPORT_READ'),
   reportController.getAttendanceReport
 );
@@ -42,6 +45,7 @@ router.get(
 router.get(
   '/payroll',
   authMiddleware,
+  requireActiveSubscription,
   authorize('REPORT_READ'),
   reportController.getPayrollReport
 );
@@ -55,6 +59,7 @@ router.get(
 router.get(
   '/sites',
   authMiddleware,
+  requireActiveSubscription,
   authorize('REPORT_READ'),
   reportController.getSiteReport
 );
@@ -68,6 +73,7 @@ router.get(
 router.get(
   '/dashboard',
   authMiddleware,
+  requireActiveSubscription,
   authorize('REPORT_READ'),
   reportController.getDashboardReport
 );

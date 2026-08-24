@@ -5,6 +5,7 @@ import workerController from '../controllers/worker.controller.js';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import authorize from '../middlewares/authorize.middleware.js';
 import validate from '../middlewares/validate.middleware.js';
+import requireActiveSubscription from '../middlewares/subscription.middleware.js';
 
 import {
   createWorkerSchema,
@@ -24,6 +25,7 @@ const router = Router();
 router.post(
   '/',
   authMiddleware,
+  requireActiveSubscription,
   authorize('WORKER_CREATE'),
   validate(createWorkerSchema),
   workerController.createWorker
@@ -38,6 +40,7 @@ router.post(
 router.get(
   '/',
   authMiddleware,
+  requireActiveSubscription,
   authorize('WORKER_READ'),
   validate(getWorkersQuerySchema, 'query'),
   workerController.getWorkers
@@ -52,6 +55,7 @@ router.get(
 router.get(
   '/:id',
   authMiddleware,
+  requireActiveSubscription,
   authorize('WORKER_READ'),
   workerController.getWorkerById
 );
@@ -65,6 +69,7 @@ router.get(
 router.put(
   '/:id',
   authMiddleware,
+  requireActiveSubscription,
   authorize('WORKER_UPDATE'),
   validate(updateWorkerSchema),
   workerController.updateWorker
@@ -79,6 +84,7 @@ router.put(
 router.patch(
   '/:id/status',
   authMiddleware,
+  requireActiveSubscription,
   authorize('WORKER_UPDATE'),
   validate(changeWorkerStatusSchema),
   workerController.changeWorkerStatus
@@ -93,6 +99,7 @@ router.patch(
 router.delete(
   '/:id',
   authMiddleware,
+  requireActiveSubscription,
   authorize('WORKER_DELETE'),
   workerController.deleteWorker
 );

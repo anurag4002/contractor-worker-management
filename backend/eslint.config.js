@@ -26,5 +26,25 @@ export default [
     },
   },
 
+  {
+    files: ['**/tests/**/*.test.js', '**/tests/**/*.spec.js', '**/tests/setup/*.js'],
+
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        ...globals.jest,
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        jest: 'readonly',
+      },
+    },
+  },
+
   prettier,
 ];

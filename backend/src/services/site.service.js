@@ -50,17 +50,17 @@ class SiteService {
  * Create Site
  * ==========================================
  */
-async createSite(siteData, createdBy) {
-   console.log('siteData:', siteData);
+async createSite(siteData, createdBy, tenantId) {
+  console.log('siteData:', siteData);
 
-  // Generate Site Code
   const siteCode =
     await generateSiteCode();
 
-  // Duplicate Site Name
+
   const existingSiteName =
     await siteRepository.findBySiteName(
-      siteData.siteName
+      siteData.siteName,
+      tenantId
     );
 
   if (existingSiteName) {
@@ -70,10 +70,10 @@ async createSite(siteData, createdBy) {
     );
   }
 
-  // Duplicate Contact Number
   const existingContactNumber =
     await siteRepository.findByContactNumber(
-      siteData.contactNumber
+      siteData.contactNumber,
+      tenantId
     );
 
   if (existingContactNumber) {
@@ -83,11 +83,11 @@ async createSite(siteData, createdBy) {
     );
   }
 
-  // Duplicate Email
   if (siteData.email) {
     const existingEmail =
       await siteRepository.findByEmail(
-        siteData.email
+        siteData.email,
+        tenantId
       );
 
     if (existingEmail) {
@@ -98,7 +98,6 @@ async createSite(siteData, createdBy) {
     }
   }
 
-  // Validate Dates
   if (
     siteData.endDate &&
     new Date(siteData.endDate) <
@@ -110,16 +109,17 @@ async createSite(siteData, createdBy) {
     );
   }
 
-  // Create Site
   const site =
     await siteRepository.create({
       ...siteData,
       siteCode,
       createdBy,
+      tenant: tenantId,
     });
 
   return await siteRepository.findById(
-    site._id
+    site._id,
+    tenantId
   );
 }
 /**
@@ -127,7 +127,7 @@ async createSite(siteData, createdBy) {
  * Get Sites
  * ==========================================
  */
-async getSites(query) {
+async getSites(query, tenantId) {
   const {
     page = 1,
     limit = 10,
@@ -143,6 +143,10 @@ async getSites(query) {
   const filter = {
     isDeleted: false,
   };
+
+  if (tenantId) {
+    filter.tenant = tenantId;
+  }
 
   // Search
   if (search) {
@@ -211,11 +215,12 @@ async getSites(query) {
   const sites =
     await siteRepository.findAll(
       filter,
-      options
+      options,
+      null
     );
 
   const total =
-    await siteRepository.count(filter);
+    await siteRepository.count(filter, null);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -223,7 +228,7 @@ async getSites(query) {
   tomorrow.setHours(24, 0, 0, 0);
 
   const presentBySite =
-    await dashboardRepository.getTodayPresentBySite();
+    await dashboardRepository.getTodayPresentBySite(tenantId);
 
   const presentMap = new Map();
   presentBySite.forEach((item) => {
@@ -255,9 +260,9 @@ async getSites(query) {
  * Get Site By Id
  * ==========================================
  */
-async getSiteById(siteId) {
+async getSiteById(siteId, tenantId) {
   const site =
-    await siteRepository.findById(siteId);
+    await siteRepository.findById(siteId, tenantId);
 
   if (!site) {
     throw new ApiError(
@@ -273,10 +278,10 @@ async getSiteById(siteId) {
  * Update Site
  * ==========================================
  */
-async updateSite(siteId, updateData, updatedBy) {
+async updateSite(siteId, updateData, updatedBy, tenantId) {
   // Check Site Exists
   const site =
-    await siteRepository.findById(siteId);
+    await siteRepository.findById(siteId, tenantId);
 
   if (!site) {
     throw new ApiError(
@@ -292,7 +297,8 @@ async updateSite(siteId, updateData, updatedBy) {
   ) {
     const existingSiteName =
       await siteRepository.findBySiteName(
-        updateData.siteName
+        updateData.siteName,
+        tenantId
       );
 
     if (
@@ -314,7 +320,8 @@ async updateSite(siteId, updateData, updatedBy) {
   ) {
     const existingContactNumber =
       await siteRepository.findByContactNumber(
-        updateData.contactNumber
+        updateData.contactNumber,
+        tenantId
       );
 
     if (
@@ -336,7 +343,8 @@ async updateSite(siteId, updateData, updatedBy) {
   ) {
     const existingEmail =
       await siteRepository.findByEmail(
-        updateData.email
+        updateData.email,
+        tenantId
       );
 
     if (
@@ -374,7 +382,8 @@ async updateSite(siteId, updateData, updatedBy) {
       {
         ...updateData,
         updatedBy,
-      }
+      },
+      tenantId
     );
 
   return updatedSite;
@@ -384,10 +393,10 @@ async updateSite(siteId, updateData, updatedBy) {
  * Change Site Status
  * ==========================================
  */
-async changeStatus(siteId, status) {
+async changeStatus(siteId, status, tenantId) {
   // Check Site Exists
   const site =
-    await siteRepository.findById(siteId);
+    await siteRepository.findById(siteId, tenantId);
 
   if (!site) {
     throw new ApiError(
@@ -399,7 +408,8 @@ async changeStatus(siteId, status) {
   // Change Status
   return await siteRepository.changeStatus(
     siteId,
-    status
+    status,
+    tenantId
   );
 }
 /**
@@ -407,10 +417,10 @@ async changeStatus(siteId, status) {
  * Delete Site
  * ==========================================
  */
-async deleteSite(siteId) {
+async deleteSite(siteId, tenantId) {
   // Check Site Exists
   const site =
-    await siteRepository.findById(siteId);
+    await siteRepository.findById(siteId, tenantId);
 
   if (!site) {
     throw new ApiError(
@@ -421,7 +431,8 @@ async deleteSite(siteId) {
 
   // Soft Delete Site
   await siteRepository.softDelete(
-    siteId
+    siteId,
+    tenantId
   );
 
   return {
@@ -434,10 +445,10 @@ async deleteSite(siteId) {
  * Assign Workers to Site
  * ==========================================
  */
-async assignWorkers(siteId, workerIds, assignedBy) {
+async assignWorkers(siteId, workerIds, assignedBy, tenantId) {
   // Check Site Exists
   const site =
-    await siteRepository.findActiveById(siteId);
+    await siteRepository.findActiveById(siteId, tenantId);
 
   if (!site) {
     throw new ApiError(
@@ -456,7 +467,8 @@ async assignWorkers(siteId, workerIds, assignedBy) {
   // Validate Workers
   const workers =
     await workerRepository.findManyByIds(
-      workerIds
+      workerIds,
+      tenantId
     );
 
   if (workers.length !== workerIds.length) {
@@ -505,14 +517,16 @@ async assignWorkers(siteId, workerIds, assignedBy) {
       siteId,
       uniqueWorkerIds,
       assignedBy,
-      session
+      session,
+      tenantId
     );
 
     // Update site workers array
     await siteRepository.addWorkers(
       siteId,
       uniqueWorkerIds,
-      session
+      session,
+      tenantId
     );
 
     await session.commitTransaction();

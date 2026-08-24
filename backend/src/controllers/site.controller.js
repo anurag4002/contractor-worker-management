@@ -13,7 +13,8 @@ const createSite = asyncHandler(async (req, res) => {
   const site =
     await siteService.createSite(
       req.body,
-      req.user.userId
+      req.user.userId,
+      req.user.tenantId
     );
 
   return ApiResponse.created(
@@ -30,7 +31,7 @@ const createSite = asyncHandler(async (req, res) => {
  */
 const getSites = asyncHandler(async (req, res) => {
   const result =
-    await siteService.getSites(req.query);
+    await siteService.getSites(req.query, req.user.tenantId);
 
   return ApiResponse.paginated(
     res,
@@ -49,7 +50,8 @@ const getSiteById = asyncHandler(
   async (req, res) => {
     const site =
       await siteService.getSiteById(
-        req.params.id
+        req.params.id,
+        req.user.tenantId
       );
 
     return ApiResponse.success(
@@ -71,7 +73,8 @@ const updateSite = asyncHandler(
       await siteService.updateSite(
         req.params.id,
         req.body,
-        req.user.userId
+        req.user.userId,
+        req.user.tenantId
       );
 
     return ApiResponse.success(
@@ -92,7 +95,8 @@ const changeSiteStatus =
     const site =
       await siteService.changeStatus(
         req.params.id,
-        req.body.status
+        req.body.status,
+        req.user.tenantId
       );
 
     return ApiResponse.success(
@@ -111,7 +115,8 @@ const deleteSite = asyncHandler(
   async (req, res) => {
     const result =
       await siteService.deleteSite(
-        req.params.id
+        req.params.id,
+        req.user.tenantId
       );
 
     return ApiResponse.success(
@@ -133,7 +138,8 @@ const assignWorkers = asyncHandler(
       await siteService.assignWorkers(
         req.params.id,
         req.body.workerIds,
-        req.user.userId
+        req.user.userId,
+        req.user.tenantId
       );
 
     return ApiResponse.success(

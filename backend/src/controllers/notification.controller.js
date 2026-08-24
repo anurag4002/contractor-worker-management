@@ -15,7 +15,7 @@ const createNotification =
       await notificationService.createNotification({
         ...req.body,
         createdBy: req.user._id,
-      });
+      }, req.user.tenantId);
 
     return ApiResponse.success(
   res,
@@ -47,15 +47,16 @@ const getNotifications =
     const result =
       await notificationService.getNotifications(
         filter,
-        req.user._id
+        req.user._id,
+        req.user.tenantId
       );
 
    return ApiResponse.success(
-  res,
-  result.data,
-  result.message,
-  result.statusCode
-);
+   res,
+   result.data,
+   result.message,
+   result.statusCode
+ );
   });
 
 /**
@@ -67,15 +68,16 @@ const getNotificationById =
   asyncHandler(async (req, res) => {
     const result =
       await notificationService.getNotificationById(
-        req.params.id
+        req.params.id,
+        req.user.tenantId
       );
 
     return ApiResponse.success(
-  res,
-  result.data,
-  result.message,
-  result.statusCode
-);
+   res,
+   result.data,
+   result.message,
+   result.statusCode
+ );
   });
 
 /**
@@ -95,15 +97,16 @@ const getUnreadCount =
     const result =
       await notificationService.getUnreadCount(
         filter,
-        req.user._id
+        req.user._id,
+        req.user.tenantId
       );
 
    return ApiResponse.success(
-  res,
-  result.data,
-  result.message,
-  result.statusCode
-);
+   res,
+   result.data,
+   result.message,
+   result.statusCode
+ );
   });
 
 /**
@@ -116,15 +119,16 @@ const markAsRead =
     const result =
       await notificationService.markAsRead(
         req.params.id,
-        req.user._id
+        req.user._id,
+        req.user.tenantId
       );
 
    return ApiResponse.success(
-  res,
-  result.data,
-  result.message,
-  result.statusCode
-);
+   res,
+   result.data,
+   result.message,
+   result.statusCode
+ );
   });
 
 /**
@@ -144,15 +148,16 @@ const markAllAsRead =
     const result =
       await notificationService.markAllAsRead(
         filter,
-        req.user._id
+        req.user._id,
+        req.user.tenantId
       );
 
    return ApiResponse.success(
-  res,
-  result.data,
-  result.message,
-  result.statusCode
-);
+   res,
+   result.data,
+   result.message,
+   result.statusCode
+ );
   });
 
 /**
@@ -164,15 +169,16 @@ const markAllAsRead =
    asyncHandler(async (req, res) => {
      const result =
        await notificationService.deleteNotification(
-         req.params.id
+         req.params.id,
+         req.user.tenantId
        );
 
      return ApiResponse.success(
-   res,
-   result.data,
-   result.message,
-   result.statusCode
- );
+     res,
+     result.data,
+     result.message,
+     result.statusCode
+   );
    });
 
  /**
@@ -180,19 +186,20 @@ const markAllAsRead =
   * Clear All Notifications
   * ==========================================
   */
- const clearAllNotifications =
+  const clearAllNotifications =
    asyncHandler(async (req, res) => {
      const result =
        await notificationService.clearAll(
-         req.user._id
+         req.user._id,
+         req.user.tenantId
        );
 
      return ApiResponse.success(
-   res,
-   result.data,
-   result.message,
-   result.statusCode
- );
+     res,
+     result.data,
+     result.message,
+     result.statusCode
+   );
    });
 
 export default {

@@ -5,12 +5,14 @@ import Payroll from '../models/Payroll.js';
 
 class ReportRepository {
     /**
- * ==========================================
- * Get Worker Report
- * ==========================================
- */
-async getWorkerReport(filter, options) {
-  return await Worker.find(filter)
+  * ==========================================
+  * Get Worker Report
+  * ==========================================
+  */
+ async getWorkerReport(filter, options, tenantId = null) {
+  const query = tenantId ? { ...filter, tenant: tenantId } : filter;
+
+  return await Worker.find(query)
     .populate(
       'site',
       'siteCode siteName'
@@ -23,24 +25,29 @@ async getWorkerReport(filter, options) {
     .skip(options.skip)
     .limit(options.limit);
 }
-/**
- * ==========================================
- * Count Workers
- * ==========================================
- */
-async countWorkers(filter) {
-  return await Worker.countDocuments(filter);
+ /**
+  * ==========================================
+  * Count Workers
+  * ==========================================
+  */
+ async countWorkers(filter, tenantId = null) {
+  const query = tenantId ? { ...filter, tenant: tenantId } : filter;
+
+  return await Worker.countDocuments(query);
 }
-/**
- * ==========================================
- * Get Attendance Report
- * ==========================================
- */
-async getAttendanceReport(
+ /**
+  * ==========================================
+  * Get Attendance Report
+  * ==========================================
+  */
+ async getAttendanceReport(
   filter,
-  options
+  options,
+  tenantId = null
 ) {
-  return await Attendance.find(filter)
+  const query = tenantId ? { ...filter, tenant: tenantId } : filter;
+
+  return await Attendance.find(query)
     .populate(
       'worker',
       'employeeCode fullName'
@@ -61,26 +68,31 @@ async getAttendanceReport(
     .skip(options.skip)
     .limit(options.limit);
 }
-/**
- * ==========================================
- * Count Attendance
- * ==========================================
- */
-async countAttendance(filter) {
+ /**
+  * ==========================================
+  * Count Attendance
+  * ==========================================
+  */
+ async countAttendance(filter, tenantId = null) {
+  const query = tenantId ? { ...filter, tenant: tenantId } : filter;
+
   return await Attendance.countDocuments(
-    filter
+    query
   );
 }
-/**
- * ==========================================
- * Get Payroll Report
- * ==========================================
- */
-async getPayrollReport(
+ /**
+  * ==========================================
+  * Get Payroll Report
+  * ==========================================
+  */
+ async getPayrollReport(
   filter,
-  options
+  options,
+  tenantId = null
 ) {
-  return await Payroll.find(filter)
+  const query = tenantId ? { ...filter, tenant: tenantId } : filter;
+
+  return await Payroll.find(query)
     .populate(
       'worker',
       'employeeCode fullName'
@@ -101,26 +113,31 @@ async getPayrollReport(
     .skip(options.skip)
     .limit(options.limit);
 }
-/**
- * ==========================================
- * Count Payroll
- * ==========================================
- */
-async countPayroll(filter) {
+ /**
+  * ==========================================
+  * Count Payroll
+  * ==========================================
+  */
+ async countPayroll(filter, tenantId = null) {
+  const query = tenantId ? { ...filter, tenant: tenantId } : filter;
+
   return await Payroll.countDocuments(
-    filter
+    query
   );
 }
-/**
- * ==========================================
- * Get Site Report
- * ==========================================
- */
-async getSiteReport(
+ /**
+  * ==========================================
+  * Get Site Report
+  * ==========================================
+  */
+ async getSiteReport(
   filter,
-  options
+  options,
+  tenantId = null
 ) {
-  return await Site.find(filter)
+  const query = tenantId ? { ...filter, tenant: tenantId } : filter;
+
+  return await Site.find(query)
     .populate(
       'createdBy',
       'fullName email'
@@ -133,22 +150,68 @@ async getSiteReport(
     .skip(options.skip)
     .limit(options.limit);
 }
-/**
- * ==========================================
- * Count Sites
- * ==========================================
- */
-async countSites(filter) {
+ /**
+  * ==========================================
+  * Count Sites
+  * ==========================================
+  */
+ async countSites(filter, tenantId = null) {
+  const query = tenantId ? { ...filter, tenant: tenantId } : filter;
+
   return await Site.countDocuments(
-    filter
+    query
   );
 }
-/**
- * ==========================================
- * Get Dashboard Report
- * ==========================================
- */
-async getDashboardReport() {
+ /**
+  * ==========================================
+  * Get Dashboard Report
+  * ==========================================
+  */
+ async getDashboardReport(tenantId = null) {
+  const workerQuery = { isDeleted: false };
+  const activeWorkerQuery = {
+    status: 'ACTIVE',
+    isDeleted: false,
+  };
+  const siteQuery = { isDeleted: false };
+  const activeSiteQuery = {
+    status: 'ACTIVE',
+    isDeleted: false,
+  };
+  const attendanceQuery = {
+    isDeleted: false,
+    attendanceDate: {
+      $gte: new Date(new Date().setHours(0, 0, 0, 0)),
+      $lt: new Date(new Date().setHours(23, 59, 59, 999)),
+    },
+  };
+  const payrollQuery = { isDeleted: false };
+  const currentMonthQuery = {
+    isDeleted: false,
+    attendanceMonth: new Date().getMonth() + 1,
+    attendanceYear: new Date().getFullYear(),
+  };
+  const paidQuery = {
+    status: 'PAID',
+    isDeleted: false,
+  };
+  const pendingQuery = {
+    status: 'PENDING',
+    isDeleted: false,
+  };
+
+  if (tenantId) {
+    workerQuery.tenant = tenantId;
+    activeWorkerQuery.tenant = tenantId;
+    siteQuery.tenant = tenantId;
+    activeSiteQuery.tenant = tenantId;
+    attendanceQuery.tenant = tenantId;
+    payrollQuery.tenant = tenantId;
+    currentMonthQuery.tenant = tenantId;
+    paidQuery.tenant = tenantId;
+    pendingQuery.tenant = tenantId;
+  }
+
   const [
     totalWorkers,
     activeWorkers,
@@ -160,43 +223,21 @@ async getDashboardReport() {
     paidPayrolls,
     pendingPayrolls,
   ] = await Promise.all([
-    Worker.countDocuments({
-      isDeleted: false,
-    }),
+    Worker.countDocuments(workerQuery),
 
-    Worker.countDocuments({
-      status: 'ACTIVE',
-      isDeleted: false,
-    }),
+    Worker.countDocuments(activeWorkerQuery),
 
-    Site.countDocuments({
-      isDeleted: false,
-    }),
+    Site.countDocuments(siteQuery),
 
-    Site.countDocuments({
-      status: 'ACTIVE',
-      isDeleted: false,
-    }),
+    Site.countDocuments(activeSiteQuery),
 
-    Attendance.countDocuments({
-      isDeleted: false,
-      attendanceDate: {
-        $gte: new Date(new Date().setHours(0, 0, 0, 0)),
-        $lt: new Date(new Date().setHours(23, 59, 59, 999)),
-      },
-    }),
+    Attendance.countDocuments(attendanceQuery),
 
-    Payroll.countDocuments({
-      isDeleted: false,
-    }),
+    Payroll.countDocuments(payrollQuery),
 
     Payroll.aggregate([
       {
-        $match: {
-          isDeleted: false,
-          attendanceMonth: new Date().getMonth() + 1,
-          attendanceYear: new Date().getFullYear(),
-        },
+        $match: currentMonthQuery,
       },
       {
         $group: {
@@ -208,15 +249,9 @@ async getDashboardReport() {
       },
     ]),
 
-    Payroll.countDocuments({
-      status: 'PAID',
-      isDeleted: false,
-    }),
+    Payroll.countDocuments(paidQuery),
 
-    Payroll.countDocuments({
-      status: 'PENDING',
-      isDeleted: false,
-    }),
+    Payroll.countDocuments(pendingQuery),
   ]);
 
   return {

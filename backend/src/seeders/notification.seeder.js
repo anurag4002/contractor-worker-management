@@ -1,5 +1,6 @@
 import Notification from '../models/Notification.js';
 import User from '../models/User.js';
+import Tenant from '../models/Tenant.js';
 
 import logger from '../common/logger/logger.js';
 
@@ -83,6 +84,7 @@ const seedNotifications = async () => {
 
   const users = await User.find({ isDeleted: false });
   const adminUser = users.find((u) => u.email === 'admin@contractor.com');
+  const adminTenant = await Tenant.findOne({ owner: adminUser?._id, isDeleted: false });
   const recipientPool = users.length > 0 ? users : [adminUser];
 
   const totalNotifications = 120;
@@ -98,6 +100,7 @@ const seedNotifications = async () => {
       title,
       message,
       type,
+      tenant: adminTenant?._id || null,
       recipient: recipient._id,
       isRead: Math.random() > 0.5,
       status: 'ACTIVE',

@@ -5,6 +5,7 @@ import payrollController from '../controllers/payroll.controller.js';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import authorize from '../middlewares/authorize.middleware.js';
 import validate from '../middlewares/validate.middleware.js';
+import requireActiveSubscription from '../middlewares/subscription.middleware.js';
 
 import {
   createPayrollSchema,
@@ -25,6 +26,7 @@ const router = Router();
 router.get(
   '/summary',
   authMiddleware,
+  requireActiveSubscription,
   authorize('PAYROLL_READ'),
   payrollController.getSummary
 );
@@ -38,6 +40,7 @@ router.get(
 router.get(
   '/worker/:workerId',
   authMiddleware,
+  requireActiveSubscription,
   authorize('PAYROLL_READ'),
   payrollController.getWorkerPayrollHistory
 );
@@ -51,6 +54,7 @@ router.get(
 router.post(
   '/',
   authMiddleware,
+  requireActiveSubscription,
   authorize('PAYROLL_CREATE'),
   validate(createPayrollSchema),
   payrollController.createPayroll
@@ -106,6 +110,7 @@ router.get(
 router.get(
   '/:id',
   authMiddleware,
+  requireActiveSubscription,
   authorize('PAYROLL_READ'),
   payrollController.getPayrollById
 );
@@ -119,6 +124,7 @@ router.get(
 router.put(
   '/:id',
   authMiddleware,
+  requireActiveSubscription,
   authorize('PAYROLL_UPDATE'),
   validate(updatePayrollSchema),
   payrollController.updatePayroll
@@ -133,6 +139,7 @@ router.put(
 router.patch(
   '/:id/status',
   authMiddleware,
+  requireActiveSubscription,
   authorize('PAYROLL_UPDATE'),
   validate(changePayrollStatusSchema),
   payrollController.changePayrollStatus
@@ -147,6 +154,7 @@ router.patch(
 router.delete(
   '/:id',
   authMiddleware,
+  requireActiveSubscription,
   authorize('PAYROLL_DELETE'),
   payrollController.deletePayroll
 );

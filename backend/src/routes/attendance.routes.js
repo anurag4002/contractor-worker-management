@@ -5,6 +5,7 @@ import attendanceController from '../controllers/attendance.controller.js';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import authorize from '../middlewares/authorize.middleware.js';
 import validate from '../middlewares/validate.middleware.js';
+import requireActiveSubscription from '../middlewares/subscription.middleware.js';
 
 import {
   createAttendanceSchema,
@@ -24,6 +25,7 @@ const router = Router();
 router.get(
   '/summary',
   authMiddleware,
+  requireActiveSubscription,
   authorize('ATTENDANCE_READ'),
   attendanceController.getSummary
 );
@@ -37,6 +39,7 @@ router.get(
 router.get(
   '/history/:workerId',
   authMiddleware,
+  requireActiveSubscription,
   authorize('ATTENDANCE_READ'),
   attendanceController.getWorkerHistory
 );
@@ -50,6 +53,7 @@ router.get(
 router.post(
   '/',
   authMiddleware,
+  requireActiveSubscription,
   authorize('ATTENDANCE_CREATE'),
   validate(createAttendanceSchema),
   attendanceController.createAttendance
@@ -64,6 +68,7 @@ router.post(
 router.get(
   '/',
   authMiddleware,
+  requireActiveSubscription,
   authorize('ATTENDANCE_READ'),
   validate(getAttendanceQuerySchema, 'query'),
   attendanceController.getAttendance
@@ -78,6 +83,7 @@ router.get(
 router.get(
   '/:id',
   authMiddleware,
+  requireActiveSubscription,
   authorize('ATTENDANCE_READ'),
   attendanceController.getAttendanceById
 );
@@ -91,6 +97,7 @@ router.get(
 router.put(
   '/:id',
   authMiddleware,
+  requireActiveSubscription,
   authorize('ATTENDANCE_UPDATE'),
   validate(updateAttendanceSchema),
   attendanceController.updateAttendance
@@ -105,6 +112,7 @@ router.put(
 router.patch(
   '/:id/status',
   authMiddleware,
+  requireActiveSubscription,
   authorize('ATTENDANCE_UPDATE'),
   validate(changeAttendanceStatusSchema),
   attendanceController.changeAttendanceStatus
@@ -119,6 +127,7 @@ router.patch(
 router.delete(
   '/:id',
   authMiddleware,
+  requireActiveSubscription,
   authorize('ATTENDANCE_DELETE'),
   attendanceController.deleteAttendance
 );

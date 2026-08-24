@@ -21,6 +21,11 @@ import reportRoutes from './report.routes.js';
 import exportRoutes from './export.routes.js';
 
 import notificationRoutes from './notification.routes.js';
+import tenantRoutes from './tenant.routes.js';
+
+import subscriptionPlanRoutes from './subscriptionPlan.routes.js';
+
+import subscriptionRoutes from './subscription.routes.js';
 
 const router = Router();
 
@@ -58,7 +63,10 @@ router.use('/reports', reportRoutes);
 
 router.use('/export', exportRoutes);
 
-router.use('/notifications',notificationRoutes);
+router.use('/notifications', notificationRoutes);
+router.use('/tenants', tenantRoutes);
+router.use('/subscription-plans', subscriptionPlanRoutes);
+router.use('/subscriptions', subscriptionRoutes);
 
 /*
 |--------------------------------------------------------------------------

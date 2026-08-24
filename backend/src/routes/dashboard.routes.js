@@ -4,6 +4,7 @@ import dashboardController from '../controllers/dashboard.controller.js';
 
 import authMiddleware from '../middlewares/auth.middleware.js';
 import authorize from '../middlewares/authorize.middleware.js';
+import requireActiveSubscription from '../middlewares/subscription.middleware.js';
 
 const router = Router();
 
@@ -16,6 +17,7 @@ const router = Router();
 router.get(
   '/',
   authMiddleware,
+  requireActiveSubscription,
   authorize('DASHBOARD_READ'),
   dashboardController.getDashboard
 );
@@ -29,6 +31,7 @@ router.get(
 router.get(
   '/recent-workers',
   authMiddleware,
+  requireActiveSubscription,
   authorize('DASHBOARD_READ'),
   dashboardController.getRecentWorkers
 );
@@ -42,6 +45,7 @@ router.get(
 router.get(
   '/recent-attendance',
   authMiddleware,
+  requireActiveSubscription,
   authorize('DASHBOARD_READ'),
   dashboardController.getRecentAttendance
 );
@@ -55,6 +59,7 @@ router.get(
 router.get(
   '/recent-payroll',
   authMiddleware,
+  requireActiveSubscription,
   authorize('DASHBOARD_READ'),
   dashboardController.getRecentPayroll
 );
@@ -68,6 +73,7 @@ router.get(
 router.get(
   '/charts',
   authMiddleware,
+  requireActiveSubscription,
   authorize('DASHBOARD_READ'),
   dashboardController.getCharts
 );

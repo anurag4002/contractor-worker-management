@@ -16,12 +16,14 @@ class AttendanceService {
  */
     async createAttendance(
         attendanceData,
-        createdBy
+        createdBy,
+        tenantId
     ) {
         // Check Worker Exists
         const worker =
             await workerRepository.findById(
-                attendanceData.worker
+                attendanceData.worker,
+                tenantId
             );
 
         if (!worker) {
@@ -34,7 +36,8 @@ class AttendanceService {
         // Check Site Exists
         const site =
             await siteRepository.findActiveById(
-                attendanceData.site
+                attendanceData.site,
+                tenantId
             );
 
         if (!site) {
@@ -48,7 +51,8 @@ class AttendanceService {
         const existingAttendance =
             await attendanceRepository.findByWorkerAndDate(
                 attendanceData.worker,
-                attendanceData.attendanceDate
+                attendanceData.attendanceDate,
+                tenantId
             );
 
         if (existingAttendance) {
@@ -72,14 +76,17 @@ class AttendanceService {
         }
 
         // Create Attendance
+        const tenant = worker.tenant || tenantId;
         const attendance =
             await attendanceRepository.create({
                 ...attendanceData,
+                tenant,
                 createdBy,
             });
 
         return await attendanceRepository.findById(
-            attendance._id
+            attendance._id,
+            tenantId
         );
     }
     /**
@@ -87,7 +94,7 @@ class AttendanceService {
      * Get Attendance
      * ==========================================
      */
-    async getAttendance(query) {
+    async getAttendance(query, tenantId) {
         const {
             page = 1,
             limit = 10,
@@ -103,6 +110,10 @@ class AttendanceService {
         const filter = {
             isDeleted: false,
         };
+
+        if (tenantId) {
+            filter.tenant = tenantId;
+        }
 
         // Search
         if (search) {
@@ -159,12 +170,14 @@ class AttendanceService {
         const attendance =
             await attendanceRepository.findAll(
                 filter,
-                options
+                options,
+                null
             );
 
         const total =
             await attendanceRepository.count(
-                filter
+                filter,
+                null
             );
 
         return {
@@ -184,10 +197,11 @@ class AttendanceService {
      * Get Attendance By Id
      * ==========================================
      */
-    async getAttendanceById(attendanceId) {
+    async getAttendanceById(attendanceId, tenantId) {
         const attendance =
             await attendanceRepository.findById(
-                attendanceId
+                attendanceId,
+                tenantId
             );
 
         if (!attendance) {
@@ -207,12 +221,14 @@ class AttendanceService {
     async updateAttendance(
         attendanceId,
         updateData,
-        updatedBy
+        updatedBy,
+        tenantId
     ) {
         // Check Attendance Exists
         const attendance =
             await attendanceRepository.findById(
-                attendanceId
+                attendanceId,
+                tenantId
             );
 
         if (!attendance) {
@@ -230,7 +246,8 @@ class AttendanceService {
         ) {
             const worker =
                 await workerRepository.findById(
-                    updateData.worker
+                    updateData.worker,
+                    tenantId
                 );
 
             if (!worker) {
@@ -249,7 +266,8 @@ class AttendanceService {
         ) {
             const site =
                 await siteRepository.findActiveById(
-                    updateData.site
+                    updateData.site,
+                    tenantId
                 );
 
             if (!site) {
@@ -272,7 +290,8 @@ class AttendanceService {
         const existingAttendance =
             await attendanceRepository.findByWorkerAndDate(
                 workerId,
-                attendanceDate
+                attendanceDate,
+                tenantId
             );
 
         if (
@@ -314,7 +333,8 @@ class AttendanceService {
                 {
                     ...updateData,
                     updatedBy,
-                }
+                },
+                tenantId
             );
 
         return updatedAttendance;
@@ -324,11 +344,12 @@ class AttendanceService {
      * Change Attendance Status
      * ==========================================
      */
-    async changeStatus(attendanceId, status) {
+    async changeStatus(attendanceId, status, tenantId) {
         // Check Attendance Exists
         const attendance =
             await attendanceRepository.findById(
-                attendanceId
+                attendanceId,
+                tenantId
             );
 
         if (!attendance) {
@@ -341,7 +362,8 @@ class AttendanceService {
         // Change Status
         return await attendanceRepository.changeStatus(
             attendanceId,
-            status
+            status,
+            tenantId
         );
     }
     /**
@@ -349,11 +371,12 @@ class AttendanceService {
      * Delete Attendance
      * ==========================================
      */
-    async deleteAttendance(attendanceId) {
+    async deleteAttendance(attendanceId, tenantId) {
         // Check Attendance Exists
         const attendance =
             await attendanceRepository.findById(
-                attendanceId
+                attendanceId,
+                tenantId
             );
 
         if (!attendance) {
@@ -365,7 +388,8 @@ class AttendanceService {
 
         // Soft Delete
         await attendanceRepository.softDelete(
-            attendanceId
+            attendanceId,
+            tenantId
         );
 
         return {
@@ -378,10 +402,14 @@ class AttendanceService {
      * Attendance Summary
      * ==========================================
      */
-    async getSummary(query) {
+    async getSummary(query, tenantId) {
         const filter = {
             isDeleted: false,
         };
+
+        if (tenantId) {
+            filter.tenant = tenantId;
+        }
 
         if (query.attendanceDate) {
             const startDate = new Date(
@@ -406,7 +434,8 @@ class AttendanceService {
 
         const summary =
             await attendanceRepository.getSummary(
-                filter
+                filter,
+                null
             );
 
         const result = {
@@ -453,12 +482,14 @@ class AttendanceService {
      */
     async getWorkerHistory(
         workerId,
-        query
+        query,
+        tenantId
     ) {
         // Validate Worker
         const worker =
             await workerRepository.findById(
-                workerId
+                workerId,
+                tenantId
             );
 
         if (!worker) {
@@ -482,7 +513,8 @@ class AttendanceService {
                 {
                     skip,
                     limit,
-                }
+                },
+                tenantId
             );
 
         return history;

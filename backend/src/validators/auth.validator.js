@@ -2,45 +2,45 @@ import Joi from 'joi';
 
 /**
  * Register Validation
+ * Supports both SUPER_ADMIN (first user) and TENANT_ADMIN registration
  */
 export const registerSchema = Joi.object({
   fullName: Joi.string()
-  .trim()
-  .min(2)
-  .max(100)
-  .required()
-  .messages({
-    'string.empty': 'Full name is required.',
-    'any.required': 'Full name is required.',
-    'string.min': 'Full name must contain at least 2 characters.',
-    'string.max': 'Full name cannot exceed 100 characters.',
-  }),
+    .trim()
+    .min(2)
+    .max(100)
+    .required()
+    .messages({
+      'string.empty': 'Full name is required.',
+      'any.required': 'Full name is required.',
+      'string.min': 'Full name must contain at least 2 characters.',
+      'string.max': 'Full name cannot exceed 100 characters.',
+    }),
 
   email: Joi.string()
-  .email()
-  .required()
-  .messages({
-    'string.empty': 'Email is required.',
-    'any.required': 'Email is required.',
-    'string.email': 'Please enter a valid email address.',
-  }),
+    .email()
+    .required()
+    .messages({
+      'string.empty': 'Email is required.',
+      'any.required': 'Email is required.',
+      'string.email': 'Please enter a valid email address.',
+    }),
 
   mobileNumber: Joi.string()
-  .pattern(/^[6-9]\d{9}$/)
-  .required()
-  .messages({
-    'string.empty': 'Mobile number is required.',
-    'any.required': 'Mobile number is required.',
-    'string.pattern.base':
-      'Please enter a valid 10-digit Indian mobile number.',
-  }),
+    .pattern(/^[6-9]\d{9}$/)
+    .required()
+    .messages({
+      'string.empty': 'Mobile number is required.',
+      'any.required': 'Mobile number is required.',
+      'string.pattern.base':
+        'Please enter a valid 10-digit Indian mobile number.',
+    }),
 
   username: Joi.string()
     .trim()
     .min(3)
     .max(30)
-    .alphanum()
-    .required(),
+    .alphanum(),
 
   password: Joi.string()
     .min(8)
@@ -53,6 +53,40 @@ export const registerSchema = Joi.object({
       'string.pattern.base':
         'Password must contain uppercase, lowercase, number and special character.',
     }),
+
+  companyName: Joi.string()
+    .trim()
+    .min(2)
+    .max(150)
+    .messages({
+      'string.min': 'Company name must contain at least 2 characters.',
+      'string.max': 'Company name cannot exceed 150 characters.',
+    }),
+
+  address: Joi.string()
+    .trim()
+    .allow('', null)
+    .optional(),
+
+  city: Joi.string()
+    .trim()
+    .allow('', null)
+    .optional(),
+
+  district: Joi.string()
+    .trim()
+    .allow('', null)
+    .optional(),
+
+  state: Joi.string()
+    .trim()
+    .allow('', null)
+    .optional(),
+
+  pincode: Joi.string()
+    .trim()
+    .allow('', null)
+    .optional(),
 });
 
 /**

@@ -147,6 +147,12 @@ const payrollSchema = new mongoose.Schema(
       default: '',
     },
 
+    tenant: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tenant',
+      required: [true, 'Tenant is required'],
+    },
+
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -184,6 +190,7 @@ const payrollSchema = new mongoose.Schema(
 // One payroll per worker per month
 payrollSchema.index(
   {
+    tenant: 1,
     worker: 1,
     attendanceMonth: 1,
     attendanceYear: 1,
@@ -194,6 +201,10 @@ payrollSchema.index(
 );
 
 // Frequently queried indexes
+payrollSchema.index({
+  tenant: 1,
+});
+
 payrollSchema.index({
   site: 1,
 });

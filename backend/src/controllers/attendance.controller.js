@@ -14,7 +14,8 @@ const createAttendance = asyncHandler(
     const attendance =
       await attendanceService.createAttendance(
         req.body,
-        req.user.userId
+        req.user.userId,
+        req.user.tenantId
       );
 
     return ApiResponse.created(
@@ -34,7 +35,8 @@ const getAttendance = asyncHandler(
   async (req, res) => {
     const result =
       await attendanceService.getAttendance(
-        req.query
+        req.query,
+        req.user.tenantId
       );
 
     return ApiResponse.paginated(
@@ -55,7 +57,8 @@ const getAttendanceById = asyncHandler(
   async (req, res) => {
     const attendance =
       await attendanceService.getAttendanceById(
-        req.params.id
+        req.params.id,
+        req.user.tenantId
       );
 
     return ApiResponse.success(
@@ -77,7 +80,8 @@ const updateAttendance = asyncHandler(
       await attendanceService.updateAttendance(
         req.params.id,
         req.body,
-        req.user.userId
+        req.user.userId,
+        req.user.tenantId
       );
 
     return ApiResponse.success(
@@ -98,7 +102,8 @@ const changeAttendanceStatus =
     const attendance =
       await attendanceService.changeStatus(
         req.params.id,
-        req.body.status
+        req.body.status,
+        req.user.tenantId
       );
 
     return ApiResponse.success(
@@ -117,7 +122,8 @@ const deleteAttendance = asyncHandler(
   async (req, res) => {
     const result =
       await attendanceService.deleteAttendance(
-        req.params.id
+        req.params.id,
+        req.user.tenantId
       );
 
     return ApiResponse.success(
@@ -137,7 +143,8 @@ const getSummary = asyncHandler(
   async (req, res) => {
     const summary =
       await attendanceService.getSummary(
-        req.query
+        req.query,
+        req.user.tenantId
       );
 
     return ApiResponse.success(
@@ -158,7 +165,8 @@ const getWorkerHistory =
     const history =
       await attendanceService.getWorkerHistory(
         req.params.workerId,
-        req.query
+        req.query,
+        req.user.tenantId
       );
 
     return ApiResponse.success(

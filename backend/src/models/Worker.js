@@ -169,6 +169,12 @@ const workerSchema = new mongoose.Schema(
             default: null,
         },
 
+        tenant: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Tenant',
+            required: [true, 'Tenant is required'],
+        },
+
         joiningDate: {
             type: Date,
             required: true,
@@ -302,22 +308,22 @@ const workerSchema = new mongoose.Schema(
 
 // Unique Indexes
 workerSchema.index(
-    { employeeCode: 1 },
+    { tenant: 1, employeeCode: 1 },
     { unique: true }
 );
 
 workerSchema.index(
-    { mobileNumber: 1 },
+    { tenant: 1, mobileNumber: 1 },
     { unique: true }
 );
 
 workerSchema.index(
-    { aadhaarNumber: 1 },
+    { tenant: 1, aadhaarNumber: 1 },
     { unique: true }
 );
 
 workerSchema.index(
-    { panNumber: 1 },
+    { tenant: 1, panNumber: 1 },
     {
         unique: true,
         sparse: true,

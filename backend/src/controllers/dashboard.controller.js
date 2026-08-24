@@ -12,7 +12,7 @@ import asyncHandler from '../common/helpers/asyncHandler.js';
 const getDashboard = asyncHandler(
   async (req, res) => {
     const dashboard =
-      await dashboardService.getDashboard();
+      await dashboardService.getDashboard(req.user.tenantId);
 
     return ApiResponse.success(
       res,
@@ -30,7 +30,7 @@ const getDashboard = asyncHandler(
 const getRecentWorkers =
   asyncHandler(async (req, res) => {
     const workers =
-      await dashboardService.getRecentWorkers();
+      await dashboardService.getRecentWorkers(req.user.tenantId);
 
     return ApiResponse.success(
       res,
@@ -47,7 +47,7 @@ const getRecentWorkers =
 const getRecentAttendance =
   asyncHandler(async (req, res) => {
     const attendance =
-      await dashboardService.getRecentAttendance();
+      await dashboardService.getRecentAttendance(req.user.tenantId);
 
     return ApiResponse.success(
       res,
@@ -64,7 +64,7 @@ const getRecentAttendance =
 const getRecentPayroll =
   asyncHandler(async (req, res) => {
     const payroll =
-      await dashboardService.getRecentPayroll();
+      await dashboardService.getRecentPayroll(req.user.tenantId);
 
     return ApiResponse.success(
       res,
@@ -81,7 +81,7 @@ const getRecentPayroll =
 const getCharts = asyncHandler(
   async (req, res) => {
     const charts =
-      await dashboardService.getCharts();
+      await dashboardService.getCharts(req.user.tenantId);
 
     return ApiResponse.success(
       res,

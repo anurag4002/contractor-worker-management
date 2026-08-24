@@ -15,6 +15,7 @@ import seedWorkers from '../src/seeders/worker.seeder.js';
 import seedAttendance from '../src/seeders/attendance.seeder.js';
 import seedPayroll from '../src/seeders/payroll.seeder.js';
 import seedNotifications from '../src/seeders/notification.seeder.js';
+import seedSubscriptionPlans from '../src/seeders/subscriptionPlan.seeder.js';
 
 const clearDemoData = async () => {
   logger.info('Clearing existing demo data...');
@@ -83,6 +84,8 @@ const runSeeder = async () => {
 
     const notificationResult = await seedNotifications();
     totalNotifications = notificationResult.count;
+
+    await seedSubscriptionPlans();
 
     logger.info('====================================');
     logger.info('Seeding Summary Report');

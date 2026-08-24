@@ -6,7 +6,7 @@ class ReportService {
  * Get Worker Report
  * ==========================================
  */
-async getWorkerReport(query) {
+async getWorkerReport(query, tenantId) {
   const page =
     Number(query.page) || 1;
 
@@ -26,6 +26,10 @@ async getWorkerReport(query) {
   const filter = {
     isDeleted: false,
   };
+
+  if (tenantId) {
+    filter.tenant = tenantId;
+  }
 
   if (query.search) {
     filter.$or = [
@@ -69,12 +73,14 @@ async getWorkerReport(query) {
         skip,
         limit,
         sort,
-      }
+      },
+      null
     );
 
   const total =
     await reportRepository.countWorkers(
-      filter
+      filter,
+      null
     );
 
   return {
@@ -94,7 +100,7 @@ async getWorkerReport(query) {
  * Get Attendance Report
  * ==========================================
  */
-async getAttendanceReport(query) {
+async getAttendanceReport(query, tenantId) {
   const page =
     Number(query.page) || 1;
 
@@ -114,6 +120,10 @@ async getAttendanceReport(query) {
   const filter = {
     isDeleted: false,
   };
+
+  if (tenantId) {
+    filter.tenant = tenantId;
+  }
 
   if (query.worker) {
     filter.worker = query.worker;
@@ -159,12 +169,14 @@ async getAttendanceReport(query) {
         skip,
         limit,
         sort,
-      }
+      },
+      null
     );
 
   const total =
     await reportRepository.countAttendance(
-      filter
+      filter,
+      null
     );
 
   return {
@@ -184,7 +196,7 @@ async getAttendanceReport(query) {
  * Get Payroll Report
  * ==========================================
  */
-async getPayrollReport(query) {
+async getPayrollReport(query, tenantId) {
   const page =
     Number(query.page) || 1;
 
@@ -204,6 +216,10 @@ async getPayrollReport(query) {
   const filter = {
     isDeleted: false,
   };
+
+  if (tenantId) {
+    filter.tenant = tenantId;
+  }
 
   if (query.worker) {
     filter.worker = query.worker;
@@ -236,12 +252,14 @@ async getPayrollReport(query) {
         skip,
         limit,
         sort,
-      }
+      },
+      null
     );
 
   const total =
     await reportRepository.countPayroll(
-      filter
+      filter,
+      null
     );
 
   return {
@@ -261,7 +279,7 @@ async getPayrollReport(query) {
  * Get Site Report
  * ==========================================
  */
-async getSiteReport(query) {
+async getSiteReport(query, tenantId) {
   const page =
     Number(query.page) || 1;
 
@@ -281,6 +299,10 @@ async getSiteReport(query) {
   const filter = {
     isDeleted: false,
   };
+
+  if (tenantId) {
+    filter.tenant = tenantId;
+  }
 
   if (query.status) {
     filter.status = query.status;
@@ -331,12 +353,14 @@ async getSiteReport(query) {
         skip,
         limit,
         sort,
-      }
+      },
+      null
     );
 
   const total =
     await reportRepository.countSites(
-      filter
+      filter,
+      null
     );
 
   return {
@@ -356,9 +380,9 @@ async getSiteReport(query) {
  * Get Dashboard Report
  * ==========================================
  */
-async getDashboardReport() {
+async getDashboardReport(tenantId) {
   const dashboard =
-    await reportRepository.getDashboardReport();
+    await reportRepository.getDashboardReport(tenantId);
 
   return dashboard;
 }

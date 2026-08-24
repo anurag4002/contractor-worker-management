@@ -16,7 +16,8 @@ const createPayroll = asyncHandler(
     const payroll =
       await payrollService.createPayroll(
         req.body,
-        req.user.userId
+        req.user.userId,
+        req.user.tenantId
       );
 
     return ApiResponse.created(
@@ -36,7 +37,8 @@ const getPayrolls = asyncHandler(
   async (req, res) => {
     const result =
       await payrollService.getPayrolls(
-        req.query
+        req.query,
+        req.user.tenantId
       );
 
     return ApiResponse.paginated(
@@ -57,7 +59,8 @@ const getPayrollById = asyncHandler(
   async (req, res) => {
     const payroll =
       await payrollService.getPayrollById(
-        req.params.id
+        req.params.id,
+        req.user.tenantId
       );
 
     return ApiResponse.success(
@@ -79,7 +82,8 @@ const updatePayroll = asyncHandler(
       await payrollService.updatePayroll(
         req.params.id,
         req.body,
-        req.user.userId
+        req.user.userId,
+        req.user.tenantId
       );
 
     return ApiResponse.success(
@@ -100,7 +104,8 @@ const changePayrollStatus =
     const payroll =
       await payrollService.changeStatus(
         req.params.id,
-        req.body.status
+        req.body.status,
+        req.user.tenantId
       );
 
     return ApiResponse.success(
@@ -119,7 +124,8 @@ const deletePayroll = asyncHandler(
   async (req, res) => {
     const result =
       await payrollService.deletePayroll(
-        req.params.id
+        req.params.id,
+        req.user.tenantId
       );
 
     return ApiResponse.success(
@@ -139,7 +145,8 @@ const getSummary = asyncHandler(
   async (req, res) => {
     const summary =
       await payrollService.getSummary(
-        req.query
+        req.query,
+        req.user.tenantId
       );
 
     return ApiResponse.success(
@@ -156,20 +163,21 @@ const getSummary = asyncHandler(
  * ==========================================
  */
 const getWorkerPayrollHistory =
-   asyncHandler(async (req, res) => {
-     const result =
-       await payrollService.getWorkerPayrollHistory(
-         req.params.workerId,
-         req.query
-       );
+  asyncHandler(async (req, res) => {
+    const result =
+      await payrollService.getWorkerPayrollHistory(
+        req.params.workerId,
+        req.query,
+        req.user.tenantId
+      );
 
-     return ApiResponse.paginated(
-       res,
-       result.payrolls,
-       result.pagination,
-       'Worker payroll history fetched successfully.'
-     );
-   });
+    return ApiResponse.paginated(
+      res,
+      result.payrolls,
+      result.pagination,
+      'Worker payroll history fetched successfully.'
+    );
+  });
 
 /**
  * ==========================================
@@ -177,23 +185,24 @@ const getWorkerPayrollHistory =
  * ==========================================
  */
 const generateSalaryFromAttendance =
-   asyncHandler(async (req, res) => {
-     const { attendanceMonth, attendanceYear } =
-       req.body;
+  asyncHandler(async (req, res) => {
+    const { attendanceMonth, attendanceYear } =
+      req.body;
 
-     const result =
-       await payrollService.generateSalaryFromAttendance(
-         Number(attendanceMonth),
-         Number(attendanceYear),
-         req.user.userId
-       );
+    const result =
+      await payrollService.generateSalaryFromAttendance(
+        Number(attendanceMonth),
+        Number(attendanceYear),
+        req.user.userId,
+        req.user.tenantId
+      );
 
-     return ApiResponse.success(
-       res,
-       result,
-       PAYROLL_MESSAGES.SALARY_GENERATED_SUCCESS
-     );
-   });
+    return ApiResponse.success(
+      res,
+      result,
+      PAYROLL_MESSAGES.SALARY_GENERATED_SUCCESS
+    );
+  });
 
 /**
  * ==========================================
@@ -201,27 +210,28 @@ const generateSalaryFromAttendance =
  * ==========================================
  */
 const processAdvancePayment =
-   asyncHandler(async (req, res) => {
-      const { payrollId } = req.params;
-      const { amount, paymentMethod, transactionId, remark } =
-        req.body;
+  asyncHandler(async (req, res) => {
+     const { payrollId } = req.params;
+     const { amount, paymentMethod, transactionId, remark } =
+       req.body;
 
-      const result =
-        await payrollService.processAdvancePayment(
-          payrollId,
-          Number(amount),
-          paymentMethod,
-          transactionId,
-          remark,
-          req.user.userId
-        );
+     const result =
+       await payrollService.processAdvancePayment(
+         payrollId,
+         Number(amount),
+         paymentMethod,
+         transactionId,
+         remark,
+         req.user.userId,
+         req.user.tenantId
+       );
 
-      return ApiResponse.success(
-        res,
-        result,
-        PAYROLL_MESSAGES.ADVANCE_PROCESSED_SUCCESS
-      );
-    });
+     return ApiResponse.success(
+       res,
+       result,
+       PAYROLL_MESSAGES.ADVANCE_PROCESSED_SUCCESS
+     );
+   });
 
 export default {
    createPayroll,

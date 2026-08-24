@@ -15,11 +15,17 @@ class WorkerRepository {
    * Find Worker By Id
    * ==========================================
    */
-  async findById(workerId) {
-    return await Worker.findOne({
+  async findById(workerId, tenantId = null) {
+    const query = {
       _id: workerId,
       isDeleted: false,
-    })
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Worker.findOne(query)
       // .populate('site')
       // .populate('contractor')
       .populate('createdBy', 'fullName email')
@@ -31,11 +37,17 @@ class WorkerRepository {
    * Find By Employee Code
    * ==========================================
    */
-  async findByEmployeeCode(employeeCode) {
-    return await Worker.findOne({
+  async findByEmployeeCode(employeeCode, tenantId = null) {
+    const query = {
       employeeCode,
       isDeleted: false,
-    });
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Worker.findOne(query);
   }
 
   /**
@@ -43,11 +55,17 @@ class WorkerRepository {
    * Find By Mobile Number
    * ==========================================
    */
-  async findByMobileNumber(mobileNumber) {
-    return await Worker.findOne({
+  async findByMobileNumber(mobileNumber, tenantId = null) {
+    const query = {
       mobileNumber,
       isDeleted: false,
-    });
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Worker.findOne(query);
   }
 
   /**
@@ -55,11 +73,17 @@ class WorkerRepository {
    * Find By Aadhaar Number
    * ==========================================
    */
-  async findByAadhaarNumber(aadhaarNumber) {
-    return await Worker.findOne({
+  async findByAadhaarNumber(aadhaarNumber, tenantId = null) {
+    const query = {
       aadhaarNumber,
       isDeleted: false,
-    });
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Worker.findOne(query);
   }
 
   /**
@@ -67,11 +91,17 @@ class WorkerRepository {
    * Find By PAN Number
    * ==========================================
    */
-  async findByPanNumber(panNumber) {
-    return await Worker.findOne({
+  async findByPanNumber(panNumber, tenantId = null) {
+    const query = {
       panNumber,
       isDeleted: false,
-    });
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Worker.findOne(query);
   }
 
   /**
@@ -79,8 +109,10 @@ class WorkerRepository {
    * Get All Workers
    * ==========================================
    */
-  async findAll(filter, options) {
-    return await Worker.find(filter)
+  async findAll(filter, options, tenantId = null) {
+    const query = tenantId ? { ...filter, tenant: tenantId } : filter;
+
+    return await Worker.find(query)
       // .populate('site')
       // .populate('contractor')
       .sort(options.sort)
@@ -93,8 +125,10 @@ class WorkerRepository {
    * Count Workers
    * ==========================================
    */
-  async count(filter) {
-    return await Worker.countDocuments(filter);
+  async count(filter, tenantId = null) {
+    const query = tenantId ? { ...filter, tenant: tenantId } : filter;
+
+    return await Worker.countDocuments(query);
   }
 
   /**
@@ -102,12 +136,18 @@ class WorkerRepository {
    * Update Worker
    * ==========================================
    */
-  async update(workerId, updateData) {
+  async update(workerId, updateData, tenantId = null) {
+    const query = {
+      _id: workerId,
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
     return await Worker.findOneAndUpdate(
-      {
-        _id: workerId,
-        isDeleted: false,
-      },
+      query,
       updateData,
       {
         returnDocument: 'after',
@@ -125,12 +165,18 @@ class WorkerRepository {
    * Change Worker Status
    * ==========================================
    */
-  async changeStatus(workerId, status) {
+  async changeStatus(workerId, status, tenantId = null) {
+    const query = {
+      _id: workerId,
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
     return await Worker.findOneAndUpdate(
-      {
-        _id: workerId,
-        isDeleted: false,
-      },
+      query,
       {
         status,
       },
@@ -145,12 +191,18 @@ class WorkerRepository {
    * Soft Delete Worker
    * ==========================================
    */
-  async softDelete(workerId) {
+  async softDelete(workerId, tenantId = null) {
+    const query = {
+      _id: workerId,
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
     return await Worker.findOneAndUpdate(
-      {
-        _id: workerId,
-        isDeleted: false,
-      },
+      query,
       {
         isDeleted: true,
         deletedAt: new Date(),
@@ -166,11 +218,17 @@ class WorkerRepository {
    * Get Active Workers
    * ==========================================
    */
-  async findActiveWorkers() {
-    return await Worker.find({
+  async findActiveWorkers(tenantId = null) {
+    const query = {
       status: 'ACTIVE',
       isDeleted: false,
-    })
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Worker.find(query)
       .populate('site')
       .populate('contractor');
   }
@@ -180,27 +238,45 @@ class WorkerRepository {
    * Get Workers By Site
    * ==========================================
    */
-  async findBySite(siteId) {
-    return await Worker.find({
+  async findBySite(siteId, tenantId = null) {
+    const query = {
       site: siteId,
       isDeleted: false,
-    })
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Worker.find(query)
       .populate('site')
       .populate('contractor');
   }
 
-  async findManyByIds(workerIds) {
-    return await Worker.find({
+  async findManyByIds(workerIds, tenantId = null) {
+    const query = {
       _id: { $in: workerIds },
-    });
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Worker.find(query);
   }
 
-  async assignToSite(siteId, workerIds, assignedBy, session = null) {
+  async assignToSite(siteId, workerIds, assignedBy, session = null, tenantId = null) {
+    const query = {
+      _id: { $in: workerIds },
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
     return await Worker.updateMany(
-      {
-        _id: { $in: workerIds },
-        isDeleted: false,
-      },
+      query,
       {
         $set: {
           site: siteId,
@@ -211,17 +287,23 @@ class WorkerRepository {
     );
   }
   /**
-  * ==========================================
-  * Find Latest Worker
-  * ==========================================
-  */
-async findLatestWorker() {
-  return await Worker.findOne({
-    isDeleted: false,
-  }).sort({
-    employeeCode: -1,
-  });
-}
+   * ==========================================
+   * Find Latest Worker
+   * ==========================================
+   */
+  async findLatestWorker(tenantId = null) {
+    const query = {
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Worker.findOne(query).sort({
+      employeeCode: -1,
+    });
+  }
 }
 
 export default new WorkerRepository();

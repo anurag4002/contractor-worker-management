@@ -61,6 +61,12 @@ const attendanceSchema = new mongoose.Schema(
       default: '',
     },
 
+    tenant: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tenant',
+      required: [true, 'Tenant is required'],
+    },
+
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -98,6 +104,7 @@ const attendanceSchema = new mongoose.Schema(
 // One attendance per worker per day
 attendanceSchema.index(
   {
+    tenant: 1,
     worker: 1,
     attendanceDate: 1,
   },
@@ -122,6 +129,10 @@ attendanceSchema.index({
 
 attendanceSchema.index({
   isDeleted: 1,
+});
+
+attendanceSchema.index({
+  tenant: 1,
 });
 
 attendanceSchema.index({

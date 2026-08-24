@@ -13,7 +13,8 @@ const createWorker = asyncHandler(async (req, res) => {
   const worker =
     await workerService.createWorker(
       req.body,
-      req.user.userId
+      req.user.userId,
+      req.user.tenantId
     );
 
   return ApiResponse.created(
@@ -30,7 +31,7 @@ const createWorker = asyncHandler(async (req, res) => {
  */
 const getWorkers = asyncHandler(async (req, res) => {
   const result =
-    await workerService.getWorkers(req.query);
+    await workerService.getWorkers(req.query, req.user.tenantId);
 
   return ApiResponse.paginated(
     res,
@@ -49,7 +50,8 @@ const getWorkerById = asyncHandler(
   async (req, res) => {
     const worker =
       await workerService.getWorkerById(
-        req.params.id
+        req.params.id,
+        req.user.tenantId
       );
 
     return ApiResponse.success(
@@ -71,7 +73,8 @@ const updateWorker = asyncHandler(
       await workerService.updateWorker(
         req.params.id,
         req.body,
-        req.user.userId
+        req.user.userId,
+        req.user.tenantId
       );
 
     return ApiResponse.success(
@@ -92,7 +95,8 @@ const changeWorkerStatus =
     const worker =
       await workerService.changeStatus(
         req.params.id,
-        req.body.status
+        req.body.status,
+        req.user.tenantId
       );
 
     return ApiResponse.success(
@@ -111,7 +115,8 @@ const deleteWorker = asyncHandler(
   async (req, res) => {
     const result =
       await workerService.deleteWorker(
-        req.params.id
+        req.params.id,
+        req.user.tenantId
       );
 
     return ApiResponse.success(

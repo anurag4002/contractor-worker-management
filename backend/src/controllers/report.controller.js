@@ -13,7 +13,8 @@ const getWorkerReport = asyncHandler(
   async (req, res) => {
     const result =
       await reportService.getWorkerReport(
-        req.query
+        req.query,
+        req.user.tenantId
       );
 
     return ApiResponse.paginated(
@@ -34,7 +35,8 @@ const getAttendanceReport =
   asyncHandler(async (req, res) => {
     const result =
       await reportService.getAttendanceReport(
-        req.query
+        req.query,
+        req.user.tenantId
       );
 
     return ApiResponse.paginated(
@@ -54,7 +56,8 @@ const getPayrollReport =
   asyncHandler(async (req, res) => {
     const result =
       await reportService.getPayrollReport(
-        req.query
+        req.query,
+        req.user.tenantId
       );
 
     return ApiResponse.paginated(
@@ -74,7 +77,8 @@ const getSiteReport = asyncHandler(
   async (req, res) => {
     const result =
       await reportService.getSiteReport(
-        req.query
+        req.query,
+        req.user.tenantId
       );
 
     return ApiResponse.paginated(
@@ -94,7 +98,7 @@ const getSiteReport = asyncHandler(
 const getDashboardReport =
   asyncHandler(async (req, res) => {
     const report =
-      await reportService.getDashboardReport();
+      await reportService.getDashboardReport(req.user.tenantId);
 
     return ApiResponse.success(
       res,

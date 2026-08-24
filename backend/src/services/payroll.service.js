@@ -20,12 +20,14 @@ class PayrollService {
  */
     async createPayroll(
         payrollData,
-        createdBy
+        createdBy,
+        tenantId
     ) {
         // Validate Worker
         const worker =
             await workerRepository.findById(
-                payrollData.worker
+                payrollData.worker,
+                tenantId
             );
 
         if (!worker) {
@@ -38,7 +40,8 @@ class PayrollService {
         // Validate Site
         const site =
             await siteRepository.findActiveById(
-                payrollData.site
+                payrollData.site,
+                tenantId
             );
 
         if (!site) {
@@ -53,7 +56,8 @@ class PayrollService {
             await payrollRepository.findByWorkerAndMonth(
                 payrollData.worker,
                 payrollData.attendanceMonth,
-                payrollData.attendanceYear
+                payrollData.attendanceYear,
+                tenantId
             );
 
         if (existingPayroll) {
@@ -68,7 +72,8 @@ class PayrollService {
             await attendanceRepository.findByWorkerAndMonth(
                 payrollData.worker,
                 payrollData.attendanceMonth,
-                payrollData.attendanceYear
+                payrollData.attendanceYear,
+                tenantId
             );
 
         if (
@@ -139,9 +144,11 @@ class PayrollService {
             payrollData.advanceDeduction;
 
         // Create Payroll
+        const tenant = worker.tenant || tenantId;
         const payroll =
             await payrollRepository.create({
                 ...payrollData,
+                tenant,
 
                 workingDays,
                 presentDays,
@@ -163,7 +170,8 @@ class PayrollService {
             });
 
         return await payrollRepository.findById(
-            payroll._id
+            payroll._id,
+            tenantId
         );
     }
     /**
@@ -171,7 +179,7 @@ class PayrollService {
      * Get Payrolls
      * ==========================================
      */
-    async getPayrolls(query) {
+    async getPayrolls(query, tenantId) {
         const {
             page = 1,
             limit = 10,
@@ -188,6 +196,10 @@ class PayrollService {
         const filter = {
             isDeleted: false,
         };
+
+        if (tenantId) {
+            filter.tenant = tenantId;
+        }
 
         // Search
         if (search) {
@@ -242,12 +254,14 @@ class PayrollService {
         const payrolls =
             await payrollRepository.findAll(
                 filter,
-                options
+                options,
+                null
             );
 
         const total =
             await payrollRepository.count(
-                filter
+                filter,
+                null
             );
 
         return {
@@ -267,10 +281,11 @@ class PayrollService {
      * Get Payroll By Id
      * ==========================================
      */
-    async getPayrollById(payrollId) {
+    async getPayrollById(payrollId, tenantId) {
         const payroll =
             await payrollRepository.findById(
-                payrollId
+                payrollId,
+                tenantId
             );
 
         if (!payroll) {
@@ -290,12 +305,14 @@ class PayrollService {
     async updatePayroll(
         payrollId,
         updateData,
-        updatedBy
+        updatedBy,
+        tenantId
     ) {
         // Check Payroll Exists
         const payroll =
             await payrollRepository.findById(
-                payrollId
+                payrollId,
+                tenantId
             );
 
         if (!payroll) {
@@ -376,7 +393,8 @@ class PayrollService {
                     netSalary,
 
                     updatedBy,
-                }
+                },
+                tenantId
             );
 
         return updatedPayroll;
@@ -388,12 +406,14 @@ class PayrollService {
      */
     async changeStatus(
         payrollId,
-        status
+        status,
+        tenantId
     ) {
         // Check Payroll Exists
         const payroll =
             await payrollRepository.findById(
-                payrollId
+                payrollId,
+                tenantId
             );
 
         if (!payroll) {
@@ -416,7 +436,8 @@ class PayrollService {
         // Update Status
         return await payrollRepository.changeStatus(
             payrollId,
-            status
+            status,
+            tenantId
         );
     }
     /**
@@ -424,11 +445,12 @@ class PayrollService {
      * Delete Payroll
      * ==========================================
      */
-    async deletePayroll(payrollId) {
+    async deletePayroll(payrollId, tenantId) {
         // Check Payroll Exists
         const payroll =
             await payrollRepository.findById(
-                payrollId
+                payrollId,
+                tenantId
             );
 
         if (!payroll) {
@@ -448,7 +470,8 @@ class PayrollService {
 
         // Soft Delete
         await payrollRepository.softDelete(
-            payrollId
+            payrollId,
+            tenantId
         );
 
         return {
@@ -463,12 +486,14 @@ class PayrollService {
      */
     async getWorkerPayrollHistory(
         workerId,
-        query
+        query,
+        tenantId
     ) {
         // Validate Worker
         const worker =
             await workerRepository.findById(
-                workerId
+                workerId,
+                tenantId
             );
 
         if (!worker) {
@@ -492,13 +517,15 @@ class PayrollService {
                 {
                     skip,
                     limit,
-                }
+                },
+                tenantId
             );
 
         const total =
             await payrollRepository.count({
                 worker: workerId,
                 isDeleted: false,
+                ...(tenantId ? { tenant: tenantId } : {}),
             });
 
         return {
@@ -518,10 +545,14 @@ class PayrollService {
      * Payroll Summary
      * ==========================================
      */
-    async getSummary(query) {
+    async getSummary(query, tenantId) {
         const filter = {
             isDeleted: false,
         };
+
+        if (tenantId) {
+            filter.tenant = tenantId;
+        }
 
         if (query.attendanceMonth) {
             filter.attendanceMonth = Number(
@@ -541,7 +572,8 @@ class PayrollService {
 
         const summary =
             await payrollRepository.getSummary(
-                filter
+                filter,
+                null
             );
 
         const result = {
@@ -587,11 +619,12 @@ class PayrollService {
      * Generate Salary from Attendance
      * ==========================================
      */
-    async generateSalaryFromAttendance(attendanceMonth, attendanceYear, createdBy) {
+    async generateSalaryFromAttendance(attendanceMonth, attendanceYear, createdBy, tenantId) {
         const attendanceRecords =
             await attendanceRepository.findByMonthAndYear(
                 attendanceMonth,
-                attendanceYear
+                attendanceYear,
+                tenantId
             );
 
         if (attendanceRecords.length === 0) {
@@ -614,7 +647,7 @@ class PayrollService {
 
         for (const [workerId, records] of workerMap) {
             const worker =
-                await workerRepository.findById(workerId);
+                await workerRepository.findById(workerId, tenantId);
 
             if (!worker) {
                 continue;
@@ -626,7 +659,7 @@ class PayrollService {
             }
 
             const site =
-                await siteRepository.findActiveById(siteId);
+                await siteRepository.findActiveById(siteId, tenantId);
 
             if (!site) {
                 continue;
@@ -636,7 +669,8 @@ class PayrollService {
                 await payrollRepository.findByWorkerAndMonth(
                     workerId,
                     attendanceMonth,
-                    attendanceYear
+                    attendanceYear,
+                    tenantId
                 );
 
             if (existingPayroll) {
@@ -687,8 +721,9 @@ class PayrollService {
 
             const overtimeAmount = overtimeHours * overtimeRate;
             const grossSalary = basicSalary + overtimeAmount;
-
             const netSalary = grossSalary;
+
+            const tenant = worker.tenant || tenantId;
 
             const payroll =
                 await payrollRepository.create({
@@ -713,11 +748,12 @@ class PayrollService {
                     grossSalary,
                     netSalary,
                     status: 'GENERATED',
+                    tenant,
                     createdBy,
                 });
 
             const populatedPayroll =
-                await payrollRepository.findById(payroll._id);
+                await payrollRepository.findById(payroll._id, tenantId);
 
             generatedPayrolls.push(populatedPayroll);
         }
@@ -732,7 +768,7 @@ class PayrollService {
      * Process Advance Payment
      * ==========================================
      */
-    async processAdvancePayment(payrollId, amount, paymentMethod, transactionId, remark, createdBy) {
+    async processAdvancePayment(payrollId, amount, paymentMethod, transactionId, remark, createdBy, tenantId) {
         if (
             !Number.isFinite(amount) ||
             Number.isNaN(amount) ||
@@ -745,7 +781,7 @@ class PayrollService {
         }
 
         const payroll =
-            await payrollRepository.findById(payrollId);
+            await payrollRepository.findById(payrollId, tenantId);
 
         if (!payroll) {
             throw new ApiError(
@@ -786,6 +822,11 @@ class PayrollService {
         try {
             session.startTransaction();
 
+            const worker =
+                await workerRepository.findById(payroll.worker?._id || payroll.worker, tenantId);
+
+            const tenant = worker?.tenant || tenantId;
+
             const paymentData = {
                         payroll: payroll._id,
                         worker: payroll.worker?._id,
@@ -796,6 +837,7 @@ class PayrollService {
                         transactionId: transactionId ? String(transactionId).trim() : '',
                         remark: remark ? String(remark).trim() : '',
                         status: 'COMPLETED',
+                        tenant,
                         createdBy,
                     };
 
@@ -821,6 +863,7 @@ class PayrollService {
                         advanceDeduction: newAdvanceDeduction,
                         netSalary: Math.max(0, newNetSalary),
                     },
+                    tenantId,
                     session
                 );
 

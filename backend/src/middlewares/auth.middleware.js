@@ -63,14 +63,15 @@ const authMiddleware = async (req, res, next) => {
     }
 
     req.user = {
-  userId: user._id,
-  email: user.email,
-  role: user.role.code,
-  permissions:
-    user.role.permissions?.map(
-      (permission) => permission.code
-    ) || [],
-};
+      userId: user._id,
+      email: user.email,
+      role: user.role.code,
+      tenantId: user.tenant ? (user.tenant._id || user.tenant) : null,
+      permissions:
+        user.role.permissions?.map(
+          (permission) => permission.code
+        ) || [],
+    };
     next();
   } catch (error) {
     next(error);

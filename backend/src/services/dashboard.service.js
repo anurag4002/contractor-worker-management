@@ -6,7 +6,7 @@ class DashboardService {
  * Get Dashboard
  * ==========================================
  */
-async getDashboard() {
+async getDashboard(tenantId) {
   // Today's Date Range
   const start = new Date();
 
@@ -23,16 +23,17 @@ async getDashboard() {
     attendanceStats,
     payrollStats,
   ] = await Promise.all([
-    dashboardRepository.getWorkerStats(),
+    dashboardRepository.getWorkerStats(tenantId),
 
-    dashboardRepository.getSiteStats(),
+    dashboardRepository.getSiteStats(tenantId),
 
     dashboardRepository.getTodayAttendance(
       start,
-      end
+      end,
+      tenantId
     ),
 
-    dashboardRepository.getPayrollStats(),
+    dashboardRepository.getPayrollStats(tenantId),
   ]);
 
   return {
@@ -77,9 +78,9 @@ async getDashboard() {
  * Get Recent Workers
  * ==========================================
  */
-async getRecentWorkers() {
+async getRecentWorkers(tenantId) {
   const workers =
-    await dashboardRepository.getRecentWorkers();
+    await dashboardRepository.getRecentWorkers(5, tenantId);
 
   return workers;
 }
@@ -88,9 +89,9 @@ async getRecentWorkers() {
  * Get Recent Attendance
  * ==========================================
  */
-async getRecentAttendance() {
+async getRecentAttendance(tenantId) {
   const attendance =
-    await dashboardRepository.getRecentAttendance();
+    await dashboardRepository.getRecentAttendance(5, tenantId);
 
   return attendance;
 }
@@ -99,9 +100,9 @@ async getRecentAttendance() {
  * Get Recent Payroll
  * ==========================================
  */
-async getRecentPayroll() {
+async getRecentPayroll(tenantId) {
   const payroll =
-    await dashboardRepository.getRecentPayroll();
+    await dashboardRepository.getRecentPayroll(5, tenantId);
 
   return payroll;
 }
@@ -110,7 +111,7 @@ async getRecentPayroll() {
  * Get Dashboard Charts
  * ==========================================
  */
-async getCharts() {
+async getCharts(tenantId) {
     // Today's Date Range
     const start = new Date();
 
@@ -127,12 +128,13 @@ async getCharts() {
     ] = await Promise.all([
       dashboardRepository.getAttendanceChart(
         start,
-        end
+        end,
+        tenantId
       ),
 
-      dashboardRepository.getPayrollStatusChart(),
+      dashboardRepository.getPayrollStatusChart(tenantId),
 
-      dashboardRepository.getSiteWorkerChart(),
+      dashboardRepository.getSiteWorkerChart(tenantId),
     ]);
 
     const formatName = (name) => {

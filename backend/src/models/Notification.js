@@ -61,6 +61,12 @@ const notificationSchema =
         default: false,
       },
 
+      tenant: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tenant',
+        default: null,
+      },
+
       deletedAt: {
         type: Date,
         default: null,
@@ -71,6 +77,10 @@ const notificationSchema =
       versionKey: false,
     }
   );
+
+notificationSchema.index({
+  tenant: 1,
+});
 
 notificationSchema.index({
   recipient: 1,

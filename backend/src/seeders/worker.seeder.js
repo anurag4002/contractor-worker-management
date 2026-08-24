@@ -1,6 +1,7 @@
 import Worker from '../models/Worker.js';
 import Site from '../models/Site.js';
 import User from '../models/User.js';
+import Tenant from '../models/Tenant.js';
 
 import logger from '../common/logger/logger.js';
 
@@ -101,6 +102,7 @@ const seedWorkers = async () => {
 
   const sites = await Site.find({ isDeleted: false, status: 'ACTIVE' });
   const adminUser = await User.findOne({ email: 'admin@contractor.com', isDeleted: false });
+  const adminTenant = await Tenant.findOne({ owner: adminUser?._id, isDeleted: false });
   const createdBy = adminUser ? adminUser._id : null;
 
   const totalWorkers = 155;
@@ -143,6 +145,7 @@ const seedWorkers = async () => {
       department: DEPARTMENTS[i % DEPARTMENTS.length],
       site: isWithoutSite ? null : sites[i % sites.length]._id,
       contractor: createdBy,
+      tenant: adminTenant?._id || null,
       joiningDate: faker.date.past({ years: 3, refDate: '2026-01-01' }),
       salaryType: Math.random() > 0.5 ? 'DAILY' : 'MONTHLY',
       dailyWage: Math.random() > 0.5 ? Math.floor(Math.random() * 1501) + 500 : 0,
