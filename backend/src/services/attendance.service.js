@@ -171,13 +171,13 @@ class AttendanceService {
             await attendanceRepository.findAll(
                 filter,
                 options,
-                null
+                tenantId
             );
 
         const total =
             await attendanceRepository.count(
                 filter,
-                null
+                tenantId
             );
 
         return {
@@ -435,7 +435,7 @@ class AttendanceService {
         const summary =
             await attendanceRepository.getSummary(
                 filter,
-                null
+                tenantId
             );
 
         const result = {

@@ -87,6 +87,14 @@ export const registerSchema = Joi.object({
     .trim()
     .allow('', null)
     .optional(),
+
+  billingCycle: Joi.string()
+    .valid('MONTHLY', 'YEARLY')
+    .optional()
+    .default('MONTHLY')
+    .messages({
+      'any.only': 'Billing cycle must be MONTHLY or YEARLY.',
+    }),
 });
 
 /**

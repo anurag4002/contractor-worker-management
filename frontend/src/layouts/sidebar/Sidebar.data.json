@@ -38,6 +38,12 @@
     },
     {
       "id": 7,
+      "title": "Subscription",
+      "path": "/subscription",
+      "icon": "FiCreditCard"
+    },
+    {
+      "id": 8,
       "title": "Settings",
       "path": "/settings",
       "icon": "FiSettings"

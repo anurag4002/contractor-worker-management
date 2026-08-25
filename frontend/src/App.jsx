@@ -1,11 +1,14 @@
 import AppRoutes from "./routes/AppRoutes";
 import Toast from "./components/common/Toast.jsx";
+import { SubscriptionProvider } from "./context/SubscriptionContext";
 
 function App() {
   return (
     <>
-      <AppRoutes />
-      <Toast />
+      <SubscriptionProvider>
+        <AppRoutes />
+        <Toast />
+      </SubscriptionProvider>
     </>
   );
 }

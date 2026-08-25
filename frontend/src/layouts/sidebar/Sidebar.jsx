@@ -12,6 +12,7 @@ import {
   FiDollarSign,
   FiBarChart2,
   FiSettings,
+  FiCreditCard,
   FiLogOut,
 } from "react-icons/fi";
 
@@ -48,6 +49,7 @@ const iconMap = {
   FiDollarSign,
   FiBarChart2,
   FiSettings,
+  FiCreditCard,
 };
 
 const Sidebar = ({ sidebarOpen, onClose }) => {

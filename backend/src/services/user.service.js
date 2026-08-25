@@ -14,7 +14,7 @@ class UserService {
    * Create User
    * =====================================
    */
-  async createUser(userData) {
+  async createUser(userData, tenantId) {
     const {
       fullName,
       email,
@@ -23,9 +23,11 @@ class UserService {
       role,
     } = userData;
 
-    // Duplicate Email
     const existingEmail =
-      await userRepository.findByEmail(email);
+      await userRepository.findByEmail(
+        email,
+        tenantId
+      );
 
     if (existingEmail) {
       throw new ApiError(
@@ -34,10 +36,10 @@ class UserService {
       );
     }
 
-    // Duplicate Mobile
     const existingMobile =
       await userRepository.findByMobileNumber(
-        mobileNumber
+        mobileNumber,
+        tenantId
       );
 
     if (existingMobile) {
@@ -47,7 +49,6 @@ class UserService {
       );
     }
 
-    // Validate Role
     const roleExists = await Role.findById(role);
 
     if (!roleExists) {
@@ -57,20 +58,22 @@ class UserService {
       );
     }
 
-    // Hash Password
     const hashedPassword =
       await hashPassword(password);
 
-    // Create User
     const user = await userRepository.create({
       fullName,
       email,
       mobileNumber,
       password: hashedPassword,
       role,
+      tenant: tenantId,
     });
 
-    return await userRepository.findById(user._id);
+    return await userRepository.findById(
+      user._id,
+      tenantId
+    );
   }
 
   /**
@@ -78,7 +81,7 @@ class UserService {
    * Get Users
    * =====================================
    */
-  async getUsers(query) {
+  async getUsers(query, tenantId) {
     const {
       page = 1,
       limit = 10,
@@ -92,6 +95,10 @@ class UserService {
     const filter = {
       isDeleted: false,
     };
+
+    if (tenantId) {
+      filter.tenant = tenantId;
+    }
 
     if (search) {
       filter.$or = [
@@ -128,17 +135,24 @@ class UserService {
       (Number(page) - 1) * Number(limit);
 
     const users =
-      await userRepository.findAll(filter, {
-        skip,
-        limit: Number(limit),
-        sort: {
-          [sortBy]:
-            sortOrder === 'asc' ? 1 : -1,
+      await userRepository.findAll(
+        filter,
+        {
+          skip,
+          limit: Number(limit),
+          sort: {
+            [sortBy]:
+              sortOrder === 'asc' ? 1 : -1,
+          },
         },
-      });
+        tenantId
+      );
 
     const total =
-      await userRepository.count(filter);
+      await userRepository.count(
+        filter,
+        tenantId
+      );
 
     return {
       users,
@@ -158,9 +172,12 @@ class UserService {
    * Get User By Id
    * =====================================
    */
-  async getUserById(userId) {
+  async getUserById(userId, tenantId) {
     const user =
-      await userRepository.findById(userId);
+      await userRepository.findById(
+        userId,
+        tenantId
+      );
 
     if (!user) {
       throw new ApiError(
@@ -177,9 +194,12 @@ class UserService {
    * Update User
    * =====================================
    */
-  async updateUser(userId, updateData) {
+  async updateUser(userId, updateData, tenantId) {
     const user =
-      await userRepository.findById(userId);
+      await userRepository.findById(
+        userId,
+        tenantId
+      );
 
     if (!user) {
       throw new ApiError(
@@ -194,7 +214,8 @@ class UserService {
     ) {
       const existingEmail =
         await userRepository.findByEmail(
-          updateData.email
+          updateData.email,
+          tenantId
         );
 
       if (existingEmail) {
@@ -212,7 +233,8 @@ class UserService {
     ) {
       const existingMobile =
         await userRepository.findByMobileNumber(
-          updateData.mobileNumber
+          updateData.mobileNumber,
+          tenantId
         );
 
       if (existingMobile) {
@@ -237,7 +259,8 @@ class UserService {
 
     return await userRepository.update(
       userId,
-      updateData
+      updateData,
+      tenantId
     );
   }
 
@@ -246,9 +269,12 @@ class UserService {
    * Change User Status
    * =====================================
    */
-  async changeStatus(userId, status) {
+  async changeStatus(userId, status, tenantId) {
     const user =
-      await userRepository.findById(userId);
+      await userRepository.findById(
+        userId,
+        tenantId
+      );
 
     if (!user) {
       throw new ApiError(
@@ -259,7 +285,8 @@ class UserService {
 
     return await userRepository.updateStatus(
       userId,
-      status
+      status,
+      tenantId
     );
   }
 
@@ -268,9 +295,12 @@ class UserService {
    * Soft Delete User
    * =====================================
    */
-  async deleteUser(userId) {
+  async deleteUser(userId, tenantId) {
     const user =
-      await userRepository.findById(userId);
+      await userRepository.findById(
+        userId,
+        tenantId
+      );
 
     if (!user) {
       throw new ApiError(
@@ -279,7 +309,10 @@ class UserService {
       );
     }
 
-    await userRepository.softDelete(userId);
+    await userRepository.softDelete(
+      userId,
+      tenantId
+    );
 
     return {
       message: 'User deleted successfully.',

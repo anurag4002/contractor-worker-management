@@ -7,6 +7,25 @@ import ApiError from '../common/errors/ApiError.js';
 import SUBSCRIPTION_PLAN_MESSAGES from '../common/constants/subscriptionPlan.messages.js';
 
 class SubscriptionPlanService {
+  async getPublicPlans() {
+    const plans = await subscriptionPlanRepository.findAll(
+      { status: 'ACTIVE', isDeleted: false },
+      { sort: { createdAt: 1 }, skip: 0, limit: 100 }
+    );
+
+    return plans.map((plan) => ({
+      id: plan._id,
+      name: plan.name,
+      code: plan.code,
+      description: plan.description,
+      monthlyPrice: plan.pricing?.monthly || 0,
+      yearlyPrice: plan.pricing?.annual || 0,
+      currency: plan.currency || 'INR',
+      features: plan.features || [],
+      limits: plan.limits || {},
+    }));
+  }
+
   async createSubscriptionPlan(planData) {
     const { name, code, description } = planData;
 

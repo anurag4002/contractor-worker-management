@@ -91,10 +91,20 @@ const Login = () => {
         return;
       }
 
+      const user = response?.data?.data?.user || response?.data?.user || {};
+      const role = user?.role?.code || user?.role;
+
       showSuccess("Logged in successfully!");
-      navigate("/dashboard", {
-        replace: true,
-      });
+
+      if (role === "SUPER_ADMIN") {
+        navigate("/super-admin/dashboard", {
+          replace: true,
+        });
+      } else {
+        navigate("/dashboard", {
+          replace: true,
+        });
+      }
     } catch (error) {
       handleError(error);
     } finally {

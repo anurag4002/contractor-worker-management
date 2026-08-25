@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   FiUser,
   FiMail,
@@ -8,6 +8,8 @@ import {
   FiLock,
   FiEye,
   FiEyeOff,
+  FiMapPin,
+  FiBriefcase,
 } from "react-icons/fi";
 
 import { useAuth } from "../../context/AuthContext";
@@ -15,6 +17,8 @@ import { showSuccess, showError } from "../../components/common/toast";
 import FormError from "../../components/ui/FormError";
 
 import RegisterIntro from "./RegisterIntro";
+
+import { PLAN } from "../../constants/subscription";
 
 import {
   RegisterPage,
@@ -37,11 +41,22 @@ import {
   LoginLinkRow,
   LoginAnchor,
   CardFooter,
+  PlanBadge,
+  PlanInfo,
+  PlanName,
+  PlanPrice,
+  TrialBadge,
 } from "./Register.style";
 
 const Register = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { register } = useAuth();
+
+  const billingCycleParam = searchParams.get("billingCycle");
+  const billingCycle = billingCycleParam === "YEARLY" || billingCycleParam === "MONTHLY"
+    ? billingCycleParam
+    : "MONTHLY";
 
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -53,6 +68,12 @@ const Register = () => {
     username: "",
     password: "",
     confirmPassword: "",
+    companyName: "",
+    address: "",
+    city: "",
+    district: "",
+    state: "",
+    pincode: "",
   });
   const [fieldError, setFieldError] = useState("");
 
@@ -81,13 +102,36 @@ const Register = () => {
         mobileNumber: formData.mobileNumber,
         username: formData.username,
         password: formData.password,
+        companyName: formData.companyName,
+        address: formData.address || undefined,
+        city: formData.city || undefined,
+        district: formData.district || undefined,
+        state: formData.state || undefined,
+        pincode: formData.pincode || undefined,
+        billingCycle,
       };
 
-      await register(payload);
+      const response = await register(payload);
 
-      showSuccess("Super Admin created successfully.");
+      const authData = response?.data || response || {};
+      const { user, accessToken, refreshToken } = authData;
 
-      navigate("/login");
+      if (accessToken) {
+        localStorage.setItem("token", accessToken);
+        localStorage.setItem("accessToken", accessToken);
+      }
+
+      if (refreshToken) {
+        localStorage.setItem("refreshToken", refreshToken);
+      }
+
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+
+      showSuccess("Contractor account created successfully. Welcome to your 7-day free trial!");
+
+      navigate(`/onboarding/payment?billingCycle=${billingCycle}`, { replace: true });
     } catch (error) {
       showError(error);
     } finally {
@@ -109,16 +153,47 @@ const Register = () => {
         <RightSection>
           <RegisterCard>
             <CardHeader>
-              <CardTitle>Create Your Account</CardTitle>
+              <CardTitle>Create Your Contractor Account</CardTitle>
               <CardSubtitle>
-                Set up your first administrator account to get started.
+                Start your 7-day free trial of Contractor Pro.
               </CardSubtitle>
             </CardHeader>
 
+            <PlanBadge>
+              <PlanName>{PLAN.name}</PlanName>
+              <PlanPrice>
+                {billingCycle === "MONTHLY"
+                  ? `₹${PLAN.monthlyPrice.toLocaleString("en-IN")}/month`
+                  : `₹${PLAN.yearlyPrice.toLocaleString("en-IN")}/year`}
+              </PlanPrice>
+              <TrialBadge>7-Day Free Trial</TrialBadge>
+            </PlanBadge>
+
             <RegisterForm onSubmit={handleSubmit}>
               <InputGroup>
+                <FieldLabel htmlFor="register-companyName" $required>
+                  Company / Contractor Name
+                </FieldLabel>
+                <InputWrapper>
+                  <InputIcon>
+                    <FiBriefcase size={18} />
+                  </InputIcon>
+                  <FormInput
+                    id="register-companyName"
+                    type="text"
+                    name="companyName"
+                    placeholder="Enter company name"
+                    value={formData.companyName}
+                    onChange={handleChange}
+                    required
+                    disabled={loading}
+                  />
+                </InputWrapper>
+              </InputGroup>
+
+              <InputGroup>
                 <FieldLabel htmlFor="register-fullName" $required>
-                  Full Name
+                  Owner / Admin Name
                 </FieldLabel>
                 <InputWrapper>
                   <InputIcon>
@@ -128,7 +203,7 @@ const Register = () => {
                     id="register-fullName"
                     type="text"
                     name="fullName"
-                    placeholder="Enter your full name"
+                    placeholder="Enter owner/admin name"
                     autoComplete="name"
                     value={formData.fullName}
                     onChange={handleChange}
@@ -150,7 +225,7 @@ const Register = () => {
                     id="register-email"
                     type="email"
                     name="email"
-                    placeholder="Enter your email address"
+                    placeholder="Enter email address"
                     autoComplete="email"
                     value={formData.email}
                     onChange={handleChange}
@@ -183,7 +258,7 @@ const Register = () => {
               </InputGroup>
 
               <InputGroup>
-                <FieldLabel htmlFor="register-username" $required>
+                <FieldLabel htmlFor="register-username">
                   Username
                 </FieldLabel>
                 <InputWrapper>
@@ -194,11 +269,10 @@ const Register = () => {
                     id="register-username"
                     type="text"
                     name="username"
-                    placeholder="Choose a username"
+                    placeholder="Choose a username (optional)"
                     autoComplete="username"
                     value={formData.username}
                     onChange={handleChange}
-                    required
                     disabled={loading}
                   />
                 </InputWrapper>
@@ -269,8 +343,69 @@ const Register = () => {
                 <FormError error={fieldError} />
               </InputGroup>
 
+              <InputGroup>
+                <FieldLabel htmlFor="register-address">
+                  Address
+                </FieldLabel>
+                <InputWrapper>
+                  <InputIcon>
+                    <FiMapPin size={18} />
+                  </InputIcon>
+                  <FormInput
+                    id="register-address"
+                    type="text"
+                    name="address"
+                    placeholder="Office address (optional)"
+                    value={formData.address}
+                    onChange={handleChange}
+                    disabled={loading}
+                  />
+                </InputWrapper>
+              </InputGroup>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem" }}>
+                <InputGroup>
+                  <FieldLabel htmlFor="register-city">City</FieldLabel>
+                  <FormInput
+                    id="register-city"
+                    type="text"
+                    name="city"
+                    placeholder="City"
+                    value={formData.city}
+                    onChange={handleChange}
+                    disabled={loading}
+                  />
+                </InputGroup>
+
+                <InputGroup>
+                  <FieldLabel htmlFor="register-state">State</FieldLabel>
+                  <FormInput
+                    id="register-state"
+                    type="text"
+                    name="state"
+                    placeholder="State"
+                    value={formData.state}
+                    onChange={handleChange}
+                    disabled={loading}
+                  />
+                </InputGroup>
+
+                <InputGroup>
+                  <FieldLabel htmlFor="register-pincode">Pincode</FieldLabel>
+                  <FormInput
+                    id="register-pincode"
+                    type="text"
+                    name="pincode"
+                    placeholder="Pincode"
+                    value={formData.pincode}
+                    onChange={handleChange}
+                    disabled={loading}
+                  />
+                </InputGroup>
+              </div>
+
               <RegisterButton type="submit" disabled={loading}>
-                {loading ? "Creating Super Admin..." : "Create Super Admin"}
+                {loading ? "Starting Free Trial..." : "Start Free Trial"}
               </RegisterButton>
             </RegisterForm>
 

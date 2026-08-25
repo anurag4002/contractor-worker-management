@@ -5,7 +5,7 @@ export const createSubscriptionSchema = Joi.object({
 
   planId: Joi.string().length(24).hex().required(),
 
-  billingCycle: Joi.string().valid('MONTHLY', 'ANNUAL').required(),
+  billingCycle: Joi.string().valid('MONTHLY', 'YEARLY').required(),
 });
 
 export const getSubscriptionQuerySchema = Joi.object({
@@ -27,4 +27,12 @@ export const getSubscriptionsQuerySchema = Joi.object({
   search: Joi.string().trim().allow(''),
   sortBy: Joi.string().valid('status', 'billingCycle', 'createdAt').default('createdAt'),
   sortOrder: Joi.string().valid('asc', 'desc').default('desc'),
+});
+
+export const renewSubscriptionSchema = Joi.object({
+  billingCycle: Joi.string().valid('MONTHLY', 'YEARLY').required(),
+});
+
+export const suspendSubscriptionSchema = Joi.object({
+  reason: Joi.string().trim().max(500).allow(''),
 });

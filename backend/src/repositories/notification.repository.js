@@ -210,6 +210,23 @@ class NotificationRepository {
       }
     );
   }
+
+  /**
+   * ==========================================
+   * Find Duplicate Subscription Notification
+   * ==========================================
+   */
+  async findDuplicate(category, eventType, recipient, tenantId) {
+    const query = {
+      category,
+      eventType,
+      recipient,
+      tenant: tenantId,
+      isDeleted: false,
+    };
+
+    return await Notification.findOne(query);
+  }
 }
 
 export default new NotificationRepository();

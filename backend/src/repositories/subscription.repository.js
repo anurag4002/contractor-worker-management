@@ -5,11 +5,18 @@ class SubscriptionRepository {
     return await Subscription.create(subscriptionData);
   }
 
-  async findById(subscriptionId) {
-    return await Subscription.findOne({
+  async findById(subscriptionId, tenantId = null) {
+    const query = {
       _id: subscriptionId,
       isDeleted: false,
-    }).populate('plan');
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Subscription.findOne(query)
+      .populate('plan');
   }
 
   async findByTenant(tenantId) {
@@ -27,8 +34,10 @@ class SubscriptionRepository {
     }).populate('plan');
   }
 
-  async findAll(filter, options) {
-    return await Subscription.find(filter)
+  async findAll(filter, options, tenantId = null) {
+    const query = tenantId ? { ...filter, tenant: tenantId } : filter;
+
+    return await Subscription.find(query)
       .populate('tenant')
       .populate('plan')
       .sort(options.sort)
@@ -36,13 +45,39 @@ class SubscriptionRepository {
       .limit(options.limit);
   }
 
-  async count(filter) {
-    return await Subscription.countDocuments(filter);
+  async count(filter, tenantId = null) {
+    const query = tenantId ? { ...filter, tenant: tenantId } : filter;
+
+    return await Subscription.countDocuments(query);
   }
 
-  async update(subscriptionId, updateData) {
-    return await Subscription.findByIdAndUpdate(
-      subscriptionId,
+  async findExpiredSubscriptions(now, options = {}) {
+    const filter = {
+      isDeleted: false,
+      endDate: { $lt: now },
+      status: { $nin: ['EXPIRED', 'CANCELLED', 'SUSPENDED'] },
+    };
+
+    return await Subscription.find(filter)
+      .populate('tenant')
+      .populate('plan')
+      .sort(options.sort || { endDate: 1 })
+      .skip(options.skip || 0)
+      .limit(options.limit || 1000);
+  }
+
+  async update(subscriptionId, updateData, tenantId = null) {
+    const query = {
+      _id: subscriptionId,
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Subscription.findOneAndUpdate(
+      query,
       updateData,
       {
         returnDocument: 'after',
@@ -51,9 +86,18 @@ class SubscriptionRepository {
     );
   }
 
-  async softDelete(subscriptionId) {
-    return await Subscription.findByIdAndUpdate(
-      subscriptionId,
+  async softDelete(subscriptionId, tenantId = null) {
+    const query = {
+      _id: subscriptionId,
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await Subscription.findOneAndUpdate(
+      query,
       {
         isDeleted: true,
         deletedAt: new Date(),

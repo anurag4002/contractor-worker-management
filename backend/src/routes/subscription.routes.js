@@ -12,6 +12,8 @@ import {
   getCurrentSubscriptionQuerySchema,
   updateSubscriptionStatusSchema,
   getSubscriptionsQuerySchema,
+  renewSubscriptionSchema,
+  suspendSubscriptionSchema,
 } from '../validators/subscription.validator.js';
 
 const router = Router();
@@ -97,6 +99,60 @@ router.patch(
   authMiddleware,
   authorize('SUBSCRIPTION_UPDATE'),
   subscriptionController.cancelSubscription
+);
+
+/*
+|--------------------------------------------------------------------------
+| Renew Subscription
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+  '/renew',
+  authMiddleware,
+  authorize('SUBSCRIPTION_CREATE'),
+  validate(renewSubscriptionSchema),
+  subscriptionController.renewSubscription
+);
+
+/*
+|--------------------------------------------------------------------------
+| Suspend Subscription
+|--------------------------------------------------------------------------
+*/
+
+router.patch(
+  '/:id/suspend',
+  authMiddleware,
+  authorize('SUBSCRIPTION_UPDATE'),
+  validate(suspendSubscriptionSchema),
+  subscriptionController.suspendSubscription
+);
+
+/*
+|--------------------------------------------------------------------------
+| Check and Expire Subscriptions (Admin/Cron)
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+  '/renewals/check',
+  authMiddleware,
+  authorize('SUBSCRIPTION_UPDATE'),
+  subscriptionController.checkExpiredSubscriptions
+);
+
+/*
+|--------------------------------------------------------------------------
+| Check and Send Trial Reminders (Admin/Cron)
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+  '/trials/reminders/check',
+  authMiddleware,
+  authorize('SUBSCRIPTION_UPDATE'),
+  subscriptionController.checkTrialReminders
 );
 
 export default router;

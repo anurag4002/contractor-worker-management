@@ -255,13 +255,13 @@ class PayrollService {
             await payrollRepository.findAll(
                 filter,
                 options,
-                null
+                tenantId
             );
 
         const total =
             await payrollRepository.count(
                 filter,
-                null
+                tenantId
             );
 
         return {
@@ -573,7 +573,7 @@ class PayrollService {
         const summary =
             await payrollRepository.getSummary(
                 filter,
-                null
+                tenantId
             );
 
         const result = {

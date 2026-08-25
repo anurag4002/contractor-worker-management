@@ -5,8 +5,10 @@ import {
 } from "react-router-dom";
 
 import ProtectedRoute from "./ProtectedRoute";
+import SuperAdminRoute from "./SuperAdminRoute";
 
 import DashboardLayout from "../layouts/dashboardlayout/DashboardLayout";
+import SuperAdminLayout from "../layouts/superadminlayout/SuperAdminLayout";
 
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
@@ -29,6 +31,18 @@ import Profile from "../pages/auth/profile/Profile";
 import ChangePassword from "../pages/auth/ChangePassword";
 import LandingPage from "../pages/landing/LandingPage";
 
+import Pricing from "../pages/subscription/Pricing";
+import Subscription from "../pages/subscription/Subscription";
+import OnboardingPayment from "../pages/subscription/OnboardingPayment";
+import OnboardingSuccess from "../pages/subscription/OnboardingSuccess";
+
+import SuperAdminLogin from "../pages/superadmin/SuperAdminLogin";
+import SuperAdminDashboard from "../pages/superadmin/SuperAdminDashboard";
+import Contractors from "../pages/superadmin/Contractors";
+import ContractorDetails from "../pages/superadmin/ContractorDetails";
+import Subscriptions from "../pages/superadmin/Subscriptions";
+import Plans from "../pages/superadmin/Plans";
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -49,6 +63,21 @@ const AppRoutes = () => {
       />
 
       <Route
+        path="/pricing"
+        element={<Pricing />}
+      />
+
+      <Route
+        path="/onboarding/payment"
+        element={<OnboardingPayment />}
+      />
+
+      <Route
+        path="/onboarding/success"
+        element={<OnboardingSuccess />}
+      />
+
+      <Route
         path="/forgot-password"
         element={<ForgotPassword />}
       />
@@ -56,6 +85,11 @@ const AppRoutes = () => {
       <Route
         path="/reset-password"
         element={<ResetPassword />}
+      />
+
+      <Route
+        path="/super-admin/login"
+        element={<SuperAdminLogin />}
       />
 
       {/* Protected Routes */}
@@ -91,8 +125,6 @@ const AppRoutes = () => {
             element={<Attendance />}
           />
 
-
-
           <Route
             path="/salary"
             element={<Salary />}
@@ -126,6 +158,38 @@ const AppRoutes = () => {
           <Route
             path="/change-password"
             element={<ChangePassword />}
+          />
+
+          <Route
+            path="/subscription"
+            element={<Subscription />}
+          />
+        </Route>
+      </Route>
+
+      {/* Super Admin Routes */}
+
+      <Route element={<SuperAdminRoute />}>
+        <Route element={<SuperAdminLayout />}>
+          <Route
+            path="/super-admin/dashboard"
+            element={<SuperAdminDashboard />}
+          />
+          <Route
+            path="/super-admin/contractors"
+            element={<Contractors />}
+          />
+          <Route
+            path="/super-admin/contractors/:tenantId"
+            element={<ContractorDetails />}
+          />
+          <Route
+            path="/super-admin/subscriptions"
+            element={<Subscriptions />}
+          />
+          <Route
+            path="/super-admin/plans"
+            element={<Plans />}
           />
         </Route>
       </Route>

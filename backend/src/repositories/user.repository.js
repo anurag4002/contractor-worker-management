@@ -15,11 +15,17 @@ class UserRepository {
    * Find By Email
    * ===============================
    */
-  async findByEmail(email) {
-    return await User.findOne({
+  async findByEmail(email, tenantId = null) {
+    const query = {
       email,
       isDeleted: false,
-    })
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await User.findOne(query)
       .select('+password')
       .populate({
         path: 'role',
@@ -34,16 +40,47 @@ class UserRepository {
    * Find By Mobile Number
    * ===============================
    */
-  async findByMobileNumber(mobileNumber) {
-    return await User.findOne({
+  async findByMobileNumber(mobileNumber, tenantId = null) {
+    const query = {
       mobileNumber,
       isDeleted: false,
-    }).populate({
-      path: 'role',
-      populate: {
-        path: 'permissions',
-      },
-    });
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await User.findOne(query)
+      .populate({
+        path: 'role',
+        populate: {
+          path: 'permissions',
+        },
+      });
+  }
+
+  /**
+   * ===============================
+   * Find By Username
+   * ===============================
+   */
+  async findByUsername(username, tenantId = null) {
+    const query = {
+      username,
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await User.findOne(query)
+      .populate({
+        path: 'role',
+        populate: {
+          path: 'permissions',
+        },
+      });
   }
 
   /**
@@ -51,16 +88,23 @@ class UserRepository {
    * Find By Id
    * ===============================
    */
-  async findById(userId) {
-    return await User.findOne({
+  async findById(userId, tenantId = null) {
+    const query = {
       _id: userId,
       isDeleted: false,
-    }).populate({
-      path: 'role',
-      populate: {
-        path: 'permissions',
-      },
-    });
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await User.findOne(query)
+      .populate({
+        path: 'role',
+        populate: {
+          path: 'permissions',
+        },
+      });
   }
 
   /**
@@ -68,8 +112,10 @@ class UserRepository {
    * Get Users
    * ===============================
    */
-  async findAll(filter, options) {
-    return await User.find(filter)
+  async findAll(filter, options, tenantId = null) {
+    const query = tenantId ? { ...filter, tenant: tenantId } : filter;
+
+    return await User.find(query)
       .populate({
         path: 'role',
         populate: {
@@ -86,8 +132,10 @@ class UserRepository {
    * Count Users
    * ===============================
    */
-  async count(filter) {
-    return await User.countDocuments(filter);
+  async count(filter, tenantId = null) {
+    const query = tenantId ? { ...filter, tenant: tenantId } : filter;
+
+    return await User.countDocuments(query);
   }
 
   /**
@@ -95,9 +143,18 @@ class UserRepository {
    * Update User
    * ===============================
    */
-  async update(userId, updateData) {
-    return await User.findByIdAndUpdate(
-      userId,
+  async update(userId, updateData, tenantId = null) {
+    const query = {
+      _id: userId,
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await User.findOneAndUpdate(
+      query,
       updateData,
       {
         returnDocument: 'after',
@@ -115,9 +172,18 @@ class UserRepository {
    * Change Status
    * ===============================
    */
-  async updateStatus(userId, status) {
-    return await User.findByIdAndUpdate(
-      userId,
+  async updateStatus(userId, status, tenantId = null) {
+    const query = {
+      _id: userId,
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await User.findOneAndUpdate(
+      query,
       {
         status,
       },
@@ -137,9 +203,18 @@ class UserRepository {
    * Soft Delete User
    * ===============================
    */
-  async softDelete(userId) {
-    return await User.findByIdAndUpdate(
-      userId,
+  async softDelete(userId, tenantId = null) {
+    const query = {
+      _id: userId,
+      isDeleted: false,
+    };
+
+    if (tenantId) {
+      query.tenant = tenantId;
+    }
+
+    return await User.findOneAndUpdate(
+      query,
       {
         isDeleted: true,
         deletedAt: new Date(),

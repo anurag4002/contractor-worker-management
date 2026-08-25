@@ -26,6 +26,17 @@ const notificationSchema =
         default: 'INFO',
       },
 
+      category: {
+        type: String,
+        enum: ['SUBSCRIPTION'],
+        default: null,
+      },
+
+      eventType: {
+        type: String,
+        default: null,
+      },
+
       recipient: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -85,6 +96,13 @@ notificationSchema.index({
 notificationSchema.index({
   recipient: 1,
   isRead: 1,
+});
+
+notificationSchema.index({
+  category: 1,
+  eventType: 1,
+  recipient: 1,
+  tenant: 1,
 });
 
 notificationSchema.index({

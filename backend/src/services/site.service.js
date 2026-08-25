@@ -216,11 +216,11 @@ async getSites(query, tenantId) {
     await siteRepository.findAll(
       filter,
       options,
-      null
+      tenantId
     );
 
   const total =
-    await siteRepository.count(filter, null);
+    await siteRepository.count(filter, tenantId);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);

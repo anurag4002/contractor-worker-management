@@ -32,8 +32,8 @@ import subscriptionService from '../services/subscription.service.js';
 class AuthService {
   /**
    * Register User
-   * - First user: SUPER_ADMIN (platform-level)
-   * - Subsequent users: TENANT_ADMIN (creates new tenant)
+   * - Always registers a new TENANT_ADMIN (contractor account)
+   * - SUPER_ADMIN must be created via seeder only
    */
   async register(registerData) {
     const {
@@ -48,30 +48,14 @@ class AuthService {
       district,
       state,
       pincode,
+      billingCycle,
     } = registerData;
 
-    const superAdminRole = await authRepository.findRoleByCode('SUPER_ADMIN');
-
-    if (!superAdminRole) {
+    if (!companyName) {
       throw new ApiError(
-        StatusCodes.NOT_FOUND,
-        'SUPER_ADMIN role not found. Please run role seeder.'
+        StatusCodes.BAD_REQUEST,
+        'Company name is required for contractor registration.'
       );
-    }
-
-    const existingSuperAdmin = await User.findOne({
-      role: superAdminRole._id,
-      isDeleted: false,
-    });
-
-    if (!existingSuperAdmin) {
-      return this._registerSuperAdmin({
-        fullName,
-        email,
-        mobileNumber,
-        username,
-        password,
-      }, superAdminRole);
     }
 
     return this._registerTenantAdmin({
@@ -86,6 +70,7 @@ class AuthService {
       district,
       state,
       pincode,
+      billingCycle,
     });
   }
 
@@ -145,6 +130,7 @@ class AuthService {
     district,
     state,
     pincode,
+    billingCycle,
   }) {
     if (!companyName) {
       throw new ApiError(StatusCodes.BAD_REQUEST, 'Company name is required for tenant registration.');
@@ -169,6 +155,9 @@ class AuthService {
     }
 
     const hashedPassword = await hashPassword(password);
+
+    const normalizedCycle = billingCycle?.toUpperCase();
+    const validCycle = normalizedCycle === 'YEARLY' ? 'YEARLY' : 'MONTHLY';
 
     const session = await mongoose.startSession();
     let tenant;
@@ -221,7 +210,7 @@ class AuthService {
     };
 
     try {
-      await subscriptionService.createTrialSubscription(tenant[0]._id);
+      await subscriptionService.createTrialSubscription(tenant[0]._id, validCycle);
     } catch (error) {
       if (error.statusCode !== StatusCodes.CONFLICT) {
         throw error;

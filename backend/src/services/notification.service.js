@@ -251,5 +251,65 @@ async markAllAsRead(
       },
     };
   }
+
+  /**
+   * ==========================================
+   * Create Subscription Notification (with duplicate guard)
+   * ==========================================
+   */
+  async createSubscriptionNotification(
+    payload,
+    tenantId
+  ) {
+    const {
+      category,
+      eventType,
+      title,
+      message,
+      type = 'INFO',
+      recipient,
+      status = 'ACTIVE',
+    } = payload;
+
+    if (!category || !eventType || !recipient) {
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        'Category, eventType, and recipient are required for subscription notifications.'
+      );
+    }
+
+    const existing =
+      await notificationRepository.findDuplicate(
+        category,
+        eventType,
+        recipient,
+        tenantId
+      );
+
+    if (existing) {
+      return {
+        message: notificationMessages.CREATED,
+        data: existing,
+      };
+    }
+
+    const notification =
+      await notificationRepository.create({
+        category,
+        eventType,
+        title,
+        message,
+        type,
+        recipient,
+        status,
+        tenant: tenantId,
+      });
+
+    return {
+      message:
+        notificationMessages.CREATED,
+      data: notification,
+    };
+  }
 };
 export default new NotificationService();

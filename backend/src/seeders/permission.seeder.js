@@ -2,20 +2,23 @@ import Permission from '../models/Permission.js';
 
 import logger from '../common/logger/logger.js';
 
-const permissionModules = [
-  'auth',
-  'user',
-  'role',
-  'worker',
-  'site',
-  'attendance',
-  'payroll',
-  'advance-payment',
-  'dashboard',
-  'report',
-  'notification',
-  'audit-log',
-];
+  const permissionModules = [
+    'auth',
+    'user',
+    'role',
+    'worker',
+    'site',
+    'attendance',
+    'payroll',
+    'advance-payment',
+    'dashboard',
+    'report',
+    'notification',
+    'audit-log',
+    'subscription',
+    'subscription-plan',
+    'tenant',
+  ];
 
 const permissionActions = [
   'create',

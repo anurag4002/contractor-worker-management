@@ -49,26 +49,13 @@ const seedAdmin = async () => {
 
     role: superAdminRole._id,
 
+    tenant: null,
+
     status: 'ACTIVE',
 
     isEmailVerified: true,
 
     isMobileVerified: true,
-  });
-
-  const tenant = await Tenant.create({
-    companyName: 'Default Tenant',
-    owner: admin._id,
-    email: 'admin@contractor.com',
-    mobileNumber: '9999999999',
-    status: 'ACTIVE',
-    isDeleted: false,
-    createdBy: admin._id,
-    updatedBy: admin._id,
-  });
-
-  await User.findByIdAndUpdate(admin._id, {
-    tenant: tenant._id,
   });
 
   logger.info(

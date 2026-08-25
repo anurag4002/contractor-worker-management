@@ -4,6 +4,11 @@ import ApiResponse from '../common/helpers/ApiResponse.js';
 
 import asyncHandler from '../common/helpers/asyncHandler.js';
 
+const getPublicPlans = asyncHandler(async (req, res) => {
+  const plans = await subscriptionPlanService.getPublicPlans();
+  return ApiResponse.success(res, plans, 'Public plans fetched successfully.');
+});
+
 const createSubscriptionPlan = asyncHandler(async (req, res) => {
   const plan = await subscriptionPlanService.createSubscriptionPlan(req.body);
   return ApiResponse.created(res, plan, 'Subscription plan created successfully.');
@@ -35,6 +40,7 @@ const deleteSubscriptionPlan = asyncHandler(async (req, res) => {
 });
 
 export default {
+  getPublicPlans,
   createSubscriptionPlan,
   getSubscriptionPlans,
   getSubscriptionPlanById,

@@ -69,6 +69,7 @@ router.post(
 router.get(
    '/',
    authMiddleware,
+   requireActiveSubscription,
    authorize('PAYROLL_READ'),
    validate(getPayrollQuerySchema, 'query'),
    payrollController.getPayrolls
@@ -83,6 +84,7 @@ router.get(
  router.post(
    '/generate-salary',
    authMiddleware,
+   requireActiveSubscription,
    authorize('PAYROLL_CREATE'),
    payrollController.generateSalaryFromAttendance
  );
@@ -96,6 +98,7 @@ router.get(
   router.patch(
     '/:payrollId/advance',
     authMiddleware,
+    requireActiveSubscription,
     authorize('PAYROLL_UPDATE'),
     validate(advancePaymentSchema),
     payrollController.processAdvancePayment

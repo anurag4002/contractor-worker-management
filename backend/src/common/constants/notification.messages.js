@@ -10,6 +10,7 @@ const notificationMessages = {
 
   NOT_FOUND: 'Notification not found.',
 
+
   CREATE_FAILED:
     'Failed to create notification.',
 
@@ -31,6 +32,14 @@ const notificationMessages = {
   CLEARED: 'All notifications cleared successfully.',
 
   CLEAR_FAILED: 'Failed to clear notifications.',
+
+  SUBSCRIPTION_TRIAL_STARTED: 'Trial started successfully.',
+  SUBSCRIPTION_TRIAL_ENDING_SOON: 'Trial ending soon notification sent.',
+  SUBSCRIPTION_TRIAL_EXPIRED: 'Trial expired notification sent.',
+  SUBSCRIPTION_PAYMENT_SUCCESS: 'Payment success notification sent.',
+  SUBSCRIPTION_PAYMENT_FAILED: 'Payment failed notification sent.',
+  SUBSCRIPTION_RENEWED: 'Subscription renewal notification sent.',
+  SUBSCRIPTION_CANCELLED: 'Subscription cancellation notification sent.',
 };
 
 export default notificationMessages;

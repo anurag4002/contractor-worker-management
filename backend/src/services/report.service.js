@@ -74,13 +74,13 @@ async getWorkerReport(query, tenantId) {
         limit,
         sort,
       },
-      null
+      tenantId
     );
 
   const total =
     await reportRepository.countWorkers(
       filter,
-      null
+      tenantId
     );
 
   return {
@@ -170,13 +170,13 @@ async getAttendanceReport(query, tenantId) {
         limit,
         sort,
       },
-      null
+      tenantId
     );
 
   const total =
     await reportRepository.countAttendance(
       filter,
-      null
+      tenantId
     );
 
   return {
@@ -253,13 +253,13 @@ async getPayrollReport(query, tenantId) {
         limit,
         sort,
       },
-      null
+      tenantId
     );
 
   const total =
     await reportRepository.countPayroll(
       filter,
-      null
+      tenantId
     );
 
   return {
@@ -354,13 +354,13 @@ async getSiteReport(query, tenantId) {
         limit,
         sort,
       },
-      null
+      tenantId
     );
 
   const total =
     await reportRepository.countSites(
       filter,
-      null
+      tenantId
     );
 
   return {

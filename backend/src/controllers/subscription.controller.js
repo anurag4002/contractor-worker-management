@@ -19,7 +19,12 @@ const getSubscription = asyncHandler(async (req, res) => {
 });
 
 const getCurrentSubscription = asyncHandler(async (req, res) => {
-  const tenantId = req.query.tenantId || req.user.tenantId;
+  const tenantId = req.user.tenantId;
+
+  if (!tenantId) {
+    return ApiResponse.success(res, null, 'No subscription found.');
+  }
+
   const subscription = await subscriptionService.getCurrentSubscription(tenantId);
   if (!subscription) {
     return ApiResponse.success(res, null, 'No subscription found.');
@@ -35,14 +40,38 @@ const getSubscriptions = asyncHandler(async (req, res) => {
 const updateSubscriptionStatus = asyncHandler(async (req, res) => {
   const subscription = await subscriptionService.updateSubscriptionStatus(
     req.params.id,
-    req.body.status
+    req.body.status,
+    req.user.tenantId
   );
   return ApiResponse.success(res, subscription, 'Subscription status updated successfully.');
 });
 
 const cancelSubscription = asyncHandler(async (req, res) => {
-  const subscription = await subscriptionService.cancelSubscription(req.params.id);
-  return ApiResponse.success(res, subscription, 'Subscription cancelled successfully.');
+  const subscription = await subscriptionService.cancelSubscription(req.params.id, req.user.tenantId);
+  return ApiResponse.success(res, subscription, 'Auto-renewal disabled successfully. Access will continue until the current period ends.');
+});
+
+const renewSubscription = asyncHandler(async (req, res) => {
+  const subscription = await subscriptionService.renewSubscription(
+    req.user.tenantId,
+    req.body.billingCycle
+  );
+  return ApiResponse.success(res, subscription, 'Subscription renewed successfully.');
+});
+
+const suspendSubscription = asyncHandler(async (req, res) => {
+  const subscription = await subscriptionService.suspendSubscription(req.params.id, req.user.tenantId);
+  return ApiResponse.success(res, subscription, 'Subscription suspended successfully.');
+});
+
+const checkExpiredSubscriptions = asyncHandler(async (req, res) => {
+  const result = await subscriptionService.checkAndExpireSubscriptions();
+  return ApiResponse.success(res, result, 'Expired subscriptions processed successfully.');
+});
+
+const checkTrialReminders = asyncHandler(async (req, res) => {
+  const result = await subscriptionService.checkTrialReminders();
+  return ApiResponse.success(res, result, 'Trial reminders processed successfully.');
 });
 
 export default {
@@ -52,4 +81,8 @@ export default {
   getSubscriptions,
   updateSubscriptionStatus,
   cancelSubscription,
+  renewSubscription,
+  suspendSubscription,
+  checkExpiredSubscriptions,
+  checkTrialReminders,
 };

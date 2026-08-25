@@ -11,7 +11,10 @@ import asyncHandler from '../common/helpers/asyncHandler.js';
  * ==========================================
  */
 const createUser = asyncHandler(async (req, res) => {
-  const user = await userService.createUser(req.body);
+  const user = await userService.createUser(
+    req.body,
+    req.user.tenantId
+  );
 
   return ApiResponse.created(
     res,
@@ -26,7 +29,10 @@ const createUser = asyncHandler(async (req, res) => {
  * ==========================================
  */
 const getUsers = asyncHandler(async (req, res) => {
-  const result = await userService.getUsers(req.query);
+  const result = await userService.getUsers(
+    req.query,
+    req.user.tenantId
+  );
 
   return ApiResponse.paginated(
     res,
@@ -42,7 +48,10 @@ const getUsers = asyncHandler(async (req, res) => {
  * ==========================================
  */
 const getUserById = asyncHandler(async (req, res) => {
-  const user = await userService.getUserById(req.params.id);
+  const user = await userService.getUserById(
+    req.params.id,
+    req.user.tenantId
+  );
 
   return ApiResponse.success(
     res,
@@ -59,7 +68,8 @@ const getUserById = asyncHandler(async (req, res) => {
 const updateUser = asyncHandler(async (req, res) => {
   const user = await userService.updateUser(
     req.params.id,
-    req.body
+    req.body,
+    req.user.tenantId
   );
 
   return ApiResponse.success(
@@ -77,7 +87,8 @@ const updateUser = asyncHandler(async (req, res) => {
 const changeUserStatus = asyncHandler(async (req, res) => {
   const user = await userService.changeStatus(
     req.params.id,
-    req.body.status
+    req.body.status,
+    req.user.tenantId
   );
 
   return ApiResponse.success(
@@ -89,12 +100,13 @@ const changeUserStatus = asyncHandler(async (req, res) => {
 
 /**
  * ==========================================
- * Delete User
+ * Soft Delete User
  * ==========================================
  */
 const deleteUser = asyncHandler(async (req, res) => {
   const result = await userService.deleteUser(
-    req.params.id
+    req.params.id,
+    req.user.tenantId
   );
 
   return ApiResponse.success(

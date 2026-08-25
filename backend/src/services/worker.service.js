@@ -209,11 +209,11 @@ async getWorkers(query, tenantId) {
     await workerRepository.findAll(
       filter,
       options,
-      null
+      tenantId
     );
 
   const total =
-    await workerRepository.count(filter, null);
+    await workerRepository.count(filter, tenantId);
 
   return {
     workers,

@@ -252,67 +252,15 @@ beforeEach(() => {
 });
 
 describe('Multi-Tenant Authentication', () => {
-  describe('SUPER_ADMIN Registration', () => {
-    it('should register first user as SUPER_ADMIN with no tenant', async () => {
+  describe('Contractor Registration', () => {
+    it('should always register a new TENANT_ADMIN with tenant', async () => {
       const result = await authService.register({
-        fullName: 'Super Admin',
-        email: 'admin@test.com',
+        fullName: 'Contractor Admin',
+        email: 'contractor@test.com',
         mobileNumber: '9999999999',
-        username: 'superadmin',
-        password: 'Admin@123',
-      });
-
-      expect(result.user).toBeDefined();
-      expect(result.user.role.code).toBe('SUPER_ADMIN');
-      expect(result.user.tenant).toBeNull();
-      expect(result.accessToken).toBeNull();
-    });
-
-    it('should fail when trying to register SUPER_ADMIN after first user', async () => {
-      await authService.register({
-        fullName: 'First Admin',
-        email: 'first@test.com',
-        mobileNumber: '9999999999',
-        username: 'firstadmin',
-        password: 'Admin@123',
-      });
-
-      await expect(
-        authService.register({
-          fullName: 'Second User',
-          email: 'second@test.com',
-          mobileNumber: '8888888888',
-          username: 'seconduser',
-          password: 'Admin@123',
-          companyName: 'Second Corp',
-        })
-      ).rejects.toThrow('Email already exists');
-    });
-  });
-
-  describe('Tenant Registration', () => {
-    beforeEach(async () => {
-      await authService.register({
-        fullName: 'First Admin',
-        email: 'firstadmin@test.com',
-        mobileNumber: '9999999999',
-        username: 'firstadmin',
-        password: 'Admin@123',
-      });
-    });
-
-    it('should create tenant and TENANT_ADMIN user on registration', async () => {
-      const result = await authService.register({
-        fullName: 'Tenant Admin',
-        email: 'tenantadmin@test.com',
-        mobileNumber: '9876543210',
-        username: 'tenantadmin',
+        username: 'contractor',
         password: 'Admin@123',
         companyName: 'Test Construction Co.',
-        address: '123 Main St',
-        city: 'Mumbai',
-        state: 'Maharashtra',
-        pincode: '400001',
       });
 
       expect(result.user).toBeDefined();
@@ -325,9 +273,9 @@ describe('Multi-Tenant Authentication', () => {
     it('should fail without company name', async () => {
       await expect(
         authService.register({
-          fullName: 'Tenant Admin',
-          email: 'tenantadmin2@test.com',
-          mobileNumber: '9876543211',
+          fullName: 'Contractor Admin',
+          email: 'contractor2@test.com',
+          mobileNumber: '9876543210',
           password: 'Admin@123',
         })
       ).rejects.toThrow('Company name is required');
@@ -348,18 +296,48 @@ describe('Multi-Tenant Authentication', () => {
     });
   });
 
+  describe('Tenant Isolation', () => {
+    let tenant1User;
+    let tenant2User;
+    let tenant1Id;
+    let tenant2Id;
+
+    beforeEach(async () => {
+      const tenant1Result = await authService.register({
+        fullName: 'Tenant1 Admin',
+        email: 'tenant1@test.com',
+        mobileNumber: '9876543210',
+        password: 'Admin@123',
+        companyName: 'Tenant1 Corp',
+      });
+      tenant1User = tenant1Result.user;
+      tenant1Id = tenant1Result.tenantId;
+
+      const tenant2Result = await authService.register({
+        fullName: 'Tenant2 Admin',
+        email: 'tenant2@test.com',
+        mobileNumber: '9876543211',
+        password: 'Admin@123',
+        companyName: 'Tenant2 Corp',
+      });
+      tenant2User = tenant2Result.user;
+      tenant2Id = tenant2Result.tenantId;
+    });
+
+    it('should have different tenant IDs for different tenants', async () => {
+      expect(tenant1Id.toString()).not.toBe(tenant2Id.toString());
+    });
+
+    it('tenant user should have correct tenant reference', () => {
+      expect(tenant1User.tenant.toString()).toBe(tenant1Id.toString());
+      expect(tenant2User.tenant.toString()).toBe(tenant2Id.toString());
+    });
+  });
+
   describe('Login with Tenant', () => {
     let tenant;
 
     beforeEach(async () => {
-      await authService.register({
-        fullName: 'Super Admin',
-        email: 'super@test.com',
-        mobileNumber: '9999999999',
-        username: 'superadmin',
-        password: 'Admin@123',
-      });
-
       const tenantResult = await authService.register({
         fullName: 'Tenant Admin',
         email: 'tenant@test.com',
@@ -368,18 +346,7 @@ describe('Multi-Tenant Authentication', () => {
         password: 'Admin@123',
         companyName: 'Test Corp',
       });
-      tenant = tenantResult.user.tenant;
-    });
-
-    it('should login SUPER_ADMIN with tenantId = null', async () => {
-      const result = await authService.login({
-        email: 'super@test.com',
-        password: 'Admin@123',
-      });
-
-      expect(result.user).toBeDefined();
-      expect(result.tenantId).toBeNull();
-      expect(result.accessToken).toBeDefined();
+      tenant = tenantResult.tenantId;
     });
 
     it('should login TENANT_ADMIN with correct tenantId', async () => {
@@ -414,65 +381,6 @@ describe('Multi-Tenant Authentication', () => {
       expect(payload.tenantId).toBeDefined();
       expect(payload.tenantId.toString()).toBe(tenant.toString());
       expect(payload.role).toBe('TENANT_ADMIN');
-    });
-
-    it('should have null tenantId in SUPER_ADMIN JWT', async () => {
-      const result = await authService.login({
-        email: 'super@test.com',
-        password: 'Admin@123',
-      });
-
-      const tokenParts = result.accessToken.split('.');
-      const payload = JSON.parse(Buffer.from(tokenParts[1], 'base64url').toString());
-
-      expect(payload.tenantId).toBeNull();
-      expect(payload.role).toBe('SUPER_ADMIN');
-    });
-  });
-
-  describe('Tenant Isolation', () => {
-    let tenant1User;
-    let tenant2User;
-    let tenant1Id;
-    let tenant2Id;
-
-    beforeEach(async () => {
-      await authService.register({
-        fullName: 'Super Admin',
-        email: 'super@test.com',
-        mobileNumber: '9999999999',
-        username: 'superadmin',
-        password: 'Admin@123',
-      });
-
-      const tenant1Result = await authService.register({
-        fullName: 'Tenant1 Admin',
-        email: 'tenant1@test.com',
-        mobileNumber: '9876543210',
-        password: 'Admin@123',
-        companyName: 'Tenant1 Corp',
-      });
-      tenant1User = tenant1Result.user;
-      tenant1Id = tenant1Result.tenantId;
-
-      const tenant2Result = await authService.register({
-        fullName: 'Tenant2 Admin',
-        email: 'tenant2@test.com',
-        mobileNumber: '9876543211',
-        password: 'Admin@123',
-        companyName: 'Tenant2 Corp',
-      });
-      tenant2User = tenant2Result.user;
-      tenant2Id = tenant2Result.tenantId;
-    });
-
-    it('should have different tenant IDs for different tenants', async () => {
-      expect(tenant1Id.toString()).not.toBe(tenant2Id.toString());
-    });
-
-    it('tenant user should have correct tenant reference', () => {
-      expect(tenant1User.tenant.toString()).toBe(tenant1Id.toString());
-      expect(tenant2User.tenant.toString()).toBe(tenant2Id.toString());
     });
   });
 });

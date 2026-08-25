@@ -27,6 +27,10 @@ import subscriptionPlanRoutes from './subscriptionPlan.routes.js';
 
 import subscriptionRoutes from './subscription.routes.js';
 
+import subscriptionPaymentRoutes from './subscriptionPayment.routes.js';
+
+import platformRoutes from './platform.routes.js';
+
 const router = Router();
 
 /*
@@ -67,6 +71,8 @@ router.use('/notifications', notificationRoutes);
 router.use('/tenants', tenantRoutes);
 router.use('/subscription-plans', subscriptionPlanRoutes);
 router.use('/subscriptions', subscriptionRoutes);
+router.use('/subscription-payments', subscriptionPaymentRoutes);
+router.use('/platform', platformRoutes);
 
 /*
 |--------------------------------------------------------------------------

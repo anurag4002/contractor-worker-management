@@ -465,6 +465,23 @@ export const RegisterAnchor = styled(Link)`
   }
 `;
 
+export const LoginLinkRow = styled.div`
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+`;
+
+export const LoginAnchor = styled(Link)`
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 export const CardFooter = styled.div`
   margin-top: 2rem;
   text-align: center;

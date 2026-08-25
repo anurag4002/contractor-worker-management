@@ -398,7 +398,7 @@ const LandingPage = () => {
   };
 
   const handleRegisterClick = () => {
-    navigate("/register");
+    navigate("/pricing");
   };
 
   const scrollToSection = (id) => {
@@ -920,6 +920,11 @@ const LandingPage = () => {
                     <PrimaryButton onClick={handleLoginClick} style={{ padding: "8px 16px", fontSize: "0.85rem" }}>
                       Login Portal
                     </PrimaryButton>
+                  </li>
+                  <li style={{ marginTop: 12 }}>
+                    <a href="/super-admin/login" style={{ color: "#9ca3af", fontSize: "0.8rem", textDecoration: "none" }}>
+                      Platform Admin
+                    </a>
                   </li>
                 </ul>
               </FooterCol>

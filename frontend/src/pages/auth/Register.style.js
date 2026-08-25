@@ -670,3 +670,45 @@ export const CardFooter = styled.div`
   color: var(--text-secondary);
   font-size: 0.82rem;
 `;
+
+export const PlanBadge = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
+  border-radius: 0.8rem;
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 1.5rem;
+`;
+
+export const PlanInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+`;
+
+export const PlanName = styled.span`
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+`;
+
+export const PlanPrice = styled.span`
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary);
+`;
+
+export const TrialBadge = styled.span`
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--success);
+  background: rgba(22, 163, 74, 0.1);
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  white-space: nowrap;
+`;

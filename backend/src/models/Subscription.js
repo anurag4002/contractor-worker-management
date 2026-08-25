@@ -22,7 +22,7 @@ const subscriptionSchema = new mongoose.Schema(
 
     billingCycle: {
       type: String,
-      enum: ['MONTHLY', 'ANNUAL'],
+      enum: ['MONTHLY', 'YEARLY'],
       default: null,
     },
 

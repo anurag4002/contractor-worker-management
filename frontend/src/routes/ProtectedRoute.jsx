@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
+import { useSubscription } from "../context/SubscriptionContext";
 
 const ProtectedRoute = () => {
   const {
@@ -12,9 +13,15 @@ const ProtectedRoute = () => {
     isAuthenticated,
   } = useAuth();
 
+  const {
+    loading: subscriptionLoading,
+    isExpired,
+    isSuperAdmin,
+  } = useSubscription();
+
   const location = useLocation();
 
-  if (loading) {
+  if (loading || subscriptionLoading) {
     return (
       <div
         style={{
@@ -31,13 +38,37 @@ const ProtectedRoute = () => {
     );
   }
 
-  if (!isAuthenticated) {
+  const isPublicRoute =
+    location.pathname === "/pricing";
+
+  if (!isAuthenticated && !isPublicRoute) {
     return (
       <Navigate
         to="/login"
         state={{
           from: location,
         }}
+        replace
+      />
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Outlet />;
+  }
+
+  const isSubscriptionRoute =
+    location.pathname === "/subscription" ||
+    location.pathname === "/pricing";
+
+  const isOnboardingRoute =
+    location.pathname === "/onboarding/payment" ||
+    location.pathname === "/onboarding/success";
+
+  if (!isSuperAdmin && isExpired() && !isSubscriptionRoute && !isOnboardingRoute) {
+    return (
+      <Navigate
+        to="/subscription"
         replace
       />
     );
