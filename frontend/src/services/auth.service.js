@@ -25,12 +25,27 @@ const authService = {
   },
 
   register: async (payload) => {
-    const { data } = await axios.post(
-      "/auth/register",
-      payload
-    );
+    const { password, ...rest } = payload;
+    console.log("[Auth] Registration payload:", {
+      ...rest,
+      password: password ? "[REDACTED]" : undefined,
+    });
 
-    return data;
+    try {
+      const { data } = await axios.post(
+        "/auth/register",
+        payload
+      );
+
+      return data;
+    } catch (error) {
+      console.error("[Auth] Registration error:", {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message,
+      });
+      throw error;
+    }
   },
 
   logout: async () => {

@@ -12,9 +12,11 @@ const validate = (schema, property = 'body') => {
     });
 
     if (error) {
-      const errors = error.details.map(
-        (detail) => detail.message
-      );
+      const errors = error.details.reduce((acc, detail) => {
+        const field = detail.path.join('.');
+        acc[field] = detail.message;
+        return acc;
+      }, {});
 
       return next(
         new ApiError(

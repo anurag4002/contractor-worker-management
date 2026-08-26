@@ -18,6 +18,10 @@ import FormError from "../../components/ui/FormError";
 
 import RegisterIntro from "./RegisterIntro";
 
+import {
+  validateEmail,
+} from "../../validators/auth.validator";
+
 import { PLAN } from "../../constants/subscription";
 
 import {
@@ -75,21 +79,63 @@ const Register = () => {
     state: "",
     pincode: "",
   });
-  const [fieldError, setFieldError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const handleChange = ({ target }) => {
     setFormData((prev) => ({
       ...prev,
       [target.name]: target.value,
     }));
-    if (fieldError) setFieldError("");
+    setFieldErrors((prev) => {
+      const next = { ...prev };
+      delete next[target.name];
+      return next;
+    });
+  };
+
+  const validateForm = () => {
+    const errors = {};
+
+    if (!formData.fullName.trim() || formData.fullName.trim().length < 2) {
+      errors.fullName = "Full name is required (min 2 characters).";
+    }
+
+    const emailError = validateEmail(formData.email);
+    if (emailError) errors.email = emailError;
+
+    if (!/^[6-9]\d{9}$/.test(formData.mobileNumber)) {
+      errors.mobileNumber = "Please enter a valid 10-digit Indian mobile number.";
+    }
+
+    if (formData.username && !/^[a-zA-Z0-9._]{3,30}$/.test(formData.username)) {
+      errors.username = "Username can only contain letters, numbers, dots and underscores (3-30 characters).";
+    }
+
+    if (!formData.password || formData.password.length < 8) {
+      errors.password = "Password must be at least 8 characters.";
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      errors.confirmPassword = "Passwords do not match.";
+    }
+
+    if (formData.companyName.trim().length < 2) {
+      errors.companyName = "Company name must contain at least 2 characters.";
+    }
+
+    if (formData.pincode && !/^\d{6}$/.test(formData.pincode)) {
+      errors.pincode = "Pincode must be a 6-digit number.";
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      showError("Passwords do not match");
+    if (!validateForm()) {
+      showError("Please correct the errors in the form.");
       return;
     }
 
@@ -97,17 +143,17 @@ const Register = () => {
       setLoading(true);
 
       const payload = {
-        fullName: formData.fullName,
-        email: formData.email,
-        mobileNumber: formData.mobileNumber,
-        username: formData.username,
+        fullName: formData.fullName.trim(),
+        email: formData.email.trim(),
+        mobileNumber: formData.mobileNumber.trim(),
+        username: formData.username.trim() || undefined,
         password: formData.password,
-        companyName: formData.companyName,
-        address: formData.address || undefined,
-        city: formData.city || undefined,
-        district: formData.district || undefined,
-        state: formData.state || undefined,
-        pincode: formData.pincode || undefined,
+        companyName: formData.companyName.trim(),
+        address: formData.address.trim() || undefined,
+        city: formData.city.trim() || undefined,
+        district: formData.district.trim() || undefined,
+        state: formData.state.trim() || undefined,
+        pincode: formData.pincode.trim() || undefined,
         billingCycle,
       };
 
@@ -133,7 +179,18 @@ const Register = () => {
 
       navigate(`/onboarding/payment?billingCycle=${billingCycle}`, { replace: true });
     } catch (error) {
-      showError(error);
+      const serverFieldErrors = error?.response?.data?.errors;
+      if (serverFieldErrors && typeof serverFieldErrors === 'object') {
+        setFieldErrors((prev) => ({ ...prev, ...serverFieldErrors }));
+        const messages = Object.values(serverFieldErrors).filter(Boolean);
+        if (messages.length === 1) {
+          showError(messages[0]);
+        } else if (messages.length > 1) {
+          showError(`${messages[0]} and ${messages.length - 1} other field(s) need attention.`);
+        }
+      } else {
+        showError(error);
+      }
     } finally {
       setLoading(false);
     }
@@ -147,7 +204,7 @@ const Register = () => {
     <RegisterPage>
       <RegisterWrapper>
         <LeftSection>
-          <RegisterIntro />
+          <RegisterIntro onIntroComplete={() => {}} />
         </LeftSection>
 
         <RightSection>
@@ -188,6 +245,9 @@ const Register = () => {
                     required
                     disabled={loading}
                   />
+                  {fieldErrors.companyName && (
+                    <FormError error={fieldErrors.companyName} />
+                  )}
                 </InputWrapper>
               </InputGroup>
 
@@ -210,6 +270,9 @@ const Register = () => {
                     required
                     disabled={loading}
                   />
+                  {fieldErrors.fullName && (
+                    <FormError error={fieldErrors.fullName} />
+                  )}
                 </InputWrapper>
               </InputGroup>
 
@@ -232,6 +295,9 @@ const Register = () => {
                     required
                     disabled={loading}
                   />
+                  {fieldErrors.email && (
+                    <FormError error={fieldErrors.email} />
+                  )}
                 </InputWrapper>
               </InputGroup>
 
@@ -254,6 +320,9 @@ const Register = () => {
                     required
                     disabled={loading}
                   />
+                  {fieldErrors.mobileNumber && (
+                    <FormError error={fieldErrors.mobileNumber} />
+                  )}
                 </InputWrapper>
               </InputGroup>
 
@@ -275,6 +344,9 @@ const Register = () => {
                     onChange={handleChange}
                     disabled={loading}
                   />
+                  {fieldErrors.username && (
+                    <FormError error={fieldErrors.username} />
+                  )}
                 </InputWrapper>
               </InputGroup>
 
@@ -297,6 +369,9 @@ const Register = () => {
                     required
                     disabled={loading}
                   />
+                  {fieldErrors.password && (
+                    <FormError error={fieldErrors.password} />
+                  )}
                   <PasswordToggle
                     type="button"
                     onClick={togglePassword(setShowPassword)}
@@ -340,7 +415,9 @@ const Register = () => {
                     {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
                   </PasswordToggle>
                 </InputWrapper>
-                <FormError error={fieldError} />
+                {fieldErrors.confirmPassword && (
+                  <FormError error={fieldErrors.confirmPassword} />
+                )}
               </InputGroup>
 
               <InputGroup>
@@ -401,6 +478,9 @@ const Register = () => {
                     onChange={handleChange}
                     disabled={loading}
                   />
+                  {fieldErrors.pincode && (
+                    <FormError error={fieldErrors.pincode} />
+                  )}
                 </InputGroup>
               </div>
 

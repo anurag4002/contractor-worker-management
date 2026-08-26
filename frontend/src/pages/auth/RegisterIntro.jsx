@@ -664,7 +664,9 @@ const RegisterIntro = ({ onIntroComplete }) => {
         setVisibleFeatures(4);
         setVisibleSteps(3);
         setLoopHeading(true);
-        onIntroComplete();
+        if (typeof onIntroComplete === 'function') {
+          onIntroComplete();
+        }
       });
       return () => cancelAnimationFrame(frame);
     }
@@ -706,14 +708,18 @@ const RegisterIntro = ({ onIntroComplete }) => {
         // Complete
         setPhase(9);
         setLoopHeading(true);
-        onIntroComplete();
+        if (typeof onIntroComplete === 'function') {
+          onIntroComplete();
+        }
       } catch (error) {
         console.error("Registration intro animation failed:", error);
         setPhase(9);
         setVisibleFeatures(4);
         setVisibleSteps(3);
         setLoopHeading(true);
-        onIntroComplete();
+        if (typeof onIntroComplete === 'function') {
+          onIntroComplete();
+        }
       }
     };
 

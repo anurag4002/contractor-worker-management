@@ -40,7 +40,13 @@ export const registerSchema = Joi.object({
     .trim()
     .min(3)
     .max(30)
-    .alphanum(),
+    .pattern(/^[a-zA-Z0-9._]{3,30}$/)
+    .messages({
+      'string.pattern.base':
+        'Username can only contain letters, numbers, dots and underscores (3-30 characters).',
+      'string.min': 'Username must contain at least 3 characters.',
+      'string.max': 'Username cannot exceed 30 characters.',
+    }),
 
   password: Joi.string()
     .min(8)
