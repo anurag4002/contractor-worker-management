@@ -69,7 +69,25 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (payload) => {
-    return authService.register(payload);
+    const response = await authService.register(payload);
+    const authData = response?.data || response || {};
+    const { user, accessToken, refreshToken } = authData;
+
+    if (accessToken) {
+      localStorage.setItem("token", accessToken);
+      localStorage.setItem("accessToken", accessToken);
+    }
+
+    if (refreshToken) {
+      localStorage.setItem("refreshToken", refreshToken);
+    }
+
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+      setUser(user);
+    }
+
+    return response;
   };
 
    const logout = async () => {

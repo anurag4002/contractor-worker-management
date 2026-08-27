@@ -30,6 +30,13 @@ axiosInstance.interceptors.request.use(
       config.url?.startsWith(path)
     );
 
+    console.log('[Axios] Request:', {
+      method: config.method?.toUpperCase(),
+      url: config.url,
+      baseURL: config.baseURL,
+      fullURL: config.baseURL ? `${config.baseURL}${config.url}` : config.url,
+    });
+
     if (isPublicAuth) {
       if (config.headers) {
         delete config.headers.Authorization;
@@ -63,10 +70,22 @@ axiosInstance.interceptors.request.use(
 */
 
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('[Axios] Response:', {
+      method: response.config.method?.toUpperCase(),
+      url: response.config.url,
+      status: response.status,
+    });
+    return response;
+  },
 
   async (error) => {
-    console.error(error);
+    console.error('[Axios] Response error:', {
+      method: error.config?.method?.toUpperCase(),
+      url: error.config?.url,
+      status: error.response?.status,
+      data: error.response?.data,
+    });
 
     const originalRequest = error.config;
 

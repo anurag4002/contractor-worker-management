@@ -12,6 +12,13 @@ import AUTH_MESSAGES from '../common/constants/auth.messages.js';
  * Register User
  */
 const register = asyncHandler(async (req, res) => {
+    console.log('[AUTH] register hit', {
+      method: req.method,
+      path: req.originalUrl,
+      hasBody: !!req.body,
+      bodyKeys: req.body ? Object.keys(req.body) : [],
+    });
+
     const user = await authService.register(req.body);
 
     return ApiResponse.created(

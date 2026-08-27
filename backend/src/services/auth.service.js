@@ -165,6 +165,16 @@ class AuthService {
 
     try {
       await session.withTransaction(async () => {
+        createdUser = await authRepository.create([{
+          fullName,
+          email,
+          mobileNumber,
+          username,
+          password: hashedPassword,
+          role: tenantAdminRole._id,
+          tenant: null,
+        }], { session });
+
         tenant = await Tenant.create([{
           companyName,
           email,
@@ -175,20 +185,11 @@ class AuthService {
           state: state || null,
           pincode: pincode || null,
           status: 'ACTIVE',
-        }], { session });
-
-        createdUser = await authRepository.create([{
-          fullName,
-          email,
-          mobileNumber,
-          username,
-          password: hashedPassword,
-          role: tenantAdminRole._id,
-          tenant: tenant[0]._id,
-        }], { session });
-
-        await Tenant.findByIdAndUpdate(tenant[0]._id, {
           owner: createdUser[0]._id,
+        }], { session });
+
+        await authRepository.updateUserById(createdUser[0]._id, {
+          tenant: tenant[0]._id,
         }, { session });
       });
 

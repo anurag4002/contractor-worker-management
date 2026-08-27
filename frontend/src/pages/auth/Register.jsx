@@ -133,6 +133,12 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
+
+    console.log('[REGISTER-V2] React handleSubmit fired');
+    console.log('[REGISTER-V2] event.type:', e.type);
+    console.log('[REGISTER-V2] defaultPrevented:', e.defaultPrevented);
+    console.log('[REGISTER-V2] currentTarget:', e.currentTarget?.tagName, e.currentTarget?.attributes?.getNamedItem('action')?.value || 'no-action');
 
     if (!validateForm()) {
       showError("Please correct the errors in the form.");
@@ -157,7 +163,13 @@ const Register = () => {
         billingCycle,
       };
 
+      console.log('[REGISTER-V2] About to call AuthContext.register()');
+      console.log('[REGISTER-V2] billingCycle:', billingCycle);
+      console.log('[REGISTER-V2] payload keys:', Object.keys(payload));
+
       const response = await register(payload);
+
+      console.log('[REGISTER-V2] Registration response received:', response);
 
       const authData = response?.data || response || {};
       const { user, accessToken, refreshToken } = authData;
@@ -179,6 +191,7 @@ const Register = () => {
 
       navigate(`/onboarding/payment?billingCycle=${billingCycle}`, { replace: true });
     } catch (error) {
+      console.log('[REGISTER-V2] Registration error:', error.response?.status, error.response?.data);
       const serverFieldErrors = error?.response?.data?.errors;
       if (serverFieldErrors && typeof serverFieldErrors === 'object') {
         setFieldErrors((prev) => ({ ...prev, ...serverFieldErrors }));

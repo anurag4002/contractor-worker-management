@@ -32,17 +32,25 @@ const authService = {
     });
 
     try {
+      console.log("[Auth] Sending POST /auth/register");
+      console.log("[Auth] axios baseURL:", axios.defaults.baseURL);
       const { data } = await axios.post(
         "/auth/register",
         payload
       );
 
+      console.log("[Auth] Registration success:", data);
       return data;
     } catch (error) {
       console.error("[Auth] Registration error:", {
         status: error.response?.status,
         data: error.response?.data,
         message: error.message,
+        config: error.config ? {
+          method: error.config.method,
+          url: error.config.url,
+          baseURL: error.config.baseURL,
+        } : null,
       });
       throw error;
     }
