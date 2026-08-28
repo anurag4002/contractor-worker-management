@@ -12,6 +12,14 @@ const authMiddleware = async (req, res, next) => {
   try {
     const authorization = req.headers.authorization;
 
+    console.info('[AUTH DEBUG]', {
+      method: req.method,
+      path: req.originalUrl,
+      hasAuthorizationHeader: !!authorization,
+      scheme: authorization ? authorization.split(' ')[0] : null,
+      tokenLength: authorization ? authorization.split(' ')[1]?.length || 0 : 0,
+    });
+
     if (!authorization) {
       throw new ApiError(
         StatusCodes.UNAUTHORIZED,
@@ -28,7 +36,18 @@ const authMiddleware = async (req, res, next) => {
 
     const token = authorization.split(' ')[1];
 
-    const decoded = verifyAccessToken(token);
+    let decoded;
+    try {
+      decoded = verifyAccessToken(token);
+    } catch (error) {
+      console.error('[AUTH DEBUG] JWT verification failed', {
+        method: req.method,
+        path: req.originalUrl,
+        jwtError: error.name,
+        jwtMessage: error.message,
+      });
+      throw error;
+    }
 
     const user = await authRepository.findUserById(
       decoded.userId

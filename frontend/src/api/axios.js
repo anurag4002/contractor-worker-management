@@ -50,6 +50,13 @@ axiosInstance.interceptors.request.use(
       localStorage.getItem("jwt") ||
       localStorage.getItem("authToken");
 
+    console.info('[AUTH DEBUG] Frontend token check', {
+      url: config.url,
+      hasToken: !!token,
+      tokenLength: token?.length || 0,
+      tokenSource: localStorage.getItem("token") ? 'token' : localStorage.getItem("accessToken") ? 'accessToken' : localStorage.getItem("jwt") ? 'jwt' : localStorage.getItem("authToken") ? 'authToken' : null,
+    });
+
     if (token) {
       if (config.headers && typeof config.headers.set === 'function') {
         config.headers.set('Authorization', `Bearer ${token}`);

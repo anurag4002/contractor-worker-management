@@ -46,7 +46,6 @@ import {
   LoginAnchor,
   CardFooter,
   PlanBadge,
-  PlanInfo,
   PlanName,
   PlanPrice,
   TrialBadge,
@@ -171,8 +170,8 @@ const Register = () => {
 
       console.log('[REGISTER-V2] Registration response received:', response);
 
-      const authData = response?.data || response || {};
-      const { user, accessToken, refreshToken } = authData;
+      const authPayload = response?.data?.data || response?.data || response || {};
+      const { user, accessToken, refreshToken } = authPayload;
 
       if (accessToken) {
         localStorage.setItem("token", accessToken);

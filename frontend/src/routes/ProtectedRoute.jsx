@@ -65,7 +65,9 @@ const ProtectedRoute = () => {
     location.pathname === "/onboarding/payment" ||
     location.pathname === "/onboarding/success";
 
-  if (!isSuperAdmin && isExpired() && !isSubscriptionRoute && !isOnboardingRoute) {
+  const isCheckoutRoute = location.pathname === "/checkout";
+
+  if (!isSuperAdmin && isExpired() && !isSubscriptionRoute && !isOnboardingRoute && !isCheckoutRoute) {
     return (
       <Navigate
         to="/subscription"

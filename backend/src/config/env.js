@@ -70,4 +70,15 @@ const env = {
     Number(process.env.RATE_LIMIT_MAX_REQUESTS) || 200,
 };
 
+if (env.NODE_ENV !== 'production') {
+  console.info('[ENV DEBUG]', {
+    JWT_SECRET_SET: !!env.JWT_SECRET,
+    JWT_SECRET_LENGTH: env.JWT_SECRET?.length || 0,
+    JWT_REFRESH_SECRET_SET: !!env.JWT_REFRESH_SECRET,
+    JWT_REFRESH_SECRET_LENGTH: env.JWT_REFRESH_SECRET?.length || 0,
+    JWT_EXPIRES_IN: env.JWT_EXPIRES_IN,
+    JWT_REFRESH_EXPIRES_IN: env.JWT_REFRESH_EXPIRES_IN,
+  });
+}
+
 export default env;

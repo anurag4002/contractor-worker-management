@@ -92,11 +92,11 @@ const DashboardLayout = () => {
                 </TrialBannerDescription>
               </TrialBannerText>
               <TrialBannerActions>
-                <TrialBannerButton onClick={() => navigate("/pricing", { state: { billingCycle: "MONTHLY" } })}>
+                <TrialBannerButton onClick={() => navigate("/checkout", { state: { billingCycle: "MONTHLY" } })}>
                   <FiCreditCard />
                   Subscribe Monthly — ₹2,499/mo
                 </TrialBannerButton>
-                <TrialBannerButtonSecondary onClick={() => navigate("/pricing", { state: { billingCycle: "YEARLY" } })}>
+                <TrialBannerButtonSecondary onClick={() => navigate("/checkout", { state: { billingCycle: "YEARLY" } })}>
                   <FiCreditCard />
                   Subscribe Annual — ₹24,999/yr
                 </TrialBannerButtonSecondary>

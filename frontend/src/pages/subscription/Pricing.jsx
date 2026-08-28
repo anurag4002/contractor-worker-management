@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FiCheck, FiCreditCard, FiShield } from "react-icons/fi";
 
 import subscriptionService from "../../services/subscription.service";
+import { useAuth } from "../../context/AuthContext";
 import { PLAN as FALLBACK_PLAN } from "../../constants/subscription";
 
 import {
@@ -34,6 +35,7 @@ import {
 
 const Pricing = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   const [billingCycle, setBillingCycle] = useState("MONTHLY");
   const [plans, setPlans] = useState([]);
@@ -64,7 +66,13 @@ const Pricing = () => {
   const annualSaving = monthlyPrice * 12 - annualPrice;
 
   const handleStartTrial = (cycle) => {
-    navigate(`/register?billingCycle=${cycle}`);
+    if (isAuthenticated) {
+      navigate("/checkout", {
+        state: { billingCycle: cycle },
+      });
+    } else {
+      navigate(`/register?billingCycle=${cycle}`);
+    }
   };
 
   if (loading) {
@@ -143,10 +151,14 @@ const Pricing = () => {
 
         <SubscribeButton onClick={() => handleStartTrial("MONTHLY")} fullWidth>
           <FiCreditCard />
-          Start 7-Day Free Trial — ₹{monthlyPrice.toLocaleString("en-IN")}/mo
+          {isAuthenticated
+            ? `Subscribe Monthly — ₹${monthlyPrice.toLocaleString("en-IN")}/mo`
+            : `Start 7-Day Free Trial — ₹${monthlyPrice.toLocaleString("en-IN")}/mo`}
         </SubscribeButton>
         <SubscribeButtonSecondary onClick={() => handleStartTrial("YEARLY")} fullWidth>
-          Start 7-Day Free Trial — ₹{annualPrice.toLocaleString("en-IN")}/yr
+          {isAuthenticated
+            ? `Subscribe Yearly — ₹${annualPrice.toLocaleString("en-IN")}/yr`
+            : `Start 7-Day Free Trial — ₹${annualPrice.toLocaleString("en-IN")}/yr`}
         </SubscribeButtonSecondary>
 
         <GuaranteeText>

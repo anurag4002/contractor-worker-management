@@ -35,6 +35,7 @@ import Pricing from "../pages/subscription/Pricing";
 import Subscription from "../pages/subscription/Subscription";
 import OnboardingPayment from "../pages/subscription/OnboardingPayment";
 import OnboardingSuccess from "../pages/subscription/OnboardingSuccess";
+import Checkout from "../pages/subscription/Checkout";
 
 import SuperAdminLogin from "../pages/superadmin/SuperAdminLogin";
 import SuperAdminDashboard from "../pages/superadmin/SuperAdminDashboard";
@@ -163,6 +164,11 @@ const AppRoutes = () => {
           <Route
             path="/subscription"
             element={<Subscription />}
+          />
+
+          <Route
+            path="/checkout"
+            element={<Checkout />}
           />
         </Route>
       </Route>

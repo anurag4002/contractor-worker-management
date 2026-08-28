@@ -10,10 +10,7 @@ import authService from "../services/auth.service";
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
+  const [user, setUser] = useState(() => {
     const token =
       localStorage.getItem("token") ||
       localStorage.getItem("accessToken") ||
@@ -22,10 +19,29 @@ export const AuthProvider = ({ children }) => {
     const storedUser = localStorage.getItem("user");
 
     if (token && storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        return JSON.parse(storedUser);
+      } catch (e) {
+        console.error('[AUTH DEBUG] Failed to parse stored user', e);
+      }
     }
 
+    return null;
+  });
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    console.info('[AUTH DEBUG] AuthContext init', {
+      hasToken: !!user,
+      tokenLength: (localStorage.getItem("token") || localStorage.getItem("accessToken") || "").length,
+      tokenSource: localStorage.getItem("token") ? 'token' : localStorage.getItem("accessToken") ? 'accessToken' : localStorage.getItem("jwt") ? 'jwt' : localStorage.getItem("authToken") ? 'authToken' : null,
+      hasStoredUser: !!localStorage.getItem("user"),
+    });
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkAdmin = async () => {
@@ -70,8 +86,8 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (payload) => {
     const response = await authService.register(payload);
-    const authData = response?.data || response || {};
-    const { user, accessToken, refreshToken } = authData;
+    const authPayload = response?.data?.data || response?.data || response || {};
+    const { user, accessToken, refreshToken } = authPayload;
 
     if (accessToken) {
       localStorage.setItem("token", accessToken);

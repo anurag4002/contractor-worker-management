@@ -107,7 +107,7 @@ const Subscription = () => {
   }
 
   const handleSubscribe = (cycle) => {
-    navigate("/pricing", {
+    navigate("/checkout", {
       state: { billingCycle: cycle },
     });
   };

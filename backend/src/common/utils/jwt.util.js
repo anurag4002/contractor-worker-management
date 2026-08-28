@@ -7,6 +7,10 @@ import env from '../../config/env.js';
  * @returns {string}
  */
 export const generateAccessToken = (payload) => {
+  if (!env.JWT_SECRET) {
+    throw new Error('JWT_SECRET is not configured. Access token generation aborted.');
+  }
+
   return jwt.sign(payload, env.JWT_SECRET, {
     expiresIn: env.JWT_EXPIRES_IN,
   });
@@ -18,6 +22,10 @@ export const generateAccessToken = (payload) => {
  * @returns {string}
  */
 export const generateRefreshToken = (payload) => {
+  if (!env.JWT_REFRESH_SECRET) {
+    throw new Error('JWT_REFRESH_SECRET is not configured. Refresh token generation aborted.');
+  }
+
   return jwt.sign(payload, env.JWT_REFRESH_SECRET, {
     expiresIn: env.JWT_REFRESH_EXPIRES_IN,
   });
@@ -29,6 +37,10 @@ export const generateRefreshToken = (payload) => {
  * @returns {Object}
  */
 export const verifyAccessToken = (token) => {
+  if (!env.JWT_SECRET) {
+    throw new Error('JWT_SECRET is not configured. Access token verification aborted.');
+  }
+
   return jwt.verify(token, env.JWT_SECRET);
 };
 
@@ -38,6 +50,10 @@ export const verifyAccessToken = (token) => {
  * @returns {Object}
  */
 export const verifyRefreshToken = (token) => {
+  if (!env.JWT_REFRESH_SECRET) {
+    throw new Error('JWT_REFRESH_SECRET is not configured. Refresh token verification aborted.');
+  }
+
   return jwt.verify(token, env.JWT_REFRESH_SECRET);
 };
 

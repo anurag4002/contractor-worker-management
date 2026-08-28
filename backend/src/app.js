@@ -23,6 +23,13 @@ app.use(
   cors({
     origin: true,
     credentials: true,
+    allowedHeaders: [
+      'Accept',
+      'Accept-Language',
+      'Content-Language',
+      'Content-Type',
+      'Authorization',
+    ],
   })
 );
 
