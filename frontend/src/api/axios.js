@@ -159,8 +159,10 @@ axiosInstance.interceptors.response.use(
       }
     }
 
-    const friendlyMessage = getFriendlyMessage(error);
-    showError(friendlyMessage);
+    if (error.response?.status !== 403) {
+      const friendlyMessage = getFriendlyMessage(error);
+      showError(friendlyMessage);
+    }
 
     return Promise.reject(error);
   }

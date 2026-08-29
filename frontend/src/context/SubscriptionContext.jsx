@@ -14,12 +14,18 @@ const SubscriptionContext = createContext(null);
 export const SubscriptionProvider = ({ children }) => {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
 
-  const [subscription, setSubscription] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
   const tenantId = user?.tenantId || user?.tenant || null;
   const isSuperAdmin = user?.role === "SUPER_ADMIN" || user?.role?.code === "SUPER_ADMIN";
+
+  const [subscription, setSubscription] = useState(null);
+  const [loading, setLoading] = useState(() => {
+    if (authLoading) return true;
+    if (!isAuthenticated) return false;
+    if (isSuperAdmin) return false;
+    if (!tenantId) return false;
+    return true;
+  });
+  const [error, setError] = useState(null);
 
   const fetchSubscription = useCallback(async () => {
     if (authLoading) return;
@@ -62,6 +68,7 @@ export const SubscriptionProvider = ({ children }) => {
   }, [isAuthenticated, isSuperAdmin, tenantId, authLoading]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchSubscription();
   }, [fetchSubscription]);
 
