@@ -9,6 +9,8 @@ import {
   FiCheckCircle,
   FiAlertCircle,
   FiRefreshCw,
+  FiDollarSign,
+  FiActivity,
 } from "react-icons/fi";
 
 import platformService from "../../services/platform.service";
@@ -28,6 +30,17 @@ import {
   LoadingState,
   ErrorState,
   RetryButton,
+  Section,
+  SectionTitle,
+  TableWrapper,
+  Table,
+  TableHeader,
+  TableHeaderCell,
+  TableBody,
+  TableRow,
+  TableCell,
+  Badge,
+  RecentSection,
 } from "./SuperAdminDashboard.style";
 
 const formatNumber = (value) => {
@@ -35,10 +48,24 @@ const formatNumber = (value) => {
   return Number(value).toLocaleString("en-IN");
 };
 
+const formatCurrency = (value) => {
+  if (value === undefined || value === null) return "₹0";
+  return `₹${Number(value).toLocaleString("en-IN")}`;
+};
+
+const formatDate = (date) => {
+  if (!date) return "—";
+  return new Date(date).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
+
 const statConfig = [
   {
     key: "totalContractors",
-    title: "Total Contractors",
+    title: "Total Organizations",
     icon: FiUsers,
     color: "#3b82f6",
     description: "Registered contractors",
@@ -55,7 +82,7 @@ const statConfig = [
     title: "Trials Expiring Soon",
     icon: FiAlertCircle,
     color: "#ef4444",
-    description: "Expiring within 7 days",
+    description: "Expiring within 30 days",
   },
   {
     key: "activeSubscriptions",
@@ -72,7 +99,7 @@ const statConfig = [
     description: "Monthly billing",
   },
   {
-    key: "annualSubscribers",
+    key: "yearlySubscribers",
     title: "Annual Subscribers",
     icon: FiTrendingUp,
     color: "#06b6d4",
@@ -98,6 +125,34 @@ const statConfig = [
     icon: FiXCircle,
     color: "#94a3b8",
     description: "Cancelled plans",
+  },
+  {
+    key: "totalRevenue",
+    title: "Total Revenue",
+    icon: FiDollarSign,
+    color: "#10b981",
+    description: "All-time successful payments",
+  },
+  {
+    key: "monthlyRevenue",
+    title: "This Month Revenue",
+    icon: FiActivity,
+    color: "#3b82f6",
+    description: "Revenue this month",
+  },
+  {
+    key: "annualRevenue",
+    title: "This Year Revenue",
+    icon: FiTrendingUp,
+    color: "#8b5cf6",
+    description: "Revenue this year",
+  },
+  {
+    key: "expiringSoon",
+    title: "Expiring Soon",
+    icon: FiAlertCircle,
+    color: "#f59e0b",
+    description: "Subscriptions expiring within 30 days",
   },
 ];
 
@@ -173,8 +228,15 @@ const SuperAdminDashboard = () => {
           <StatCard
             key={stat.key}
             onClick={() => {
-              if (stat.key === "activeTrials" || stat.key === "activeSubscriptions" || stat.key === "expiredSubscriptions" || stat.key === "paymentFailed" || stat.key === "cancelledSubscriptions") {
-                navigate("/superadmin/contractors", {
+              if (
+                stat.key === "activeTrials" ||
+                stat.key === "activeSubscriptions" ||
+                stat.key === "expiredSubscriptions" ||
+                stat.key === "paymentFailed" ||
+                stat.key === "cancelledSubscriptions" ||
+                stat.key === "expiringSoon"
+              ) {
+                navigate("/super-admin/contractors", {
                   state: { filter: stat.key },
                 });
               }
@@ -184,11 +246,91 @@ const SuperAdminDashboard = () => {
               <stat.icon />
             </StatCardIcon>
             <StatCardTitle>{stat.title}</StatCardTitle>
-            <StatCardValue>{formatNumber(stats?.[stat.key])}</StatCardValue>
+            <StatCardValue>
+              {stat.key.includes("Revenue")
+                ? formatCurrency(stats?.[stat.key])
+                : formatNumber(stats?.[stat.key])}
+            </StatCardValue>
             <StatCardDescription>{stat.description}</StatCardDescription>
           </StatCard>
         ))}
       </StatsGrid>
+
+      {stats?.recentUsers && stats.recentUsers.length > 0 && (
+        <RecentSection>
+          <SectionTitle>
+            <FiUsers /> Recent Registrations
+          </SectionTitle>
+          <TableWrapper>
+            <Table>
+              <TableHeader>
+                <tr>
+                  <TableHeaderCell>Name</TableHeaderCell>
+                  <TableHeaderCell>Email</TableHeaderCell>
+                  <TableHeaderCell>Mobile</TableHeaderCell>
+                  <TableHeaderCell>Registered</TableHeaderCell>
+                </tr>
+              </TableHeader>
+              <TableBody>
+                {stats.recentUsers.map((user) => (
+                  <TableRow key={user._id}>
+                    <TableCell>
+                      <strong>{user.fullName}</strong>
+                    </TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{user.mobileNumber}</TableCell>
+                    <TableCell>{formatDate(user.createdAt)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableWrapper>
+        </RecentSection>
+      )}
+
+      {stats?.recentPayments && stats.recentPayments.length > 0 && (
+        <RecentSection>
+          <SectionTitle>
+            <FiCreditCard /> Recent Payments
+          </SectionTitle>
+          <TableWrapper>
+            <Table>
+              <TableHeader>
+                <tr>
+                  <TableHeaderCell>Company</TableHeaderCell>
+                  <TableHeaderCell>Amount</TableHeaderCell>
+                  <TableHeaderCell>Billing</TableHeaderCell>
+                  <TableHeaderCell>Status</TableHeaderCell>
+                  <TableHeaderCell>Date</TableHeaderCell>
+                </tr>
+              </TableHeader>
+              <TableBody>
+                {stats.recentPayments.map((payment) => (
+                  <TableRow key={payment._id}>
+                    <TableCell>
+                      <strong>{payment.tenant?.companyName || "—"}</strong>
+                    </TableCell>
+                    <TableCell>{formatCurrency(payment.amount)}</TableCell>
+                    <TableCell>
+                      {payment.billingCycle === "MONTHLY"
+                        ? "Monthly"
+                        : payment.billingCycle === "YEARLY"
+                        ? "Annual"
+                        : "—"}
+                    </TableCell>
+                    <TableCell>
+                      <Badge success={payment.status === "COMPLETED"} danger={payment.status === "FAILED"}>
+                        {payment.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{formatDate(payment.createdAt)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableWrapper>
+        </RecentSection>
+      )}
     </PageWrapper>
   );
 };

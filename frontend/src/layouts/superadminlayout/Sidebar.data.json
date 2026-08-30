@@ -1,0 +1,40 @@
+{
+  "menu": [
+    {
+      "id": 1,
+      "title": "Dashboard",
+      "path": "/super-admin/dashboard",
+      "icon": "FiHome"
+    },
+    {
+      "id": 2,
+      "title": "Organizations",
+      "path": "/super-admin/contractors",
+      "icon": "FiUsers"
+    },
+    {
+      "id": 3,
+      "title": "Subscriptions",
+      "path": "/super-admin/subscriptions",
+      "icon": "FiCreditCard"
+    },
+    {
+      "id": 4,
+      "title": "Payments",
+      "path": "/super-admin/payments",
+      "icon": "FiDollarSign"
+    },
+    {
+      "id": 5,
+      "title": "Expiring Soon",
+      "path": "/super-admin/expiring",
+      "icon": "FiAlertCircle"
+    },
+    {
+      "id": 6,
+      "title": "Plans",
+      "path": "/super-admin/plans",
+      "icon": "FiBox"
+    }
+  ]
+}

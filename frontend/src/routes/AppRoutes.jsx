@@ -43,6 +43,8 @@ import Contractors from "../pages/superadmin/Contractors";
 import ContractorDetails from "../pages/superadmin/ContractorDetails";
 import Subscriptions from "../pages/superadmin/Subscriptions";
 import Plans from "../pages/superadmin/Plans";
+import Payments from "../pages/superadmin/Payments";
+import Expiring from "../pages/superadmin/Expiring";
 
 const AppRoutes = () => {
   return (
@@ -192,6 +194,14 @@ const AppRoutes = () => {
           <Route
             path="/super-admin/subscriptions"
             element={<Subscriptions />}
+          />
+          <Route
+            path="/super-admin/payments"
+            element={<Payments />}
+          />
+          <Route
+            path="/super-admin/expiring"
+            element={<Expiring />}
           />
           <Route
             path="/super-admin/plans"

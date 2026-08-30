@@ -24,13 +24,32 @@ import SUBSCRIPTION_MESSAGES from '../common/constants/subscription.messages.js'
 
 class SubscriptionPaymentService {
   async createPaymentOrder(tenantId, billingCycle, user) {
-    const subscription = await subscriptionRepository.findByTenant(tenantId);
+    let subscription = await subscriptionRepository.findByTenant(tenantId);
 
     if (!subscription) {
-      throw new ApiError(
-        StatusCodes.NOT_FOUND,
-        SUBSCRIPTION_MESSAGES.SUBSCRIPTION_NOT_FOUND
-      );
+      const plan = await subscriptionPlanRepository.findByCode('CONTRACTOR_PRO');
+
+      if (!plan || plan.status !== 'ACTIVE') {
+        throw new ApiError(
+          StatusCodes.NOT_FOUND,
+          SUBSCRIPTION_MESSAGES.PLAN_NOT_FOUND
+        );
+      }
+
+      const normalizedCycle = billingCycle?.toUpperCase() === 'YEARLY' ? 'YEARLY' : 'MONTHLY';
+      const now = new Date();
+
+      subscription = await subscriptionRepository.create({
+        tenant: tenantId,
+        plan: plan._id,
+        status: 'TRIAL',
+        billingCycle: normalizedCycle,
+        startDate: null,
+        endDate: null,
+        trialStart: now,
+        trialEndDate: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000),
+        autoRenew: false,
+      });
     }
 
     const plan = await subscriptionPlanRepository.findById(subscription.plan);

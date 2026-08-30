@@ -170,3 +170,88 @@ export const RetryButton = styled.button`
     background: var(--primary-hover);
   }
 `;
+
+export const RecentSection = styled.section`
+  margin-top: 2rem;
+`;
+
+export const Section = styled.section`
+  margin-bottom: 2rem;
+`;
+
+export const SectionTitle = styled.h2`
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
+export const TableWrapper = styled.div`
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface);
+`;
+
+export const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+`;
+
+export const TableHeader = styled.thead`
+  background: var(--table-header-bg);
+`;
+
+export const TableHeaderCell = styled.th`
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+`;
+
+export const TableBody = styled.tbody``;
+
+export const TableRow = styled.tr`
+  border-bottom: 1px solid var(--border);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+`;
+
+export const TableCell = styled.td`
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  vertical-align: middle;
+`;
+
+export const Badge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: ${({ $success, $warning, $danger }) => {
+    if ($danger) return "var(--badge-danger-bg)";
+    if ($warning) return "var(--badge-warning-bg)";
+    if ($success) return "var(--badge-success-bg)";
+    return "var(--badge-info-bg)";
+  }};
+  color: ${({ $success, $warning, $danger }) => {
+    if ($danger) return "var(--badge-danger-fg)";
+    if ($warning) return "var(--badge-warning-fg)";
+    if ($success) return "var(--badge-success-fg)";
+    return "var(--badge-info-fg)";
+  }};
+`;

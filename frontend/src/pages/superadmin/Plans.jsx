@@ -7,6 +7,7 @@ import {
 } from "react-icons/fi";
 
 import { useAuth } from "../../context/AuthContext";
+import axios from "../../api/axios";
 
 import {
   PageWrapper,
@@ -58,16 +59,11 @@ const Plans = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/subscription-plans`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      const result = await response.json();
-      if (result.success) {
-        setPlans(result.data || []);
+      const { data } = await axios.get("/subscription-plans");
+      if (data.success) {
+        setPlans(data.data || []);
       } else {
-        throw new Error(result.message || "Failed to load plans");
+        throw new Error(data.message || "Failed to load plans");
       }
     } catch (err) {
       console.error(err);

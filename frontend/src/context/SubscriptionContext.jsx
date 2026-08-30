@@ -56,7 +56,13 @@ export const SubscriptionProvider = ({ children }) => {
     } catch (err) {
       const status = err?.response?.status;
 
-      if (status === 404 || status === 403 || status === 401) {
+      if (status === 401) {
+        setError('Authentication expired. Please log in again.');
+        setSubscription(null);
+      } else if (status === 403) {
+        setError('You do not have permission to view subscription details.');
+        setSubscription(null);
+      } else if (status === 404) {
         setSubscription(null);
       } else {
         setError(err);
@@ -97,7 +103,7 @@ export const SubscriptionProvider = ({ children }) => {
   };
 
   const isExpired = () => {
-    if (!subscription) return false;
+    if (!subscription) return true;
     return (
       subscription.status === "EXPIRED" ||
       subscription.status === "PAYMENT_FAILED" ||

@@ -126,6 +126,20 @@ class AuthRepository {
   /**
    * Update user
    */
+  async updateUser(userId, updateData) {
+    return await User.findByIdAndUpdate(
+      userId,
+      updateData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+  }
+
+  /**
+   * Update user by id
+   */
   async updateUserById(userId, updateData) {
     return await User.findByIdAndUpdate(
       userId,
@@ -138,7 +152,7 @@ class AuthRepository {
   }
 
   /**
-   * Update last login
+   * Find role by code
    */
   async updateLastLogin(userId) {
     return await User.findByIdAndUpdate(
@@ -260,6 +274,16 @@ class AuthRepository {
       isDeleted: false,
       status: 'ACTIVE',
     }).populate('permissions');
+  }
+
+  /**
+   * Find all active permissions
+   */
+  async findAllPermissions() {
+    return await Permission.find({
+      isDeleted: false,
+      status: 'ACTIVE',
+    });
   }
   /**
    * Reset failed login attempts

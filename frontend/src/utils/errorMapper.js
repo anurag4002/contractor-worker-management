@@ -280,6 +280,18 @@ const mapByStatus = (status, rawText, requestUrl) => {
     return textMessage;
   }
 
+  if (status === 403) {
+    const text = normalizeText(rawText).toLowerCase();
+
+    if (text.includes('trial') || text.includes('subscription expired') || text.includes('expired. please subscribe')) {
+      return 'Your trial or subscription has expired. Please subscribe to continue.';
+    }
+
+    if (text.includes('tenant context')) {
+      return 'Your account is not associated with a tenant. Please contact support.';
+    }
+  }
+
   if (statusMessages[status]) return statusMessages[status];
 
   if (status >= 400 && status < 500) {

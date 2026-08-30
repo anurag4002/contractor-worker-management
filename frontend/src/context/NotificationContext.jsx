@@ -21,6 +21,12 @@ export const NotificationProvider = ({ children }) => {
             setNotifications(res.data?.data || []);
             setPagination(res.data?.pagination || {});
         } catch (error) {
+            const status = error?.response?.status;
+
+            if (status === 403) {
+                return;
+            }
+
             showError(error);
         } finally {
             setLoading(false);

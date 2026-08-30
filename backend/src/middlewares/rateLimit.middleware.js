@@ -1,4 +1,4 @@
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 
 export const registerLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
@@ -10,9 +10,7 @@ export const registerLimiter = rateLimit({
     statusCode: 429,
     message: 'Too many registration attempts. Please try again later.',
   },
-  keyGenerator: (req) => {
-    return req.ip || req.connection?.remoteAddress || 'unknown';
-  },
+  keyGenerator: ipKeyGenerator,
 });
 
 export const loginLimiter = rateLimit({
@@ -25,7 +23,5 @@ export const loginLimiter = rateLimit({
     statusCode: 429,
     message: 'Too many login attempts. Please try again later.',
   },
-  keyGenerator: (req) => {
-    return req.ip || req.connection?.remoteAddress || 'unknown';
-  },
+  keyGenerator: ipKeyGenerator,
 });

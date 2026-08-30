@@ -4,7 +4,18 @@ import ApiResponse from '../common/helpers/ApiResponse.js';
 
 import asyncHandler from '../common/helpers/asyncHandler.js';
 
+import logger from '../common/logger/logger.js';
+
 const createPaymentOrder = asyncHandler(async (req, res) => {
+  logger.info('[SUBSCRIPTION PAYMENT] createPaymentOrder hit', {
+    method: req.method,
+    path: req.originalUrl,
+    userId: req.user?.userId,
+    tenantId: req.user?.tenantId,
+    role: req.user?.role,
+    billingCycle: req.body?.billingCycle,
+  });
+
   const payment = await subscriptionPaymentService.createPaymentOrder(
     req.user.tenantId,
     req.body.billingCycle,

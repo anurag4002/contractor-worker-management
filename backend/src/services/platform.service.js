@@ -42,6 +42,43 @@ class PlatformService {
 
     return subscription;
   }
+
+  async getPayments(query) {
+    const result = await platformRepository.getPayments(query);
+
+    return result;
+  }
+
+  async getPaymentById(paymentId) {
+    const payment = await platformRepository.getPaymentById(paymentId);
+
+    if (!payment) {
+      throw new ApiError(
+        StatusCodes.NOT_FOUND,
+        'Payment not found.'
+      );
+    }
+
+    return payment;
+  }
+
+  async getExpiringSubscriptions(query) {
+    const result = await platformRepository.getExpiringSubscriptions(query);
+
+    return result;
+  }
+
+  async getRecentUsers(limit = 10) {
+    const users = await platformRepository.getRecentUsers(limit);
+
+    return users;
+  }
+
+  async getRecentPayments(limit = 10) {
+    const payments = await platformRepository.getRecentPayments(limit);
+
+    return payments;
+  }
 }
 
 export default new PlatformService();

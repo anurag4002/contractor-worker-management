@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
-import Sidebar from "../../layouts/sidebar/Sidebar";
-import Header from "../../layouts/header/Header";
+import SuperAdminSidebar from "./SuperAdminSidebar";
 
 import {
   LayoutWrapper,
   ContentWrapper,
   MainContent,
+  TopBar,
+  TopBarTitle,
+  TopBarToggle,
 } from "./SuperAdminLayout.style";
 
 const SuperAdminLayout = () => {
@@ -19,9 +21,14 @@ const SuperAdminLayout = () => {
 
   return (
     <LayoutWrapper>
-      <Sidebar sidebarOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <SuperAdminSidebar sidebarOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <ContentWrapper>
-        <Header toggleSidebar={toggleSidebar} />
+        <TopBar>
+          <TopBarToggle onClick={toggleSidebar}>
+            ☰
+          </TopBarToggle>
+          <TopBarTitle>Platform Administration</TopBarTitle>
+        </TopBar>
         <MainContent>
           <Outlet />
         </MainContent>

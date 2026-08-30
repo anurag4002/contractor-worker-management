@@ -1,16 +1,13 @@
 import { StatusCodes } from 'http-status-codes';
 
-import ApiError from '../errors/ApiError.js';
+import ApiError from '../common/errors/ApiError.js';
 
-import {
-  getTenantId,
-  isSuperAdmin,
-} from '../utils/tenant.util.js';
+import { isSuperAdmin } from '../common/utils/tenant.util.js';
 
 const tenantMiddleware = () => {
   return (req, res, next) => {
     try {
-      const tenantId = getTenantId(req);
+      const tenantId = req.user?.tenantId || null;
 
       if (!tenantId && !isSuperAdmin(req)) {
         throw new ApiError(

@@ -154,6 +154,22 @@ class AuthService {
       );
     }
 
+    if (
+      !tenantAdminRole.permissions ||
+      tenantAdminRole.permissions.length === 0
+    ) {
+      const allPermissions = await authRepository.findAllPermissions();
+      const permissionIds = allPermissions.map(
+        (permission) => permission._id
+      );
+
+      await Role.findByIdAndUpdate(tenantAdminRole._id, {
+        permissions: permissionIds,
+      });
+
+      tenantAdminRole.permissions = allPermissions;
+    }
+
     const hashedPassword = await hashPassword(password);
 
     const normalizedCycle = billingCycle?.toUpperCase();

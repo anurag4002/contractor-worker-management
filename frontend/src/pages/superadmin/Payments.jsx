@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
-  FiSearch,
   FiRefreshCw,
-  FiEye,
-  FiFilter,
   FiAlertCircle,
-  FiUsers,
+  FiCreditCard,
+  FiSearch,
+  FiFilter,
 } from "react-icons/fi";
 
 import platformService from "../../services/platform.service";
@@ -30,13 +29,13 @@ import {
   TableRow,
   TableCell,
   Badge,
-  EmptyState,
   LoadingState,
   ErrorState,
+  RetryButton,
   Pagination,
   PaginationButton,
   PaginationInfo,
-} from "./Contractors.style";
+} from "./Payments.style";
 
 const formatDate = (date) => {
   if (!date) return "—";
@@ -47,38 +46,44 @@ const formatDate = (date) => {
   });
 };
 
+const formatCurrency = (amount, currency = "INR") => {
+  if (amount === undefined || amount === null) return "—";
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
+
 const getStatusBadge = (status) => {
   switch (status) {
-    case "ACTIVE":
-      return <Badge success>Active</Badge>;
-    case "TRIAL":
-      return <Badge warning>Trial</Badge>;
-    case "EXPIRED":
-      return <Badge danger>Expired</Badge>;
-    case "PAYMENT_FAILED":
-      return <Badge danger>Payment Failed</Badge>;
+    case "COMPLETED":
+      return <Badge success>Successful</Badge>;
+    case "PENDING":
+      return <Badge warning>Pending</Badge>;
+    case "FAILED":
+      return <Badge danger>Failed</Badge>;
+    case "REFUNDED":
+      return <Badge>Refunded</Badge>;
     case "CANCELLED":
-      return <Badge>Canceled</Badge>;
-    case "SUSPENDED":
-      return <Badge danger>Suspended</Badge>;
-    case "NONE":
-      return <Badge>No Subscription</Badge>;
+      return <Badge danger>Cancelled</Badge>;
     default:
       return <Badge>{status}</Badge>;
   }
 };
 
-const Contractors = () => {
+const Payments = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { user, isAuthenticated } = useAuth();
 
-  const [tenants, setTenants] = useState([]);
+  const [payments, setPayments] = useState([]);
+  const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [subscriptionFilter, setSubscriptionFilter] = useState("");
+  const [billingCycleFilter, setBillingCycleFilter] = useState("");
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -97,15 +102,10 @@ const Contractors = () => {
       return;
     }
 
-    const filter = location.state?.filter;
-    if (filter) {
-      setSubscriptionFilter(filter);
-    }
+    loadPayments();
+  }, [isAuthenticated, user, navigate, pagination.page, pagination.limit, search, statusFilter, billingCycleFilter]);
 
-    loadTenants();
-  }, [isAuthenticated, user, navigate, pagination.page, pagination.limit, search, statusFilter, subscriptionFilter]);
-
-  const loadTenants = async () => {
+  const loadPayments = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -114,13 +114,14 @@ const Contractors = () => {
         limit: pagination.limit,
         search: search || undefined,
         status: statusFilter || undefined,
-        subscriptionStatus: subscriptionFilter || undefined,
+        billingCycle: billingCycleFilter || undefined,
         sortBy: "createdAt",
         sortOrder: "desc",
       };
 
-      const result = await platformService.getTenants(params);
-      setTenants(result.tenants);
+      const result = await platformService.getPayments(params);
+      setPayments(result.payments || []);
+      setSummary(result.summary || null);
       setPagination((prev) => ({
         ...prev,
         totalPages: result.pagination.totalPages,
@@ -134,43 +135,34 @@ const Contractors = () => {
     }
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setPagination((prev) => ({ ...prev, page: 1 }));
-  };
-
   const handlePageChange = (newPage) => {
     setPagination((prev) => ({ ...prev, page: newPage }));
-  };
-
-  const getBillingCycleLabel = (cycle) => {
-    switch (cycle) {
-      case "MONTHLY":
-        return "Monthly";
-      case "YEARLY":
-        return "Annual";
-      default:
-        return "—";
-    }
   };
 
   return (
     <PageWrapper>
       <PageHeader>
-        <PageTitle>Contractors</PageTitle>
+        <PageTitle>Payments</PageTitle>
         <PageSubtitle>
-          Manage and monitor all registered contractors
+          Monitor all subscription payments across the platform
         </PageSubtitle>
       </PageHeader>
 
+      {summary && (
+        <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap" }}>
+          <Badge success>Total Amount: {formatCurrency(summary.totalAmount)}</Badge>
+          <Badge>Successful Payments: {summary.successfulPayments}</Badge>
+        </div>
+      )}
+
       <Toolbar>
-        <form onSubmit={handleSearch} style={{ display: "flex", gap: "0.75rem", flex: 1, flexWrap: "wrap" }}>
+        <form onSubmit={(e) => { e.preventDefault(); setPagination((prev) => ({ ...prev, page: 1 })); }} style={{ display: "flex", gap: "0.75rem", flex: 1, flexWrap: "wrap" }}>
           <SearchIcon>
             <FiSearch />
           </SearchIcon>
           <SearchInput
             type="text"
-            placeholder="Search contractors..."
+            placeholder="Search by company or order ID..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -182,28 +174,27 @@ const Contractors = () => {
             }}
           >
             <option value="">All Status</option>
-            <option value="ACTIVE">Active</option>
-            <option value="SUSPENDED">Suspended</option>
-            <option value="INACTIVE">Inactive</option>
+            <option value="COMPLETED">Successful</option>
+            <option value="PENDING">Pending</option>
+            <option value="FAILED">Failed</option>
+            <option value="REFUNDED">Refunded</option>
+            <option value="CANCELLED">Cancelled</option>
           </FilterSelect>
           <FilterSelect
-            value={subscriptionFilter}
+            value={billingCycleFilter}
             onChange={(e) => {
-              setSubscriptionFilter(e.target.value);
+              setBillingCycleFilter(e.target.value);
               setPagination((prev) => ({ ...prev, page: 1 }));
             }}
           >
-            <option value="">All Subscriptions</option>
-            <option value="TRIAL">Trial</option>
-            <option value="ACTIVE">Active</option>
-            <option value="EXPIRED">Expired</option>
-            <option value="PAYMENT_FAILED">Payment Failed</option>
-            <option value="CANCELLED">Cancelled</option>
+            <option value="">All Cycles</option>
+            <option value="MONTHLY">Monthly</option>
+            <option value="YEARLY">Annual</option>
           </FilterSelect>
           <ActionButton type="submit">
             <FiFilter /> Filter
           </ActionButton>
-          <ActionButton type="button" variant="secondary" onClick={loadTenants}>
+          <ActionButton type="button" variant="secondary" onClick={loadPayments}>
             <FiRefreshCw /> Refresh
           </ActionButton>
         </form>
@@ -212,23 +203,17 @@ const Contractors = () => {
       {loading ? (
         <LoadingState>
           <div className="loading-spinner" />
-          <p>Loading contractors...</p>
+          <p>Loading payments...</p>
         </LoadingState>
       ) : error ? (
         <ErrorState>
           <FiAlertCircle size={48} color="#dc2626" />
-          <h3>Failed to load contractors</h3>
+          <h3>Failed to load payments</h3>
           <p>Please try again.</p>
-          <RetryButton onClick={loadTenants}>
+          <RetryButton onClick={loadPayments}>
             <FiRefreshCw /> Retry
           </RetryButton>
         </ErrorState>
-      ) : tenants.length === 0 ? (
-        <EmptyState>
-          <FiUsers size={48} color="#94a3b8" />
-          <h3>No contractors found</h3>
-          <p>Try adjusting your search or filters.</p>
-        </EmptyState>
       ) : (
         <>
           <TableWrapper>
@@ -236,52 +221,51 @@ const Contractors = () => {
               <TableHeader>
                 <tr>
                   <TableHeaderCell>Company</TableHeaderCell>
-                  <TableHeaderCell>Owner</TableHeaderCell>
-                  <TableHeaderCell>Contact</TableHeaderCell>
-                  <TableHeaderCell>Status</TableHeaderCell>
-                  <TableHeaderCell>Subscription</TableHeaderCell>
+                  <TableHeaderCell>Plan</TableHeaderCell>
                   <TableHeaderCell>Billing</TableHeaderCell>
-                  <TableHeaderCell>Trial Ends</TableHeaderCell>
-                  <TableHeaderCell>Subscription Ends</TableHeaderCell>
-                  <TableHeaderCell>Created</TableHeaderCell>
-                  <TableHeaderCell>Actions</TableHeaderCell>
+                  <TableHeaderCell>Amount</TableHeaderCell>
+                  <TableHeaderCell>Status</TableHeaderCell>
+                  <TableHeaderCell>Order ID</TableHeaderCell>
+                  <TableHeaderCell>Payment ID</TableHeaderCell>
+                  <TableHeaderCell>Date</TableHeaderCell>
                 </tr>
               </TableHeader>
               <TableBody>
-                {tenants.map((tenant) => (
-                  <TableRow key={tenant._id}>
+                {payments.map((payment) => (
+                  <TableRow key={payment._id}>
                     <TableCell>
-                      <strong>{tenant.companyName}</strong>
+                      <strong>{payment.tenant?.companyName || "—"}</strong>
                     </TableCell>
                     <TableCell>
-                      {tenant.owner?.fullName || "—"}
+                      {payment.subscription?.plan?.name || "—"}
                     </TableCell>
                     <TableCell>
-                      <div>{tenant.email}</div>
-                      <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-                        {tenant.mobileNumber}
-                      </div>
+                      {payment.billingCycle === "MONTHLY"
+                        ? "Monthly"
+                        : payment.billingCycle === "YEARLY"
+                        ? "Annual"
+                        : "—"}
                     </TableCell>
                     <TableCell>
-                      <Badge success={tenant.status === "ACTIVE"} danger={tenant.status === "SUSPENDED"}>
-                        {tenant.status}
-                      </Badge>
+                      {formatCurrency(payment.amount, payment.currency)}
                     </TableCell>
-                    <TableCell>{getStatusBadge(tenant.subscriptionStatus)}</TableCell>
-                    <TableCell>{getBillingCycleLabel(tenant.billingCycle)}</TableCell>
-                    <TableCell>{formatDate(tenant.trialEnd)}</TableCell>
-                    <TableCell>{formatDate(tenant.subscriptionEnd)}</TableCell>
-                    <TableCell>{formatDate(tenant.createdAt)}</TableCell>
+                    <TableCell>{getStatusBadge(payment.status)}</TableCell>
                     <TableCell>
-                      <ActionButton
-                        size="small"
-                        onClick={() => navigate(`/super-admin/contractors/${tenant._id}`)}
-                      >
-                        <FiEye /> View
-                      </ActionButton>
+                      <code>{payment.providerOrderId || "—"}</code>
                     </TableCell>
+                    <TableCell>
+                      <code>{payment.providerPaymentId || "—"}</code>
+                    </TableCell>
+                    <TableCell>{formatDate(payment.createdAt)}</TableCell>
                   </TableRow>
                 ))}
+                {payments.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={8} style={{ textAlign: "center", padding: "2rem" }}>
+                      No payments found.
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </TableWrapper>
@@ -290,7 +274,7 @@ const Contractors = () => {
             <PaginationInfo>
               Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
               {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
-              {pagination.total} contractors
+              {pagination.total} payments
             </PaginationInfo>
             <div style={{ display: "flex", gap: "0.5rem" }}>
               <PaginationButton
@@ -313,4 +297,4 @@ const Contractors = () => {
   );
 };
 
-export default Contractors;
+export default Payments;

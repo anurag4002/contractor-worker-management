@@ -129,7 +129,7 @@ const ContractorDetails = () => {
 
   return (
     <PageWrapper>
-      <BackButton onClick={() => navigate("/superadmin/contractors")}>
+      <BackButton onClick={() => navigate("/super-admin/contractors")}>
         <FiArrowLeft /> Back to Contractors
       </BackButton>
 

@@ -158,10 +158,12 @@ class SubscriptionService {
 
     const now = new Date();
 
-    if (subscription.status === 'TRIAL' && await this.isTrialExpired(subscription)) {
-      subscription = await subscriptionRepository.update(subscription._id, {
-        status: 'EXPIRED',
-      });
+    if (subscription.status === 'TRIAL') {
+      if (await this.isTrialExpired(subscription)) {
+        subscription = await subscriptionRepository.update(subscription._id, {
+          status: 'EXPIRED',
+        });
+      }
     } else if (
       subscription.endDate < now &&
       !['EXPIRED', 'CANCELLED', 'SUSPENDED', 'GRACE_PERIOD'].includes(subscription.status)

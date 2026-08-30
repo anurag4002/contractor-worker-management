@@ -9,6 +9,7 @@ import DashboardCharts from "../../components/dashboardcharts/DashboardCharts";
 import StatCard from "../../components/statcard/StatCard";
 import exportDashboardPDFFn from "../../utils/exportDashboardPDF";
 import { useSearch } from "../../context/SearchContext";
+import { useAuth } from "../../context/AuthContext";
 
 import {
   DashboardContainer,
@@ -39,6 +40,7 @@ const Dashboard = () => {
 
   const { attendanceRecords } = useAttendance();
   const { searchQuery, searchResults, isLoading } = useSearch();
+  const { logout } = useAuth();
 
   const [dashboard, setDashboard] = useState(null);
   const [recentWorkers, setRecentWorkers] = useState([]);
@@ -59,13 +61,8 @@ const Dashboard = () => {
     try {
       setLoading(true);
       setError(false);
-      const [
-        dashboardRes,
-        workersRes,
-        attendanceRes,
-        payrollRes,
-        chartsRes,
-      ] = await Promise.all([
+
+      const results = await Promise.allSettled([
         dashboardService.getDashboard(),
         dashboardService.getRecentWorkers(),
         dashboardService.getRecentAttendance(),
@@ -73,15 +70,40 @@ const Dashboard = () => {
         dashboardService.getCharts(),
       ]);
 
+      const [
+        dashboardRes,
+        workersRes,
+        attendanceRes,
+        payrollRes,
+        chartsRes,
+      ] = results.map((r) => (r.status === 'fulfilled' ? r.value : null));
+
+      const hasCriticalFailure = results[0].status === 'rejected';
+
       setDashboard(dashboardRes || {});
       setRecentWorkers(workersRes || []);
       setRecentAttendance(attendanceRes || []);
       setRecentPayroll(payrollRes || []);
       setCharts(chartsRes || {});
+
+      if (hasCriticalFailure) {
+        const criticalError = results[0].reason;
+        const status = criticalError?.response?.status;
+
+        if (status === 401) {
+          showError('Your session has expired. Please log in again.');
+          logout();
+        } else if (status === 403) {
+          showError('You do not have permission to view the dashboard.');
+        } else {
+          showError('Failed to load dashboard. Please try again.');
+        }
+        setError(true);
+      }
     } catch (err) {
-      console.error(err);
+      console.error('Dashboard load error:', err);
       setError(true);
-      showError(err);
+      showError('Failed to load dashboard. Please try again.');
     } finally {
       setLoading(false);
     }

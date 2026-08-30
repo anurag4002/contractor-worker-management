@@ -8,6 +8,12 @@ import ApiError from '../common/errors/ApiError.js';
 
 import AUTH_MESSAGES from '../common/constants/auth.messages.js';
 
+import logger from '../common/logger/logger.js';
+
+import Role from '../models/Role.js';
+
+import Permission from '../models/Permission.js';
+
 const authMiddleware = async (req, res, next) => {
   try {
     const authorization = req.headers.authorization;
@@ -79,6 +85,28 @@ const authMiddleware = async (req, res, next) => {
         StatusCodes.FORBIDDEN,
         AUTH_MESSAGES.ROLE.INACTIVE
       );
+    }
+
+    if (
+      user.role.code === 'TENANT_ADMIN' &&
+      (!user.role.permissions || user.role.permissions.length === 0)
+    ) {
+      const allPermissions = await Permission.find({
+        isDeleted: false,
+        status: 'ACTIVE',
+      });
+
+      if (allPermissions.length > 0) {
+        await Role.findByIdAndUpdate(user.role._id, {
+          permissions: allPermissions.map((permission) => permission._id),
+        });
+
+        logger.warn('TENANT_ADMIN role had no permissions. Auto-repaired.', {
+          userId: user._id,
+          roleId: user.role._id,
+          permissionCount: allPermissions.length,
+        });
+      }
     }
 
     req.user = {
