@@ -812,45 +812,58 @@ async changePassword(
 /**
  * Get User Profile
  */
-async getProfile(userId) {
-  // Find User
-  const user =
-    await authRepository.findUserById(
-      userId
-    );
+  async getProfile(userId) {
+    // Find User
+    const user =
+      await authRepository.findUserById(
+        userId
+      );
 
-  if (!user) {
-    throw new ApiError(
-      StatusCodes.NOT_FOUND,
-      AUTH_MESSAGES.USER.NOT_FOUND
-    );
+    if (!user) {
+      throw new ApiError(
+        StatusCodes.NOT_FOUND,
+        AUTH_MESSAGES.USER.NOT_FOUND
+      );
+    }
+
+    // Check User Status
+    if (user.status !== 'ACTIVE') {
+      throw new ApiError(
+        StatusCodes.FORBIDDEN,
+        AUTH_MESSAGES.LOGIN.ACCOUNT_INACTIVE
+      );
+    }
+
+    // Check Role
+    if (!user.role) {
+      throw new ApiError(
+        StatusCodes.FORBIDDEN,
+        AUTH_MESSAGES.ROLE.NOT_FOUND
+      );
+    }
+
+    if (user.role.status !== 'ACTIVE') {
+      throw new ApiError(
+        StatusCodes.FORBIDDEN,
+        AUTH_MESSAGES.ROLE.INACTIVE
+      );
+    }
+
+    return user;
   }
 
-  // Check User Status
-  if (user.status !== 'ACTIVE') {
-    throw new ApiError(
-      StatusCodes.FORBIDDEN,
-      AUTH_MESSAGES.LOGIN.ACCOUNT_INACTIVE
-    );
-  }
+  async checkAdminExists() {
+    const adminRole = await authRepository.findRoleByCode('TENANT_ADMIN');
+    if (!adminRole) return false;
 
-  // Check Role
-  if (!user.role) {
-    throw new ApiError(
-      StatusCodes.FORBIDDEN,
-      AUTH_MESSAGES.ROLE.NOT_FOUND
-    );
-  }
+    const adminCount = await User.countDocuments({
+      role: adminRole._id,
+      isDeleted: false,
+      status: 'ACTIVE',
+    });
 
-  if (user.role.status !== 'ACTIVE') {
-    throw new ApiError(
-      StatusCodes.FORBIDDEN,
-      AUTH_MESSAGES.ROLE.INACTIVE
-    );
+    return adminCount > 0;
   }
-
-  return user;
-}
 /**
  * Update User Profile
  */

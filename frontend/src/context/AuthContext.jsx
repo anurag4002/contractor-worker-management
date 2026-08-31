@@ -32,6 +32,18 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const handleAuthCleared = () => {
+      setUser(null);
+    };
+
+    window.addEventListener("auth-cleared", handleAuthCleared);
+
+    return () => {
+      window.removeEventListener("auth-cleared", handleAuthCleared);
+    };
+  }, []);
+
+  useEffect(() => {
     console.info('[AUTH DEBUG] AuthContext init', {
       hasToken: !!user,
       tokenLength: (localStorage.getItem("token") || localStorage.getItem("accessToken") || "").length,

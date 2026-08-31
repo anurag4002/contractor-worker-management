@@ -80,6 +80,11 @@ router.get(
   authController.getProfile
 );
 
+router.get(
+  "/check-admin",
+  authController.checkAdmin
+);
+
 router.put(
   "/profile",
   authMiddleware,

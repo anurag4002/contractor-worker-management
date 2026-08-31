@@ -145,6 +145,8 @@ axiosInstance.interceptors.response.use(
         localStorage.removeItem("refreshToken");
         localStorage.removeItem("user");
 
+        window.dispatchEvent(new Event("auth-cleared"));
+
         const markedError = new Error(refreshError.message);
         Object.assign(markedError, refreshError);
         markedError._sessionExpiredHandled = true;

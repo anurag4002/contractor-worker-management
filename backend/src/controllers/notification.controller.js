@@ -14,7 +14,7 @@ const createNotification =
     const result =
       await notificationService.createNotification({
         ...req.body,
-        createdBy: req.user._id,
+        createdBy: req.user.userId,
       }, req.user.tenantId);
 
     return ApiResponse.success(
@@ -44,10 +44,10 @@ const getNotifications =
         req.query.isRead === 'true';
     }
 
-    const result =
+     const result =
       await notificationService.getNotifications(
         filter,
-        req.user._id,
+        req.user.userId,
         req.user.tenantId
       );
 
@@ -72,20 +72,20 @@ const getNotificationById =
         req.user.tenantId
       );
 
-    return ApiResponse.success(
-   res,
-   result.data,
-   result.message,
-   result.statusCode
- );
-  });
+      return ApiResponse.success(
+    res,
+    result.data,
+    result.message,
+    result.statusCode
+  );
+   });
 
-/**
+  /**
  * ==========================================
  * Get Unread Count
  * ==========================================
  */
-const getUnreadCount =
+ const getUnreadCount =
   asyncHandler(async (req, res) => {
     const filter = {};
 
@@ -97,7 +97,7 @@ const getUnreadCount =
     const result =
       await notificationService.getUnreadCount(
         filter,
-        req.user._id,
+        req.user.userId,
         req.user.tenantId
       );
 
@@ -119,7 +119,7 @@ const markAsRead =
     const result =
       await notificationService.markAsRead(
         req.params.id,
-        req.user._id,
+        req.user.userId,
         req.user.tenantId
       );
 
@@ -148,7 +148,7 @@ const markAllAsRead =
     const result =
       await notificationService.markAllAsRead(
         filter,
-        req.user._id,
+        req.user.userId,
         req.user.tenantId
       );
 
@@ -186,13 +186,13 @@ const markAllAsRead =
   * Clear All Notifications
   * ==========================================
   */
-  const clearAllNotifications =
-   asyncHandler(async (req, res) => {
-     const result =
-       await notificationService.clearAll(
-         req.user._id,
-         req.user.tenantId
-       );
+   const clearAllNotifications =
+    asyncHandler(async (req, res) => {
+       const result =
+         await notificationService.clearAll(
+           req.user.userId,
+           req.user.tenantId
+         );
 
      return ApiResponse.success(
      res,

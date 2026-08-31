@@ -41,22 +41,23 @@ class NotificationService {
  * Get Notifications
  * ==========================================
  */
-async getNotifications(filter = {}, userId = null, tenantId = null) {
-  let cutoffDate = null;
+ async getNotifications(filter = {}, userId = null, tenantId = null) {
+   let cutoffDate = null;
 
-  if (userId) {
-    const user = await userRepository.findById(userId);
-    if (user?.notificationsClearedAt) {
-      cutoffDate = user.notificationsClearedAt;
-    }
-  }
+   if (userId) {
+     const user = await userRepository.findById(userId);
+     if (user?.notificationsClearedAt) {
+       cutoffDate = user.notificationsClearedAt;
+     }
+   }
 
-  const notifications =
-    await notificationRepository.findAll(
-      filter,
-      cutoffDate,
-      tenantId
-    );
+   const notifications =
+     await notificationRepository.findAll(
+       filter,
+       cutoffDate,
+       tenantId,
+       userId
+     );
 
   return {
     message:
@@ -94,22 +95,23 @@ async getNotificationById(id, tenantId) {
  * Get Unread Notification Count
  * ==========================================
  */
-async getUnreadCount(filter = {}, userId = null, tenantId = null) {
-  let cutoffDate = null;
+ async getUnreadCount(filter = {}, userId = null, tenantId = null) {
+   let cutoffDate = null;
 
-  if (userId) {
-    const user = await userRepository.findById(userId);
-    if (user?.notificationsClearedAt) {
-      cutoffDate = user.notificationsClearedAt;
-    }
-  }
+   if (userId) {
+     const user = await userRepository.findById(userId);
+     if (user?.notificationsClearedAt) {
+       cutoffDate = user.notificationsClearedAt;
+     }
+   }
 
-  const count =
-    await notificationRepository.countUnread(
-      filter,
-      cutoffDate,
-      tenantId
-    );
+   const count =
+     await notificationRepository.countUnread(
+       filter,
+       cutoffDate,
+       tenantId,
+       userId
+     );
 
   return {
     message:
@@ -163,17 +165,18 @@ async markAsRead(id, updatedBy, tenantId) {
  * Mark All Notifications As Read
  * ==========================================
  */
-async markAllAsRead(
-  filter = {},
-  updatedBy,
-  tenantId
-) {
-  const result =
-    await notificationRepository.markAllAsRead(
-      filter,
-      updatedBy,
-      tenantId
-    );
+ async markAllAsRead(
+   filter = {},
+   updatedBy,
+   tenantId
+ ) {
+   const result =
+     await notificationRepository.markAllAsRead(
+       filter,
+       updatedBy,
+       tenantId,
+       updatedBy
+     );
 
   return {
     message:

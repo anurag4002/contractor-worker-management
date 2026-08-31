@@ -177,6 +177,11 @@ const AppRoutes = () => {
 
       {/* Super Admin Routes */}
 
+      <Route
+        path="/super-admin"
+        element={<Navigate to="/super-admin/dashboard" replace />}
+      />
+
       <Route element={<SuperAdminRoute />}>
         <Route element={<SuperAdminLayout />}>
           <Route

@@ -66,6 +66,29 @@ const subscriptionSchema = new mongoose.Schema(
       default: true,
     },
 
+    lastPaymentAmount: {
+      type: Number,
+      default: null,
+    },
+
+    lastPaymentStatus: {
+      type: String,
+      enum: ['PENDING', 'COMPLETED', 'FAILED', 'REFUNDED', 'CANCELLED', null],
+      default: null,
+    },
+
+    lastPaymentId: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+
+    razorpayOrderId: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+
     isDeleted: {
       type: Boolean,
       default: false,

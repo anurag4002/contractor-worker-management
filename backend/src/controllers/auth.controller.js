@@ -130,6 +130,20 @@ const getProfile = asyncHandler(async (req, res) => {
         AUTH_MESSAGES.PROFILE.FETCH_SUCCESS
     );
 });
+
+/**
+ * Check if admin exists (for initial setup redirect)
+ */
+const checkAdmin = asyncHandler(async (req, res) => {
+    const adminExists = await authService.checkAdminExists();
+
+    return ApiResponse.success(
+        res,
+        { adminExists },
+        'Admin check completed.'
+    );
+});
+
 /**
  * Update User Profile
  */
@@ -156,4 +170,5 @@ export default {
     changePassword,
     getProfile,
     updateProfile,
+    checkAdmin,
 };

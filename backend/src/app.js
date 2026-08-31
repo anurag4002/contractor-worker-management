@@ -8,6 +8,7 @@ import rateLimit from 'express-rate-limit';
 import routes from './routes/index.js';
 import notFoundMiddleware from './middlewares/notFound.middleware.js';
 import errorMiddleware from './middlewares/error.middleware.js';
+import env from './config/env.js';
 
 const app = express();
 
@@ -19,9 +20,22 @@ const app = express();
 
 app.use(helmet());
 
+const allowedOrigins = [
+  env.CLIENT_URL,
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://localhost:5000',
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: true,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     allowedHeaders: [
       'Accept',

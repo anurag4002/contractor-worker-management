@@ -15,7 +15,7 @@ class NotificationRepository {
    * Find All Notifications
    * ==========================================
    */
-  async findAll(filter = {}, cutoffDate = null, tenantId = null) {
+  async findAll(filter = {}, cutoffDate = null, tenantId = null, recipientId = null) {
     const query = {
       isDeleted: false,
       ...filter,
@@ -23,6 +23,10 @@ class NotificationRepository {
 
     if (tenantId) {
       query.tenant = tenantId;
+    }
+
+    if (recipientId) {
+      query.recipient = recipientId;
     }
 
     if (cutoffDate) {
@@ -82,7 +86,7 @@ class NotificationRepository {
    * Count Unread Notifications
    * ==========================================
    */
-  async countUnread(filter = {}, cutoffDate = null, tenantId = null) {
+  async countUnread(filter = {}, cutoffDate = null, tenantId = null, recipientId = null) {
     const query = {
       isDeleted: false,
       isRead: false,
@@ -91,6 +95,10 @@ class NotificationRepository {
 
     if (tenantId) {
       query.tenant = tenantId;
+    }
+
+    if (recipientId) {
+      query.recipient = recipientId;
     }
 
     if (cutoffDate) {
@@ -135,7 +143,8 @@ class NotificationRepository {
   async markAllAsRead(
     filter = {},
     updatedBy,
-    tenantId = null
+    tenantId = null,
+    recipientId = null
   ) {
     const query = {
       isDeleted: false,
@@ -145,6 +154,10 @@ class NotificationRepository {
 
     if (tenantId) {
       query.tenant = tenantId;
+    }
+
+    if (recipientId) {
+      query.recipient = recipientId;
     }
 
     return await Notification.updateMany(
