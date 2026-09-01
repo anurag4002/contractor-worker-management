@@ -1,0 +1,6 @@
+# Vercel ignore file - don't cache these
+node_modules
+.git
+.env
+.env.local
+*.log
