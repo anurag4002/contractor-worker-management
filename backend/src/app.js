@@ -8,6 +8,7 @@ import rateLimit from 'express-rate-limit';
 import routes from './routes/index.js';
 import notFoundMiddleware from './middlewares/notFound.middleware.js';
 import errorMiddleware from './middlewares/error.middleware.js';
+import ensureDatabaseConnection from './middlewares/database.middleware.js';
 import env from './config/env.js';
 
 const app = express();
@@ -98,7 +99,7 @@ app.use(requestLogger);
 |--------------------------------------------------------------------------
 */
 
-app.use('/api/v1', routes);
+app.use('/api/v1', ensureDatabaseConnection, routes);
 
 
 
