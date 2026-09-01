@@ -58,7 +58,7 @@ const getStatusBadge = (status) => {
     case "PAYMENT_FAILED":
       return <Badge danger>Payment Failed</Badge>;
     case "CANCELLED":
-      return <Badge>Canceled</Badge>;
+      return <Badge>Cancelled</Badge>;
     case "SUSPENDED":
       return <Badge danger>Suspended</Badge>;
     case "NONE":
@@ -218,7 +218,7 @@ const Contractors = () => {
         <ErrorState>
           <FiAlertCircle size={48} color="#dc2626" />
           <h3>Failed to load contractors</h3>
-          <p>Please try again.</p>
+          <p>Please check your connection and try again.</p>
           <RetryButton onClick={loadTenants}>
             <FiRefreshCw /> Retry
           </RetryButton>

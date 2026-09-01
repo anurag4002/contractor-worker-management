@@ -149,7 +149,7 @@ const Expiring = () => {
         <ErrorState>
           <FiAlertCircle size={48} color="#dc2626" />
           <h3>Failed to load expiring subscriptions</h3>
-          <p>Please try again.</p>
+          <p>Please check your connection and try again.</p>
           <RetryButton onClick={loadExpiring}>
             <FiRefreshCw /> Retry
           </RetryButton>

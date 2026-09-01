@@ -42,7 +42,7 @@ export const SiteProvider = ({ children }) => {
         try {
             setLoading(true);
             await siteService.createSite(payload);
-            showSuccess("Site created successfully");
+            showSuccess("Site created successfully.");
             await fetchSites();
         } catch (error) {
             showError(error);
@@ -56,7 +56,7 @@ export const SiteProvider = ({ children }) => {
         try {
             setLoading(true);
             await siteService.updateSite(id, payload);
-            showSuccess("Site updated successfully");
+            showSuccess("Site updated successfully.");
             await fetchSites();
         } catch (error) {
             showError(error);
@@ -70,7 +70,7 @@ export const SiteProvider = ({ children }) => {
         try {
             setLoading(true);
             await siteService.deleteSite(id);
-            showSuccess("Site deleted successfully");
+            showSuccess("Site deleted successfully.");
             await fetchSites();
         } catch (error) {
             showError(error);

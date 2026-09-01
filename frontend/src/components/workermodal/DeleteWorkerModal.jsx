@@ -77,7 +77,7 @@ const DeleteWorkerModal = ({
             Cancel
           </SecondaryButton>
           <DangerButton type="button" disabled={isSubmitting} onClick={handleDelete}>
-            {isSubmitting ? "Deleting..." : "Yes, Delete Worker"}
+            {isSubmitting ? "Deleting..." : "Delete worker"}
           </DangerButton>
         </ModalFooter>
       </ModalContainer>

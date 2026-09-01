@@ -113,9 +113,9 @@ const HEADING_LINES = ["Build Your Workforce", "Management Workspace"];
 
 const FEATURES = [
   "Manage workers and workforce records",
-  "Track attendance across multiple sites",
-  "Assign workers to sites",
-  "Manage payroll and payments",
+  "Track daily attendance across all sites",
+  "Manage site assignments and worker allocation",
+  "Simplify payroll and payment tracking",
 ];
 
 const ONBOARDING_STEPS = [
@@ -201,9 +201,9 @@ const AnimatedHeading = ({ animate, loop }) => {
             key={lineIdx}
             style={{
               display: "block",
-              whiteSpace: "normal",
-              wordBreak: "break-word",
-              overflowWrap: "break-word",
+              whiteSpace: "nowrap",
+              wordBreak: "normal",
+              overflowWrap: "normal",
               font: "inherit",
               fontWeight: 800,
               fontSize: "clamp(2.5rem, 4vw, 3.5rem)",
@@ -212,7 +212,7 @@ const AnimatedHeading = ({ animate, loop }) => {
             }}
           >
             {chars.map(({ id, char }) => (
-              <span key={id}>{char}</span>
+              <span key={id} style={{ display: "inline-block", whiteSpace: "pre" }}>{char}</span>
             ))}
           </div>
         ))}
@@ -232,9 +232,9 @@ const AnimatedHeading = ({ animate, loop }) => {
           key={lineIdx}
           style={{
             display: "block",
-            whiteSpace: "normal",
-            wordBreak: "break-word",
-            overflowWrap: "break-word",
+            whiteSpace: "nowrap",
+            wordBreak: "normal",
+            overflowWrap: "normal",
             font: "inherit",
             fontWeight: 800,
             fontSize: "clamp(2.5rem, 4vw, 3.5rem)",
@@ -246,7 +246,7 @@ const AnimatedHeading = ({ animate, loop }) => {
             <motion.span
               key={id}
               variants={headingCharVariants}
-              style={{ display: "inline" }}
+              style={{ display: "inline-block", whiteSpace: "pre" }}
             >
               {char}
             </motion.span>
@@ -763,7 +763,7 @@ const RegisterIntro = ({ onIntroComplete }) => {
             <DashboardPreviewTitle>Platform Overview</DashboardPreviewTitle>
             <DashboardStats>
               <AnimatedStat
-                label="TOTAL WORKERS"
+                label="Total Workers"
                 value={155}
                 duration={1800}
                 delay={200}
@@ -771,7 +771,7 @@ const RegisterIntro = ({ onIntroComplete }) => {
                 labelDelay={150}
               />
               <AnimatedStat
-                label="ACTIVE SITES"
+                label="Active Sites"
                 value={23}
                 duration={1800}
                 delay={450}
@@ -779,7 +779,7 @@ const RegisterIntro = ({ onIntroComplete }) => {
                 labelDelay={400}
               />
               <AnimatedStat
-                label="PRESENT TODAY"
+                label="Present Today"
                 value={140}
                 duration={1800}
                 delay={700}
@@ -787,7 +787,7 @@ const RegisterIntro = ({ onIntroComplete }) => {
                 labelDelay={650}
               />
               <AnimatedStat
-                label="PENDING SALARY"
+                label="Pending Payroll"
                 value={4328843}
                 duration={1800}
                 delay={950}

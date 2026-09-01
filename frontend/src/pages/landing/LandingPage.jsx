@@ -481,7 +481,7 @@ const LandingPage = () => {
                 </motion.div>
                 <motion.div variants={buttonVariants} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
                   <SecondaryButton onClick={handleRegisterClick} style={{ padding: "12px 24px", fontSize: "0.95rem" }}>
-                    Create Account
+                    Create account
                   </SecondaryButton>
                 </motion.div>
                 <motion.div variants={buttonVariants} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
@@ -561,7 +561,7 @@ const LandingPage = () => {
                   <motion.div variants={metricCardVariants} initial="hidden" animate="visible" transition={{ delay: 0.34 }}>
                     <MockCard>
                       <div className="meta">
-                        <span>Pending Salary</span>
+                         <span>Pending Payroll</span>
                         <h4><AnimatedNumber value={184500} format="currency" /></h4>
                       </div>
                       <div className="icon-box" style={{ background: "#f3e8ff", color: "#7c3aed" }}>

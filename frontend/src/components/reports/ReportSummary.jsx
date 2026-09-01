@@ -85,7 +85,7 @@ const ReportSummary = ({
 
     {
 
-      title: "Pending Salary",
+      title: "Pending Payroll",
 
       value: `₹${totalBalance.toLocaleString("en-IN")}`,
 

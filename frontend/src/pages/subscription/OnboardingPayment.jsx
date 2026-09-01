@@ -146,7 +146,7 @@ const OnboardingPayment = () => {
           <PlanBilling>
             {getBillingCycleLabel(billingCycle)} — {formatPrice(price)}/{getBillingCyclePeriod(billingCycle)}
           </PlanBilling>
-          <TrialBadge>7-Day Free Trial</TrialBadge>
+          <TrialBadge>7-day free trial</TrialBadge>
         </PlanSummary>
 
         <OrderSummary>
@@ -192,13 +192,13 @@ const OnboardingPayment = () => {
               </>
             ) : (
               <>
-                <FiCreditCard /> Start 7-Day Free Trial
+                <FiCreditCard /> Start 7-day free trial
               </>
             )}
           </PaymentButton>
 
           <PaymentButtonSecondary onClick={handleSkipToDashboard} disabled={loading}>
-            Skip for now (Trial only)
+            Skip for now (trial only)
           </PaymentButtonSecondary>
         </PaymentSection>
 

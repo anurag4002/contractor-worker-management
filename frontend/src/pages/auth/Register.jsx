@@ -186,7 +186,7 @@ const Register = () => {
         localStorage.setItem("user", JSON.stringify(user));
       }
 
-      showSuccess("Contractor account created successfully. Welcome to your 7-day free trial!");
+      showSuccess("Account created successfully. Welcome to your 7-day free trial!");
 
       navigate(`/onboarding/payment?billingCycle=${billingCycle}`, { replace: true });
     } catch (error) {

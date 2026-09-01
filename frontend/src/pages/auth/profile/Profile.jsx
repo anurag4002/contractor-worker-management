@@ -160,7 +160,7 @@ const Profile = () => {
       const mergedUser = { ...(p || {}), ...updatedUser };
       setProfileData(mergedUser);
       localStorage.setItem("user", JSON.stringify(mergedUser));
-      showSuccess("Profile Updated Successfully\nYour profile information has been updated successfully.");
+      showSuccess("Profile updated successfully. Your profile information has been saved.");
       setErrors({ fullName: "", mobileNumber: "", username: "" });
       setIsEditing(false);
     } catch (error) {
@@ -189,7 +189,7 @@ const Profile = () => {
     try {
       setPwSaving(true);
       await changePassword(pw.oldPassword, pw.newPassword);
-      showSuccess("Password changed successfully!");
+      showSuccess("Password changed successfully.");
       setPw({ oldPassword: "", newPassword: "", confirm: "" });
       setShowPw(false);
     } catch (err) {

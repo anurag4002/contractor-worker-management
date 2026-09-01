@@ -46,7 +46,7 @@ const OnboardingSuccess = () => {
           </PlanRow>
           <PlanRow>
             <PlanLabel>Trial</PlanLabel>
-            <PlanValue>7 Days</PlanValue>
+            <PlanValue>7 days</PlanValue>
           </PlanRow>
           <PlanRow>
             <PlanLabel>Monthly Price</PlanLabel>
@@ -59,10 +59,10 @@ const OnboardingSuccess = () => {
         </PlanSummary>
 
         <CTAButton onClick={handleGoToDashboard}>
-          Go to Dashboard <FiArrowRight />
+          Go to dashboard <FiArrowRight />
         </CTAButton>
 
-        <SecondaryLink to="/subscription">Manage Subscription</SecondaryLink>
+        <SecondaryLink to="/subscription">Manage subscription</SecondaryLink>
       </SuccessCard>
     </PageWrapper>
   );

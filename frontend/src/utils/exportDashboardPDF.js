@@ -88,7 +88,7 @@ const exportDashboardPDF = (
       ],
 
       [
-        "Pending Salary",
+        "Pending Payroll",
         `₹${pendingSalary.toLocaleString("en-IN")}`,
       ],
 

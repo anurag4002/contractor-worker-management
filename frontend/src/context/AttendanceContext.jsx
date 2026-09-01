@@ -53,7 +53,7 @@ export const AttendanceProvider = ({ children }) => {
         try {
             setLoading(true);
             await attendanceService.markAttendance(payload);
-            showSuccess("Attendance marked successfully");
+            showSuccess("Attendance marked successfully.");
             await fetchAttendance();
             await fetchSummary();
         } catch (error) {
@@ -68,7 +68,7 @@ export const AttendanceProvider = ({ children }) => {
         try {
             setLoading(true);
             await attendanceService.updateAttendance(id, payload);
-            showSuccess("Attendance updated successfully");
+            showSuccess("Attendance updated successfully.");
             await fetchAttendance();
         } catch (error) {
             showError(error);
@@ -96,7 +96,7 @@ export const AttendanceProvider = ({ children }) => {
         try {
             setLoading(true);
             await attendanceService.deleteAttendance(id);
-            showSuccess("Attendance deleted successfully");
+            showSuccess("Attendance deleted successfully.");
             await fetchAttendance();
         } catch (error) {
             showError(error);

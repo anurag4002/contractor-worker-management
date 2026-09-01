@@ -94,7 +94,7 @@ const Login = () => {
       const user = response?.data?.data?.user || response?.data?.user || {};
       const role = user?.role?.code || user?.role;
 
-      showSuccess("Logged in successfully!");
+      showSuccess("Logged in successfully.");
 
       if (role === "SUPER_ADMIN") {
         navigate("/super-admin/dashboard", {
@@ -194,22 +194,22 @@ const Login = () => {
                     disabled={isSubmitting}
                     autoComplete="remember-token"
                   />
-                  Remember Me
+                  Remember me
                 </RememberLabel>
                 <ForgotLink to="/forgot-password">
-                  Forgot Password?
+                  Forgot password?
                 </ForgotLink>
               </OptionsRow>
 
-              <SignInButton type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Signing in..." : "Sign In"}
-              </SignInButton>
+               <SignInButton type="submit" disabled={isSubmitting}>
+                 {isSubmitting ? "Signing in..." : "Sign in"}
+               </SignInButton>
             </LoginForm>
 
             <RegisterLink>
               Don't have an account?{" "}
               <RegisterAnchor to="/register">
-                Create an account
+                Sign up
               </RegisterAnchor>
             </RegisterLink>
 

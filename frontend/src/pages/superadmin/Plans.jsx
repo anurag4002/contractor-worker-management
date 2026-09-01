@@ -97,7 +97,7 @@ const Plans = () => {
         <ErrorState>
           <FiAlertCircle size={48} color="#dc2626" />
           <h3>Failed to load plans</h3>
-          <p>Please try again.</p>
+          <p>Please check your connection and try again.</p>
           <RetryButton onClick={loadPlans}>
             <FiRefreshCw /> Retry
           </RetryButton>

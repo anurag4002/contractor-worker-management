@@ -179,13 +179,13 @@ const SuperAdminLogin = () => {
               </InputGroup>
 
               <SignInButton type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Signing in..." : "Sign In as Super Admin"}
+                {isSubmitting ? "Signing in..." : "Sign in as Super Admin"}
               </SignInButton>
             </LoginForm>
 
             <LoginLinkRow>
               <LoginAnchor to="/login">
-                Back to Contractor Login
+                Back to contractor login
               </LoginAnchor>
             </LoginLinkRow>
 

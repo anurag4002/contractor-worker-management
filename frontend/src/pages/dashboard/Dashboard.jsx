@@ -91,19 +91,19 @@ const Dashboard = () => {
         const status = criticalError?.response?.status;
 
         if (status === 401) {
-          showError('Your session has expired. Please log in again.');
+          showError('Your session has expired. Please sign in again.');
           logout();
         } else if (status === 403) {
-          showError('You do not have permission to view the dashboard.');
+          showError("You don't have permission to view the dashboard.");
         } else {
-          showError('Failed to load dashboard. Please try again.');
+          showError('Unable to load the dashboard. Please try again.');
         }
         setError(true);
       }
     } catch (err) {
       console.error('Dashboard load error:', err);
       setError(true);
-      showError('Failed to load dashboard. Please try again.');
+      showError('Unable to load the dashboard. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -212,10 +212,10 @@ const Dashboard = () => {
       <DashboardContainer>
         <ErrorContainer>
           <FiAlertCircle size={48} color="#dc2626" />
-          <ErrorTitle>Failed to load Dashboard</ErrorTitle>
-          <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Please check your configuration or try again.</p>
+          <ErrorTitle>Unable to load the dashboard</ErrorTitle>
+          <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Please check your connection and try again.</p>
           <RetryButton onClick={loadDashboard}>
-            <FiRefreshCw /> Retry Connection
+            <FiRefreshCw /> Retry connection
           </RetryButton>
         </ErrorContainer>
       </DashboardContainer>
@@ -262,11 +262,11 @@ const Dashboard = () => {
       route: "/sites",
     },
     {
-      title: "Pending Salary",
+      title: "Pending Payroll",
       value: `₹${Number(
         dashboard.payroll?.pendingSalary || 0
       ).toLocaleString("en-IN")}`,
-      description: "Pending Payroll",
+      description: "Pending payments",
       route: "/salary",
     },
   ];

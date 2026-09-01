@@ -26,7 +26,7 @@ export const WorkerProvider = ({ children }) => {
     try {
       setLoading(true);
       await workerService.createWorker(payload);
-      showSuccess("Worker added successfully");
+      showSuccess("Worker added successfully.");
       await fetchWorkers();
     } catch (error) {
       showError(error);
@@ -40,7 +40,7 @@ export const WorkerProvider = ({ children }) => {
     try {
       setLoading(true);
       await workerService.updateWorker(id, payload);
-      showSuccess("Worker updated successfully");
+      showSuccess("Worker updated successfully.");
       await fetchWorkers();
     } catch (error) {
       showError(error);
@@ -54,7 +54,7 @@ export const WorkerProvider = ({ children }) => {
     try {
       setLoading(true);
       await workerService.deleteWorker(id);
-      showSuccess("Worker deleted successfully");
+      showSuccess("Worker deleted successfully.");
       await fetchWorkers();
     } catch (error) {
       showError(error);
@@ -82,7 +82,7 @@ export const WorkerProvider = ({ children }) => {
     try {
       setLoading(true);
       await siteService.assignWorkers(siteId, [workerId]);
-      showSuccess("Worker assigned successfully");
+      showSuccess("Worker assigned successfully.");
       await fetchWorkers();
     } catch (error) {
       showError(error);

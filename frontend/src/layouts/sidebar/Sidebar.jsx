@@ -192,7 +192,7 @@ const Sidebar = ({ sidebarOpen, onClose }) => {
                     <LogoutConfirmTitle>Confirm Logout</LogoutConfirmTitle>
 
                     <LogoutConfirmText>
-                      Are you sure you want to logout?
+                      Are you sure you want to log out?
                     </LogoutConfirmText>
 
                     <LogoutConfirmActions>

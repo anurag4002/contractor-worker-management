@@ -183,9 +183,9 @@ const Checkout = () => {
   return (
     <PageWrapper>
       <PageHeader>
-        <BackLink to="/subscription">
-          <FiArrowLeft /> Back to Subscription
-        </BackLink>
+          <BackLink to="/subscription">
+            <FiArrowLeft /> Back to subscription
+          </BackLink>
         <PageTitle>Complete Your Subscription</PageTitle>
         <PageSubtitle>
           Secure payment powered by Razorpay
@@ -222,8 +222,7 @@ const Checkout = () => {
           <PaymentTitle>Payment Method</PaymentTitle>
           <PaymentDescription>
             Complete your payment to activate your {PLAN.name}{" "}
-            subscription. You will be redirected to Razorpay to securely
-            enter your payment details.
+            subscription. You'll be securely redirected to Razorpay to enter your payment details.
           </PaymentDescription>
 
           {error && (
@@ -239,8 +238,7 @@ const Checkout = () => {
               </>
             ) : (
               <>
-                <FiCreditCard /> Pay {formatPrice(price)} & Activate
-                Subscription
+                <FiCreditCard /> Pay {formatPrice(price)} — Activate subscription
               </>
             )}
           </PaymentButton>

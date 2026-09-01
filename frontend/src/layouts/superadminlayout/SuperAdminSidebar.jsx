@@ -147,7 +147,7 @@ const SuperAdminSidebar = ({ sidebarOpen, onClose }) => {
                   <LogoutConfirmCard>
                     <LogoutConfirmTitle>Confirm Logout</LogoutConfirmTitle>
                     <LogoutConfirmText>
-                      Are you sure you want to logout?
+                      Are you sure you want to log out?
                     </LogoutConfirmText>
                     <LogoutConfirmActions>
                       <LogoutCancelBtn onClick={handleLogoutCancel}>

@@ -49,7 +49,7 @@ const getStatusBadge = (status) => {
     case "PAYMENT_FAILED":
       return <Badge danger>Payment Failed</Badge>;
     case "CANCELLED":
-      return <Badge>Canceled</Badge>;
+      return <Badge>Cancelled</Badge>;
     case "SUSPENDED":
       return <Badge danger>Suspended</Badge>;
     default:
@@ -133,7 +133,7 @@ const Subscriptions = () => {
         <ErrorState>
           <FiAlertCircle size={48} color="#dc2626" />
           <h3>Failed to load subscriptions</h3>
-          <p>Please try again.</p>
+          <p>Please check your connection and try again.</p>
           <RetryButton onClick={loadSubscriptions}>
             <FiRefreshCw /> Retry
           </RetryButton>

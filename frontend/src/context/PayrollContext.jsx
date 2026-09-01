@@ -49,7 +49,7 @@ export const PayrollProvider = ({ children }) => {
         try {
             setLoading(true);
             await payrollService.createPayroll(payload);
-            showSuccess("Payroll created successfully");
+            showSuccess("Payroll created successfully.");
             await fetchPayrolls();
             await fetchSummary();
         } catch (error) {
@@ -64,7 +64,7 @@ export const PayrollProvider = ({ children }) => {
         try {
             setLoading(true);
             await payrollService.updatePayroll(id, payload);
-            showSuccess("Payroll updated successfully");
+            showSuccess("Payroll updated successfully.");
             await fetchPayrolls();
         } catch (error) {
             showError(error);
@@ -92,7 +92,7 @@ export const PayrollProvider = ({ children }) => {
         try {
             setLoading(true);
             await payrollService.deletePayroll(id);
-            showSuccess("Payroll deleted successfully");
+            showSuccess("Payroll deleted successfully.");
             await fetchPayrolls();
         } catch (error) {
             showError(error);
@@ -106,7 +106,7 @@ export const PayrollProvider = ({ children }) => {
         try {
             setLoading(true);
             await payrollService.generateSalaryFromAttendance(payload);
-            showSuccess("Salary records generated successfully");
+            showSuccess("Salary records generated successfully.");
             await fetchPayrolls();
             await fetchSummary();
         } catch (error) {

@@ -56,7 +56,7 @@ const getSubscriptionStatusBadge = (status) => {
     case "PAYMENT_FAILED":
       return <Badge danger>Payment Failed</Badge>;
     case "CANCELLED":
-      return <Badge>Canceled</Badge>;
+      return <Badge>Cancelled</Badge>;
     case "GRACE_PERIOD":
       return <Badge warning>Grace Period</Badge>;
     case "SUSPENDED":

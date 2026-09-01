@@ -37,7 +37,7 @@ const iconMap = {
   "Half Day": FiTrendingUp,
   Holiday: FiTrendingUp,
   "Active Sites": FiMapPin,
-  "Pending Salary": FiDollarSign,
+  "Pending Payroll": FiDollarSign,
 };
 
 const colorMap = {
@@ -57,7 +57,7 @@ const colorMap = {
   "Half Day": "#0EA5E9",
   Holiday: "#7C3AED",
   "Active Sites": "#F97316",
-  "Pending Salary": "#8B5CF6",
+  "Pending Payroll": "#8B5CF6",
 };
 
 const StatCard = ({

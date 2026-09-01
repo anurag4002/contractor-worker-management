@@ -153,12 +153,12 @@ const Pricing = () => {
           <FiCreditCard />
           {isAuthenticated
             ? `Subscribe Monthly — ₹${monthlyPrice.toLocaleString("en-IN")}/mo`
-            : `Start 7-Day Free Trial — ₹${monthlyPrice.toLocaleString("en-IN")}/mo`}
+            : `Start 7-day free trial — ₹${monthlyPrice.toLocaleString("en-IN")}/mo`}
         </SubscribeButton>
         <SubscribeButtonSecondary onClick={() => handleStartTrial("YEARLY")} fullWidth>
           {isAuthenticated
             ? `Subscribe Yearly — ₹${annualPrice.toLocaleString("en-IN")}/yr`
-            : `Start 7-Day Free Trial — ₹${annualPrice.toLocaleString("en-IN")}/yr`}
+            : `Start 7-day free trial — ₹${annualPrice.toLocaleString("en-IN")}/yr`}
         </SubscribeButtonSecondary>
 
         <GuaranteeText>
@@ -172,15 +172,15 @@ const Pricing = () => {
       <TrustBadges>
         <TrustBadge>
           <FiShield />
-          <span>Secure Payments</span>
+          <span>Secure payments</span>
         </TrustBadge>
         <TrustBadge>
           <FiCheck />
-          <span>7-Day Free Trial</span>
+          <span>7-day free trial</span>
         </TrustBadge>
         <TrustBadge>
           <FiCreditCard />
-          <span>Cancel Anytime</span>
+          <span>Cancel anytime</span>
         </TrustBadge>
       </TrustBadges>
     </PageWrapper>

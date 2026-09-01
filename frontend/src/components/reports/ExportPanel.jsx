@@ -1,4 +1,3 @@
-import React from "react";
 import styled, { keyframes } from "styled-components";
 import {
     FiDownload, FiFileText, FiUsers, FiCalendar,
@@ -27,6 +26,7 @@ const Card = styled.div`
   gap: 1rem;
   box-shadow: 0 4px 12px var(--shadow);
   transition: box-shadow 0.2s;
+  min-height: 100px;
   &:hover { box-shadow: 0 8px 24px var(--shadow-lg); }
 `;
 
@@ -34,6 +34,8 @@ const CardLeft = styled.div`
   display: flex;
   align-items: center;
   gap: 0.9rem;
+  min-width: 0;
+  flex: 1;
 `;
 
 const IconBox = styled.div`
@@ -52,11 +54,13 @@ const IconBox = styled.div`
 const Meta = styled.div`
   p { margin: 0; font-size: 0.78rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
   h4 { margin: 0.2rem 0 0; font-size: 0.95rem; font-weight: 600; color: var(--text); }
+  span { display: block; margin-top: 0.15rem; font-size: 0.78rem; color: var(--text-secondary); }
 `;
 
 const Btn = styled.button`
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.4rem;
   padding: 0.55rem 1rem;
   border: none;
@@ -68,6 +72,9 @@ const Btn = styled.button`
   cursor: ${({ $loading }) => ($loading ? "not-allowed" : "pointer")};
   white-space: nowrap;
   transition: background 0.2s;
+  min-width: 100px;
+  height: 40px;
+  flex-shrink: 0;
   &:hover:not(:disabled) { background: var(--primary-hover); }
   svg.spin { animation: ${spin} 1s linear infinite; }
 `;
@@ -145,7 +152,7 @@ const ExportPanel = () => {
                                         <Meta>
                                             <p>{format}</p>
                                             <h4>{label}</h4>
-                                            <span style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}>{sub}</span>
+                                            <span>{sub}</span>
                                         </Meta>
                                     </CardLeft>
                                     <Btn

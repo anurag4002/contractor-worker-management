@@ -82,12 +82,12 @@ const splitIntoChars = (text) =>
     char: char === " " ? "\u00A0" : char,
   }));
 
-const HEADING_LINES = ["Manage Your Workforce With", "Confidence"];
+const HEADING_LINES = ["Manage Your", "Workforce With Confidence"];
 
 const FEATURES = [
   "Manage workers and workforce records",
-  "Track daily attendance across sites",
-  "Manage site assignments and workers",
+  "Track daily attendance across all sites",
+  "Manage site assignments and worker allocation",
   "Simplify payroll and payment tracking",
 ];
 
@@ -188,9 +188,9 @@ const AnimatedHeading = () => {
             key={lineIdx}
             style={{
               display: "block",
-              whiteSpace: "normal",
-              wordBreak: "break-word",
-              overflowWrap: "break-word",
+              whiteSpace: "nowrap",
+              wordBreak: "normal",
+              overflowWrap: "normal",
               font: "inherit",
               fontWeight: 800,
               fontSize: "clamp(2.5rem, 4vw, 3.5rem)",
@@ -199,7 +199,7 @@ const AnimatedHeading = () => {
             }}
           >
             {chars.map(({ id, char }) => (
-              <span key={id}>{char}</span>
+              <span key={id} style={{ display: "inline-block", whiteSpace: "pre" }}>{char}</span>
             ))}
           </div>
         ))}
@@ -219,9 +219,9 @@ const AnimatedHeading = () => {
           key={lineIdx}
           style={{
             display: "block",
-            whiteSpace: "normal",
-            wordBreak: "break-word",
-            overflowWrap: "break-word",
+            whiteSpace: "nowrap",
+            wordBreak: "normal",
+            overflowWrap: "normal",
             font: "inherit",
             fontWeight: 800,
             fontSize: "clamp(2.5rem, 4vw, 3.5rem)",
@@ -233,7 +233,7 @@ const AnimatedHeading = () => {
             <motion.span
               key={id}
               variants={headingCharVariants}
-              style={{ display: "inline" }}
+              style={{ display: "inline-block", whiteSpace: "pre" }}
             >
               {char}
             </motion.span>
@@ -263,8 +263,7 @@ const AnimatedDescription = ({ animate }) => {
           filter: "blur(3px)",
         }}
       >
-        Manage workers, attendance, sites, and payroll from one centralized
-        contractor management platform.
+        Manage workers, attendance, sites, and payroll from one centralized contractor management platform.
       </p>
     );
   }
@@ -282,8 +281,7 @@ const AnimatedDescription = ({ animate }) => {
         color: "var(--text-secondary)",
       }}
     >
-      Manage workers, attendance, sites, and payroll from one centralized
-      contractor management platform.
+      Manage workers, attendance, sites, and payroll from one centralized contractor management platform.
     </motion.p>
   );
 };
@@ -528,7 +526,7 @@ const LoginIntro = ({ onIntroComplete }) => {
                 labelDelay={650}
               />
               <AnimatedStat
-                label="Pending Salary"
+                label="Pending Payroll"
                 value={4328843}
                 duration={1800}
                 delay={950}
