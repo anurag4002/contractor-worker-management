@@ -7,6 +7,8 @@ export const PageWrapper = styled.div`
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
 `;
 
 export const Container = styled.div`
@@ -60,6 +62,13 @@ export const NavInner = styled.div`
   align-items: center;
   justify-content: space-between;
   height: 70px;
+  gap: 0.75rem;
+  min-width: 0;
+
+  @media (max-width: 480px) {
+    height: 60px;
+    gap: 0.5rem;
+  }
 `;
 
 export const LogoGroup = styled.div`
@@ -68,6 +77,8 @@ export const LogoGroup = styled.div`
   gap: 12px;
   cursor: pointer;
   user-select: none;
+  min-width: 0;
+  flex-shrink: 1;
 `;
 
 export const LogoIcon = styled.div`
@@ -84,6 +95,7 @@ export const LogoIcon = styled.div`
 `;
 
 export const LogoText = styled.div`
+  min-width: 0;
   span {
     display: block;
     font-size: 1.05rem;
@@ -91,6 +103,9 @@ export const LogoText = styled.div`
     color: var(--text);
     letter-spacing: -0.02em;
     line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   small {
     display: block;
@@ -99,6 +114,14 @@ export const LogoText = styled.div`
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @media (max-width: 380px) {
+    span { font-size: 0.95rem; }
+    small { font-size: 0.65rem; }
   }
 `;
 
@@ -128,6 +151,11 @@ export const NavActions = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
+
+  @media (max-width: 480px) {
+    gap: 0.5rem;
+  }
 `;
 
 export const PrimaryButton = styled.button`
@@ -144,6 +172,8 @@ export const PrimaryButton = styled.button`
   gap: 8px;
   transition: all 200ms ease;
   box-shadow: 0 1px 3px rgba(37, 99, 235, 0.2);
+  white-space: nowrap;
+  min-width: 0;
 
   &:hover {
     background-color: #1d4ed8;
@@ -153,6 +183,11 @@ export const PrimaryButton = styled.button`
 
   &:active {
     transform: translateY(0);
+  }
+
+  @media (max-width: 480px) {
+    padding: 8px 12px;
+    font-size: 0.85rem;
   }
 `;
 
@@ -169,11 +204,18 @@ export const SecondaryButton = styled.button`
   align-items: center;
   gap: 8px;
   transition: all 200ms ease;
+  white-space: nowrap;
+  min-width: 0;
 
   &:hover {
     background-color: var(--surface-hover);
     border-color: var(--text-secondary);
     color: var(--text);
+  }
+
+  @media (max-width: 480px) {
+    padding: 8px 12px;
+    font-size: 0.85rem;
   }
 `;
 
@@ -200,13 +242,15 @@ export const Badge = styled.div`
 `;
 
 export const HeroTitle = styled.h1`
-  font-size: clamp(2.1rem, 4vw, 3.25rem);
+  font-size: clamp(1.8rem, 5.5vw, 3.25rem);
   font-weight: 800;
   color: var(--text);
   letter-spacing: -0.03em;
   line-height: 1.2;
   max-width: 960px;
   margin: 0 auto 16px;
+  word-break: normal;
+  overflow-wrap: break-word;
 `;
 
 export const HeroDescription = styled.p`
@@ -312,6 +356,8 @@ export const MockTableCard = styled.div`
   border-radius: 12px;
   padding: 16px;
   overflow-x: auto;
+  width: 100%;
+  max-width: 100%;
 
   h5 {
     margin: 0 0 12px;
@@ -322,6 +368,7 @@ export const MockTableCard = styled.div`
 
   table {
     width: 100%;
+    min-width: 480px;
     border-collapse: collapse;
     font-size: 0.82rem;
 

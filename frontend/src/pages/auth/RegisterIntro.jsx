@@ -195,20 +195,21 @@ const AnimatedHeading = ({ animate, loop }) => {
 
   if (reducedMotion) {
     return (
-      <div style={{ display: "block" }}>
+      <div style={{ display: "block", maxWidth: "100%" }}>
         {charLines.map((chars, lineIdx) => (
           <div
             key={lineIdx}
             style={{
               display: "block",
-              whiteSpace: "nowrap",
+              whiteSpace: "normal",
               wordBreak: "normal",
-              overflowWrap: "normal",
+              overflowWrap: "break-word",
               font: "inherit",
               fontWeight: 800,
-              fontSize: "clamp(2.5rem, 4vw, 3.5rem)",
+              fontSize: "clamp(1.5rem, 5.5vw, 2.8rem)",
               lineHeight: 1.18,
               color: "var(--text)",
+              maxWidth: "100%",
             }}
           >
             {chars.map(({ id, char }) => (
@@ -225,21 +226,22 @@ const AnimatedHeading = ({ animate, loop }) => {
       variants={headingContainerVariants}
       initial="hidden"
       animate={animate}
-      style={{ display: "block" }}
+      style={{ display: "block", maxWidth: "100%" }}
     >
       {charLines.map((chars, lineIdx) => (
         <div
           key={lineIdx}
           style={{
             display: "block",
-            whiteSpace: "nowrap",
+            whiteSpace: "normal",
             wordBreak: "normal",
-            overflowWrap: "normal",
+            overflowWrap: "break-word",
             font: "inherit",
             fontWeight: 800,
-            fontSize: "clamp(2.5rem, 4vw, 3.5rem)",
+            fontSize: "clamp(1.5rem, 5.5vw, 2.8rem)",
             lineHeight: 1.18,
             color: "var(--text)",
+            maxWidth: "100%",
           }}
         >
           {chars.map(({ id, char }) => (

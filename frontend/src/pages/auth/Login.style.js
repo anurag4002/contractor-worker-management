@@ -56,13 +56,14 @@ export const LoginWrapper = styled.div`
   width: 100%;
   max-width: 1140px;
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
   gap: 2.5rem;
   position: relative;
   z-index: 1;
+  min-width: 0;
 
   @media (max-width: 900px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.5rem;
     align-items: start;
   }
@@ -86,6 +87,13 @@ export const BrandGroup = styled.div`
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 2rem;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    margin-bottom: 1.25rem;
+  }
 `;
 
 export const LogoIcon = styled.div`
@@ -106,12 +114,17 @@ export const LogoText = styled.div`
   display: flex;
   flex-direction: column;
   line-height: 1.1;
+  min-width: 0;
+  overflow: hidden;
 
   h2 {
     margin: 0;
     font-size: 1.25rem;
     font-weight: 800;
     color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   p {
@@ -121,15 +134,21 @@ export const LogoText = styled.div`
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 `;
 
 export const MainHeading = styled.h1`
   margin: 0 0 0.8rem;
-  font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+  font-size: clamp(1.5rem, 5.5vw, 2.6rem);
   font-weight: 800;
   line-height: 1.18;
   color: var(--text);
+  word-break: normal;
+  overflow-wrap: break-word;
+  max-width: 100%;
 `;
 
 export const Description = styled.p`

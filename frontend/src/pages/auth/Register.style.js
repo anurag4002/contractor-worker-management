@@ -154,13 +154,14 @@ export const RegisterWrapper = styled.div`
   width: 100%;
   max-width: 1140px;
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
   gap: 2.5rem;
   position: relative;
   z-index: 1;
+  min-width: 0;
 
   @media (max-width: 900px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.5rem;
     align-items: start;
   }
@@ -175,6 +176,9 @@ export const LeftSection = styled.div`
   flex-direction: column;
   height: 100%;
   padding: 1rem;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 
   @media (max-width: 900px) {
     align-items: center;
@@ -188,6 +192,13 @@ export const BrandGroup = styled.div`
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 2rem;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    margin-bottom: 1.25rem;
+  }
 `;
 
 export const LogoIcon = styled.div`
@@ -208,12 +219,17 @@ export const LogoText = styled.div`
   display: flex;
   flex-direction: column;
   line-height: 1.1;
+  min-width: 0;
+  overflow: hidden;
 
   h2 {
     margin: 0;
     font-size: 1.25rem;
     font-weight: 800;
     color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   p {
@@ -223,15 +239,21 @@ export const LogoText = styled.div`
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 `;
 
 export const MainHeading = styled.h1`
   margin: 0 0 0.8rem;
-  font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+  font-size: clamp(1.5rem, 5.5vw, 2.6rem);
   font-weight: 800;
   line-height: 1.18;
   color: var(--text);
+  word-break: normal;
+  overflow-wrap: break-word;
+  max-width: 100%;
   /* subtle blue highlight sweeps through the heading once it is fully revealed */
   animation: ${keyframes.headingGlow} 0.65s ease-out both 920ms;
   ${reducedMotionReset}
@@ -473,6 +495,9 @@ export const RightSection = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 `;
 
 export const RegisterCard = styled.div`
@@ -502,9 +527,12 @@ export const CardHeader = styled.header`
 
 export const CardTitle = styled.h2`
   margin: 0;
-  font-size: 1.75rem;
+  font-size: clamp(1.4rem, 5vw, 1.75rem);
   font-weight: 800;
   color: var(--text);
+  word-break: normal;
+  overflow-wrap: break-word;
+  line-height: 1.2;
 `;
 
 export const CardSubtitle = styled.p`
@@ -512,6 +540,8 @@ export const CardSubtitle = styled.p`
   font-size: 0.92rem;
   line-height: 1.55;
   color: var(--text-secondary);
+  word-break: normal;
+  overflow-wrap: break-word;
 `;
 
 export const RegisterForm = styled.form`
@@ -675,18 +705,26 @@ export const PlanBadge = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.75rem;
   background: var(--surface-secondary);
   border: 1px solid var(--border);
   border-radius: 0.8rem;
   padding: 0.9rem 1.1rem;
   margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  min-width: 0;
+
+  @media (max-width: 400px) {
+    padding: 0.75rem 0.85rem;
+  }
 `;
 
 export const PlanInfo = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
+  min-width: 0;
+  flex: 1 1 auto;
 `;
 
 export const PlanName = styled.span`
@@ -695,12 +733,16 @@ export const PlanName = styled.span`
   color: var(--text);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 export const PlanPrice = styled.span`
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--primary);
+  white-space: nowrap;
 `;
 
 export const TrialBadge = styled.span`
@@ -711,4 +753,5 @@ export const TrialBadge = styled.span`
   padding: 0.35rem 0.7rem;
   border-radius: 999px;
   white-space: nowrap;
+  flex-shrink: 0;
 `;
