@@ -23,11 +23,12 @@ export const SidebarContainer = styled.aside`
     top: 0;
     height: 100vh;
     height: 100dvh;
+    width: min(16rem, 85vw);
+    max-width: 85vw;
     transform: ${({ $sidebarOpen }) =>
     $sidebarOpen
       ? "translateX(0)"
       : "translateX(-100%)"};
-    width: var(--sidebar-width);
     box-shadow: 4px 0 24px rgba(0,0,0,.4);
   }
 `;

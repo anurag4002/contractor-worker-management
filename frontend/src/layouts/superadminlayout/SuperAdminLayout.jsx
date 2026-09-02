@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 
 import SuperAdminSidebar from "./SuperAdminSidebar";
@@ -12,8 +12,33 @@ import {
   TopBarToggle,
 } from "./SuperAdminLayout.style";
 
+const MOBILE_QUERY = "(max-width: 768px)";
+
 const SuperAdminLayout = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    const mq = window.matchMedia(MOBILE_QUERY);
+    const handler = (e) => {
+      if (e.matches) {
+        setSidebarOpen(false);
+      } else {
+        setSidebarOpen(true);
+      }
+    };
+    if (mq.addEventListener) mq.addEventListener("change", handler);
+    else mq.addListener(handler);
+    if (mq.matches) {
+      setSidebarOpen(false);
+    } else {
+      setSidebarOpen(true);
+    }
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener("change", handler);
+      else mq.removeListener(handler);
+    };
+  }, []);
 
   const toggleSidebar = () => {
     setSidebarOpen((prev) => !prev);
@@ -24,7 +49,7 @@ const SuperAdminLayout = () => {
       <SuperAdminSidebar sidebarOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <ContentWrapper>
         <TopBar>
-          <TopBarToggle onClick={toggleSidebar}>
+          <TopBarToggle onClick={toggleSidebar} aria-label="Toggle sidebar">
             ☰
           </TopBarToggle>
           <TopBarTitle>Platform Administration</TopBarTitle>

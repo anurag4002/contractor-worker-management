@@ -9,6 +9,42 @@
   box-shadow: 0 14px 34px var(--shadow-lg);
   font-size: 0.92rem;
   line-height: 1.45;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .Toastify__toast-container--top-right,
+  .Toastify__toast-container--top-center,
+  .Toastify__toast-container--top-left {
+    width: min(100% - 1rem, 22rem) !important;
+    left: 0.5rem !important;
+    right: 0.5rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    top: 0.5rem !important;
+  }
+  .app-toast {
+    margin-bottom: 0.5rem !important;
+    font-size: 0.88rem;
+    padding: 0.7rem 0.75rem !important;
+    border-radius: 10px !important;
+  }
+  .Toastify__toast-body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .Toastify__toast-container--top-right,
+  .Toastify__toast-container--top-center,
+  .Toastify__toast-container--top-left {
+    width: calc(100% - 0.75rem) !important;
+    left: 0.375rem !important;
+    right: 0.375rem !important;
+  }
 }
 
 .app-toast .Toastify__toast-icon {

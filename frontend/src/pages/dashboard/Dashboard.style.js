@@ -112,6 +112,7 @@ export const HeaderRight = styled.div`
     min-width: 0;
     overflow-wrap: anywhere;
     word-break: break-word;
+    font-size: 0.85rem;
   }
 
   @media (max-width: 640px) {

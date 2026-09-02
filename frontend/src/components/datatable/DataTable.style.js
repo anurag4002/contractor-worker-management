@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 export const TableContainer = styled.div`
   width: 100%;
+  max-width: 100%;
   background: var(--surface);
   border-radius: 1rem;
   overflow: hidden;

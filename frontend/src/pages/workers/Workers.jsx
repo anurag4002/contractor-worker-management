@@ -175,8 +175,6 @@ const Workers = () => {
 
             }
 
-            style={{ minWidth: "max-content" }}
-
           >
 
             <FiPlus />

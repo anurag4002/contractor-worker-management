@@ -2,11 +2,21 @@ import styled from "styled-components";
 
 export const Page = styled.div`
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
+  padding: 1.5rem;
   background: linear-gradient(135deg, var(--primary), #1e3a8a);
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    align-items: flex-start;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+  }
 `;
 
 export const Card = styled.div`
@@ -30,13 +40,22 @@ export const Card = styled.div`
       transform: translateY(0);
     }
   }
+
+  @media (max-width: 560px) {
+    padding: 1.75rem;
+  }
+
+  @media (max-width: 400px) {
+    padding: 1.25rem;
+    border-radius: 1rem;
+  }
 `;
 
 export const Title = styled.h2`
   margin: 0;
   text-align: center;
   color: var(--text);
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
   font-weight: 700;
 `;
 

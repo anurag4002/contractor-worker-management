@@ -216,9 +216,9 @@ export const Footer = styled.div`
 
   justify-content: flex-end;
 
-  gap: 1rem;
+  gap: 0.75rem;
 
-  margin-top: 2rem;
+  margin-top: 1.5rem;
 
   position: sticky;
 
@@ -227,8 +227,18 @@ export const Footer = styled.div`
   background: var(--surface);
 
   padding-top: 1rem;
+  padding-bottom: max(0rem, env(safe-area-inset-bottom));
 
   border-top: 1px solid var(--border);
+
+  flex-wrap: wrap;
+
+  @media (max-width: 480px) {
+    flex-direction: column-reverse;
+    > * {
+      width: 100%;
+    }
+  }
 `;
 
 export const CancelButton = styled.button`

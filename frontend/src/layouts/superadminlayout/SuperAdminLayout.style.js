@@ -7,6 +7,21 @@ export const SidebarContainer = styled.div`
   display: flex;
   flex-direction: column;
   transition: width 0.2s ease;
+  flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    height: 100dvh;
+    width: min(16rem, 85vw);
+    z-index: 1100;
+    transform: ${({ $sidebarOpen }) =>
+      $sidebarOpen ? "translateX(0)" : "translateX(-100%)"};
+    transition: transform 0.25s ease;
+    box-shadow: 4px 0 24px rgba(0,0,0,.4);
+  }
 `;
 
 export const TopSection = styled.div`
@@ -246,6 +261,11 @@ export const SidebarBackdrop = styled.div`
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
   z-index: 900;
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
 `;
 
 export const LayoutWrapper = styled.div`
@@ -270,27 +290,50 @@ export const TopBar = styled.header`
   padding: 0.75rem 1.25rem;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  min-width: 0;
+
+  @media (max-width: 768px) {
+    padding: 0.6rem 1rem;
+    gap: 0.75rem;
+  }
 `;
 
 export const TopBarToggle = styled.button`
   background: none;
-  border: none;
+  border: 1px solid var(--border);
   font-size: 1.25rem;
   cursor: pointer;
   color: var(--text);
-  padding: 0.25rem;
-  border-radius: 0.35rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.5rem;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 
   &:hover {
     background: var(--surface-hover);
   }
+
+  @media (min-width: 769px) {
+    display: none;
+  }
 `;
 
 export const TopBarTitle = styled.h1`
-  font-size: 1.1rem;
+  font-size: clamp(1rem, 2.5vw, 1.1rem);
   font-weight: 700;
   color: var(--text);
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 `;
 
 export const MainContent = styled.main`

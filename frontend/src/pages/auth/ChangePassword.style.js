@@ -2,11 +2,21 @@ import styled from "styled-components";
 
 export const Page = styled.div`
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
+  padding: 1.5rem;
   background: var(--bg);
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    align-items: flex-start;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+  }
 `;
 
 export const Card = styled.div`
@@ -16,13 +26,21 @@ export const Card = styled.div`
   border-radius: 1rem;
   padding: 2rem;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
+
+  @media (max-width: 560px) {
+    padding: 1.5rem;
+  }
+
+  @media (max-width: 400px) {
+    padding: 1.25rem;
+  }
 `;
 
 export const Title = styled.h2`
   margin: 0;
   text-align: center;
   color: var(--text);
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
   font-weight: 700;
 `;
 

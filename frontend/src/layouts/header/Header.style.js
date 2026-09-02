@@ -11,20 +11,22 @@ export const HeaderContainer = styled.header`
   position: sticky;
   top: 0;
   z-index: 998;
-  gap: 1rem;
+  gap: 0.75rem;
+  min-width: 0;
 
   @media (max-width: 640px) {
-    padding: 0 1rem;
-    gap: 0.5rem;
+    padding: 0 0.75rem;
+    gap: 0.4rem;
   }
 `;
 
 export const LeftSection = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
   min-width: 0;
   flex: 1;
+  overflow: hidden;
 `;
 
 export const MenuButton = styled.button`

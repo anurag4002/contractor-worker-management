@@ -10,6 +10,8 @@ export const TableCard = styled.div`
   overflow-x: auto;
 
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+  width: 100%;
+  max-width: 100%;
 `;
 
 export const Table = styled.table`

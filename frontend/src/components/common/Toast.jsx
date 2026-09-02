@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import {
   AlertTriangle,
@@ -17,10 +18,28 @@ const toastIcons = {
 
 const getTypeClass = (prefix, type) => `${prefix} ${prefix}--${type || "default"}`;
 
+const MOBILE_QUERY = "(max-width: 640px)";
+
 const Toast = () => {
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia(MOBILE_QUERY).matches : false
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    const mq = window.matchMedia(MOBILE_QUERY);
+    const handler = (e) => setIsMobile(e.matches);
+    if (mq.addEventListener) mq.addEventListener("change", handler);
+    else mq.addListener(handler);
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener("change", handler);
+      else mq.removeListener(handler);
+    };
+  }, []);
+
   return (
     <ToastContainer
-      position="top-right"
+      position={isMobile ? "top-center" : "top-right"}
       autoClose={4000}
       hideProgressBar={false}
       newestOnTop

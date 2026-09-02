@@ -4,6 +4,11 @@ export const SearchContainer = styled.div`
   position: relative;
   width: 100%;
   max-width: 26rem;
+  min-width: 0;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 export const SearchInputWrapper = styled.div`

@@ -12,6 +12,16 @@ import {
   Status,
   ActionButtons,
   IconButton,
+  CardList,
+  CardItem,
+  CardHeader,
+  CardName,
+  CardSub,
+  CardBody,
+  CardField,
+  CardLabel,
+  CardValue,
+  CardActions,
 } from "./SiteTable.style";
 
 const SiteTable = ({
@@ -23,6 +33,79 @@ const SiteTable = ({
   onDelete,
   onToggleStatus,
 }) => {
+
+  const renderCard = (site, index) => {
+    const workerCount = Array.isArray(site.workers)
+      ? site.workers.length
+      : Number(site.workers || 0);
+    const presentCount = Number(site.present || 0);
+    return (
+      <CardItem key={`card-${site._id || index}`}>
+        <CardHeader>
+          <div style={{ minWidth: 0 }}>
+            <CardName>{site.siteName || "—"}</CardName>
+            <CardSub>
+              {[site.city, site.state].filter(Boolean).join(", ") || "—"}
+            </CardSub>
+          </div>
+          <Status
+            $status={site.status}
+            style={{ cursor: "pointer" }}
+            onClick={() =>
+              onToggleStatus &&
+              onToggleStatus(
+                site._id,
+                site.status === "ACTIVE" ? "INACTIVE" : "ACTIVE"
+              )
+            }
+          >
+            {site.status}
+          </Status>
+        </CardHeader>
+        <CardBody>
+          <CardField>
+            <CardLabel>Supervisor</CardLabel>
+            <CardValue>{site.supervisor || "—"}</CardValue>
+          </CardField>
+          <CardField>
+            <CardLabel>Workers</CardLabel>
+            <CardValue>{workerCount}</CardValue>
+          </CardField>
+          <CardField>
+            <CardLabel>Present Today</CardLabel>
+            <CardValue>
+              {presentCount} / {workerCount}
+            </CardValue>
+          </CardField>
+        </CardBody>
+        <CardActions>
+          <IconButton title="View Details" onClick={() => onView(site)}>
+            <FiEye />
+          </IconButton>
+          <IconButton title="Assign Workers" onClick={() => onAssign(site)}>
+            <FiUsers />
+          </IconButton>
+          <IconButton title="Site Attendance" onClick={() => onAttendance(site)}>
+            <FiClipboard />
+          </IconButton>
+          {onEdit && (
+            <IconButton title="Edit Site" onClick={() => onEdit(site)}>
+              Edit
+            </IconButton>
+          )}
+          {onDelete && (
+            <IconButton
+              title="Delete Site"
+              style={{ color: "red" }}
+              onClick={() => onDelete(site)}
+            >
+              Del
+            </IconButton>
+          )}
+        </CardActions>
+      </CardItem>
+    );
+  };
 
   return (
 
@@ -71,11 +154,8 @@ const SiteTable = ({
                   style={{
 
                     textAlign: "center",
-
                     padding: "2rem",
-
                     color: "#64748B",
-
                   }}
 
                 >
@@ -106,67 +186,48 @@ const SiteTable = ({
 
                   <tr key={site._id || index}>
 
-                    <td>
+                    <td>{index + 1}</td>
 
-                      {index + 1}
+                    <td>{site._id}</td>
 
-                    </td>
-
-                    <td>
-
-                      {site._id}
-
-                    </td>
+                    <td>{site.siteName}</td>
 
                     <td>
-
-                      {site.siteName}
-
-                    </td>
-
-                    <td>
-
                       {site.city && site.state ? `${site.city}, ${site.state}` : "-"}
-
                     </td>
 
-                    <td>
+                    <td>{site.supervisor || "-"}</td>
 
-                      {site.supervisor || "-"}
-
-                    </td>
+                    <td>{workerCount}</td>
 
                     <td>
-
-                      {workerCount}
-
-                    </td>
-
-                    <td>
-
                       {presentCount} / {workerCount}
-
                     </td>
 
                     <td>
-
                       <Status
                         $status={site.status}
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => onToggleStatus && onToggleStatus(site._id, site.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE')}
+                        style={{ cursor: "pointer" }}
+                        onClick={() =>
+                          onToggleStatus &&
+                          onToggleStatus(
+                            site._id,
+                            site.status === "ACTIVE" ? "INACTIVE" : "ACTIVE"
+                          )
+                        }
                       >
                         {site.status}
                       </Status>
                     </td>
+
                     <td>
                       <ActionButtons>
                         <IconButton title="View Details" onClick={() => onView(site)}><FiEye /></IconButton>
                         <IconButton title="Assign Workers" onClick={() => onAssign(site)}><FiUsers /></IconButton>
                         <IconButton title="Site Attendance" onClick={() => onAttendance(site)}><FiClipboard /></IconButton>
                         {onEdit && <IconButton title="Edit Site" onClick={() => onEdit(site)}>Edit</IconButton>}
-                        {onDelete && <IconButton title="Delete Site" style={{ color: 'red' }} onClick={() => onDelete(site)}>Del</IconButton>}
+                        {onDelete && <IconButton title="Delete Site" style={{ color: "red" }} onClick={() => onDelete(site)}>Del</IconButton>}
                       </ActionButtons>
-
                     </td>
 
                   </tr>
@@ -182,6 +243,16 @@ const SiteTable = ({
         </tbody>
 
       </Table>
+
+      <CardList>
+        {sites.length === 0 ? (
+          <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
+            No sites found.
+          </div>
+        ) : (
+          sites.map((s, i) => renderCard(s, i))
+        )}
+      </CardList>
 
     </TableCard>
 
