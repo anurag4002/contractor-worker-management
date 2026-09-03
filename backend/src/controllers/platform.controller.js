@@ -1,3 +1,5 @@
+import { StatusCodes } from 'http-status-codes';
+
 import platformService from '../services/platform.service.js';
 
 import ApiResponse from '../common/helpers/ApiResponse.js';
@@ -26,7 +28,14 @@ const getPlatformTenantSubscription = asyncHandler(async (req, res) => {
 
 const getPlatformPayments = asyncHandler(async (req, res) => {
   const result = await platformService.getPayments(req.query);
-  return ApiResponse.paginated(res, result.payments, result.pagination, 'Payments fetched successfully.');
+  return res.status(StatusCodes.OK).json({
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Payments fetched successfully.',
+    data: result.payments,
+    pagination: result.pagination,
+    summary: result.summary,
+  });
 });
 
 const getPlatformPaymentById = asyncHandler(async (req, res) => {

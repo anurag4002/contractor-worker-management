@@ -10,7 +10,11 @@ const platformService = {
   getTenants: async (params = {}) => {
     const { data } = await axios.get("/platform/tenants", { params });
 
-    return data.data;
+    return {
+      tenants: data.data || [],
+      pagination: data.pagination || { total: 0, page: 1, limit: 10, totalPages: 1 },
+      summary: data.summary || null,
+    };
   },
 
   getTenantById: async (tenantId) => {
@@ -28,7 +32,11 @@ const platformService = {
   getPayments: async (params = {}) => {
     const { data } = await axios.get("/platform/payments", { params });
 
-    return data.data;
+    return {
+      payments: data.data || [],
+      pagination: data.pagination || { total: 0, page: 1, limit: 10, totalPages: 1 },
+      summary: data.summary || null,
+    };
   },
 
   getPaymentById: async (paymentId) => {
@@ -40,7 +48,10 @@ const platformService = {
   getExpiringSubscriptions: async (params = {}) => {
     const { data } = await axios.get("/platform/expiring-subscriptions", { params });
 
-    return data.data;
+    return {
+      subscriptions: data.data || [],
+      pagination: data.pagination || { total: 0, page: 1, limit: 10, totalPages: 1 },
+    };
   },
 
   getRecentUsers: async (limit = 10) => {

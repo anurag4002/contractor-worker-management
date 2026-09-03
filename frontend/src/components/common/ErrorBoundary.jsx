@@ -75,10 +75,10 @@ class ErrorBoundary extends Component {
     if (this.state.hasError) {
       return (
         <ErrorContainer>
-          <ErrorTitle>Something went wrong</ErrorTitle>
+          <ErrorTitle>Unable to load this page</ErrorTitle>
           <ErrorDescription>
-            The Dashboard encountered an unexpected error and could not render.
-            Please try again or contact support if the issue persists.
+            {this.props.description ||
+              "This page encountered an unexpected error and could not render. Please try again or contact support if the issue persists."}
           </ErrorDescription>
           <RetryButton onClick={this.handleRetry}>
             Try Again

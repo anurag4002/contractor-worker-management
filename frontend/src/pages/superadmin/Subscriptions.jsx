@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import {
   FiRefreshCw,
   FiAlertCircle,
-  FiCreditCard,
 } from "react-icons/fi";
 
 import platformService from "../../services/platform.service";
@@ -84,22 +83,29 @@ const Subscriptions = () => {
       setLoading(true);
       setError(null);
       const data = await platformService.getTenants({});
-      const subs = await Promise.all(
-        (data || []).map(async (tenant) => {
-          try {
-            const sub = await platformService.getTenantSubscription(tenant._id);
-            return {
-              ...tenant,
-              subscription: sub,
-            };
-          } catch {
-            return {
-              ...tenant,
-              subscription: null,
-            };
-          }
-        })
-      );
+      const tenants = data?.tenants || [];
+
+      const subs = (tenants || []).map((tenant) => ({
+        _id: tenant._id,
+        companyName: tenant.companyName,
+        createdAt: tenant.createdAt,
+        status: tenant.status,
+        plan: tenant.plan,
+        billingCycle: tenant.billingCycle,
+        subscriptionStatus: tenant.subscriptionStatus || "NONE",
+        trialEndDate: tenant.trialEnd,
+        endDate: tenant.subscriptionEnd,
+        subscription: tenant.plan
+          ? {
+              plan: tenant.plan,
+              billingCycle: tenant.billingCycle,
+              status: tenant.subscriptionStatus,
+              trialEndDate: tenant.trialEnd,
+              endDate: tenant.subscriptionEnd,
+            }
+          : null,
+      }));
+
       setSubscriptions(subs);
     } catch (err) {
       console.error(err);
@@ -158,19 +164,31 @@ const Subscriptions = () => {
                   <TableCell>
                     <strong>{item.companyName}</strong>
                   </TableCell>
-                  <TableCell>{item.subscription?.plan?.name || "—"}</TableCell>
                   <TableCell>
-                    {item.subscription?.billingCycle === "MONTHLY"
-                      ? "Monthly"
-                      : item.subscription?.billingCycle === "YEARLY"
-                      ? "Annual"
-                      : "—"}
+                    {item.plan?.name || (
+                      item.subscriptionStatus === "TRIAL"
+                        ? "Free Trial"
+                        : "No active plan"
+                    )}
                   </TableCell>
-                  <TableCell>{getStatusBadge(item.subscription?.status || "NONE")}</TableCell>
-                  <TableCell>{formatDate(item.subscription?.trialEndDate)}</TableCell>
                   <TableCell>
-                    {item.subscription?.endDate
-                      ? formatDate(item.subscription.endDate)
+                    {item.billingCycle === "MONTHLY"
+                      ? "Monthly"
+                      : item.billingCycle === "YEARLY"
+                      ? "Annual"
+                      : item.subscriptionStatus === "TRIAL"
+                      ? "Trial"
+                      : "Not subscribed"}
+                  </TableCell>
+                  <TableCell>
+                    {item.subscriptionStatus === "NONE"
+                      ? <Badge>No Subscription</Badge>
+                      : getStatusBadge(item.subscriptionStatus)}
+                  </TableCell>
+                  <TableCell>{formatDate(item.trialEndDate)}</TableCell>
+                  <TableCell>
+                    {item.endDate
+                      ? formatDate(item.endDate)
                       : "—"}
                   </TableCell>
                   <TableCell>{formatDate(item.createdAt)}</TableCell>

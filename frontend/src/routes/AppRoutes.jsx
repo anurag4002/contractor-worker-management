@@ -186,31 +186,59 @@ const AppRoutes = () => {
         <Route element={<SuperAdminLayout />}>
           <Route
             path="/super-admin/dashboard"
-            element={<SuperAdminDashboard />}
+            element={
+              <ErrorBoundary description="Failed to load the platform dashboard.">
+                <SuperAdminDashboard />
+              </ErrorBoundary>
+            }
           />
           <Route
             path="/super-admin/contractors"
-            element={<Contractors />}
+            element={
+              <ErrorBoundary description="Failed to load contractors.">
+                <Contractors />
+              </ErrorBoundary>
+            }
           />
           <Route
             path="/super-admin/contractors/:tenantId"
-            element={<ContractorDetails />}
+            element={
+              <ErrorBoundary description="Failed to load contractor details.">
+                <ContractorDetails />
+              </ErrorBoundary>
+            }
           />
           <Route
             path="/super-admin/subscriptions"
-            element={<Subscriptions />}
+            element={
+              <ErrorBoundary description="Failed to load subscriptions.">
+                <Subscriptions />
+              </ErrorBoundary>
+            }
           />
           <Route
             path="/super-admin/payments"
-            element={<Payments />}
+            element={
+              <ErrorBoundary description="Failed to load payments.">
+                <Payments />
+              </ErrorBoundary>
+            }
           />
           <Route
             path="/super-admin/expiring"
-            element={<Expiring />}
+            element={
+              <ErrorBoundary description="Failed to load expiring subscriptions.">
+                <Expiring />
+              </ErrorBoundary>
+            }
           />
           <Route
             path="/super-admin/plans"
-            element={<Plans />}
+            element={
+              <ErrorBoundary description="Failed to load subscription plans.">
+                <Plans />
+              </ErrorBoundary>
+            }
           />
         </Route>
       </Route>
