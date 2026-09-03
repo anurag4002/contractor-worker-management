@@ -184,7 +184,7 @@ const SuperAdminDashboard = () => {
       return;
     }
 
-    if (user?.role !== "SUPER_ADMIN") {
+    if (user?.role?.code !== "SUPER_ADMIN" && user?.role !== "SUPER_ADMIN") {
       navigate("/dashboard", { replace: true });
       return;
     }
