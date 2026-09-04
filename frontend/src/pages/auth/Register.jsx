@@ -134,10 +134,9 @@ const Register = () => {
     e.preventDefault();
     e.stopPropagation();
 
+    if (loading) return;
+
     console.log('[REGISTER-V2] React handleSubmit fired');
-    console.log('[REGISTER-V2] event.type:', e.type);
-    console.log('[REGISTER-V2] defaultPrevented:', e.defaultPrevented);
-    console.log('[REGISTER-V2] currentTarget:', e.currentTarget?.tagName, e.currentTarget?.attributes?.getNamedItem('action')?.value || 'no-action');
 
     if (!validateForm()) {
       showError("Please correct the errors in the form.");
@@ -161,10 +160,6 @@ const Register = () => {
         pincode: formData.pincode.trim() || undefined,
         billingCycle,
       };
-
-      console.log('[REGISTER-V2] About to call AuthContext.register()');
-      console.log('[REGISTER-V2] billingCycle:', billingCycle);
-      console.log('[REGISTER-V2] payload keys:', Object.keys(payload));
 
       const response = await register(payload);
 

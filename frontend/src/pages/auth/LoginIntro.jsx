@@ -427,7 +427,9 @@ const LoginIntro = ({ onIntroComplete }) => {
         setPhase(10);
         setVisibleFeatures(4);
         setDashboardVisible(true);
-        onIntroComplete();
+        if (typeof onIntroComplete === 'function') {
+          onIntroComplete();
+        }
       });
       return () => cancelAnimationFrame(frame);
     }
@@ -462,13 +464,17 @@ const LoginIntro = ({ onIntroComplete }) => {
         // Phase 7: Dashboard
         setPhase(7);
         setDashboardVisible(true);
-        onIntroComplete();
+        if (typeof onIntroComplete === 'function') {
+          onIntroComplete();
+        }
       } catch (error) {
         console.error("Login intro animation failed:", error);
         setPhase(10);
         setVisibleFeatures(4);
         setDashboardVisible(true);
-        onIntroComplete();
+        if (typeof onIntroComplete === 'function') {
+          onIntroComplete();
+        }
       }
     };
 

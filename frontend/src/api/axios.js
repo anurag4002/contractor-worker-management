@@ -10,13 +10,28 @@ const PUBLIC_AUTH_PATHS = [
   "/auth/refresh-token",
 ];
 
+const resolveBaseURL = () => {
+  const envBase = import.meta.env.VITE_API_URL;
+  if (envBase && typeof envBase === "string" && envBase.trim() !== "") {
+    return envBase.trim().replace(/\/+$/, "");
+  }
+  return "/api/v1";
+};
+
+const API_BASE_URL = resolveBaseURL();
+
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: API_BASE_URL,
   timeout: 15000,
   headers: {
     "Content-Type": "application/json",
   },
 });
+
+if (typeof window !== "undefined") {
+  // eslint-disable-next-line no-console
+  console.log("[API] Base URL:", API_BASE_URL);
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -112,7 +127,7 @@ axiosInstance.interceptors.response.use(
         }
 
         const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}/auth/refresh-token`,
+          `${API_BASE_URL}/auth/refresh-token`,
           {
             refreshToken,
           }
