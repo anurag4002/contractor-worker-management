@@ -44,57 +44,71 @@ const consoleTransport = new winston.transports.Console({
     ),
 });
 
-const combinedTransport =
-    new DailyRotateFile({
-        dirname: 'logs/combined',
+const isVercel = process.env.VERCEL === '1';
 
-        filename: '%DATE%.log',
+let useFileTransports = false;
+if (!isVercel) {
+  try {
+    fs.accessSync(logDirectory, fs.constants.W_OK);
+    useFileTransports = true;
+  } catch {
+    useFileTransports = false;
+  }
+}
 
-        datePattern: 'YYYY-MM-DD',
+const transports = [consoleTransport];
 
-        maxFiles: '30d',
+if (useFileTransports) {
+  const combinedTransport =
+      new DailyRotateFile({
+          dirname: 'logs/combined',
 
-        zippedArchive: true,
+          filename: '%DATE%.log',
 
-        level: 'info',
-    });
+          datePattern: 'YYYY-MM-DD',
 
-const errorTransport =
-    new DailyRotateFile({
-        dirname: 'logs/error',
+          maxFiles: '30d',
 
-        filename: '%DATE%.log',
+          zippedArchive: true,
 
-        datePattern: 'YYYY-MM-DD',
+          level: 'info',
+      });
 
-        maxFiles: '60d',
+  const errorTransport =
+      new DailyRotateFile({
+          dirname: 'logs/error',
 
-        zippedArchive: true,
+          filename: '%DATE%.log',
 
-        levels: {
-  error: 0,
-  warn: 1,
-  info: 2,
-  http: 3,
-  debug: 4,
-},
+          datePattern: 'YYYY-MM-DD',
 
-level:
-  env.NODE_ENV === 'production'
-    ? 'info'
-    : 'debug',
-    });
+          maxFiles: '60d',
+
+          zippedArchive: true,
+
+          levels: {
+    error: 0,
+    warn: 1,
+    info: 2,
+    http: 3,
+    debug: 4,
+  },
+
+  level:
+    env.NODE_ENV === 'production'
+      ? 'info'
+      : 'debug',
+      });
+
+  transports.push(combinedTransport, errorTransport);
+}
 
 const logger = winston.createLogger({
     level: 'info',
 
     format: logFormat,
 
-    transports: [
-        consoleTransport,
-        combinedTransport,
-        errorTransport,
-    ],
+    transports,
 
     exitOnError: false,
 });

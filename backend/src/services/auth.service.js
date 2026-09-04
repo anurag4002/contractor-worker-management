@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import authRepository from '../repositories/auth.repository.js';
 import Tenant from '../models/Tenant.js';
 import User from '../models/User.js';
+import Role from '../models/Role.js';
 import ApiError from '../common/errors/ApiError.js';
 import mongoose from 'mongoose';
 
@@ -132,22 +133,32 @@ class AuthService {
     pincode,
     billingCycle,
   }) {
+    logger.info('[REGISTER] Starting tenant admin registration', {
+      email,
+      username,
+      companyName,
+      districtProvided: district !== undefined && district !== null && district !== '',
+    });
+
     if (!companyName) {
       throw new ApiError(StatusCodes.BAD_REQUEST, 'Company name is required for tenant registration.');
     }
 
     const existingEmail = await authRepository.findByEmail(email);
     if (existingEmail) {
+      logger.warn('[REGISTER] Duplicate email', { email });
       throw new ApiError(StatusCodes.CONFLICT, 'Email already exists.');
     }
 
     const existingMobile = await authRepository.findByMobileNumber(mobileNumber);
     if (existingMobile) {
+      logger.warn('[REGISTER] Duplicate mobile', { mobileNumber });
       throw new ApiError(StatusCodes.CONFLICT, 'Mobile number already exists.');
     }
 
     const tenantAdminRole = await authRepository.findRoleByCode('TENANT_ADMIN');
     if (!tenantAdminRole) {
+      logger.error('[REGISTER] TENANT_ADMIN role not found');
       throw new ApiError(
         StatusCodes.NOT_FOUND,
         'TENANT_ADMIN role not found. Please run role seeder.'
@@ -191,6 +202,11 @@ class AuthService {
           tenant: null,
         }], { session });
 
+        logger.info('[REGISTER] User created', {
+          userId: createdUser[0]._id,
+          email: createdUser[0].email,
+        });
+
         tenant = await Tenant.create([{
           companyName,
           email,
@@ -204,14 +220,31 @@ class AuthService {
           owner: createdUser[0]._id,
         }], { session });
 
+        logger.info('[REGISTER] Tenant created', {
+          tenantId: tenant[0]._id,
+          companyName: tenant[0].companyName,
+        });
+
         await authRepository.updateUserById(createdUser[0]._id, {
           tenant: tenant[0]._id,
         }, { session });
+
+        logger.info('[REGISTER] User updated with tenant', {
+          userId: createdUser[0]._id,
+          tenantId: tenant[0]._id,
+        });
       });
 
       await session.endSession();
     } catch (error) {
       await session.endSession();
+
+      logger.error('[REGISTER] Transaction failed', {
+        errorName: error.name,
+        errorMessage: error.message,
+        errorCode: error.code,
+        stack: error.stack,
+      });
 
       if (error.code === 11000) {
         throw new ApiError(StatusCodes.CONFLICT, 'Email, mobile number, or company already exists.');
@@ -227,8 +260,20 @@ class AuthService {
     };
 
     try {
+      logger.info('[REGISTER] Creating trial subscription', {
+        tenantId: tenant[0]._id,
+        billingCycle: validCycle,
+      });
       await subscriptionService.createTrialSubscription(tenant[0]._id, validCycle);
+      logger.info('[REGISTER] Trial subscription created');
     } catch (error) {
+      logger.error('[REGISTER] Trial subscription failed', {
+        errorName: error.name,
+        errorMessage: error.message,
+        errorCode: error.code,
+        statusCode: error.statusCode,
+        stack: error.stack,
+      });
       if (error.statusCode !== StatusCodes.CONFLICT) {
         throw error;
       }
