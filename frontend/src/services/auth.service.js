@@ -33,7 +33,6 @@ const authService = {
 
     try {
       console.log("[Auth] Sending POST /auth/register");
-      console.log("[Auth] axios baseURL:", axios.defaults.baseURL);
       const { data } = await axios.post(
         "/auth/register",
         payload
