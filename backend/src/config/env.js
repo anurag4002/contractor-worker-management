@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config({ override: false });
 
 const normalizeMongoDbUri = (uri) => {
   if (!uri) {
@@ -9,17 +9,13 @@ const normalizeMongoDbUri = (uri) => {
 
   try {
     const parsedUri = new URL(uri);
-    const databaseName = decodeURIComponent(
-      parsedUri.pathname.slice(1)
-    );
+    const databaseName = decodeURIComponent(parsedUri.pathname.slice(1));
 
     if (!databaseName) {
       return uri;
     }
 
-    const normalizedDatabaseName = databaseName
-      .trim()
-      .replace(/\s+/g, '-');
+    const normalizedDatabaseName = databaseName.trim().replace(/\s+/g, '-');
 
     if (normalizedDatabaseName === databaseName) {
       return uri;
@@ -40,9 +36,7 @@ const env = {
 
   API_PREFIX: process.env.API_PREFIX || '/api/v1',
 
-  MONGODB_URI: normalizeMongoDbUri(
-    process.env.MONGODB_URI
-  ),
+  MONGODB_URI: normalizeMongoDbUri(process.env.MONGODB_URI),
 
   JWT_SECRET: process.env.JWT_SECRET,
 
@@ -50,8 +44,7 @@ const env = {
 
   JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
 
-  JWT_REFRESH_EXPIRES_IN:
-    process.env.JWT_REFRESH_EXPIRES_IN,
+  JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN,
 
   CLIENT_URL: process.env.CLIENT_URL?.trim().replace(/\/+$/, ''),
 
@@ -59,15 +52,11 @@ const env = {
   RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET,
   RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET,
 
-  BCRYPT_SALT_ROUNDS:
-    Number(process.env.BCRYPT_SALT_ROUNDS) || 10,
+  BCRYPT_SALT_ROUNDS: Number(process.env.BCRYPT_SALT_ROUNDS) || 10,
 
-  RATE_LIMIT_WINDOW_MS:
-    Number(process.env.RATE_LIMIT_WINDOW_MS) ||
-    15 * 60 * 1000,
+  RATE_LIMIT_WINDOW_MS: Number(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
 
-  RATE_LIMIT_MAX_REQUESTS:
-    Number(process.env.RATE_LIMIT_MAX_REQUESTS) || 200,
+  RATE_LIMIT_MAX_REQUESTS: Number(process.env.RATE_LIMIT_MAX_REQUESTS) || 200,
 };
 
 if (env.NODE_ENV !== 'production') {
