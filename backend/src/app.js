@@ -53,19 +53,17 @@ app.use(
       const normalizedOrigin = normalizeOrigin(origin);
       const allowed = !origin || isOriginAllowed(origin);
       if (allowed) {
+        const requestOrigin = origin || '(undefined)';
+        const clientUrl = env.CLIENT_URL || '(undefined)';
+        logger.info(`[CORS DEBUG] requestOrigin=${requestOrigin} clientUrl=${clientUrl} isAllowed=true`);
         callback(null, true);
       } else {
-        const rejectionDetails = {
-          requestOrigin: origin,
-          normalizedRequestOrigin: normalizedOrigin,
-          clientUrl: env.CLIENT_URL,
-          normalizedClientUrl: normalizeOrigin(env.CLIENT_URL),
-          vercelUrl: process.env.VERCEL_URL,
-          normalizedVercelUrl: process.env.VERCEL_URL ? normalizeOrigin(`https://${process.env.VERCEL_URL}`) : null,
-          allowedOrigins: allowedOrigins.map(normalizeOrigin),
-          allowed,
-        };
-        logger.warn('[CORS DEBUG] origin not allowed', rejectionDetails);
+        const requestOrigin = origin || '(undefined)';
+        const clientUrl = env.CLIENT_URL || '(undefined)';
+        const vercelUrl = process.env.VERCEL_URL || '(undefined)';
+        const allowedOriginsList = allowedOrigins.map(normalizeOrigin).join(' | ');
+        const rejectionMessage = `[CORS DEBUG] requestOrigin=${requestOrigin} normalizedRequestOrigin=${normalizedOrigin} clientUrl=${clientUrl} normalizedClientUrl=${normalizeOrigin(clientUrl)} vercelUrl=${vercelUrl} normalizedVercelUrl=${vercelUrl !== '(undefined)' ? normalizeOrigin('https://' + vercelUrl) : '(undefined)'} allowedOrigins=${allowedOriginsList} isAllowed=false`;
+        logger.warn(rejectionMessage);
         callback(new Error('Not allowed by CORS'));
       }
     },
