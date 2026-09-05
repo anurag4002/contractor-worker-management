@@ -8,10 +8,14 @@ import env from '../../config/env.js';
 
 const logDirectory = path.resolve('logs');
 
-if (!fs.existsSync(logDirectory)) {
+try {
+  if (!fs.existsSync(logDirectory)) {
     fs.mkdirSync(logDirectory, {
-        recursive: true,
+      recursive: true,
     });
+  }
+} catch {
+  // Ignore filesystem errors (e.g., read-only environments like Vercel serverless)
 }
 
 const logFormat = winston.format.combine(
