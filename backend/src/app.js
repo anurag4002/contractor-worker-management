@@ -14,7 +14,18 @@ import logger from './common/logger/logger.js';
 
 const app = express();
 
-logger.info('[CORS ENV TRACE] processClientUrl=' + (process.env.CLIENT_URL || '(undefined)') + ' envClientUrl=' + (env.CLIENT_URL || '(undefined)') + ' nodeEnv=' + (process.env.NODE_ENV || '(undefined)') + ' vercelEnv=' + (process.env.VERCEL_ENV || '(undefined)') + ' vercelUrl=' + (process.env.VERCEL_URL || '(undefined)'));
+logger.info(
+  '[CORS ENV TRACE] processClientUrl=' +
+    (process.env.CLIENT_URL || '(undefined)') +
+    ' envClientUrl=' +
+    (env.CLIENT_URL || '(undefined)') +
+    ' nodeEnv=' +
+    (process.env.NODE_ENV || '(undefined)') +
+    ' vercelEnv=' +
+    (process.env.VERCEL_ENV || '(undefined)') +
+    ' vercelUrl=' +
+    (process.env.VERCEL_URL || '(undefined)')
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -44,9 +55,7 @@ const normalizeOrigin = (origin) => {
 
 const isOriginAllowed = (origin) => {
   const normalizedOrigin = normalizeOrigin(origin);
-  return allowedOrigins.some(
-    (allowed) => normalizeOrigin(allowed) === normalizedOrigin
-  );
+  return allowedOrigins.some((allowed) => normalizeOrigin(allowed) === normalizedOrigin);
 };
 
 app.use(
@@ -54,15 +63,12 @@ app.use(
     origin: (origin, callback) => {
       const normalizedOrigin = normalizeOrigin(origin);
       const allowed = !origin || isOriginAllowed(origin);
+      logger.info(
+        `[CORS DEBUG] requestOrigin=${origin || '(undefined)'} normalizedRequestOrigin=${normalizedOrigin || '(undefined)'} clientUrl=${env.CLIENT_URL || '(undefined)'} normalizedClientUrl=${normalizeOrigin(env.CLIENT_URL || '(undefined)') || '(undefined)'} allowedOrigins=${allowedOrigins.map(normalizeOrigin).filter(Boolean).join(' | ') || '(none)'} isAllowed=${allowed}`
+      );
       if (allowed) {
-        logger.info(
-          `[CORS DEBUG] requestOrigin=${origin || '(undefined)'} clientUrl=${env.CLIENT_URL || '(undefined)'} isAllowed=true`
-        );
         callback(null, true);
       } else {
-        logger.warn(
-          `[CORS DEBUG] requestOrigin=${origin || '(undefined)'} normalizedRequestOrigin=${normalizedOrigin} clientUrl=${env.CLIENT_URL || '(undefined)'} normalizedClientUrl=${normalizeOrigin(env.CLIENT_URL || '(undefined)')} vercelUrl=${process.env.VERCEL_URL || '(undefined)'} normalizedVercelUrl=${process.env.VERCEL_URL ? normalizeOrigin('https://' + process.env.VERCEL_URL) : '(undefined)'} allowedOrigins=${allowedOrigins.map(normalizeOrigin).join(' | ')} isAllowed=false`
-        );
         callback(new Error('Not allowed by CORS'));
       }
     },
@@ -130,8 +136,6 @@ app.use(requestLogger);
 
 app.use('/api/v1', ensureDatabaseConnection, routes);
 
-
-
 /*
 |--------------------------------------------------------------------------
 | 404 Middleware
@@ -147,6 +151,5 @@ app.use(notFoundMiddleware);
 */
 
 app.use(errorMiddleware);
-
 
 export default app;
