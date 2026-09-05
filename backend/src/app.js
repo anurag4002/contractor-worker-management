@@ -14,6 +14,8 @@ import logger from './common/logger/logger.js';
 
 const app = express();
 
+logger.info('[CORS ENV TRACE] processClientUrl=' + (process.env.CLIENT_URL || '(undefined)') + ' envClientUrl=' + (env.CLIENT_URL || '(undefined)') + ' nodeEnv=' + (process.env.NODE_ENV || '(undefined)') + ' vercelEnv=' + (process.env.VERCEL_ENV || '(undefined)') + ' vercelUrl=' + (process.env.VERCEL_URL || '(undefined)'));
+
 /*
 |--------------------------------------------------------------------------
 | Security Middleware
