@@ -24,6 +24,7 @@ app.use(helmet());
 
 const allowedOrigins = [
   env.CLIENT_URL,
+  'https://contractor-worker-management.vercel.app',
   'http://localhost:5173',
   'http://localhost:3000',
   'http://localhost:5000',
@@ -52,15 +53,14 @@ app.use(
       const normalizedOrigin = normalizeOrigin(origin);
       const allowed = !origin || isOriginAllowed(origin);
       if (allowed) {
+        logger.info(
+          `[CORS DEBUG] requestOrigin=${origin || '(undefined)'} clientUrl=${env.CLIENT_URL || '(undefined)'} isAllowed=true`
+        );
         callback(null, true);
       } else {
-        logger.warn('CORS origin not allowed', {
-          requestOrigin: origin,
-          normalizedRequestOrigin: normalizedOrigin,
-          clientUrl: env.CLIENT_URL,
-          normalizedClientUrl: normalizeOrigin(env.CLIENT_URL),
-          allowedOrigins: allowedOrigins.map(normalizeOrigin),
-        });
+        logger.warn(
+          `[CORS DEBUG] requestOrigin=${origin || '(undefined)'} normalizedRequestOrigin=${normalizedOrigin} clientUrl=${env.CLIENT_URL || '(undefined)'} normalizedClientUrl=${normalizeOrigin(env.CLIENT_URL || '(undefined)')} vercelUrl=${process.env.VERCEL_URL || '(undefined)'} normalizedVercelUrl=${process.env.VERCEL_URL ? normalizeOrigin('https://' + process.env.VERCEL_URL) : '(undefined)'} allowedOrigins=${allowedOrigins.map(normalizeOrigin).join(' | ')} isAllowed=false`
+        );
         callback(new Error('Not allowed by CORS'));
       }
     },
