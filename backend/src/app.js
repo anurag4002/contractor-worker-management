@@ -55,13 +55,17 @@ app.use(
       if (allowed) {
         callback(null, true);
       } else {
-        logger.warn('CORS origin not allowed', {
-          origin,
-          normalizedOrigin,
+        const rejectionDetails = {
+          requestOrigin: origin,
+          normalizedRequestOrigin: normalizedOrigin,
           clientUrl: env.CLIENT_URL,
           normalizedClientUrl: normalizeOrigin(env.CLIENT_URL),
+          vercelUrl: process.env.VERCEL_URL,
+          normalizedVercelUrl: process.env.VERCEL_URL ? normalizeOrigin(`https://${process.env.VERCEL_URL}`) : null,
           allowedOrigins: allowedOrigins.map(normalizeOrigin),
-        });
+          allowed,
+        };
+        logger.warn('[CORS DEBUG] origin not allowed', rejectionDetails);
         callback(new Error('Not allowed by CORS'));
       }
     },
