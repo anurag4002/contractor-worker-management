@@ -10,6 +10,7 @@ import notFoundMiddleware from './middlewares/notFound.middleware.js';
 import errorMiddleware from './middlewares/error.middleware.js';
 import ensureDatabaseConnection from './middlewares/database.middleware.js';
 import env from './config/env.js';
+import logger from './common/logger/logger.js';
 
 const app = express();
 
@@ -23,17 +24,44 @@ app.use(helmet());
 
 const allowedOrigins = [
   env.CLIENT_URL,
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined,
   'http://localhost:5173',
   'http://localhost:3000',
   'http://localhost:5000',
 ].filter(Boolean);
 
+const normalizeOrigin = (origin) => {
+  if (!origin) return '';
+  try {
+    const url = new URL(origin);
+    return `${url.protocol}//${url.host}`;
+  } catch {
+    return origin.trim().replace(/\/+$/, '');
+  }
+};
+
+const isOriginAllowed = (origin) => {
+  const normalizedOrigin = normalizeOrigin(origin);
+  return allowedOrigins.some(
+    (allowed) => normalizeOrigin(allowed) === normalizedOrigin
+  );
+};
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      const normalizedOrigin = normalizeOrigin(origin);
+      const allowed = !origin || isOriginAllowed(origin);
+      if (allowed) {
         callback(null, true);
       } else {
+        logger.warn('CORS origin not allowed', {
+          origin,
+          normalizedOrigin,
+          clientUrl: env.CLIENT_URL,
+          normalizedClientUrl: normalizeOrigin(env.CLIENT_URL),
+          allowedOrigins: allowedOrigins.map(normalizeOrigin),
+        });
         callback(new Error('Not allowed by CORS'));
       }
     },
