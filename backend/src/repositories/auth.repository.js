@@ -131,7 +131,7 @@ class AuthRepository {
       userId,
       updateData,
       {
-        new: true,
+        returnDocument: 'after',
         runValidators: true,
       }
     );
@@ -145,7 +145,7 @@ class AuthRepository {
       userId,
       updateData,
       {
-        new: true,
+        returnDocument: 'after',
         runValidators: true,
       }
     );
@@ -163,7 +163,7 @@ class AuthRepository {
         lockUntil: null,
       },
       {
-        new: true,
+        returnDocument: 'after',
       }
     );
   }
@@ -212,7 +212,7 @@ class AuthRepository {
         },
       },
       {
-        new: true,
+        returnDocument: 'after',
       }
     );
   }
@@ -227,7 +227,7 @@ class AuthRepository {
         lockUntil,
       },
       {
-        new: true,
+        returnDocument: 'after',
       }
     );
   }
@@ -243,7 +243,7 @@ class AuthRepository {
         passwordChangedAt: new Date(),
       },
       {
-        new: true,
+        returnDocument: 'after',
       }
     );
   }
@@ -296,7 +296,7 @@ class AuthRepository {
         lockUntil: null,
       },
       {
-        new: true,
+        returnDocument: 'after',
       }
     );
   }
@@ -330,7 +330,7 @@ class AuthRepository {
         failedLoginAttempts: 0,
       },
       {
-        new: true,
+        returnDocument: 'after',
       }
     );
   }
@@ -402,7 +402,7 @@ class AuthRepository {
         passwordResetTokenExpires,
       },
       {
-        new: true,
+        returnDocument: 'after',
       }
     );
   }
@@ -419,7 +419,7 @@ class AuthRepository {
         refreshTokenHash: null,
       },
       {
-        new: true,
+        returnDocument: 'after',
       }
     );
   }
@@ -441,7 +441,7 @@ class AuthRepository {
         passwordResetTokenExpires: null,
       },
       {
-        new: true,
+        returnDocument: 'after',
         runValidators: true,
       }
     );

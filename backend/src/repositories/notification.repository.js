@@ -130,7 +130,7 @@ class NotificationRepository {
         updatedBy,
       },
       {
-        new: true,
+        returnDocument: 'after',
       }
     );
   }
@@ -193,7 +193,7 @@ class NotificationRepository {
         deletedAt,
       },
       {
-        new: true,
+        returnDocument: 'after',
       }
     );
   }
