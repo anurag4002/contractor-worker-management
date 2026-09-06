@@ -3,7 +3,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
 import requestLogger from './common/logger/morgan.js';
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 
 import routes from './routes/index.js';
 import notFoundMiddleware from './middlewares/notFound.middleware.js';
@@ -12,6 +12,8 @@ import ensureDatabaseConnection from './middlewares/database.middleware.js';
 import env from './config/env.js';
 
 const app = express();
+
+app.set('trust proxy', 1);
 
 /*
 |
@@ -78,6 +80,7 @@ const limiter = rateLimit({
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator: ipKeyGenerator,
 });
 
 app.use(limiter);

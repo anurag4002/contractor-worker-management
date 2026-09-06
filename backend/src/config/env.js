@@ -69,15 +69,6 @@ const env = {
   RATE_LIMIT_MAX_REQUESTS: Number(process.env.RATE_LIMIT_MAX_REQUESTS) || 200,
 };
 
-console.info(
-  '[MONGO ENV TRACE] MONGODB_URI=' +
-    (process.env.MONGODB_URI ? 'SET' : 'UNDEFINED') +
-    ' MONGO_URI=' +
-    (process.env.MONGO_URI ? 'SET' : 'UNDEFINED') +
-    ' DATABASE_URL=' +
-    (process.env.DATABASE_URL ? 'SET' : 'UNDEFINED')
-);
-
 if (env.NODE_ENV !== 'production') {
   console.info('[ENV DEBUG]', {
     JWT_SECRET_SET: !!env.JWT_SECRET,

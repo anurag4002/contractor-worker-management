@@ -730,7 +730,7 @@ const RegisterIntro = ({ onIntroComplete }) => {
     return () => {
       mounted = false;
     };
-  }, [reducedMotion, headingControls, onIntroComplete]);
+  }, [reducedMotion, headingControls]);
 
   const showDescription = phase >= 1;
   const dashboardVisible = phase === 9;
