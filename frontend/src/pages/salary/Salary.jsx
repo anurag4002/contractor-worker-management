@@ -1,9 +1,4 @@
-import React, {
-  useMemo,
-  useState,
-  useEffect,
-  useCallback,
-} from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 
 import { FiDownload } from "react-icons/fi";
 
@@ -39,7 +34,6 @@ const DEFAULT_FILTERS = {
 const Salary = () => {
   const {
     payrolls,
-    summary,
     loading,
     fetchPayrolls,
     fetchSummary,
@@ -63,11 +57,11 @@ const Salary = () => {
 
   const [historyOpen, setHistoryOpen] = useState(false);
 
-  const sitesData = Array.isArray(sites) ? sites : [];
+  const sitesData = useMemo(() => Array.isArray(sites) ? sites : [], [sites]);
 
   const isLoading = loading ?? false;
 
-  const salaryData = Array.isArray(payrolls) ? payrolls : [];
+  const salaryData = useMemo(() => Array.isArray(payrolls) ? payrolls : [], [payrolls]);
 
   useEffect(() => {
     fetchSummary();
@@ -88,6 +82,7 @@ const Salary = () => {
       params.attendanceMonth = Number(month);
     }
     fetchPayrolls(params);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -105,7 +100,7 @@ const Salary = () => {
       params.attendanceMonth = Number(month);
     }
     fetchPayrolls(params);
-  }, [page, filters, sitesData]);
+  }, [page, filters, sitesData, fetchPayrolls]);
 
   const filteredWorkers = useMemo(() => {
     const keyword = filters.search.toLowerCase();
@@ -137,11 +132,6 @@ const Salary = () => {
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
-    setPage(1);
-  };
-
-  const handleFilterReset = () => {
-    setFilters(DEFAULT_FILTERS);
     setPage(1);
   };
 
