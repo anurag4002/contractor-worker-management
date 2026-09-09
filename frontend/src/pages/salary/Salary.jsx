@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 
 import { FiDownload } from "react-icons/fi";
 
@@ -63,25 +63,17 @@ const Salary = () => {
 
   const salaryData = useMemo(() => Array.isArray(payrolls) ? payrolls : [], [payrolls]);
 
+  const sitesDataRef = useRef(sitesData);
+
+  useEffect(() => {
+    sitesDataRef.current = sitesData;
+  });
+
   useEffect(() => {
     fetchSummary();
     if (!sitesData || sitesData.length === 0) {
       fetchSites({ limit: 100 });
     }
-    const params = { page, limit: 10 };
-    if (filters.search) params.search = filters.search;
-    if (filters.site && filters.site !== "All") {
-      const siteObj = sitesData.find(
-        (s) => s.siteName === filters.site
-      );
-      if (siteObj) params.site = siteObj._id;
-    }
-    if (filters.month) {
-      const [year, month] = filters.month.split("-");
-      params.attendanceYear = Number(year);
-      params.attendanceMonth = Number(month);
-    }
-    fetchPayrolls(params);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -89,7 +81,7 @@ const Salary = () => {
     const params = { page, limit: 10 };
     if (filters.search) params.search = filters.search;
     if (filters.site && filters.site !== "All") {
-      const siteObj = sitesData.find(
+      const siteObj = sitesDataRef.current.find(
         (s) => s.siteName === filters.site
       );
       if (siteObj) params.site = siteObj._id;
@@ -100,7 +92,7 @@ const Salary = () => {
       params.attendanceMonth = Number(month);
     }
     fetchPayrolls(params);
-  }, [page, filters, sitesData, fetchPayrolls]);
+  }, [page, filters, fetchPayrolls]);
 
   const filteredWorkers = useMemo(() => {
     const keyword = filters.search.toLowerCase();
