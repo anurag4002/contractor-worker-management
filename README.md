@@ -136,7 +136,7 @@ JWT_SECRET=
 
 💼 MERN Stack Developer
 
-🌐 Passionate about building scalable web applications.
+🌐 Passionate about building scalable web applications
 
 ---
 
