@@ -1,6 +1,6 @@
 # 🚧 Contractor Worker Management System
 
-> **A modern MERN Stack application for managing contractors, workers, attendance, salaries, and project sites efficiently.**
+> **A modern MERN Stack application for managing contractors, workers, attendance, salaries, and project sites efficiently**
 
 <p align="center">
 
