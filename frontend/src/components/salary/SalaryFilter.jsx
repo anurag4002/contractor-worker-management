@@ -1,5 +1,3 @@
-import React from "react";
-
 import {
   FilterContainer,
   SearchInput,
@@ -18,18 +16,14 @@ const SalaryFilter = ({
   month,
   setMonth,
   sites = [],
+  onReset,
 }) => {
-
   const handleReset = () => {
-
     setSearch("");
-
     setSite("All");
-
     setWageType("All");
-
     setMonth("");
-
+    if (onReset) onReset();
   };
 
   return (

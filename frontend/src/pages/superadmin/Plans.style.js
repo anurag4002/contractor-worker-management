@@ -207,3 +207,382 @@ export const RetryButton = styled.button`
     background: var(--primary-hover);
   }
 `;
+
+/* ============================================================
+   EDIT PLAN MODAL STYLES
+   ============================================================ */
+
+export const ModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+  overflow-y: auto;
+  z-index: 9999;
+  animation: fade 0.25s ease;
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    align-items: flex-end;
+  }
+`;
+
+export const ModalContainer = styled.div`
+  width: 100%;
+  max-width: 52rem;
+  margin: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+  max-height: calc(100vh - 4rem);
+  max-height: calc(100dvh - 4rem);
+  display: flex;
+  flex-direction: column;
+  animation: popup 0.25s ease;
+
+  @keyframes popup {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+    max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
+    border-radius: 1.25rem 1.25rem 0 0;
+    margin-bottom: 0;
+  }
+`;
+
+export const ModalHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 10;
+`;
+
+export const ModalTitle = styled.h3`
+  margin: 0;
+  color: var(--text);
+  font-size: 1.25rem;
+  font-weight: 700;
+`;
+
+export const ModalCloseButton = styled.button`
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  transition: color 0.25s;
+  padding: 0.2rem;
+
+  &:hover {
+    color: var(--danger);
+  }
+`;
+
+export const ModalBody = styled.div`
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+`;
+
+export const ModalFooter = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid var(--border);
+  position: sticky;
+  bottom: 0;
+  background: var(--surface);
+  z-index: 5;
+
+  @media (max-width: 768px) {
+    flex-direction: column-reverse;
+    flex-wrap: nowrap;
+    padding: 1rem;
+  }
+`;
+
+export const SectionCard = styled.div`
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    border-radius: 0.6rem;
+  }
+`;
+
+export const SectionTitle = styled.h4`
+  margin: 0 0 1rem;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--primary);
+`;
+
+export const FormGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+`;
+
+export const FormField = styled.div`
+  display: grid;
+  gap: 0.45rem;
+`;
+
+export const FormLabel = styled.label`
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+  font-weight: 700;
+
+  ${({ $required }) =>
+    $required &&
+    `
+    &::after {
+      content: " *";
+      color: var(--danger);
+    }
+  `}
+`;
+
+const inputStyles = `
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border-radius: 0.9rem;
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  color: var(--text);
+  font-size: 0.95rem;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &::placeholder {
+    color: var(--input-placeholder);
+  }
+
+  &:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  }
+
+  &:disabled {
+    background: var(--surface-secondary);
+    color: #cbd5e1;
+    cursor: not-allowed;
+  }
+`;
+
+export const FormInput = styled.input`
+  ${inputStyles}
+`;
+
+export const FormSelect = styled.select`
+  ${inputStyles}
+  cursor: pointer;
+  background: var(--input-bg);
+  color: var(--text);
+
+  option {
+    background: var(--input-bg);
+    color: var(--text);
+  }
+`;
+
+export const FormError = styled.div`
+  color: var(--danger);
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+`;
+
+export const ButtonGroup = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.9rem;
+  margin-top: 1.6rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column-reverse;
+    flex-wrap: nowrap;
+  }
+`;
+
+export const PrimaryButton = styled.button`
+  background: var(--primary);
+  color: var(--text-on-primary);
+  border: none;
+  border-radius: 0.9rem;
+  padding: 0.9rem 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+
+  &:hover:not(:disabled) {
+    background: var(--primary-hover);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+export const SecondaryButton = styled.button`
+  background: var(--border);
+  color: var(--text);
+  border: none;
+  border-radius: 0.9rem;
+  padding: 0.9rem 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+
+  &:hover:not(:disabled) {
+    background: var(--surface-hover);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+export const LimitGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+export const LimitToggle = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+
+  input {
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: var(--primary);
+    cursor: pointer;
+  }
+
+  span {
+    color: var(--text);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+`;
+
+export const LimitInputWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-left: 1.85rem;
+`;
+
+export const LimitInput = styled.input`
+  ${inputStyles}
+  max-width: 160px;
+`;
+
+export const ConfirmOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  animation: fade 0.2s ease;
+`;
+
+export const ConfirmDialog = styled.div`
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  max-width: 24rem;
+  width: 90%;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.15);
+  animation: popup 0.2s ease;
+
+  h3 {
+    margin: 0 0 0.5rem;
+    color: var(--text);
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0 0 1.5rem;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+`;
+
+export const ConfirmButtons = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+`;

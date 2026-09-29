@@ -44,7 +44,9 @@ const Salary = () => {
 
   const { searchQuery } = useSearch();
 
-  const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  const [search, setSearch] = useState(DEFAULT_FILTERS.search);
+  const [site, setSite] = useState(DEFAULT_FILTERS.site);
+  const [month, setMonth] = useState(DEFAULT_FILTERS.month);
 
   const [page, setPage] = useState(1);
 
@@ -79,23 +81,22 @@ const Salary = () => {
 
   useEffect(() => {
     const params = { page, limit: 10 };
-    if (filters.search) params.search = filters.search;
-    if (filters.site && filters.site !== "All") {
+    if (site && site !== "All") {
       const siteObj = sitesDataRef.current.find(
-        (s) => s.siteName === filters.site
+        (s) => s.siteName === site
       );
       if (siteObj) params.site = siteObj._id;
     }
-    if (filters.month) {
-      const [year, month] = filters.month.split("-");
+    if (month) {
+      const [year, monthValue] = month.split("-");
       params.attendanceYear = Number(year);
-      params.attendanceMonth = Number(month);
+      params.attendanceMonth = Number(monthValue);
     }
     fetchPayrolls(params);
-  }, [page, filters, fetchPayrolls]);
+  }, [page, site, month, fetchPayrolls]);
 
   const filteredWorkers = useMemo(() => {
-    const keyword = filters.search.toLowerCase();
+    const keyword = search.toLowerCase();
     const globalKeyword = searchQuery.trim().toLowerCase();
     const effectiveKeyword = globalKeyword || keyword;
 
@@ -120,10 +121,27 @@ const Salary = () => {
     }
 
     return result;
-  }, [salaryData, filters.search, searchQuery]);
+  }, [salaryData, search, searchQuery]);
 
-  const handleFilterChange = (key, value) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
+  const handleSearchChange = (value) => {
+    setSearch(value);
+    setPage(1);
+  };
+
+  const handleSiteChange = (value) => {
+    setSite(value);
+    setPage(1);
+  };
+
+  const handleMonthChange = (value) => {
+    setMonth(value);
+    setPage(1);
+  };
+
+  const handleFilterReset = () => {
+    setSearch(DEFAULT_FILTERS.search);
+    setSite(DEFAULT_FILTERS.site);
+    setMonth(DEFAULT_FILTERS.month);
     setPage(1);
   };
 
@@ -147,23 +165,23 @@ const Salary = () => {
   const handleExport = useCallback(async () => {
     try {
       const params = {};
-      if (filters.search) params.search = filters.search;
-      if (filters.site && filters.site !== "All") {
+      if (search) params.search = search;
+      if (site && site !== "All") {
         const siteObj = sitesData.find(
-          (s) => s.siteName === filters.site
+          (s) => s.siteName === site
         );
         if (siteObj) params.site = siteObj._id;
       }
-      if (filters.month) {
-        const [year, month] = filters.month.split("-");
+      if (month) {
+        const [year, monthValue] = month.split("-");
         params.attendanceYear = Number(year);
-        params.attendanceMonth = Number(month);
+        params.attendanceMonth = Number(monthValue);
       }
       await exportService.exportPayrollPdf(params);
     } catch (error) {
       showError(error);
     }
-  }, [filters, sitesData]);
+  }, [search, site, month, sitesData]);
 
   return (
     <SalaryContainer>
@@ -183,79 +201,60 @@ const Salary = () => {
         </ActionSection>
       </Header>
 
-      {isLoading && !salaryData.length ? (
-        <div
-          style={{
-            padding: "var(--content-padding)",
-            textAlign: "center",
-            color: "var(--text-secondary)",
-          }}
-        >
-          Loading salary records...
-        </div>
-      ) : (
-        <>
-          <SalarySummary
-            workers={filteredWorkers}
-          />
+      <SalarySummary
+        workers={filteredWorkers}
+      />
 
-          <SalaryFilter
-            search={filters.search}
-            setSearch={(value) =>
-              handleFilterChange("search", value)
-            }
-            site={filters.site}
-            setSite={(value) =>
-              handleFilterChange("site", value)
-            }
-            wageType="All"
-            setWageType={() => {}}
-            month={filters.month}
-            setMonth={(value) =>
-              handleFilterChange("month", value)
-            }
-            sites={[
-              "All",
-              ...sitesData.map((item) => item.siteName),
-            ]}
-          />
+      <SalaryFilter
+        search={search}
+        setSearch={handleSearchChange}
+        site={site}
+        setSite={handleSiteChange}
+        wageType="All"
+        setWageType={() => {}}
+        month={month}
+        setMonth={handleMonthChange}
+        sites={[
+          "All",
+          ...sitesData.map((item) => item.siteName),
+        ]}
+        onReset={handleFilterReset}
+      />
 
-          <SalaryTable
-            workers={filteredWorkers}
-            onView={(worker) => {
-              setSelectedWorker(worker);
-              setSlipOpen(true);
-            }}
-            onAdvance={(worker) => {
-              setSelectedWorker(worker);
-              setAdvanceOpen(true);
-            }}
-            onHistory={(worker) => {
-              setSelectedWorker(worker);
-              setHistoryOpen(true);
-            }}
-          />
+      <SalaryTable
+        workers={filteredWorkers}
+        onView={(worker) => {
+          setSelectedWorker(worker);
+          setSlipOpen(true);
+        }}
+        onAdvance={(worker) => {
+          setSelectedWorker(worker);
+          setAdvanceOpen(true);
+        }}
+        onHistory={(worker) => {
+          setSelectedWorker(worker);
+          setHistoryOpen(true);
+        }}
+      />
 
-          <SalarySlipModal
-            open={slipOpen}
-            worker={selectedWorker}
-            onClose={() => setSlipOpen(false)}
-          />
+      <SalarySlipModal
+        open={slipOpen}
+        worker={selectedWorker}
+        onClose={() => setSlipOpen(false)}
+      />
 
-          <AdvancePaymentModal
-            open={advanceOpen}
-            worker={selectedWorker}
-            onClose={() => setAdvanceOpen(false)}
-            onSave={handleAdvancePayment}
-          />
+      <AdvancePaymentModal
+        open={advanceOpen}
+        worker={selectedWorker}
+        onClose={() => setAdvanceOpen(false)}
+        onSave={handleAdvancePayment}
+      />
 
-          <PaymentHistoryModal
-            open={historyOpen}
-            worker={selectedWorker}
-            onClose={() => setHistoryOpen(false)}
-          />
-        </>
-      )}
+      <PaymentHistoryModal
+        open={historyOpen}
+        worker={selectedWorker}
+        onClose={() => setHistoryOpen(false)}
+      />
     </SalaryContainer>
   );
 };

@@ -12,14 +12,18 @@ export const PayrollProvider = ({ children }) => {
     const [loading, setLoading] = useState(false);
 
     const fetchPayrolls = useCallback(async (params = {}) => {
+        console.log('[PayrollContext] fetchPayrolls START', params);
         try {
             setLoading(true);
             const data = await payrollService.getPayrolls(params);
+            console.log('[PayrollContext] fetchPayrolls SUCCESS', data?.payrolls?.length || data?.data?.length || 0);
             setPayrolls(data?.data || data?.payrolls || data || []);
             if (data?.pagination) setPagination(data.pagination);
         } catch (error) {
+            console.log('[PayrollContext] fetchPayrolls ERROR', error.message);
             showError(error);
         } finally {
+            console.log('[PayrollContext] fetchPayrolls FINALLY loading=false');
             setLoading(false);
         }
     }, []);
