@@ -166,7 +166,7 @@ const inputStyles = `
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
   }
 
-  &:read-only {
+  &[readonly] {
     background: var(--surface-secondary);
     color: #cbd5e1;
   }
