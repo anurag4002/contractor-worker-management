@@ -173,7 +173,7 @@ const inputStyles = `
 
   &:disabled {
     background: var(--surface-secondary);
-    color: #cbd5e1;
+    color: var(--text-secondary);
     cursor: not-allowed;
   }
 `;
