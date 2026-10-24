@@ -438,7 +438,16 @@ class AttendanceService {
                 tenantId
             );
 
+        const totalWorkers =
+            await workerRepository.count(
+                {
+                    isDeleted: false,
+                },
+                tenantId
+            );
+
         const result = {
+            totalWorkers,
             total: 0,
             present: 0,
             absent: 0,
