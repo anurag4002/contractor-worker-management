@@ -109,3 +109,23 @@ export const Button = styled.button`
     background:var(--primary-hover);
   }
 `;
+
+export const SecondaryButton = styled.button`
+  border:none;
+  background:var(--surface-hover);
+  color:var(--text);
+  padding:.9rem 1.6rem;
+  border-radius:.75rem;
+  cursor:pointer;
+  margin-right:.75rem;
+
+  &:hover{
+    background:var(--border);
+  }
+
+  @media (max-width: 768px) {
+    margin-right: 0;
+    margin-bottom: .75rem;
+    width: 100%;
+  }
+`;

@@ -23,6 +23,27 @@ const PaymentHistoryModal = ({
 
   const history = worker.payments || [];
 
+  const paymentMethodLabels = {
+    CASH: "Cash",
+    UPI: "UPI",
+    BANK_TRANSFER: "Bank Transfer",
+    CHEQUE: "Cheque",
+  };
+
+  const formatPaymentDate = (item) => {
+    const raw = item.paymentDate ?? item.date ?? item.createdAt;
+    if (!raw) return "-";
+    const date = new Date(raw);
+    if (Number.isNaN(date.getTime())) return "-";
+    return date.toLocaleDateString("en-IN");
+  };
+
+  const formatPaymentMethod = (item) => {
+    const raw = item.paymentMethod ?? item.method;
+    if (!raw) return "-";
+    return paymentMethodLabels[raw] || String(raw);
+  };
+
   return (
 
     <Overlay>
@@ -155,13 +176,7 @@ const PaymentHistoryModal = ({
 
                           {
 
-                            item.date
-
-                              ? new Date(
-                                  item.date
-                                ).toLocaleDateString("en-IN")
-
-                              : "-"
+                            formatPaymentDate(item)
 
                           }
 
@@ -181,7 +196,9 @@ const PaymentHistoryModal = ({
 
                         <td>
 
-                          {item.method || "-"}
+                          {
+                            formatPaymentMethod(item)
+                          }
 
                         </td>
 
