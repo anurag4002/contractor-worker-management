@@ -114,27 +114,27 @@ const Attendance = () => {
         </ActionSection>
       </Header>
 
+      <AttendanceSummary summary={summary || {}} />
+
+      {/* Reusing existing filter mapping, note props change internally if needed */}
+      <AttendanceFilter
+        search={search}
+        setSearch={setSearch}
+        site={siteId}
+        setSite={(val) => { setSiteId(val); setPage(1); }}
+        status={status}
+        setStatus={(val) => { setStatus(val); setPage(1); }}
+        month={date}
+        setMonth={(val) => { setDate(val); setPage(1); }}
+        sites={[{ _id: "All", siteName: "All" }, ...sitesData]}
+      />
+
       {loading && !attendanceData.length ? (
         <div style={{ padding: "var(--content-padding)", textAlign: "center", color: "var(--text-secondary)" }}>
           Loading attendance records...
         </div>
       ) : (
         <>
-          <AttendanceSummary summary={summary || {}} />
-
-          {/* Reusing existing filter mapping, note props change internally if needed */}
-          <AttendanceFilter
-            search={search}
-            setSearch={setSearch}
-            site={siteId}
-            setSite={(val) => { setSiteId(val); setPage(1); }}
-            status={status}
-            setStatus={(val) => { setStatus(val); setPage(1); }}
-            month={date}
-            setMonth={(val) => { setDate(val); setPage(1); }}
-            sites={[{ _id: "All", siteName: "All" }, ...sitesData]}
-          />
-
           <AttendanceTable
             records={filteredRecords}
             onHistory={(record) => {
