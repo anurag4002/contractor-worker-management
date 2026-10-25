@@ -1,8 +1,11 @@
 import { StatusCodes } from 'http-status-codes';
 
+import mongoose from 'mongoose';
+
 import attendanceRepository from '../repositories/attendance.repository.js';
 import workerRepository from '../repositories/worker.repository.js';
 import siteRepository from '../repositories/site.repository.js';
+import payrollService from '../services/payroll.service.js';
 
 import ApiError from '../common/errors/ApiError.js';
 
@@ -76,17 +79,73 @@ class AttendanceService {
         }
 
         // Create Attendance
-        const tenant = worker.tenant || tenantId;
-        const attendance =
-            await attendanceRepository.create({
-                ...attendanceData,
-                tenant,
-                createdBy,
-            });
+        const session = await mongoose.startSession();
 
-        return await attendanceRepository.findById(
-            attendance._id,
-            tenantId
+        try {
+            session.startTransaction();
+
+            const tenant = worker.tenant || tenantId;
+            const attendance =
+                await attendanceRepository.create(
+                    {
+                        ...attendanceData,
+                        tenant,
+                        createdBy,
+                    },
+                    session
+                );
+
+            // Recalculate the affected worker's payroll if one exists
+            await this.recalcPayrollForWorkerMonth(
+                attendanceData.worker,
+                attendance.attendanceDate,
+                tenantId,
+                session,
+                createdBy
+            );
+
+            await session.commitTransaction();
+
+            return await attendanceRepository.findById(
+                attendance._id,
+                tenantId
+            );
+        } catch (error) {
+            await session.abortTransaction();
+            throw error;
+        } finally {
+            session.endSession();
+        }
+    }
+
+    /**
+     * ==========================================
+     * Recalculate Payroll For Worker Month
+     * ==========================================
+     * Recalculates the existing payroll record for a worker and month/year
+     * after an attendance mutation. Never auto-creates a payroll record.
+     * Throws when a fully paid payroll would be affected so the caller can
+     * handle the error explicitly instead of silently leaving payroll
+     * inconsistent.
+     * ==========================================
+     */
+    async recalcPayrollForWorkerMonth(
+        workerId,
+        attendanceDate,
+        tenantId,
+        session,
+        updatedBy
+    ) {
+        const attendanceMonth = attendanceDate.getMonth() + 1;
+        const attendanceYear = attendanceDate.getFullYear();
+
+        return await payrollService.recalculatePayroll(
+            attendanceMonth,
+            attendanceYear,
+            workerId,
+            tenantId,
+            updatedBy,
+            session
         );
     }
     /**
@@ -238,6 +297,10 @@ class AttendanceService {
             );
         }
 
+        // Retain old worker and date for recalculation when they change
+        const oldWorkerId = attendance.worker._id.toString();
+        const oldAttendanceDate = new Date(attendance.attendanceDate);
+
         // Validate Worker
         if (
             updateData.worker &&
@@ -326,18 +389,71 @@ class AttendanceService {
             );
         }
 
-        // Update Attendance
-        const updatedAttendance =
-            await attendanceRepository.update(
-                attendanceId,
-                {
-                    ...updateData,
-                    updatedBy,
-                },
-                tenantId
+        // Update Attendance inside a transaction so payroll recalculation is
+        // atomic with the attendance change.
+        const session = await mongoose.startSession();
+
+        try {
+            session.startTransaction();
+
+            const updatedAttendance =
+                await attendanceRepository.update(
+                    attendanceId,
+                    {
+                        ...updateData,
+                        updatedBy,
+                    },
+                    tenantId,
+                    session
+                );
+
+            const newWorkerId =
+                updateData.worker || oldWorkerId;
+
+            const newAttendanceDate =
+                updateData.attendanceDate
+                    ? new Date(updateData.attendanceDate)
+                    : oldAttendanceDate;
+
+            // Recalculate the new worker/month payroll if it exists
+            await this.recalcPayrollForWorkerMonth(
+                newWorkerId,
+                newAttendanceDate,
+                tenantId,
+                session,
+                updatedBy
             );
 
-        return updatedAttendance;
+            // Recalculate the previous worker/month payroll if worker or
+            // month changed
+            const monthChanged =
+                newAttendanceDate.getMonth() !==
+                    oldAttendanceDate.getMonth() ||
+                newAttendanceDate.getFullYear() !==
+                    oldAttendanceDate.getFullYear();
+
+            if (
+                newWorkerId !== oldWorkerId ||
+                monthChanged
+            ) {
+                await this.recalcPayrollForWorkerMonth(
+                    oldWorkerId,
+                    oldAttendanceDate,
+                    tenantId,
+                    session,
+                    updatedBy
+                );
+            }
+
+            await session.commitTransaction();
+
+            return updatedAttendance;
+        } catch (error) {
+            await session.abortTransaction();
+            throw error;
+        } finally {
+            session.endSession();
+        }
     }
     /**
      * ==========================================
@@ -359,12 +475,37 @@ class AttendanceService {
             );
         }
 
-        // Change Status
-        return await attendanceRepository.changeStatus(
-            attendanceId,
-            status,
-            tenantId
-        );
+        const session = await mongoose.startSession();
+
+        try {
+            session.startTransaction();
+
+            const updatedAttendance =
+                await attendanceRepository.changeStatus(
+                    attendanceId,
+                    status,
+                    tenantId,
+                    session
+                );
+
+            // Recalculate the affected worker's payroll if one exists
+            await this.recalcPayrollForWorkerMonth(
+                attendance.worker._id.toString(),
+                attendance.attendanceDate,
+                tenantId,
+                session,
+                null
+            );
+
+            await session.commitTransaction();
+
+            return updatedAttendance;
+        } catch (error) {
+            await session.abortTransaction();
+            throw error;
+        } finally {
+            session.endSession();
+        }
     }
     /**
      * ==========================================
@@ -386,16 +527,39 @@ class AttendanceService {
             );
         }
 
-        // Soft Delete
-        await attendanceRepository.softDelete(
-            attendanceId,
-            tenantId
-        );
+        const session = await mongoose.startSession();
 
-        return {
-            message:
-                ATTENDANCE_MESSAGES.DELETED_SUCCESS,
-        };
+        try {
+            session.startTransaction();
+
+            await attendanceRepository.softDelete(
+                attendanceId,
+                tenantId,
+                session
+            );
+
+            // Recalculate the affected worker's payroll from the remaining
+            // valid attendance records, if a payroll exists
+            await this.recalcPayrollForWorkerMonth(
+                attendance.worker._id.toString(),
+                attendance.attendanceDate,
+                tenantId,
+                session,
+                null
+            );
+
+            await session.commitTransaction();
+
+            return {
+                message:
+                    ATTENDANCE_MESSAGES.DELETED_SUCCESS,
+            };
+        } catch (error) {
+            await session.abortTransaction();
+            throw error;
+        } finally {
+            session.endSession();
+        }
     }
     /**
      * ==========================================
