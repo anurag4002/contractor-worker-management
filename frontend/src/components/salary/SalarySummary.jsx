@@ -51,13 +51,29 @@ const SalarySummary = ({
 
   );
 
+  const uniqueWorkerIds = new Set();
+
+  workers.forEach((worker) => {
+
+    const id = worker?._id || worker?.worker?._id;
+
+    if (id) {
+
+      uniqueWorkerIds.add(String(id));
+
+    }
+
+  });
+
+  const uniqueWorkerCount = uniqueWorkerIds.size;
+
   const cards = [
 
     {
 
       title: "Total Workers",
 
-      value: summary.totalWorkers,
+      value: uniqueWorkerCount,
 
       icon: <FiUsers />,
 

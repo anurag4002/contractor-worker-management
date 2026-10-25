@@ -85,6 +85,30 @@ const PAYROLL_MESSAGES = {
   ADVANCE_PAYMENT_FAILED:
     'We could not save the advance payment. Please try again.',
 
+  SALARY_PAYMENT_SUCCESS:
+    'Salary payment processed successfully.',
+
+  PAYMENT_TYPE_REQUIRED:
+    'Payment type is required.',
+
+  PAYMENT_TYPE_INVALID:
+    'Invalid salary payment type.',
+
+  PAYMENT_AMOUNT_REQUIRED:
+    'Payment amount is required.',
+
+  PAYMENT_AMOUNT_INVALID:
+    'Please enter a valid payment amount.',
+
+  PAYMENT_AMOUNT_MUST_BE_GREATER_THAN_ZERO:
+    'Payment amount must be greater than ₹0.',
+
+  PAYMENT_EXCEEDS_BALANCE:
+    'Payment cannot exceed the remaining salary balance.',
+
+  PAYMENT_ZERO_BALANCE:
+    'Cannot record a payment because the remaining balance is ₹0.',
+
   WORKER_HAS_NO_ACTIVE_SITE:
     'Worker has no active site assigned.',
 };

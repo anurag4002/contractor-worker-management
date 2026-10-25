@@ -160,3 +160,40 @@ export const advancePaymentSchema = Joi.object({
     .allow('', null)
     .default(''),
 });
+
+export const salaryPaymentSchema = Joi.object({
+  amount: Joi.number()
+    .required()
+    .min(0.01)
+    .messages({
+      'any.required': PAYROLL_MESSAGES.PAYMENT_AMOUNT_REQUIRED,
+      'number.min': PAYROLL_MESSAGES.PAYMENT_AMOUNT_MUST_BE_GREATER_THAN_ZERO,
+    }),
+
+  paymentType: Joi.string()
+    .valid('FULL', 'PARTIAL')
+    .required()
+    .messages({
+      'any.required': PAYROLL_MESSAGES.PAYMENT_TYPE_REQUIRED,
+      'any.only': PAYROLL_MESSAGES.PAYMENT_TYPE_INVALID,
+    }),
+
+  paymentMethod: Joi.string()
+    .valid('CASH', 'UPI', 'BANK_TRANSFER', 'CHEQUE')
+    .required()
+    .messages({
+      'any.required': PAYROLL_MESSAGES.PAYMENT_METHOD_REQUIRED,
+      'any.only': PAYROLL_MESSAGES.PAYMENT_METHOD_REQUIRED,
+    }),
+
+  transactionId: Joi.string()
+    .trim()
+    .allow('', null)
+    .default(''),
+
+  remark: Joi.string()
+    .trim()
+    .max(500)
+    .allow('', null)
+    .default(''),
+});
