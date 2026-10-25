@@ -4,6 +4,7 @@ import {
   FiEye,
   FiCreditCard,
   FiClock,
+  FiCheckCircle,
 } from "react-icons/fi";
 
 import {
@@ -31,6 +32,8 @@ const SalaryTable = ({
   onView,
   onAdvance,
   onHistory,
+  onPayment,
+  emptyMessage = "No salary records found.",
 }) => {
 
   const getStatus = (worker) => {
@@ -95,6 +98,9 @@ const SalaryTable = ({
         <CardActions>
           <IconButton title="Salary Slip" onClick={() => onView && onView(worker)}>
             <FiEye />
+          </IconButton>
+          <IconButton title="Record Salary Payment" onClick={() => onPayment && onPayment(worker)}>
+            <FiCheckCircle />
           </IconButton>
           <IconButton title="Advance Payment" onClick={() => onAdvance && onAdvance(worker)}>
             <FiCreditCard />
@@ -172,7 +178,7 @@ const SalaryTable = ({
 
                 >
 
-                  No salary records found.
+                  {emptyMessage}
 
                 </td>
 
@@ -274,6 +280,10 @@ const SalaryTable = ({
                           <FiEye />
                         </IconButton>
 
+                        <IconButton title="Record Salary Payment" onClick={() => onPayment && onPayment(worker)}>
+                          <FiCheckCircle />
+                        </IconButton>
+
                         <IconButton title="Advance Payment" onClick={() => onAdvance && onAdvance(worker)}>
                           <FiCreditCard />
                         </IconButton>
@@ -303,7 +313,7 @@ const SalaryTable = ({
       <CardList>
         {workers.length === 0 ? (
           <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
-            No salary records found.
+            {emptyMessage}
           </div>
         ) : (
           workers.map((w, i) => renderMobileCard(w, i))

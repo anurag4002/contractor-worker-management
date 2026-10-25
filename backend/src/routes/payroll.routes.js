@@ -13,6 +13,7 @@ import {
   changePayrollStatusSchema,
   getPayrollQuerySchema,
   advancePaymentSchema,
+  salaryPaymentSchema,
 } from '../validators/payroll.validator.js';
 
 const router = Router();
@@ -102,6 +103,21 @@ router.get(
     authorize('PAYROLL_UPDATE'),
     validate(advancePaymentSchema),
     payrollController.processAdvancePayment
+  );
+
+  /*
+  |--------------------------------------------------------------------------
+  | Process Salary Payment (Full / Partial)
+  |--------------------------------------------------------------------------
+  */
+
+  router.patch(
+    '/:payrollId/payment',
+    authMiddleware,
+    requireActiveSubscription,
+    authorize('PAYROLL_UPDATE'),
+    validate(salaryPaymentSchema),
+    payrollController.processSalaryPayment
   );
 
 /*

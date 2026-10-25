@@ -880,6 +880,141 @@ class PayrollService {
             session.endSession();
         }
     }
+    /**
+     * ==========================================
+     * Process Salary Payment (Full / Partial)
+     * ==========================================
+     */
+    async processSalaryPayment(payrollId, amount, paymentType, paymentMethod, transactionId, remark, createdBy, tenantId) {
+        if (
+            !Number.isFinite(amount) ||
+            Number.isNaN(amount) ||
+            amount <= 0
+        ) {
+            throw new ApiError(
+                StatusCodes.BAD_REQUEST,
+                PAYROLL_MESSAGES.PAYMENT_AMOUNT_INVALID
+            );
+        }
+
+        const payroll =
+            await payrollRepository.findById(payrollId, tenantId);
+
+        if (!payroll) {
+            throw new ApiError(
+                StatusCodes.NOT_FOUND,
+                PAYROLL_MESSAGES.NOT_FOUND
+            );
+        }
+
+        if (payroll.status === 'PAID') {
+            throw new ApiError(
+                StatusCodes.BAD_REQUEST,
+                PAYROLL_MESSAGES.PAYROLL_ALREADY_PAID
+            );
+        }
+
+        if (payroll.status === 'CANCELLED') {
+            throw new ApiError(
+                StatusCodes.BAD_REQUEST,
+                PAYROLL_MESSAGES.PAYROLL_ALREADY_CANCELLED
+            );
+        }
+
+        const remainingBalance =
+            (payroll.grossSalary || 0) -
+            (payroll.deduction || 0) -
+            (payroll.advanceDeduction || 0) -
+            (payroll.paid || 0);
+
+        if (remainingBalance <= 0) {
+            throw new ApiError(
+                StatusCodes.BAD_REQUEST,
+                PAYROLL_MESSAGES.PAYMENT_ZERO_BALANCE
+            );
+        }
+
+        if (amount > remainingBalance) {
+            throw new ApiError(
+                StatusCodes.BAD_REQUEST,
+                PAYROLL_MESSAGES.PAYMENT_EXCEEDS_BALANCE
+            );
+        }
+
+        const session = await mongoose.startSession();
+
+        try {
+            session.startTransaction();
+
+            const worker =
+                await workerRepository.findById(
+                    payroll.worker?._id || payroll.worker,
+                    tenantId
+                );
+
+            const tenant = worker?.tenant || tenantId;
+
+            const paymentData = {
+                payroll: payroll._id,
+                worker: payroll.worker?._id,
+                site: payroll.site?._id,
+                amount,
+                paymentType,
+                paymentMethod: paymentMethod || 'CASH',
+                transactionId: transactionId ? String(transactionId).trim() : '',
+                remark: remark ? String(remark).trim() : '',
+                status: 'COMPLETED',
+                tenant,
+                createdBy,
+            };
+
+            const payment =
+                await paymentRepository.create(
+                    paymentData,
+                    session
+                );
+
+            const newPaid =
+                paymentType === 'FULL'
+                    ? (payroll.grossSalary || 0) -
+                      (payroll.deduction || 0) -
+                      (payroll.advanceDeduction || 0)
+                    : (payroll.paid || 0) + amount;
+
+            const newNetSalary =
+                Math.max(
+                    0,
+                    (payroll.grossSalary || 0) -
+                    (payroll.deduction || 0) -
+                    (payroll.advanceDeduction || 0) -
+                    newPaid
+                );
+
+            const updatedPayroll =
+                await payrollRepository.update(
+                    payroll._id,
+                    {
+                        paid: newPaid,
+                        netSalary: newNetSalary,
+                        status: newNetSalary <= 0 ? 'PAID' : 'GENERATED',
+                    },
+                    tenantId,
+                    session
+                );
+
+            await session.commitTransaction();
+
+            return {
+                payment,
+                payroll: updatedPayroll,
+            };
+        } catch (error) {
+            await session.abortTransaction();
+            throw error;
+        } finally {
+            session.endSession();
+        }
+    }
 }
 
 export default new PayrollService();

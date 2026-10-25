@@ -233,6 +233,37 @@ const processAdvancePayment =
      );
    });
 
+/**
+ * ==========================================
+ * Process Salary Payment (Full / Partial)
+ * ==========================================
+ */
+const processSalaryPayment = asyncHandler(
+  async (req, res) => {
+    const { payrollId } = req.params;
+    const { amount, paymentType, paymentMethod, transactionId, remark } =
+      req.body;
+
+    const result =
+      await payrollService.processSalaryPayment(
+        payrollId,
+        Number(amount),
+        paymentType,
+        paymentMethod,
+        transactionId,
+        remark,
+        req.user.userId,
+        req.user.tenantId
+      );
+
+    return ApiResponse.success(
+      res,
+      result,
+      PAYROLL_MESSAGES.SALARY_PAYMENT_SUCCESS
+    );
+  }
+);
+
 export default {
    createPayroll,
    getPayrolls,
@@ -244,4 +275,5 @@ export default {
    getWorkerPayrollHistory,
    generateSalaryFromAttendance,
    processAdvancePayment,
+   processSalaryPayment,
  };

@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 
-import { FiDownload } from "react-icons/fi";
+import { FiDownload, FiPlus } from "react-icons/fi";
 
 import usePayroll from "../../hooks/usePayroll";
 import useSites from "../../hooks/useSites";
@@ -16,6 +16,8 @@ import SalaryTable from "../../components/salary/SalaryTable";
 import SalarySlipModal from "../../components/salary/SalarySlipModal";
 import AdvancePaymentModal from "../../components/salary/AdvancePaymentModal";
 import PaymentHistoryModal from "../../components/salary/PaymentHistoryModal";
+import GenerateSalaryModal from "../../components/salary/GenerateSalaryModal";
+import SalaryPaymentModal from "../../components/salary/SalaryPaymentModal";
 
 import {
   SalaryContainer,
@@ -38,6 +40,7 @@ const Salary = () => {
     fetchPayrolls,
     fetchSummary,
     processAdvancePayment,
+    processSalaryPayment,
   } = usePayroll();
 
   const { sites, fetchSites } = useSites();
@@ -58,6 +61,12 @@ const Salary = () => {
   const [advanceOpen, setAdvanceOpen] = useState(false);
 
   const [historyOpen, setHistoryOpen] = useState(false);
+
+  const [generateOpen, setGenerateOpen] = useState(false);
+
+  const [paymentOpen, setPaymentOpen] = useState(false);
+
+  const [payingWorker, setPayingWorker] = useState(null);
 
   const sitesData = useMemo(() => Array.isArray(sites) ? sites : [], [sites]);
 
@@ -162,6 +171,19 @@ const Salary = () => {
     [processAdvancePayment]
   );
 
+  const handleRecordSalaryPayment = useCallback(
+    async (payrollId, payload) => {
+      await processSalaryPayment(payrollId, {
+        amount: Number(payload.amount),
+        paymentType: payload.paymentType,
+        paymentMethod: payload.paymentMethod,
+        transactionId: payload.transactionId,
+        remark: payload.remark,
+      });
+    },
+    [processSalaryPayment]
+  );
+
   const handleExport = useCallback(async () => {
     try {
       const params = {};
@@ -194,6 +216,10 @@ const Salary = () => {
         </TitleSection>
 
         <ActionSection>
+          <Button onClick={() => setGenerateOpen(true)}>
+            <FiPlus />
+            Generate Salary
+          </Button>
           <Button onClick={handleExport}>
             <FiDownload />
             Export Report
@@ -223,6 +249,7 @@ const Salary = () => {
 
       <SalaryTable
         workers={filteredWorkers}
+        emptyMessage="No salary records found for the selected filters. Generate salary for the selected month to create payroll records from attendance."
         onView={(worker) => {
           setSelectedWorker(worker);
           setSlipOpen(true);
@@ -234,6 +261,10 @@ const Salary = () => {
         onHistory={(worker) => {
           setSelectedWorker(worker);
           setHistoryOpen(true);
+        }}
+        onPayment={(worker) => {
+          setPayingWorker(worker);
+          setPaymentOpen(true);
         }}
       />
 
@@ -254,6 +285,27 @@ const Salary = () => {
         open={historyOpen}
         worker={selectedWorker}
         onClose={() => setHistoryOpen(false)}
+      />
+
+      <GenerateSalaryModal
+        open={generateOpen}
+        onClose={() => setGenerateOpen(false)}
+        listParams={{
+          page,
+          limit: 10,
+          ...(search ? { search } : {}),
+          ...(site && site !== "All" ? { site: sitesData.find((s) => s.siteName === site)?._id } : {}),
+          ...(month
+            ? { attendanceYear: Number(month.split("-")[0]), attendanceMonth: Number(month.split("-")[1]) }
+            : {}),
+        }}
+      />
+
+      <SalaryPaymentModal
+        open={paymentOpen}
+        worker={payingWorker}
+        onClose={() => setPaymentOpen(false)}
+        onSave={handleRecordSalaryPayment}
       />
     </SalaryContainer>
   );
