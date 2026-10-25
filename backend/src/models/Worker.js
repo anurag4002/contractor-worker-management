@@ -147,6 +147,7 @@ const workerSchema = new mongoose.Schema(
                 'UNSKILLED',
                 'SEMI_SKILLED',
                 'SKILLED',
+                'HIGHLY_SKILLED',
             ],
             default: 'UNSKILLED',
         },

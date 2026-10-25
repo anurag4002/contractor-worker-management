@@ -130,7 +130,8 @@ export const createWorkerSchema = Joi.object({
     skillLevel: Joi.string().valid(
         'UNSKILLED',
         'SEMI_SKILLED',
-        'SKILLED'
+        'SKILLED',
+        'HIGHLY_SKILLED'
     ),
 
     department: Joi.string().trim().allow('', null),
