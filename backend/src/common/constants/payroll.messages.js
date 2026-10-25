@@ -109,6 +109,12 @@ const PAYROLL_MESSAGES = {
   PAYMENT_ZERO_BALANCE:
     'Cannot record a payment because the remaining balance is ₹0.',
 
+  PAYROLL_PAID_ADJUSTMENT_REQUIRED:
+    'Payroll is already paid. Attendance changes cannot be recalculated automatically. Please raise an adjustment.',
+
+  PAYMENT_RECONCILIATION_REQUIRED:
+    'Corrected salary is less than the amount already paid. Please raise an adjustment.',
+
   WORKER_HAS_NO_ACTIVE_SITE:
     'Worker has no active site assigned.',
 };

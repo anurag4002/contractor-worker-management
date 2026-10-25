@@ -6,7 +6,11 @@ class AttendanceRepository {
    * Create Attendance
    * ==========================================
    */
-  async create(attendanceData) {
+  async create(attendanceData, session = null) {
+    if (session) {
+      const attendance = new Attendance(attendanceData);
+      return await attendance.save({ session });
+    }
     return await Attendance.create(attendanceData);
   }
 
@@ -75,7 +79,8 @@ class AttendanceRepository {
     workerId,
     attendanceMonth,
     attendanceYear,
-    tenantId = null
+    tenantId = null,
+    session = null
   ) {
     const startDate = new Date(
       attendanceYear,
@@ -106,7 +111,13 @@ class AttendanceRepository {
       query.tenant = tenantId;
     }
 
-    return await Attendance.find(query);
+    const cursor = Attendance.find(query);
+
+    if (session) {
+      cursor.session(session);
+    }
+
+    return await cursor;
   }
 
     /**
@@ -201,7 +212,8 @@ class AttendanceRepository {
     async update(
       attendanceId,
       updateData,
-      tenantId = null
+      tenantId = null,
+      session = null
     ) {
       const query = {
         _id: attendanceId,
@@ -218,6 +230,7 @@ class AttendanceRepository {
         {
           returnDocument: 'after',
           runValidators: true,
+          ...(session ? { session } : {}),
         }
       )
         .populate(
@@ -246,7 +259,8 @@ class AttendanceRepository {
     async changeStatus(
       attendanceId,
       status,
-      tenantId = null
+      tenantId = null,
+      session = null
     ) {
       const query = {
         _id: attendanceId,
@@ -264,6 +278,7 @@ class AttendanceRepository {
         },
         {
           returnDocument: 'after',
+          ...(session ? { session } : {}),
         }
       );
     }
@@ -273,7 +288,7 @@ class AttendanceRepository {
      * Soft Delete Attendance
      * ==========================================
      */
-    async softDelete(attendanceId, tenantId = null) {
+    async softDelete(attendanceId, tenantId = null, session = null) {
       const query = {
         _id: attendanceId,
         isDeleted: false,
@@ -291,6 +306,7 @@ class AttendanceRepository {
         },
         {
           returnDocument: 'after',
+          ...(session ? { session } : {}),
         }
       );
     }

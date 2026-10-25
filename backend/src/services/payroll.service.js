@@ -13,6 +13,88 @@ import ApiError from '../common/errors/ApiError.js';
 import PAYROLL_MESSAGES from '../common/constants/payroll.messages.js';
 
 class PayrollService {
+
+    /**
+     * ==========================================
+     * Calculate Payroll From Attendance
+     * ==========================================
+     */
+    calculatePayrollFromAttendance(
+        worker,
+        attendanceRecords,
+        options = {}
+    ) {
+        const dailyWage =
+            options.dailyWage ?? worker?.dailyWage ?? 800;
+
+        const overtimeRate =
+            options.overtimeRate ?
+            options.overtimeRate :
+            dailyWage / 8;
+
+        const bonus = options.bonus ?? 0;
+        const deduction = options.deduction ?? 0;
+        const advanceDeduction = options.advanceDeduction ?? 0;
+
+        let workingDays = 0;
+        let presentDays = 0;
+        let absentDays = 0;
+        let halfDays = 0;
+        let leaveDays = 0;
+        let regularHours = 0;
+        let overtimeHours = 0;
+
+        (attendanceRecords || []).forEach(
+            (attendance) => {
+                workingDays++;
+
+                switch (attendance.status) {
+                    case 'PRESENT':
+                        presentDays++;
+                        regularHours += attendance.regularHours || 8;
+                        break;
+
+                    case 'ABSENT':
+                        absentDays++;
+                        break;
+
+                    case 'HALF_DAY':
+                        halfDays++;
+                        regularHours += attendance.regularHours || 4;
+                        break;
+
+                    case 'LEAVE':
+                        leaveDays++;
+                        break;
+                }
+
+                overtimeHours += attendance.overtimeHours || 0;
+            }
+        );
+
+        const basicSalary =
+            worker?.salaryType === 'MONTHLY'
+                ? worker?.monthlySalary || 30000
+                : dailyWage * (presentDays + (halfDays / 2));
+
+        const overtimeAmount = overtimeHours * overtimeRate;
+        const grossSalary = basicSalary + overtimeAmount + bonus;
+        const netSalary = grossSalary - deduction - advanceDeduction;
+
+        return {
+            workingDays,
+            presentDays,
+            absentDays,
+            halfDays,
+            leaveDays,
+            regularHours,
+            overtimeHours,
+            basicSalary,
+            overtimeAmount,
+            grossSalary,
+            netSalary,
+        };
+    }
     /**
  * ==========================================
  * Create Payroll
@@ -85,63 +167,18 @@ class PayrollService {
             );
         }
 
-        let workingDays = 0;
-        let presentDays = 0;
-        let absentDays = 0;
-        let halfDays = 0;
-        let leaveDays = 0;
-
-        let regularHours = 0;
-        let overtimeHours = 0;
-
-        attendanceRecords.forEach(
-            (attendance) => {
-                workingDays++;
-
-                switch (attendance.status) {
-                    case 'PRESENT':
-                        presentDays++;
-                        break;
-
-                    case 'ABSENT':
-                        absentDays++;
-                        break;
-
-                    case 'HALF_DAY':
-                        halfDays++;
-                        break;
-
-                    case 'LEAVE':
-                        leaveDays++;
-                        break;
-                }
-
-                regularHours +=
-                    attendance.regularHours || 0;
-
-                overtimeHours +=
-                    attendance.overtimeHours || 0;
+        // Salary Calculation
+        const calculations = this.calculatePayrollFromAttendance(
+            worker,
+            attendanceRecords,
+            {
+                dailyWage: payrollData.dailyWage,
+                overtimeRate: payrollData.overtimeRate,
+                bonus: payrollData.bonus,
+                deduction: payrollData.deduction,
+                advanceDeduction: payrollData.advanceDeduction,
             }
         );
-
-        // Salary Calculation
-        const basicSalary =
-            presentDays *
-            payrollData.dailyWage;
-
-        const overtimeAmount =
-            overtimeHours *
-            payrollData.overtimeRate;
-
-        const grossSalary =
-            basicSalary +
-            overtimeAmount +
-            payrollData.bonus;
-
-        const netSalary =
-            grossSalary -
-            payrollData.deduction -
-            payrollData.advanceDeduction;
 
         // Create Payroll
         const tenant = worker.tenant || tenantId;
@@ -150,19 +187,7 @@ class PayrollService {
                 ...payrollData,
                 tenant,
 
-                workingDays,
-                presentDays,
-                absentDays,
-                halfDays,
-                leaveDays,
-
-                regularHours,
-                overtimeHours,
-
-                basicSalary,
-                overtimeAmount,
-                grossSalary,
-                netSalary,
+                ...calculations,
 
                 status: 'GENERATED',
 
@@ -173,6 +198,110 @@ class PayrollService {
             payroll._id,
             tenantId
         );
+    }
+    /**
+     * ==========================================
+     * Recalculate Payroll
+     * ==========================================
+     */
+    async recalculatePayroll(
+        attendanceMonth,
+        attendanceYear,
+        workerId,
+        tenantId,
+        updatedBy,
+        session = null
+    ) {
+        const payroll =
+            await payrollRepository.findByWorkerAndMonth(
+                workerId,
+                attendanceMonth,
+                attendanceYear,
+                tenantId
+            );
+
+        if (!payroll) {
+            return {
+                payroll: null,
+                action: 'NO_RECORD',
+            };
+        }
+
+        // Never silently rewrite a fully paid payroll.
+        if (payroll.status === 'PAID') {
+            throw new ApiError(
+                StatusCodes.BAD_REQUEST,
+                PAYROLL_MESSAGES.PAYROLL_PAID_ADJUSTMENT_REQUIRED
+            );
+        }
+
+        // Cancelled payrolls are not recalculated.
+        if (payroll.status === 'CANCELLED') {
+            return {
+                payroll,
+                action: 'SKIPPED',
+            };
+        }
+
+        const attendanceRecords =
+            await attendanceRepository.findByWorkerAndMonth(
+                workerId,
+                attendanceMonth,
+                attendanceYear,
+                tenantId,
+                session
+            );
+
+        const worker =
+            await workerRepository.findById(
+                workerId,
+                tenantId
+            );
+
+        const calculations = this.calculatePayrollFromAttendance(
+            worker,
+            attendanceRecords,
+            {
+                bonus: payroll.bonus || 0,
+                deduction: payroll.deduction || 0,
+                advanceDeduction: payroll.advanceDeduction || 0,
+            }
+        );
+
+        const paid = payroll.paid || 0;
+
+        if (calculations.netSalary - paid < 0) {
+            throw new ApiError(
+                StatusCodes.BAD_REQUEST,
+                PAYROLL_MESSAGES.PAYMENT_RECONCILIATION_REQUIRED
+            );
+        }
+
+        const updatedPayroll =
+            await payrollRepository.update(
+                payroll._id,
+                {
+                    workingDays: calculations.workingDays,
+                    presentDays: calculations.presentDays,
+                    absentDays: calculations.absentDays,
+                    halfDays: calculations.halfDays,
+                    leaveDays: calculations.leaveDays,
+                    regularHours: calculations.regularHours,
+                    overtimeHours: calculations.overtimeHours,
+                    basicSalary: calculations.basicSalary,
+                    overtimeAmount: calculations.overtimeAmount,
+                    grossSalary: calculations.grossSalary,
+                    netSalary: calculations.netSalary,
+                    updatedBy,
+                },
+                tenantId,
+                session
+            );
+
+        return {
+            payroll: updatedPayroll,
+            action: 'RECALCULATED',
+        };
     }
     /**
      * ==========================================
@@ -677,51 +806,20 @@ class PayrollService {
                 continue;
             }
 
-            let workingDays = 0;
-            let presentDays = 0;
-            let absentDays = 0;
-            let halfDays = 0;
-            let leaveDays = 0;
-            let regularHours = 0;
-            let overtimeHours = 0;
-
-            records.forEach((attendance) => {
-                workingDays++;
-
-                switch (attendance.status) {
-                    case 'PRESENT':
-                        presentDays++;
-                        regularHours += attendance.regularHours || 8;
-                        break;
-
-                    case 'ABSENT':
-                        absentDays++;
-                        break;
-
-                    case 'HALF_DAY':
-                        halfDays++;
-                        regularHours += attendance.regularHours || 4;
-                        break;
-
-                    case 'LEAVE':
-                        leaveDays++;
-                        break;
-                }
-
-                overtimeHours += attendance.overtimeHours || 0;
-            });
-
             const dailyWage = worker.dailyWage || 800;
             const overtimeRate = dailyWage / 8;
 
-            const basicSalary =
-                worker.salaryType === 'MONTHLY'
-                    ? worker.monthlySalary || 30000
-                    : dailyWage * presentDays;
-
-            const overtimeAmount = overtimeHours * overtimeRate;
-            const grossSalary = basicSalary + overtimeAmount;
-            const netSalary = grossSalary;
+            const calculations = this.calculatePayrollFromAttendance(
+                worker,
+                records,
+                {
+                    dailyWage,
+                    overtimeRate,
+                    bonus: 0,
+                    deduction: 0,
+                    advanceDeduction: 0,
+                }
+            );
 
             const tenant = worker.tenant || tenantId;
 
@@ -731,22 +829,14 @@ class PayrollService {
                     site: siteId,
                     attendanceMonth,
                     attendanceYear,
-                    workingDays,
-                    presentDays,
-                    absentDays,
-                    halfDays,
-                    leaveDays,
-                    regularHours,
-                    overtimeHours,
+                    ...calculations,
                     dailyWage,
                     overtimeRate,
-                    basicSalary,
-                    overtimeAmount,
                     bonus: 0,
                     deduction: 0,
                     advanceDeduction: 0,
-                    grossSalary,
-                    netSalary,
+                    grossSalary: calculations.grossSalary,
+                    netSalary: calculations.netSalary,
                     status: 'GENERATED',
                     tenant,
                     createdBy,
