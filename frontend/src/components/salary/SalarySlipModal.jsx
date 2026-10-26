@@ -3,6 +3,7 @@ import React from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
+import { registerSalarySlipFonts } from "../../utils/salarySlipFonts";
 import { showError } from "../../components/common/toast";
 
 import {
@@ -88,6 +89,11 @@ const SalarySlipModal = ({
 
       const doc = new jsPDF();
 
+      // Embed a Unicode-capable font (Noto Sans) so the Indian Rupee sign (₹)
+      // renders correctly instead of the Helvetica substitute ("¹").
+      registerSalarySlipFonts(doc);
+      doc.setFont("NotoSans");
+
       doc.setFontSize(20);
       doc.setTextColor(15, 23, 42);
       doc.text("Salary Slip", 14, 22);
@@ -118,7 +124,7 @@ const SalarySlipModal = ({
         head: [["Field", "Value"]],
         body: infoRows,
         theme: "plain",
-        styles: { fontSize: 10, cellPadding: 3 },
+        styles: { font: "NotoSans", fontSize: 10, cellPadding: 3 },
         headStyles: { fillColor: [241, 245, 249], textColor: [15, 23, 42], fontStyle: "bold" },
         columnStyles: { 0: { fontStyle: "bold", textColor: [100, 116, 139] } },
         margin: { left: 14 },
@@ -146,7 +152,7 @@ const SalarySlipModal = ({
         head: [["Field", "Amount"]],
         body: summaryRows,
         theme: "plain",
-        styles: { fontSize: 10, cellPadding: 3 },
+        styles: { font: "NotoSans", fontSize: 10, cellPadding: 3 },
         headStyles: { fillColor: [241, 245, 249], textColor: [15, 23, 42], fontStyle: "bold" },
         columnStyles: { 0: { fontStyle: "bold", textColor: [100, 116, 139] } },
         margin: { left: 14 },
