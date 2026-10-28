@@ -190,9 +190,9 @@ Do not claim that a scenario has never been tested across the entire repository 
 
 ## Report generation protocol
 
-The Test Planner must write its test plan to a role-specific report after completing planning:
+The Test Planner must create or update its role-specific Markdown report at `.agents/reports/<task-slug>/test-planner-report.md` before returning its final response. This requirement applies when the agent's outcome is `COMPLETE`, `BLOCKED`, `NEEDS CLARIFICATION`, `FAILED`, or partially completed with unresolved questions. An incomplete task is not a reason to skip report creation.
 
-`.agents/reports/<task-slug>/test-planner-report.md`
+The agent must not simply print the report in chat and leave the expected file unwritten. It must actually save the file in the repository whenever it has filesystem write access. If filesystem write access is unavailable, it must clearly report that limitation rather than claim that a file was created.
 
 Where `<task-slug>` is a kebab-case identifier derived from the task subject (e.g., `salary-slip-pdf-formatting`). Before writing, confirm the correct task slug and read any existing reports in `.agents/reports/<task-slug>/`.
 

@@ -99,8 +99,17 @@ the user to repeat information already provided.
 
 ### B. Write a report after completing the assigned work
 
-Every agent must save its findings to its own role-specific Markdown report after the
-work is complete. For example:
+Every agent must create or update its own role-specific Markdown report before returning
+its final response. This requirement applies when the agent's outcome is `COMPLETE`,
+`BLOCKED`, `NEEDS CLARIFICATION`, `FAILED`, or partially completed with unresolved
+questions. An incomplete task is not a reason to skip report creation.
+
+The agent must not simply print the report in chat and leave the expected file unwritten.
+It must actually save the file in the repository whenever it has filesystem write access.
+If filesystem write access is unavailable, it must clearly report that limitation rather
+than claim that a file was created.
+
+Each agent writes to its own report file:
 
 - Code Auditor writes `.agents/reports/<task-slug>/code-auditor-report.md`
 - Test Planner writes `.agents/reports/<task-slug>/test-planner-report.md`

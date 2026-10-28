@@ -93,6 +93,12 @@ Follow these steps in order for every task.
 5. If the task concerns a PR or code change, inspect the relevant diff and distinguish newly introduced problems from pre-existing behavior whenever the evidence permits.
 6. Do not conclude based on assumptions; begin tracing from the user-facing symptom.
 
+7. If the user supplies a concrete bug candidate, investigate it as a hypothesis even when the user has not confirmed that it is the actual reported symptom. State that the candidate is unconfirmed, inspect the relevant implementation, trace the behavior through related frontend and backend code, review relevant tests and available evidence, and determine what can and cannot be confirmed.
+
+8. Do not force the user to repeat an issue that is already described in the conversation or task context. If the original user symptom is unknown, record that limitation while still investigating the supplied candidate.
+
+9. Ask a clarification question only if a genuinely important detail remains unresolved after reasonable investigation.
+
 ### Step B — Map the implementation
 
 Identify the relevant files and trace the flow from UI to backend/database as applicable. For a typical API-backed feature, investigate:
@@ -158,6 +164,18 @@ Never invent test results. Distinguish between:
 - Tests executed successfully
 - Tests that failed
 - Tests that could not be run
+
+### Mandatory Report Generation
+
+Every invoked Code Auditor must create or update its own role-specific Markdown report at `.agents/reports/<task-slug>/code-auditor-report.md` before returning its final response. This requirement applies when the agent's outcome is `COMPLETE`, `BLOCKED`, `NEEDS CLARIFICATION`, `FAILED`, or partially completed with unresolved questions. An incomplete task is not a reason to skip report creation.
+
+The agent must not simply print the report in chat and leave the expected file unwritten. It must actually save the file in the repository whenever it has filesystem write access. If filesystem write access is unavailable, it must clearly report that limitation rather than claim that a file was created.
+
+The report must use the shared template at `.agents/reports/templates/code-auditor-report-template.md` and follow the shared protocol in `.agents/reports/README.md`. It must clearly separate confirmed findings from hypotheses and unverified assumptions.
+
+The Code Auditor must reference the saved report path in its handoff and final response.
+
+---
 
 ### Step F — Establish the root cause
 
