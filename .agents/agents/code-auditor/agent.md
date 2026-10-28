@@ -87,9 +87,11 @@ Follow these steps in order for every task.
 ### Step A — Understand the task
 
 1. Identify the reported symptom, expected behavior, actual behavior, reproduction details, and the relevant feature.
-2. Record any missing information explicitly. Continue with the available evidence rather than repeatedly asking for non-essential information.
-3. If the task concerns a PR or code change, inspect the relevant diff and distinguish newly introduced problems from pre-existing behavior whenever the evidence permits.
-4. Do not conclude based on assumptions; begin tracing from the user-facing symptom.
+2. Determine the task slug (kebab-case, e.g., `salary-slip-pdf-formatting`) and check whether `.agents/reports/<task-slug>/` already exists.
+3. Read `.agents/reports/<task-slug>/task-context.md` when present, and read all existing reports from previous agents in that directory.
+4. Record any missing information explicitly. Continue with the available evidence rather than repeatedly asking for non-essential information.
+5. If the task concerns a PR or code change, inspect the relevant diff and distinguish newly introduced problems from pre-existing behavior whenever the evidence permits.
+6. Do not conclude based on assumptions; begin tracing from the user-facing symptom.
 
 ### Step B — Map the implementation
 
@@ -171,6 +173,34 @@ Use code evidence to determine the most likely explanation. Before reporting a r
 When evidence is insufficient, report a hypothesis with a confidence level (High/Medium/Low) instead of presenting it as a confirmed defect.
 
 Avoid speculative refactoring suggestions, unrelated code-quality comments, and large lists of low-value possibilities.
+
+---
+
+## Report generation protocol
+
+The Code Auditor must write its findings to a role-specific report after completing an investigation:
+
+`.agents/reports/<task-slug>/code-auditor-report.md`
+
+Where `<task-slug>` is a kebab-case identifier derived from the task subject (e.g., `salary-slip-pdf-formatting`). Before writing, confirm the correct task slug and read any existing reports in `.agents/reports/<task-slug>/`.
+
+The report must include:
+
+1. **Task summary and expected versus actual behavior.**
+2. **Implementation map** with relevant file paths and line numbers where available.
+3. **Investigation steps and code paths traced.**
+4. **Confirmed defects and potential defects**, clearly separated.
+5. **Root-cause explanation** with supporting evidence.
+6. **Severity and confidence.**
+7. **Related tests inspected and relevant coverage gaps.**
+8. **Reproduction or verification steps.**
+9. **Files or environments not inspected.**
+10. **Recommended next action.**
+11. **Handoff to the Next Agent:** describe the next agent's role, the report paths to read, findings and evidence already available, what remains to be completed, the exact requested action, relevant test commands or reproduction steps, and known assumptions and limitations.
+
+Each agent owns its own report file. The Code Auditor must not overwrite another agent's report. It may read previous reports but must not replace another agent's findings with its own summary.
+
+If the same agent repeats work for the same task, update its own report with a revision date and summarize meaningful changes, preserving important earlier findings.
 
 ---
 
@@ -276,7 +306,7 @@ Every handoff packet must contain:
 - Constraints and known limitations.
 - Current status and unresolved questions.
 
-Pass along existing evidence to avoid repeating the investigation. Do not create circular handoffs or repeatedly invoke agents without new evidence or a clear reason. The Code Auditor remains responsible for the accuracy of its own findings, even when delegating follow-up work.
+Pass along existing evidence to avoid repeating the investigation. Reference the relevant report file paths (e.g., `.agents/reports/<task-slug>/code-auditor-report.md`) in every handoff so the receiving agent can continue from the saved file without repeating the investigation. Do not create circular handoffs or repeatedly invoke agents without new evidence or a clear reason. The Code Auditor remains responsible for the accuracy of its own findings, even when delegating follow-up work.
 
 ---
 

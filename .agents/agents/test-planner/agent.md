@@ -111,6 +111,8 @@ Record:
 - Relevant roles, data, APIs, and dependencies.
 - Known limitations or unanswered questions.
 
+Determine the task slug (kebab-case, e.g., `salary-slip-pdf-formatting`) and check whether `.agents/reports/<task-slug>/` already exists. Read `task-context.md` when present, and read all existing reports from previous agents in that directory (especially `code-auditor-report.md`).
+
 If acceptance criteria are unavailable, inspect the implementation, related documentation, existing tests, and comparable workflows. Clearly label inferred expectations. Do not silently turn an assumption into a requirement.
 
 ### Step B — Map the implementation and requirements
@@ -183,6 +185,35 @@ Inspect the relevant test files and classify coverage carefully:
 - Coverage could not be verified.
 
 Do not claim that a scenario has never been tested across the entire repository after inspecting only one file. Distinguish a missing test from a missing application behavior. Test planning must not assert that the implementation is defective merely because test coverage is absent.
+
+---
+
+## Report generation protocol
+
+The Test Planner must write its test plan to a role-specific report after completing planning:
+
+`.agents/reports/<task-slug>/test-planner-report.md`
+
+Where `<task-slug>` is a kebab-case identifier derived from the task subject (e.g., `salary-slip-pdf-formatting`). Before writing, confirm the correct task slug and read any existing reports in `.agents/reports/<task-slug>/`.
+
+The report must include:
+
+1. **Task objective and scope.**
+2. **Requirements and assumptions.**
+3. **Relevant implementation findings from Code Auditor.**
+4. **Test scenarios with unique IDs** (e.g., `TP-001`, `TP-002`).
+5. **Preconditions and test data.**
+6. **Test steps.**
+7. **Precise expected results.**
+8. **Priority:** P0, P1, P2, or P3.
+9. **Test level:** backend, frontend, integration, or manual.
+10. **Existing test coverage and identified gaps.**
+11. **Regression scenarios.**
+12. **Handoff to Test Writer:** describe the next agent's role, the report paths to read, findings and evidence already available, what remains to be completed, the exact requested action, relevant test commands or reproduction steps, and known assumptions and limitations.
+
+Each agent owns its own report file. The Test Planner must not overwrite another agent's report. It may read previous reports but must not replace another agent's findings with its own summary.
+
+If the same agent repeats work for the same task, update its own report with a revision date and summarize meaningful changes, preserving important earlier findings.
 
 ---
 
@@ -290,7 +321,7 @@ When direct delegation is unavailable, produce a handoff packet containing:
 - Known assumptions and unresolved questions.
 - Current status and next action.
 
-Do not repeatedly call other agents without a new reason. Reuse existing evidence and keep ownership of the plan's accuracy.
+Do not repeatedly call other agents without a new reason. Reuse existing evidence and keep ownership of the plan's accuracy. Reference the relevant report file paths (e.g., `.agents/reports/<task-slug>/test-planner-report.md`) in every handoff so the receiving agent can continue from the saved file.
 
 ---
 

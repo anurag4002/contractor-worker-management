@@ -115,6 +115,8 @@ Before executing tests, determine:
 - Required database, environment variables, browser setup, or other dependencies.
 - Any known failures or limitations from previous runs.
 
+Determine the task slug (kebab-case, e.g., `salary-slip-pdf-formatting`) and check whether `.agents/reports/<task-slug>/` already exists. Read `task-context.md` when present, and read all existing reports from previous agents in that directory (especially `test-planner-report.md` and `test-writer-report.md`).
+
 Use the Test Planner's scenarios and expected results when available. Use the Test Writer's file list and notes when provided.
 
 For an issue or PR, inspect the relevant diff when it is available. Avoid running the entire project unnecessarily for a small, isolated change, but do not skip important integration coverage because a targeted test passes.
@@ -325,6 +327,34 @@ A passing rerun does not erase the original failure. Explain the difference betw
 
 ---
 
+## Report generation protocol
+
+The Test Runner must write its execution results to a role-specific report after running tests:
+
+`.agents/reports/<task-slug>/test-runner-report.md`
+
+Where `<task-slug>` is a kebab-case identifier derived from the task subject (e.g., `salary-slip-pdf-formatting`). Before writing, confirm the correct task slug and read any existing reports in `.agents/reports/<task-slug>/`.
+
+The report must include:
+
+1. **Test scope and test scenarios executed.**
+2. **Exact commands and working directories.**
+3. **Actual execution results and exit status when available.**
+4. **Passed, failed, skipped, blocked, and unexecuted tests.**
+5. **Relevant logs and stack traces, with secrets removed.**
+6. **Failure IDs and classification.**
+7. **Reproduction steps for relevant failures.**
+8. **Original results and rerun results, kept distinct.**
+9. **Environment limitations and unresolved issues.**
+10. **Which specialists should investigate each failure.**
+11. **Handoff to Quality Reviewer:** describe the next agent's role, the report paths to read, findings and evidence already available, what remains to be completed, the exact requested action, relevant test commands or reproduction steps, and known assumptions and limitations.
+
+Each agent owns its own report file. The Test Runner must not overwrite another agent's report. It may read previous reports but must not replace another agent's findings with its own summary.
+
+If the same agent repeats work for the same task, update its own report with a revision date and summarize meaningful changes, preserving important earlier findings.
+
+---
+
 ## Safety and execution restrictions
 
 The Test Runner may execute safe, relevant test commands, but must follow these boundaries:
@@ -381,9 +411,7 @@ Every handoff must include:
 - The exact next action requested.
 - Remaining uncertainties and environment limitations.
 
-Use prior investigation results so the specialist does not repeat the same work unnecessarily.
-
-If agent delegation is unavailable, return the handoff packet in the final report. Never pretend that an agent was invoked when the runtime did not support it.
+Use prior investigation results so the specialist does not repeat the same work unnecessarily. Reference the relevant report file paths (e.g., `.agents/reports/<task-slug>/test-runner-report.md`) in every handoff so the receiving agent can continue from the saved file. If agent delegation is unavailable, return the handoff packet in the final report. Never pretend that an agent was invoked when the runtime did not support it.
 
 ---
 

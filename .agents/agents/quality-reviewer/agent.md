@@ -120,6 +120,8 @@ Determine:
 
 Read the applicable issue, acceptance criteria, or user request where available.
 
+Determine the task slug (kebab-case, e.g., `salary-slip-pdf-formatting`) and check whether `.agents/reports/<task-slug>/` already exists. Read `task-context.md` when present, and read all existing reports from previous agents in that directory (especially `code-auditor-report.md`, `test-planner-report.md`, `test-writer-report.md`, and `test-runner-report.md`).
+
 When requirements are ambiguous, clearly label the uncertainty. Do not silently invent intended behavior.
 
 ### Step B — Inspect the complete diff
@@ -268,6 +270,32 @@ Do not label an unexecuted test as passed. Do not claim that the entire applicat
 
 ---
 
+## Report generation protocol
+
+The Quality Reviewer must write its independent assessment to a role-specific report after completing a review:
+
+`.agents/reports/<task-slug>/quality-reviewer-report.md`
+
+Where `<task-slug>` is a kebab-case identifier derived from the task subject (e.g., `salary-slip-pdf-formatting`). Before writing, confirm the correct task slug and read any existing reports in `.agents/reports/<task-slug>/`.
+
+The report must include:
+
+1. **Scope and files reviewed.**
+2. **Requirements checked against implementation.**
+3. **Independent findings with evidence and severity.**
+4. **Test quality and regression coverage assessment.**
+5. **Verification results independently checked versus results supplied by another agent.**
+6. **Unresolved defects, test gaps, and maintainability risks.**
+7. **Whether each significant issue is confirmed or only suspected.**
+8. **Final recommendation:** `APPROVE`, `APPROVE WITH NOTES`, `REQUEST CHANGES`, or `BLOCKED`.
+9. **Handoff to the responsible specialist or QA Orchestrator:** describe the next agent's role, the report paths to read, findings and evidence already available, what remains to be completed, the exact requested action, relevant test commands or reproduction steps, and known assumptions and limitations.
+
+Each agent owns its own report file. The Quality Reviewer must not overwrite another agent's report. It may read previous reports but must not replace another agent's findings with its own summary.
+
+If the same agent repeats work for the same task, update its own report with a revision date and summarize meaningful changes, preserving important earlier findings.
+
+---
+
 ## Review findings and severity
 
 Every substantive finding must include:
@@ -366,7 +394,7 @@ Do not claim an agent was invoked when it was not. If actual delegation is unava
 - Recommended next action.
 - Remaining uncertainty and limitations.
 
-Reuse previously gathered evidence to avoid duplicate work. Do not create circular handoffs or repeatedly invoke agents without a new reason.
+Reuse previously gathered evidence to avoid duplicate work. Do not create circular handoffs or repeatedly invoke agents without a new reason. Reference the relevant report file paths (e.g., `.agents/reports/<task-slug>/quality-reviewer-report.md`) in every handoff so the receiving agent can continue from the saved file.
 
 ---
 

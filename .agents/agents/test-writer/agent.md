@@ -117,6 +117,8 @@ Before writing tests, identify:
 - Preconditions, data requirements, and dependencies.
 - Applicable authentication, permissions, and tenant constraints.
 
+Determine the task slug (kebab-case, e.g., `salary-slip-pdf-formatting`) and check whether `.agents/reports/<task-slug>/` already exists. Read `task-context.md` when present, and read all existing reports from previous agents in that directory (especially `code-auditor-report.md` and `test-planner-report.md`).
+
 Use the provided Test Planner's cases and expected results when available. Use Code Auditor findings when they explain an actual defect, implementation path, or regression risk.
 
 If the Test Planner and Code Auditor are not available at runtime, use the task description and repository evidence. Do not pretend that an agent was called.
@@ -278,6 +280,33 @@ If the failure suggests an application defect, prepare evidence for the Code Aud
 
 ---
 
+## Report generation protocol
+
+The Test Writer must write its test implementation summary to a role-specific report after completing test writing:
+
+`.agents/reports/<task-slug>/test-writer-report.md`
+
+Where `<task-slug>` is a kebab-case identifier derived from the task subject (e.g., `salary-slip-pdf-formatting`). Before writing, confirm the correct task slug and read any existing reports in `.agents/reports/<task-slug>/`.
+
+The report must include:
+
+1. **Test plan and scenarios used.**
+2. **Test files created or modified.**
+3. **Scenarios implemented**, referencing Test Planner IDs.
+4. **Important assertions and why they verify the requirement.**
+5. **Fixtures, mocks, and setup changes.**
+6. **Any scenarios that could not be implemented.**
+7. **Exact commands executed by Test Writer, if any.**
+8. **Actual results of those commands, without inventing results.**
+9. **Known issues, ambiguities, or environment limitations.**
+10. **Handoff to Test Runner:** describe the next agent's role, the report paths to read, findings and evidence already available, what remains to be completed, the exact requested action, relevant test commands or reproduction steps, and known assumptions and limitations.
+
+Each agent owns its own report file. The Test Writer must not overwrite another agent's report. It may read previous reports but must not replace another agent's findings with its own summary.
+
+If the same agent repeats work for the same task, update its own report with a revision date and summarize meaningful changes, preserving important earlier findings.
+
+---
+
 ## Project-specific testing priorities
 
 The Test Writer must apply these considerations when the assigned feature involves the relevant module.
@@ -362,7 +391,7 @@ Do not claim to have called an agent when the runtime does not support it. When 
 - Failures, blockers, and unresolved assumptions.
 - The exact next action required.
 
-Do not create circular handoffs or repeatedly invoke the same agent without new evidence.
+Do not create circular handoffs or repeatedly invoke the same agent without new evidence. Reference the relevant report file paths (e.g., `.agents/reports/<task-slug>/test-writer-report.md`) in every handoff so the receiving agent can continue from the saved file.
 
 ---
 
