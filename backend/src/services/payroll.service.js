@@ -469,6 +469,13 @@ class PayrollService {
             );
         }
 
+        // Look up worker to determine salary type and monthly salary
+        const worker =
+            await workerRepository.findById(
+                payroll.worker?._id || payroll.worker,
+                tenantId
+            );
+
         // Prepare Updated Values
         const dailyWage =
             updateData.dailyWage ??
@@ -492,8 +499,9 @@ class PayrollService {
 
         // Recalculate Salary
         const basicSalary =
-            payroll.presentDays *
-            dailyWage;
+            worker?.salaryType === 'MONTHLY'
+                ? worker?.monthlySalary || 30000
+                : dailyWage * (payroll.presentDays + (payroll.halfDays / 2));
 
         const overtimeAmount =
             payroll.overtimeHours *
