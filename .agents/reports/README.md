@@ -20,6 +20,8 @@ role-specific Markdown report into a shared task directory under `.agents/report
 │   │   └── agent.md
 │   ├── quality-reviewer/
 │   │   └── agent.md
+│   ├── qa-orchestrator/
+│   │   └── agent.md
 │   └── ... other existing agents
 │
 └── reports/
@@ -33,10 +35,12 @@ role-specific Markdown report into a shared task directory under `.agents/report
     │
     └── <task-slug>/
         ├── task-context.md
+        ├── test-coverage-matrix.md        (project-wide mode)
         ├── code-auditor-report.md
         ├── test-planner-report.md
         ├── test-writer-report.md
         ├── test-runner-report.md
+        ├── test-execution-report.md     (project-wide mode)
         ├── quality-reviewer-report.md
         └── final-summary.md   (only when QA Orchestrator or coordinator exists)
 ```
@@ -186,6 +190,27 @@ necessarily that the application passed all checks. A Test Runner report can be
 complete while its test outcome is `FAIL`. A Quality Reviewer report can be complete
 with the recommendation `REQUEST CHANGES`. Do not equate agent task completion with
 successful verification.
+
+## Coverage statuses
+
+The shared coverage matrix uses these statuses for module/test-type coverage entries:
+
+- `COVERED` — test implemented and executed (or otherwise verified) with supporting evidence.
+- `PARTIAL` — some scenarios covered; meaningful gaps remain.
+- `MISSING` — no coverage found for the module or testing type.
+- `BLOCKED` — coverage cannot be established in the current environment.
+- `NOT APPLICABLE` — testing type not applicable to the module or scope, with reason.
+
+Project-wide reporting adds these task documents:
+
+- `task-context.md`
+- `test-coverage-matrix.md`
+- `code-auditor-report.md`
+- `test-planner-report.md`
+- `test-writer-report.md`
+- `test-execution-report.md`
+- `quality-reviewer-report.md`
+- `final-summary.md` (when QA Orchestrator or coordinator exists)
 
 ## Restrictions
 

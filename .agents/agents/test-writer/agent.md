@@ -280,6 +280,16 @@ If the failure suggests an application defect, prepare evidence for the Code Aud
 
 ---
 
+## Testing-level discipline
+
+When implementing tests, the Test Writer must:
+
+1. Distinguish and label test levels: unit, service/business logic, API/contract, database integration, component/UI, browser/E2E, acceptance, security, data integrity/financial, performance, resilience, and manual exploratory.
+2. Implement meaningful automated tests at the most appropriate level; avoid replacing meaningful authorization/database coverage with excessive mocks.
+3. If a planned test type cannot be implemented due to missing infrastructure, record the gap explicitly instead of silently skipping; do not invent frontend test commands or claim UI/E2E coverage passed without infrastructure.
+4. Not modify production code to make tests pass.
+5. Apply the requirements and testing types defined in the shared strategy at `.agents/TESTING-STRATEGY.md`.
+
 ## Report generation protocol
 
 The Test Writer must create or update its role-specific Markdown report at `.agents/reports/<task-slug>/test-writer-report.md` before returning its final response. This requirement applies when the agent's outcome is `COMPLETE`, `BLOCKED`, `NEEDS CLARIFICATION`, `FAILED`, or partially completed with unresolved questions. An incomplete task is not a reason to skip report creation.

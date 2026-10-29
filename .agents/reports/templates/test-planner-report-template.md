@@ -7,6 +7,7 @@
 - Agent: Test Planner
 - Date:
 - Status: NOT STARTED | IN PROGRESS | COMPLETE | BLOCKED | NEEDS CLARIFICATION | FAILED | NOT APPLICABLE
+- Testing mode: FEATURE / REGRESSION | PROJECT-WIDE
 - Input Reports Reviewed:
 
 ## Summary
