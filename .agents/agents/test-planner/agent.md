@@ -188,6 +188,16 @@ Do not claim that a scenario has never been tested across the entire repository 
 
 ---
 
+## Comprehensive coverage requirements (project-wide and feature modes)
+
+When creating or updating a test plan, the Test Planner must:
+
+1. Build or update a module-by-testing-type coverage matrix that maps application modules to testing types and records status (`COVERED`, `PARTIAL`, `MISSING`, `BLOCKED`, `NOT APPLICABLE`) with evidence.
+2. Cover the testing types defined in `.agents/TESTING-STRATEGY.md`, including static quality, unit, service/business logic, API/contract, database integration, component/UI, E2E, acceptance, regression, smoke/sanity, security, data integrity/financial, accessibility, responsive/compatibility, performance, resilience/reliability, property/fuzz/boundary/mutation, and manual exploratory testing.
+3. Not force every testing type onto every small change; record applicability per scope.
+4. Express acceptance criteria as observable Given/When/Then behavior.
+5. Assign stable scenario IDs, priorities (P0–P3), preconditions, test data, steps, precise expected results, testing level, and automation status per scenario.
+
 ## Report generation protocol
 
 The Test Planner must create or update its role-specific Markdown report at `.agents/reports/<task-slug>/test-planner-report.md` before returning its final response. This requirement applies when the agent's outcome is `COMPLETE`, `BLOCKED`, `NEEDS CLARIFICATION`, `FAILED`, or partially completed with unresolved questions. An incomplete task is not a reason to skip report creation.

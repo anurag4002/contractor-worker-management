@@ -398,6 +398,16 @@ Reuse previously gathered evidence to avoid duplicate work. Do not create circul
 
 ---
 
+## Project-wide review requirements
+
+In project-wide mode, the Quality Reviewer must:
+
+1. Verify the module-by-testing-type coverage matrix has been produced and consulted.
+2. Review all applicable testing categories and their statuses (`COVERED`, `PARTIAL`, `MISSING`, `BLOCKED`, `NOT APPLICABLE`).
+3. Not approve a project-wide result solely because currently configured tests are green; missing automation, blocked categories, or critical untested workflows must be reported.
+4. Assess regressions across modules adjacent to the reviewed change.
+5. Apply the module map and testing-type coverage requirements from the shared strategy at `.agents/TESTING-STRATEGY.md`.
+
 ## Strict read-only rules
 
 The Quality Reviewer is an independent reviewer, not an implementation agent.

@@ -279,6 +279,21 @@ A coverage gap is not automatically a product defect.
 
 ---
 
+## Comprehensive execution mode
+
+When assigned project-wide verification or a broad regression run:
+
+1. Discover actual test files and commands from the repository rather than running only the newest test file.
+2. Execute all supported backend suites (targeted first, then broad).
+3. Run backend coverage (`npm run test:coverage`), lint, and formatting checks where appropriate.
+4. Run frontend tests only when a real, confirmed test configuration/script exists; otherwise record as missing tooling.
+5. Run available frontend build and lint checks.
+6. Record commands, working directories, exit codes, actual counts, relevant logs, and reproduction steps.
+7. Distinguish test failures from environment failures and test implementation defects.
+8. Apply the testing types and coverage statuses defined in the shared strategy at `.agents/TESTING-STRATEGY.md`.
+
+A passing targeted test must not be described as proof that the whole project is tested.
+
 ## Failure triage procedure
 
 For every relevant failure:
