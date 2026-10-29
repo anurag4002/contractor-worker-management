@@ -14,153 +14,52 @@ const generateMockId = () => {
   return { toString: () => hex };
 };
 
-jest.mock('../../src/common/utils/jwt.util.js', () => ({
-  generateAccessToken: (payload) => {
-    const base64Payload = Buffer.from(JSON.stringify(payload)).toString('base64url');
-    return `mock-header.${base64Payload}.mock-signature`;
-  },
-  generateRefreshToken: (payload) => {
-    const base64Payload = Buffer.from(JSON.stringify({ ...payload, type: 'refresh' })).toString('base64url');
-    return `mock-header.${base64Payload}.mock-signature`;
-  },
-  verifyRefreshToken: (token) => {
-    const parts = token.split('.');
-    return JSON.parse(Buffer.from(parts[1], 'base64url').toString());
-  },
+const mockOwnerId = '507f1f77bcf86cd799439001';
+const mockSuperAdminId = '507f1f77bcf86cd799439003';
+
+// Mock Tenant model
+class MockTenant {
+  constructor(data) {
+    this._id = generateMockId();
+    this.companyName = data.companyName;
+    this.owner = data.owner || null;
+    this.email = data.email;
+    this.mobileNumber = data.mobileNumber;
+    this.address = data.address || null;
+    this.city = data.city || null;
+    this.district = data.district || null;
+    this.state = data.state || null;
+    this.pincode = data.pincode || null;
+    this.status = data.status || 'ACTIVE';
+    this.isDeleted = false;
+    this.createdAt = new Date();
+    this.updatedAt = new Date();
+  }
+}
+
+jest.mock('../../src/models/Tenant.js', () => ({
+  __esModule: true,
+  default: MockTenant,
 }));
 
-jest.mock('../../src/common/utils/password.util.js', () => ({
-  hashPassword: async (password) => `hashed_${password}`,
-  comparePassword: async (plain, hashed) => hashed === `hashed_${plain}`,
+// Mock Role model
+class MockRole {
+  constructor(data) {
+    this._id = generateMockId();
+    this.name = data.name;
+    this.code = data.code;
+    this.description = data.description || '';
+    this.permissions = data.permissions || [];
+    this.isSystemRole = data.isSystemRole || false;
+    this.status = data.status || 'ACTIVE';
+    this.isDeleted = false;
+  }
+}
+
+jest.mock('../../src/models/Role.js', () => ({
+  __esModule: true,
+  default: MockRole,
 }));
-
-jest.mock('../../src/models/Tenant.js', () => {
-  class MockTenant {
-    constructor(data) {
-      this._id = generateMockId();
-      this.companyName = data.companyName;
-      this.owner = data.owner || null;
-      this.email = data.email;
-      this.mobileNumber = data.mobileNumber;
-      this.address = data.address || null;
-      this.city = data.city || null;
-      this.district = data.district || null;
-      this.state = data.state || null;
-      this.pincode = data.pincode || null;
-      this.status = data.status || 'ACTIVE';
-      this.isDeleted = false;
-      this.createdAt = new Date();
-      this.updatedAt = new Date();
-    }
-  }
-
-  MockTenant.create = async (data) => {
-    const doc = new MockTenant(data);
-    mockTenantData.push(doc);
-    return doc;
-  };
-
-  MockTenant.findByIdAndUpdate = async (id, updateData) => {
-    const index = mockTenantData.findIndex((t) => t._id.toString() === id.toString());
-    if (index === -1) return null;
-    Object.assign(mockTenantData[index], updateData);
-    return mockTenantData[index];
-  };
-
-  MockTenant.findOne = async (query) => {
-    const { _id, email, owner } = query;
-    if (_id) {
-      return mockTenantData.find((t) => t._id.toString() === _id.toString() && !t.isDeleted) || null;
-    }
-    if (email) {
-      return mockTenantData.find((t) => t.email === email && !t.isDeleted) || null;
-    }
-    if (owner) {
-      return mockTenantData.find((t) => t.owner?.toString() === owner?.toString() && !t.isDeleted) || null;
-    }
-    return null;
-  };
-
-  return {
-    __esModule: true,
-    default: MockTenant,
-  };
-});
-
-jest.mock('../../src/models/User.js', () => {
-  class MockUser {
-    constructor(data) {
-      this._id = generateMockId();
-      this.fullName = data.fullName || 'Test User';
-      this.email = data.email;
-      this.mobileNumber = data.mobileNumber;
-      this.username = data.username || null;
-      this.password = data.password;
-      this.role = data.role;
-      this.tenant = data.tenant || null;
-      this.status = data.status || 'ACTIVE';
-      this.isDeleted = false;
-      this.refreshTokenHash = null;
-      this.failedLoginAttempts = 0;
-      this.lockUntil = null;
-      mockUserData.push(this);
-    }
-  }
-
-  MockUser.create = async (data) => {
-    const doc = new MockUser(data);
-    return doc;
-  };
-
-  MockUser.findOne = async (query) => {
-    const { _id, email, mobileNumber, username } = query;
-    if (_id) {
-      return mockUserData.find((u) => u._id.toString() === _id.toString() && !u.isDeleted) || null;
-    }
-    if (email) {
-      return mockUserData.find((u) => u.email === email && !u.isDeleted) || null;
-    }
-    if (mobileNumber) {
-      return mockUserData.find((u) => u.mobileNumber === mobileNumber && !u.isDeleted) || null;
-    }
-    if (username) {
-      return mockUserData.find((u) => u.username === username && !u.isDeleted) || null;
-    }
-    return null;
-  };
-
-  MockUser.countDocuments = async () => mockUserData.filter((u) => !u.isDeleted).length;
-
-  return {
-    __esModule: true,
-    default: MockUser,
-  };
-});
-
-jest.mock('../../src/models/Role.js', () => {
-  class MockRole {
-    constructor(data) {
-      this._id = generateMockId();
-      this.name = data.name;
-      this.code = data.code;
-      this.description = data.description || '';
-      this.permissions = data.permissions || [];
-      this.isSystemRole = data.isSystemRole || false;
-      this.status = data.status || 'ACTIVE';
-      this.isDeleted = false;
-    }
-  }
-
-  MockRole.findOne = async (query) => {
-    const { code } = query;
-    return mockRoleData.find((r) => r.code === code && !r.isDeleted) || null;
-  };
-
-  return {
-    __esModule: true,
-    default: MockRole,
-  };
-});
 
 jest.mock('../../src/repositories/auth.repository.js', () => ({
   __esModule: true,
@@ -207,13 +106,12 @@ jest.mock('../../src/repositories/auth.repository.js', () => ({
       const user = mockUserData.find((u) => u._id.toString() === userId.toString());
       if (user) {
         user.failedLoginAttempts += 1;
-        return user;
       }
-      return null;
+      return user;
     },
-    lockAccount: async (userId, until) => {
+    lockAccount: async (userId, lockUntil) => {
       const user = mockUserData.find((u) => u._id.toString() === userId.toString());
-      if (user) user.lockUntil = until;
+      if (user) user.lockUntil = lockUntil;
     },
     updateUserById: async (userId, data) => {
       const user = mockUserData.find((u) => u._id.toString() === userId.toString());
@@ -242,9 +140,6 @@ beforeAll(async () => {
 
   const authModule = await import('../../src/services/auth.service.js');
   authService = authModule.default;
-
-  const UserModule = await import('../../src/models/User.js');
-  MockUser = UserModule.default;
 });
 
 beforeEach(() => {
@@ -328,7 +223,7 @@ describe('Multi-Tenant Authentication', () => {
       expect(tenant1Id.toString()).not.toBe(tenant2Id.toString());
     });
 
-    it('tenant user should have correct tenant reference', () => {
+    it('tenant user should have correct tenant reference', async () => {
       expect(tenant1User.tenant.toString()).toBe(tenant1Id.toString());
       expect(tenant2User.tenant.toString()).toBe(tenant2Id.toString());
     });

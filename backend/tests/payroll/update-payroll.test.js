@@ -18,6 +18,7 @@ import ApiError from '../../src/common/errors/ApiError.js';
 
 import payrollRepository from '../../src/repositories/payroll.repository.js';
 import workerRepository from '../../src/repositories/worker.repository.js';
+import attendanceRepository from '../../src/repositories/attendance.repository.js';
 
 let payrollService;
 
@@ -37,7 +38,9 @@ beforeEach(() => {
   payrollRepository.update = jest.fn().mockImplementation(async (_id, data) => data);
   // Default: payroll not found. Individual tests override as needed.
   payrollRepository.findById = jest.fn().mockResolvedValue(null);
+  payrollRepository.findByWorkerAndMonth = jest.fn().mockResolvedValue(null);
   workerRepository.findById = jest.fn().mockResolvedValue(null);
+  attendanceRepository.findByWorkerAndMonth = jest.fn().mockResolvedValue([]);
 });
 
 /*
@@ -247,5 +250,54 @@ describe('Payroll Service - updatePayroll()', () => {
     ).rejects.toBeInstanceOf(ApiError);
 
     expect(payrollRepository.update).not.toHaveBeenCalled();
+  });
+
+  it('TP-013: recalculatePayroll and updatePayroll produce consistent basicSalary for a MONTHLY worker', async () => {
+    const payroll = buildPayroll({
+      status: 'GENERATED',
+      presentDays: 22,
+      halfDays: 0,
+      basicSalary: 17600,
+      bonus: 0,
+      deduction: 0,
+      advanceDeduction: 0,
+      overtimeHours: 0,
+      paid: 0,
+    });
+
+    // updatePayroll path (fixed): resolves worker salary context and recalculates.
+    payrollRepository.findById.mockResolvedValue(payroll);
+    workerRepository.findById.mockResolvedValue(
+      buildWorker({ salaryType: 'MONTHLY', monthlySalary: 30000, dailyWage: 800 })
+    );
+
+    const updatedResult = await payrollService.updatePayroll(
+      payrollId,
+      { bonus: 100 },
+      updatedBy,
+      tenantId
+    );
+
+    // MONTHLY worker: basicSalary must come from monthlySalary, not day-rate math.
+    expect(updatedResult.basicSalary).toBe(30000);
+
+    // recalculatePayroll path: same worker context via calculatePayrollFromAttendance.
+    payrollRepository.findByWorkerAndMonth.mockResolvedValue(payroll);
+    attendanceRepository.findByWorkerAndMonth.mockResolvedValue([
+      { status: 'PRESENT', regularHours: 8, overtimeHours: 0 },
+    ]);
+    workerRepository.findById.mockResolvedValue(
+      buildWorker({ salaryType: 'MONTHLY', monthlySalary: 30000, dailyWage: 800 })
+    );
+
+    const recalculated = await payrollService.recalculatePayroll(
+      6,
+      2026,
+      workerId,
+      tenantId,
+      updatedBy
+    );
+
+    expect(recalculated.payroll.basicSalary).toBe(30000);
   });
 });

@@ -1,22 +1,148 @@
+import { jest } from '@jest/globals';
+
+// Mock CJS packages that work with transform: {}
+jest.mock('jsonwebtoken', () => {
+  const actual = jest.requireActual('jsonwebtoken');
+  return {
+    ...actual,
+    verify: jest.fn((token, secret) => {
+      const parts = token.split('.');
+      if (parts.length !== 3) throw new Error('invalid token');
+      try {
+        return JSON.parse(Buffer.from(parts[1], 'base64url').toString());
+      } catch {
+        throw new Error('invalid token');
+      }
+    }),
+    sign: actual.sign,
+    decode: actual.decode,
+  };
+});
+
+jest.mock('mongoose', () => {
+  const actual = jest.requireActual('mongoose');
+
+  const mockSuperAdminUser = {
+    _id: mockSuperAdminId,
+    email: 'superadmin@test.com',
+    role: {
+      _id: 'role-1',
+      code: 'SUPER_ADMIN',
+      permissions: [
+        { code: 'TENANT_CREATE' },
+        { code: 'TENANT_READ' },
+        { code: 'TENANT_UPDATE' },
+        { code: 'TENANT_DELETE' },
+      ],
+      status: 'ACTIVE',
+    },
+    status: 'ACTIVE',
+    tenant: null,
+  };
+
+  const mockOwnerUser = {
+    _id: mockOwnerId,
+    email: 'owner@test.com',
+    role: {
+      _id: 'role-owner',
+      code: 'TENANT_ADMIN',
+      permissions: [{ code: 'TENANT_READ' }],
+      status: 'ACTIVE',
+    },
+    status: 'ACTIVE',
+    tenant: null,
+  };
+
+  let createdTenantData = null;
+
+  // Chainable mock query object that is also thenable (for await User.findOne())
+  const makeMockQuery = (resolvedUser) => ({
+    select: jest.fn().mockReturnThis(),
+    populate: jest.fn().mockReturnThis(),
+    sort: jest.fn().mockReturnThis(),
+    skip: jest.fn().mockReturnThis(),
+    limit: jest.fn().mockReturnThis(),
+    exec: jest.fn().mockResolvedValue(resolvedUser),
+    lean: jest.fn().mockReturnThis(),
+    then: jest.fn((resolve) => resolve(resolvedUser)),
+  });
+
+  return {
+    ...actual,
+    connect: jest.fn().mockResolvedValue({
+      connection: { host: 'test-mongodb', readyState: 1 },
+    }),
+    connection: {
+      ...actual.connection,
+      readyState: 1,
+      on: jest.fn(),
+      once: jest.fn(),
+      emit: jest.fn(),
+    },
+    model: jest.fn((name) => {
+      const MockModel = {
+        create: jest.fn().mockImplementation((data) => {
+          createdTenantData = { _id: 'mock-id-1', ...data };
+          return Promise.resolve(createdTenantData);
+        }),
+        findOne: jest.fn().mockImplementation((query) => {
+          if (query && query._id === 'mock-id-1') {
+            return makeMockQuery(createdTenantData);
+          }
+          if (query && query._id === mockOwnerId) {
+            return makeMockQuery(mockOwnerUser);
+          }
+          if (query && query.email) {
+            // Email lookup - no existing tenant with this email
+            return makeMockQuery(null);
+          }
+          if (query && query.owner) {
+            // Owner lookup - no existing tenant for this owner
+            return makeMockQuery(null);
+          }
+          return makeMockQuery(mockSuperAdminUser);
+        }),
+        findById: jest.fn().mockImplementation((id) => {
+          if (id === 'mock-id-1') {
+            return makeMockQuery(createdTenantData);
+          }
+          if (id === mockOwnerId) {
+            return makeMockQuery(mockOwnerUser);
+          }
+          return makeMockQuery(mockSuperAdminUser);
+        }),
+        find: jest.fn().mockReturnValue(makeMockQuery([])),
+        countDocuments: jest.fn().mockResolvedValue(0),
+        findByIdAndUpdate: jest.fn().mockResolvedValue({ _id: 'mock-id' }),
+        findOneAndUpdate: jest.fn().mockResolvedValue({ _id: 'mock-id' }),
+        updateOne: jest.fn().mockResolvedValue({ modifiedCount: 1 }),
+        deleteOne: jest.fn().mockResolvedValue({ deletedCount: 1 }),
+      };
+      return MockModel;
+    }),
+    Schema: actual.Schema,
+    Types: actual.Types,
+  };
+});
+
 import request from 'supertest';
 
 let app;
 
-beforeAll(async () => {
-  app = (await import('../../src/app.js')).default;
-});
+const mockOwnerId = '507f1f77bcf86cd799439001';
+const mockSuperAdminId = '507f1f77bcf86cd799439003';
 
 const createToken = (payload) => {
   const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
   const base64Payload = Buffer.from(JSON.stringify(payload)).toString('base64url');
-  const signature = 'mock-signature';
-  return `${header}.${base64Payload}.${signature}`;
+  return `${header}.${base64Payload}.mock-signature`;
 };
 
-const mockOwnerId = '507f1f77bcf86cd799439001';
-const mockSuperAdminId = '507f1f77bcf86cd799439003';
-
 describe('Tenant Module', () => {
+  beforeAll(async () => {
+    app = (await import('../../src/app.js')).default;
+  });
+
   describe('POST /api/v1/tenants - Create Tenant', () => {
     it('should create a tenant successfully with SUPER_ADMIN', async () => {
       const token = createToken({
@@ -28,7 +154,7 @@ describe('Tenant Module', () => {
       const tenantData = {
         companyName: 'Test Construction Co.',
         owner: mockOwnerId,
-        email: `tenant${Date.now()}test.com`,
+        email: `tenant${Date.now()}@test.com`,
         mobileNumber: '9876543210',
         address: '123 Test Street',
         city: 'Mumbai',

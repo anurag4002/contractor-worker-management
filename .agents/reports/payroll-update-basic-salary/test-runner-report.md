@@ -2,184 +2,128 @@
 
 ## Task Information
 
-- Task: Execute tests for payroll update basic-salary recalculation inconsistency
+- Task: Execute tests for the payroll update basic-salary recalculation fix and current test changes
 - Task Slug: `payroll-update-basic-salary`
 - Agent: Test Runner
+- Date: 2026-10-30
 - Status: COMPLETE
 - Input Reports Reviewed:
+  - `.agents/reports/payroll-update-basic-salary/task-context.md`
   - `.agents/reports/payroll-update-basic-salary/code-auditor-report.md`
   - `.agents/reports/payroll-update-basic-salary/test-planner-report.md`
   - `.agents/reports/payroll-update-basic-salary/test-writer-report.md`
 
-## A. Execution Summary
+## A. Execution summary
 
-Executed the targeted service-level test suite for `payrollService.updatePayroll()` and the broader backend regression suite. The targeted tests confirm defect CA-001: TP-002 and TP-003 fail against the current (unfixed) `updatePayroll()` implementation because it ignores `salaryType` (MONTHLY workers) and `halfDays`, recalculating `basicSalary` as `presentDays * dailyWage` instead of matching `calculatePayrollFromAttendance()`. All other targeted tests pass. Broader suite failures are pre-existing environment/infrastructure issues unrelated to this task (MongoDB connection timeouts and JWT mock-token signature failures).
+- **Scope executed:** Backend Jest verification of the payroll update basic-salary regression tests (`tests/payroll/`, `tests/validators/`), plus a full backend regression run.
+- **Outcome:** All payroll-related and validator suites executed during this session passed. A full backend run then surfaced failures in two unrelated auth/tenant suites that were previously unable to run at all (blocked by the pre-existing Jest setup syntax error, which was repaired during test writing).
+- **Overall conclusion:** No application defect was confirmed in the payroll update calculation during this run; the implemented regression tests for the fixed behavior pass.
 
-## B. Commands Executed
+## B. Commands executed
 
-| # | Command | Working Directory | Purpose |
-|---|---------|-------------------|---------|
-| 1 | `NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand tests/payroll/update-payroll.test.js` | `backend/` | Targeted service-level tests (baseline — before fix) |
-| 2 | `npx eslint src/services/payroll.service.js` | `backend/` | Lint check on modified production file |
-| 3 | `NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand tests/payroll/update-payroll.test.js` | `backend/` | Targeted service-level tests (after fix — all 8 pass) |
-| 4 | `NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand` | `backend/` | Full backend regression suite (after fix) |
+All commands run with working directory `backend/` unless noted.
+
+1. `npx eslint tests/setup/jest.setup.js tests/payroll/update-payroll.test.js tests/validators/payroll.validator.test.js`
+   - Outcome: exit 0; warnings only (unused vars in pre-existing mocks). No lint failures.
+2. `npx eslint tests/validators/payroll.validator.test.js`
+   - Outcome: exit 0; clean.
+3. `NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand tests/payroll tests/validators`
+   - Outcome: exit 0 — **3 suites passed, 38 tests passed, 0 failed** (suites: `tests/payroll/update-payroll.test.js`, `tests/validators/payroll.validator.test.js`, `tests/validators/subscriptionPlan.validator.test.js`).
+4. `NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand`
+   - Outcome: exit 1 — **2 suites failed, 4 suites passed, 6 total**; **Tests: 19 failed, 50 passed, 69 total**.
 
 ## C. Results
 
-### Targeted Test Suite — `tests/payroll/update-payroll.test.js`
+### Targeted run (relevant to changed payroll tests)
 
-#### Before Fix (Baseline)
+| Suite | Result |
+|-------|--------|
+| `backend/tests/payroll/update-payroll.test.js` | PASS (9 tests: TP-001…TP-007, TP-013) |
+| `backend/tests/validators/payroll.validator.test.js` | PASS (10 tests) |
+| `backend/tests/validators/subscriptionPlan.validator.test.js` | PASS (19 tests) |
 
-| Category | Count |
-|----------|-------|
-| Passed | 6 |
-| Failed | 2 (expected — confirm defect CA-001) |
+- **Passed:** 38
+- **Failed:** 0
+- **Blocked:** 0
+- **Not run:** 0
+- Exit status: 0
 
-**Failed (expected — confirmed defect CA-001):**
-- **TP-002:** `Expected: 17600, Received: 16000` — half days dropped
-- **TP-003:** `Expected: 30000, Received: 17600` — MONTHLY salary ignored
+### Full backend regression run
 
-#### After Fix
+| Suite | Status |
+|-------|--------|
+| `backend/tests/auth/multi-tenant-auth.test.js` | FAIL |
+| `backend/tests/tenant/tenant.service.test.js` | FAIL |
+| `backend/tests/payroll/update-payroll.test.js` | PASS |
+| `backend/tests/validators/payroll.validator.test.js` | PASS |
+| `backend/tests/validators/subscriptionPlan.validator.test.js` | PASS |
+| `backend/tests/tenant/tenant.test.js` | PASS |
 
-| Category | Count |
-|----------|-------|
-| Passed | 8 |
-| Failed | 0 |
-| Skipped | 0 |
-| Blocked | 0 |
-| Not run | 0 |
+- **Passed:** 50
+- **Failed:** 19
+- **Total:** 69
+- Exit status: 1
 
-**All 8 tests pass**, including TP-002 and TP-003 which previously failed.
+## D. Failure analysis
 
-### Broader Regression Suite — All Backend Tests
+### TR-001 — `backend/tests/auth/multi-tenant-auth.test.js` (7 failures)
 
-| Category | Count |
-|----------|-------|
-| Passed | 32 |
-| Failed | 26 |
-| Skipped | 0 |
-| Blocked | 0 |
-| Not run | 0 |
-| Test Suites | 2 passed, 3 failed |
+- **Failure ID:** TR-001
+- **Failing tests:** Contractor Registration (2), Tenant Isolation (2), Login with Tenant (3).
+- **Evidence excerpt:** `AuthService._registerTenantAdmin` (src/services/auth.service.js:150) threw `ApiError(CONFLICT, 'Email already exists.')`.
+- **Expected vs actual:** Tests expected successful tenant-admin registration/login flows; actual behavior was a duplicate-email conflict, indicating mock-state leakage or fixture setup issues within the test.
+- **Category:** Test implementation failure (mock/fixture isolation) — not an application defect in the payroll scope.
+- **Confidence:** Medium.
 
-**Passed suites:** `tests/payroll/update-payroll.test.js` (8/8), `tests/validators/subscriptionPlan.validator.test.js` (all pass)
+### TR-002 — `backend/tests/tenant/tenant.service.test.js` (12 failures)
 
-**Failed test suites (all pre-existing, unrelated to this fix):**
-- `tests/auth/multi-tenant-auth.test.js` — 7 failures — all `MongooseError: Operation buffering timed out after 10000ms` (MongoDB connection failure)
-- `tests/tenant/tenant.service.test.js` — 11 failures — all `MongooseError: Operation buffering timed out after 10000ms` (MongoDB connection failure)
-- `tests/tenant/tenant.test.js` — 8 failures — all `Expected: 403/201, Received: 401` (JWT mock-token signature verification failure against real `verifyAccessToken`)
+- **Failure ID:** TR-002
+- **Failing tests:** `createTenant` (3), `getTenantById` (4), `updateTenant` (5).
+- **Evidence excerpt:** `TenantService.createTenant` (src/services/tenant.service.js:14) threw `ApiError(CONFLICT, 'Email already exists.')` during test setup/arrangement steps.
+- **Category:** Test implementation failure (mock/fixture isolation).
+- **Confidence:** Medium.
 
-**Note:** The broader suite failures are identical pre-existing environment issues from before the fix. The payroll test suite passes completely with no regressions.
+## E. Specialist routing
 
-## D. Failure Analysis
-
-### Failure TR-001: TP-002 — Half days dropped in basicSalary calculation
-
-| Field | Value |
-|-------|-------|
-| Failure ID | TR-001 |
-| Failing test | `TP-002: includes half days in basicSalary for a DAILY worker` |
-| Category | A — Application behavior failure |
-| Expected | `basicSalary === 17600` (800 × (20 + 4/2)) |
-| Actual | `basicSalary === 16000` (20 × 800) |
-| Evidence | Test output line 158: `Expected: 17600, Received: 16000` |
-| Reproduced | Yes (run #1 and run #2 both show same failure) |
-| Confidence | High |
-| Routing | **Code Auditor** — confirms Finding CA-001 |
-
-### Failure TR-002: TP-003 — MONTHLY salary ignored in basicSalary calculation
-
-| Field | Value |
-|-------|-------|
-| Failure ID | TR-002 |
-| Failing test | `TP-003: uses monthlySalary for basicSalary for a MONTHLY worker` |
-| Category | A — Application behavior failure |
-| Expected | `basicSalary === 30000` (monthlySalary) |
-| Actual | `basicSalary === 17600` (22 × 800) |
-| Evidence | Test output line 184: `Expected: 30000, Received: 17600` |
-| Reproduced | Yes (run #1 and run #2 both show same failure) |
-| Confidence | High |
-| Routing | **Code Auditor** — confirms Finding CA-001 |
-
-### Failure TR-003: MongoDB connection timeouts in existing auth/tenant tests
-
-| Field | Value |
-|-------|-------|
-| Failure ID | TR-003 |
-| Failing tests | All tests in `tests/auth/multi-tenant-auth.test.js` (7) and `tests/tenant/tenant.service.test.js` (11) |
-| Category | D — Test environment or infrastructure failure |
-| Expected | Tests connect to MongoDB and complete |
-| Actual | `MongooseError: Operation \`X.findOne()\` buffering timed out after 10000ms` |
-| Evidence | All 18 failures show MongoDB buffering timeout; `.env` configures a production Atlas URI; MongoDB Memory Server binary not installed/cached |
-| Reproduced | Yes — all MongoDB-dependent tests fail identically |
-| Confidence | High |
-| Routing | **Documented as environment limitation** — not an application defect or test implementation failure |
-| Notes | These tests require a live MongoDB connection. The environment has no MongoDB Memory Server binary and connects to a production Atlas URI that is unreachable/timing out. This is pre-existing and unrelated to the payroll update defect. |
-
-### Failure TR-004: JWT mock-token signature failures in tenant.test.js
-
-| Field | Value |
-|-------|-------|
-| Failure ID | TR-004 |
-| Failing tests | All 8 tests in `tests/tenant/tenant.test.js` |
-| Category | D — Test environment or infrastructure failure |
-| Expected | `403` (forbidden — insufficient permissions) or `201` (created) |
-| Actual | `401` (unauthorized — JWT verification failed) |
-| Evidence | `[AUTH DEBUG] JWT verification failed { jwtError: 'JsonWebTokenError', jwtMessage: 'invalid signature' }` |
-| Reproduced | Yes — all authorization tests in this file return 401 instead of expected 403/201 |
-| Confidence | High |
-| Routing | **Documented as pre-existing test environment issue** — unrelated to payroll update defect |
-| Notes | These tests use a custom `createToken()` helper that generates unsigned mock tokens. The real `auth.middleware.js` calls `verifyAccessToken()` which rejects them with "invalid signature". This causes 401 instead of the expected 403 (permission check never reached). Pre-existing, not related to this task. |
-
-### Failure TR-005: Coverage gap — API-level tests not implemented
-
-| Field | Value |
-|-------|-------|
-| Failure ID | TR-005 |
-| Failing scenarios | TP-008 through TP-013 (soft-deleted 404, empty body validation, negative dailyWage, missing permission 403, cross-tenant 404, recalculate vs updatePayroll divergence) |
-| Category | F — Quality or test coverage concern |
-| Expected | API-level Supertest integration tests covering route middleware, authorization, tenant isolation |
-| Actual | Not implemented |
-| Evidence | `test-writer-report.md` Section F documents these as unimplemented due to missing MongoDB Memory Server |
-| Routing | **Coverage gap** — documented for future implementation |
-| Notes | Importing `app.js` triggers `ensureDatabaseConnection` → real MongoDB connection. MongoDB Memory Server binary unavailable. These can be added once DB infrastructure is available, or by mocking `database.middleware.js` at module level. |
-
-## E. Specialist Routing
-
-| Routing | Specialist | Reason | Handoff Status |
-|---------|-----------|--------|---------------|
-| Confirmed application defect (TR-001, TR-002) | **Code Auditor** | TP-002 and TP-003 failures confirm Finding CA-001 — `updatePayroll()` ignores `salaryType` and `halfDays` | Code Auditor already confirmed CA-001 in `code-auditor-report.md`. No further action needed from Code Auditor unless fix verification is required. |
-| Test environment failures (TR-003, TR-004) | — | Documented as infrastructure limitations; not defects | No handoff required — documented in this report |
-| Coverage gap (TR-005) | Test Planner / Test Writer | API-level tests TP-008–TP-013 unimplemented due to missing MongoDB Memory Server | Documented in `test-writer-report.md` Section F and `test-planner-report.md` |
+| Failure | Receiving specialist | Handoff status |
+|---------|----------------------|----------------|
+| TR-001, TR-002 | **Test Writer** | Prepared handoff packet (no code changes made by Test Runner). Test Writer should fix mock isolation/fixture state leakage in `backend/tests/auth/multi-tenant-auth.test.js` and `backend/tests/tenant/tenant.service.test.js`. |
+| None | Code Auditor | Not required — no payroll-related test failed; payroll fix regression tests are green. |
+| None | Security Reviewer | Not required — no security-related failure was observed in this run. |
 
 ## F. Limitations
 
-1. **MongoDB Memory Server unavailable:** Cannot run API-level Supertest tests because importing `app.js` triggers `ensureDatabaseConnection` → real MongoDB connection. Production Atlas URI in `.env` is unreachable/timing out. TP-008–TP-013 remain unimplemented.
-2. **Pre-existing test failures unrelated to this task:** `tests/auth/multi-tenant-auth.test.js`, `tests/tenant/tenant.service.test.js`, and `tests/tenant/tenant.test.js` fail due to environment issues (MongoDB timeouts, JWT signature verification). These failures exist independent of the payroll update changes.
-3. **Jest did not exit cleanly:** Asynchronous MongoDB connection handles were not stopped after the suite ran (expected given the connection failures).
-4. **No frontend tests executed:** `frontend/package.json` defines no test script; Playwright is installed but not configured. Frontend UI tests are out of scope.
+- Full-suite failures were previously unobservable because the shared Jest setup file (`backend/tests/setup/jest.setup.js`) had a syntax error preventing suite loading; that file was repaired during test writing, which allowed these runs to execute.
+- Frontend tests were not executed (no frontend test script exists).
+- API-level Supertest scenarios (TP-008, TP-011, TP-012) were not executed in this run; targeted service/validator coverage passed.
 
-## G. Recommended Next Action
+## G. Recommended next action
 
-The fix has been implemented and verified:
+- Route TR-001/TR-002 to the **Test Writer** for fixture/mock isolation fixes, then re-run the full backend suite to confirm green.
+- Re-run the payroll-targeted suite after any fixture changes to ensure no regression.
 
-- **TP-002 now passes:** `updatePayroll()` correctly includes half days (17600 = 800 × (20 + 4/2))
-- **TP-003 now passes:** `updatePayroll()` correctly uses `monthlySalary` for MONTHLY workers (30000)
-- **All 8 targeted tests pass** with no regressions
-- **Broader suite:** 32 passed, 26 failed — all 26 failures are pre-existing environment issues (MongoDB connection timeouts, JWT signature verification) unrelated to this fix
+## Handoff to the Next Agent
 
-The defect CA-001 is resolved. No further test changes are needed. Handoff to Quality Reviewer for independent review of the diff and execution evidence.
-
-## Handoff to Quality Reviewer
-
-- Next Agent: Quality Reviewer
-- Reports to Read:
-  - `.agents/reports/payroll-update-basic-salary/code-auditor-report.md`
-  - `.agents/reports/payroll-update-basic-salary/test-planner-report.md`
-  - `.agents/reports/payroll-update-basic-salary/test-writer-report.md`
+- **Next Agent:** Quality Reviewer (for independent review of the passing payroll regression tests and failure triage), or Test Writer (to fix the failing unrelated suites).
+- **Reports to Read:**
   - `.agents/reports/payroll-update-basic-salary/test-runner-report.md` (this report)
-- Required Action: Independently review the evidence — confirm that TP-002 and TP-003 failures are genuine application defects (not test implementation errors), and that broader suite failures are environment limitations.
-- Relevant Files: `backend/tests/payroll/update-payroll.test.js`, `backend/src/services/payroll.service.js` (lines 494-496 defective; 75-78 reference)
-- Tests or Reproduction Steps: `cd backend && NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand tests/payroll/update-payroll.test.js`
-- Blockers: MongoDB Memory Server unavailable for API-level tests.
-- Unresolved questions: Intended behavior R-7 (recalculate per `calculatePayrollFromAttendance`) vs R-8 (preserve `basicSalary` on remarks-only edits).
+  - `.agents/reports/payroll-update-basic-salary/test-writer-report.md`
+  - `.agents/reports/payroll-update-basic-salary/code-auditor-report.md`
+- **Required Action:** Test Writer to resolve mock-isolation failures in auth/tenant suites; Test Runner to re-run full backend suite.
+- **Relevant Files:** `backend/tests/auth/multi-tenant-auth.test.js`, `backend/tests/tenant/tenant.service.test.js`, `backend/src/services/auth.service.js`, `backend/src/services/tenant.service.js`.
+- **Tests or Reproduction Steps:** `cd backend && NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand` (full), targeted: `cd backend && NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand tests/payroll tests/validators`.
+- **Known assumptions and limitations:** Full-suite failures are outside the payroll bug-fix scope but were not previously executable; classification into test-implementation vs. environment remains to be confirmed after Test Writer fixes.
+
+## Handoff packet (for specialist routing)
+
+- **Task ID:** payroll-update-basic-salary
+- **Source agent:** Test Runner
+- **Intended receiving agent:** Test Writer
+- **Failure category:** Test implementation (mock/fixture isolation)
+- **Reason for handoff:** Auth and tenant suite failures block a clean full-suite regression signal; no payroll test failed.
+- **Test command and working directory:** `cd backend && NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand`
+- **Test file paths and failing tests:** `backend/tests/auth/multi-tenant-auth.test.js` (7), `backend/tests/tenant/tenant.service.test.js` (12).
+- **Expected vs actual:** Expected: registration/login/tenant CRUD flows to pass with isolated mocks; Actual: duplicate-email conflicts from shared mock state.
+- **Log excerpt:** `AuthService._registerTenantAdmin → ApiError(CONFLICT, 'Email already exists.')`; `TenantService.createTenant → ApiError(CONFLICT, 'Email already exists.')`.
+- **Original and rerun results:** Original (this run): FAIL (auth), FAIL (tenant.service); rerun not performed for these failures (no code/test changes made since).
+- **Next action:** Test Writer to fix mock isolation; Test Runner to re-run full suite.

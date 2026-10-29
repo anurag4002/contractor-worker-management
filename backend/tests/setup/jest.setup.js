@@ -1,7 +1,104 @@
 import { jest } from '@jest/globals';
 
-jest.mock('../../src/middlewares/auth.middleware.js', () => {
-  return function(req, res, next) {
+// Mock mongoose to prevent connections to production Atlas URI during tests.
+// mongoose is a CJS package, so jest.mock can intercept it even with transform: {}.
+jest.mock('mongoose', () => {
+  const actual = jest.requireActual('mongoose');
+  return {
+    ...actual,
+    connect: jest.fn().mockResolvedValue({
+      connection: {
+        host: 'test-mongodb',
+        readyState: 1,
+      },
+    }),
+    connection: {
+      ...actual.connection,
+      readyState: 1,
+      on: jest.fn(),
+      once: jest.fn(),
+      emit: jest.fn(),
+    },
+    model: jest.fn((name) => {
+      const mockUser = {
+        _id: 'mock-user-id',
+        email: 'test@test.com',
+        role: {
+          _id: 'role-1',
+          code: 'SUPER_ADMIN',
+          permissions: [
+            { code: 'TENANT_CREATE' },
+            { code: 'TENANT_READ' },
+            { code: 'TENANT_UPDATE' },
+            { code: 'TENANT_DELETE' },
+          ],
+          status: 'ACTIVE',
+        },
+        status: 'ACTIVE',
+        tenant: null,
+      };
+      const MockModel = {
+        create: jest.fn().mockResolvedValue({ _id: 'mock-id' }),
+        findOne: jest.fn().mockImplementation((query) => {
+          const mockQuery = {
+            select: jest.fn().mockReturnThis(),
+            populate: jest.fn().mockReturnThis(),
+            sort: jest.fn().mockReturnThis(),
+            skip: jest.fn().mockReturnThis(),
+            limit: jest.fn().mockReturnThis(),
+            exec: jest.fn().mockResolvedValue(mockUser),
+            lean: jest.fn().mockReturnThis(),
+            then: jest.fn((resolve) => resolve(mockUser)),
+          };
+          return mockQuery;
+        }),
+        findById: jest.fn().mockResolvedValue({ _id: 'mock-id' }),
+        find: jest.fn().mockReturnValue({
+          select: jest.fn().mockReturnThis(),
+          populate: jest.fn().mockReturnThis(),
+          sort: jest.fn().mockReturnThis(),
+          skip: jest.fn().mockReturnThis(),
+          limit: jest.fn().mockReturnThis(),
+          exec: jest.fn().mockResolvedValue([]),
+          lean: jest.fn().mockReturnThis(),
+        }),
+        countDocuments: jest.fn().mockResolvedValue(0),
+        findByIdAndUpdate: jest.fn().mockResolvedValue({ _id: 'mock-id' }),
+        findOneAndUpdate: jest.fn().mockResolvedValue({ _id: 'mock-id' }),
+        updateOne: jest.fn().mockResolvedValue({ modifiedCount: 1 }),
+        deleteOne: jest.fn().mockResolvedValue({ deletedCount: 1 }),
+      };
+      return MockModel;
+    }),
+  };
+});
+
+// Mock jsonwebtoken.verify so auth.middleware.js accepts test tokens.
+// jsonwebtoken is a CJS package, so jest.mock can intercept it.
+jest.mock('jsonwebtoken', () => {
+  const actual = jest.requireActual('jsonwebtoken');
+  return {
+    ...actual,
+    verify: jest.fn((token, secret) => {
+      // Accept any 3-part token as valid and return a mock payload
+      const parts = token.split('.');
+      if (parts.length !== 3) {
+        throw new Error('invalid token');
+      }
+      try {
+        return JSON.parse(Buffer.from(parts[1], 'base64url').toString());
+      } catch {
+        throw new Error('invalid token');
+      }
+    }),
+    sign: actual.sign,
+    decode: actual.decode,
+  };
+});
+
+jest.mock('../../src/middlewares/auth.middleware.js', () => ({
+  __esModule: true,
+  default: function authMiddleware(req, res, next) {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -33,8 +130,8 @@ jest.mock('../../src/middlewares/auth.middleware.js', () => {
       error.statusCode = 401;
       return next(error);
     }
-  };
-});
+  },
+}));
 
 jest.mock('../../src/middlewares/authorize.middleware.js', () => {
   return (...requiredPermissions) => {
@@ -188,8 +285,28 @@ jest.mock('../../src/models/User.js', () => {
     return null;
   };
 
+  MockUserModel.findById = async (id) => {
+    return mockUserData.find(
+      (u) => u._id.toString() === id.toString() && !u.isDeleted
+    ) || null;
+  };
+
+  MockUserModel.create = async (data) => {
+    const doc = new MockUserModel(data);
+    return doc;
+  };
+
   return {
     __esModule: true,
     default: MockUserModel,
+  };
+});
+
+jest.mock('../../src/middlewares/database.middleware.js', () => {
+  return {
+    __esModule: true,
+    default: async (_req, _res, next) => {
+      next();
+    },
   };
 });
