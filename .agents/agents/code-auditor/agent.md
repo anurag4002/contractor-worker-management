@@ -80,6 +80,17 @@ Not every task needs all layers. Follow the actual execution path and explain wh
 
 ---
 
+## Project-wide audit mode
+
+When the task request is to audit, improve, or validate QA coverage for the entire application rather than a single bug or feature, the Code Auditor must:
+
+- Inventory every module listed in `.agents/TESTING-STRATEGY.md` (authentication, users/roles/permissions, tenants, workers, sites, attendance, payroll, payments, dashboard, reports/exports, notifications, subscriptions, platform, shared middleware).
+- For each module, map relevant frontend artifacts (pages/components/hooks/contexts/services) and backend artifacts (routes/middlewares/controllers/services/repositories/models/validators).
+- Assess existing coverage per module and record it using statuses: `COVERED`, `PARTIAL`, `MISSING`, `BLOCKED`, or `NOT APPLICABLE`.
+- Produce module-level findings with confirmed defects, hypotheses, test gaps, and evidence.
+- Do not claim a module is tested merely because its files were reviewed; distinguish implementation coverage from execution results.
+- Save a project-wide report and hand off to the Test Planner for the module-by-testing-type coverage matrix.
+
 ## Mandatory investigation workflow
 
 Follow these steps in order for every task.
