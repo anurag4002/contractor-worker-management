@@ -79,11 +79,12 @@ synthetic invocation was claimed. Manual handoff workflow was used instead.
 | Check | Command | Working dir | Exit | Result |
 |---|---|---|---|---|
 | Targeted payroll + validators | `NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand tests/payroll tests/validators` | backend | 0 | 38/38 passed |
-| Full backend suite | `NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand` | backend | 1 | 2 suites failed; 19 failed / 50 passed / 69 total (auth, tenant.service) |
-| Backend lint | `npm run lint` | backend | 1 | 14 errors / 21 warnings (pre-existing) |
-| Backend format check | `npm run format:check` | backend | 1 | 138 files with style issues (pre-existing) |
+| Targeted JWT auth API | `NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand tests/auth/jwt-auth.test.js` | backend | 0 | 5/5 passed |
+| Full backend suite | `NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand` | backend | 1 | 7 suites (2 failed: auth, tenant.service); 19 failed / 55 passed / 74 total |
+| Backend lint | `npm run lint` | backend | 1 | 14 errors / 22 warnings observed |
+| Backend format check | `npm run format:check` | backend | 1 | 139 files with style issues |
 | Frontend build | `npm run build` | frontend | 0 | success (chunk-size warning) |
-| Frontend lint | `npm run lint` | frontend | 1 | 133 errors / 32 warnings (pre-existing) |
+| Frontend lint | `npm run lint` | frontend | 1 | 133 errors / 32 warnings |
 | Frontend tests | n/a | frontend | n/a | Not run — no standard frontend test script confirmed |
 
 ## E. Coverage matrix
