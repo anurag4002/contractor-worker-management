@@ -73,24 +73,14 @@ jest.mock('mongoose', () => {
   };
 });
 
-// Mock jsonwebtoken.verify so auth.middleware.js accepts test tokens.
-// jsonwebtoken is a CJS package, so jest.mock can intercept it.
+// Delegate JWT operations to the real implementation so tests that exercise
+// token verification perform actual signature validation with the configured
+// test secret. Mocked tokens must never bypass signature verification.
 jest.mock('jsonwebtoken', () => {
   const actual = jest.requireActual('jsonwebtoken');
   return {
     ...actual,
-    verify: jest.fn((token, secret) => {
-      // Accept any 3-part token as valid and return a mock payload
-      const parts = token.split('.');
-      if (parts.length !== 3) {
-        throw new Error('invalid token');
-      }
-      try {
-        return JSON.parse(Buffer.from(parts[1], 'base64url').toString());
-      } catch {
-        throw new Error('invalid token');
-      }
-    }),
+    verify: actual.verify,
     sign: actual.sign,
     decode: actual.decode,
   };

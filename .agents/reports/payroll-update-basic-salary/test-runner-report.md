@@ -127,3 +127,11 @@ All commands run with working directory `backend/` unless noted.
 - **Log excerpt:** `AuthService._registerTenantAdmin → ApiError(CONFLICT, 'Email already exists.')`; `TenantService.createTenant → ApiError(CONFLICT, 'Email already exists.')`.
 - **Original and rerun results:** Original (this run): FAIL (auth), FAIL (tenant.service); rerun not performed for these failures (no code/test changes made since).
 - **Next action:** Test Writer to fix mock isolation; Test Runner to re-run full suite.
+
+## Revision (2026-10-30)
+
+The previously failing full-suite runs were executed after the shared Jest setup repair. Failure
+classification was re-evaluated: auth/tenant failures stem from mock isolation/fidelity gaps
+(shared mock state and fixed mock-user behavior), not from the reviewed payroll fix. Mock-state
+reset fixes were applied to auth/tenant suites during the QA remediation; final suite re-run
+results are recorded in this report's execution evidence.

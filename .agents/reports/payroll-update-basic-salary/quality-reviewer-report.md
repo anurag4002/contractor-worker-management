@@ -102,3 +102,11 @@
 - **Relevant Files:** `backend/tests/auth/multi-tenant-auth.test.js`, `backend/tests/tenant/tenant.service.test.js`, `backend/tests/payroll/update-payroll.test.js`, `backend/src/services/payroll.service.js`.
 - **Tests or Reproduction Steps:** `cd backend && NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand` and targeted: `cd backend && NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand tests/payroll tests/validators`.
 - **Known assumptions and limitations:** Full-suite failures classified as suspected test-implementation issues, not application defects; confidence medium pending Test Writer confirmation.
+
+## Revision (2026-10-30)
+
+The earlier conclusion that full-suite failures were "pre-existing and masked" was re-validated
+after the Jest setup repair; the failures were re-classified as suspected test-implementation
+issues (mock isolation/fidelity). Mock-state reset remediation was applied during the QA upgrade;
+final re-run results are pending. The reviewed payroll fix and its regression tests remain
+verified green (38/38 targeted).

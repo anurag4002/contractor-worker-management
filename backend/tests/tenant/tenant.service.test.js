@@ -2,16 +2,16 @@ import { jest } from '@jest/globals';
 
 let tenantService;
 
+const mockTenantData = [];
+let mockIdCounter = 1;
+
+const generateMockId = () => {
+  const hex = mockIdCounter.toString(16).padStart(24, '0');
+  mockIdCounter++;
+  return { toString: () => hex };
+};
+
 jest.mock('../../src/repositories/tenant.repository.js', () => {
-  const mockTenantData = [];
-  let mockIdCounter = 1;
-
-  const generateMockId = () => {
-    const hex = mockIdCounter.toString(16).padStart(24, '0');
-    mockIdCounter++;
-    return { toString: () => hex };
-  };
-
   return {
     __esModule: true,
     default: {
@@ -95,6 +95,12 @@ jest.mock('../../src/services/subscription.service.js', () => {
 beforeAll(async () => {
   const module = await import('../../src/services/tenant.service.js');
   tenantService = module.default;
+});
+
+beforeEach(() => {
+  // Reset shared mock state between tests so scenarios stay isolated.
+  mockTenantData.length = 0;
+  mockIdCounter = 100;
 });
 
 const mockOwnerId = '507f1f77bcf86cd799439001';

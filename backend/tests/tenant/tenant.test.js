@@ -126,6 +126,7 @@ jest.mock('mongoose', () => {
 });
 
 import request from 'supertest';
+import jwt from 'jsonwebtoken';
 
 let app;
 
@@ -133,9 +134,11 @@ const mockOwnerId = '507f1f77bcf86cd799439001';
 const mockSuperAdminId = '507f1f77bcf86cd799439003';
 
 const createToken = (payload) => {
-  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
-  const base64Payload = Buffer.from(JSON.stringify(payload)).toString('base64url');
-  return `${header}.${base64Payload}.mock-signature`;
+  // Sign tokens with the real JWT implementation using the test-only secret
+  // so verification performs genuine signature validation.
+  return jwt.sign(payload, process.env.JWT_SECRET || 'test-secret-key', {
+    expiresIn: '1h',
+  });
 };
 
 describe('Tenant Module', () => {

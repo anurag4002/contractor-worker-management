@@ -2,58 +2,93 @@
 
 ## Task Information
 
-- Task: QA Agent System Upgrade for Comprehensive Full-Project Testing
+- Task: Upgrade and Validate the Complete QA Agent System
 - Task Slug: `project-wide-testing-audit`
 - Agent: Test Planner
 - Date: 2026-10-30
 - Status: COMPLETE
 - Testing mode: PROJECT_WIDE
-- Input Reports Reviewed: code-auditor, test-planner, test-writer, test-runner, quality-reviewer reports for `payroll-update-basic-salary`
+- Input Reports Reviewed: code-auditor, test-planner, test-writer, test-runner, quality-reviewer reports; shared strategy.
 
 ## Purpose
 
-Map application modules to testing types and record coverage status for the full application audit.
+Provide a module-by-testing-type coverage matrix for the Contractor Worker Management
+application. One row per discovered application module. Separate columns exist for each
+applicable testing type. Every cell records coverage implementation status, execution
+status, evidence, and rationale for missing/blocked coverage.
 
-## Coverage statuses
+## Status vocabularies
 
-`COVERED`, `PARTIAL`, `MISSING`, `BLOCKED`, `NOT APPLICABLE`.
+### Coverage status (module / testing type)
 
-## Matrix
+- `COVERED` — implemented and executed (or otherwise verified) with supporting evidence.
+- `PARTIAL` — some scenarios covered; meaningful gaps remain.
+- `MISSING` — no coverage found for the module or testing type.
+- `BLOCKED` — coverage cannot be established in the current environment.
+- `NOT APPLICABLE` — testing type not applicable to the module/scope, with reason.
 
-| Module | Frontend artifacts | Backend artifacts | Testing types | Status | Evidence / notes |
-|---|---|---|---|---|---|
-| Authentication and session handling | `frontend/src/context/AuthContext.jsx`, `frontend/src/services/auth.service.js`, `frontend/src/api/axios.js` | `backend/src/routes/auth.routes.js`, `auth.middleware.js`, `auth.controller.js`, `auth.service.js`, `auth.repository.js`, `User.js`, `Role.js`, `auth.validator.js` | API/contract, security, DB integration, E2E where possible | MISSING | Only payroll suites executed green in this session; auth/tenant suites not yet passing due to test-implementation issues. |
-| Users, roles, permissions | `frontend/src/pages/users`, `frontend/src/context/AuthContext.jsx` | `backend/src/routes/user.routes.js`, `role.routes.js`, `user.controller.js`, `user.service.js`, `role.service.js`, `User.js`, `Role.js`, `Permission.js` | API/contract, security | PARTIAL | No dedicated automated coverage confirmed for all user/role flows. |
-| Tenants, onboarding, tenant isolation | `frontend/src/pages/tenants`, `frontend/src/context/AuthContext.jsx` | `backend/src/routes/tenant.routes.js`, `tenant.middleware.js`, `tenant.controller.js`, `tenant.service.js`, `tenant.repository.js`, `Tenant.js`, `User.js` | API/contract, DB integration, security | PARTIAL | Tenant suites failing in full run (mock issues); isolation scenarios partially covered by auth tests. |
-| Worker profiles and validation | `frontend/src/pages/workers`, `frontend/src/components/workermodal/*`, `frontend/src/utils/wageCalculator.js` | `backend/src/routes/worker.routes.js`, `worker.controller.js`, `worker.service.js`, `worker.repository.js`, `Worker.js`, `worker.validator.js` | Unit, service, API/contract, security | PARTIAL | Worker skill/salary logic reviewed; dedicated automated coverage not confirmed for full set. |
-| Site and worker assignments | `frontend/src/pages/sites`, `frontend/src/components/workertable/*` | `backend/src/routes/site.routes.js`, `worker.service.js` (assign), `site.repository.js` | API/contract, DB integration | MISSING | Not confirmed automated. |
-| Attendance | `frontend/src/pages/attendance`, `frontend/src/components/attendancetable/*`, `frontend/src/utils/wageCalculator.js` | `backend/src/routes/attendance.routes.js`, `attendance.controller.js`, `attendance.service.js`, `attendance.repository.js`, `Attendance.js`, `attendance.validator.js` | Unit, service, API/contract, DB integration | PARTIAL | Payroll/attendance sync relationship under test indirectly via payroll tests. |
-| Payroll generation, editing, recalculation, advances, salary payments | `frontend/src/pages/payroll`, `frontend/src/components/payroll/*`, `frontend/src/context/PayrollContext.jsx`, `frontend/src/services/payroll.service.js` | `backend/src/routes/payroll.routes.js`, `payroll.controller.js`, `payroll.service.js`, `payroll.repository.js`, `Payroll.js`, `Worker.js`, `payroll.validator.js` | Service, API/contract, DB integration, security, regression, data integrity/financial | PARTIAL | Service-level regression tests implemented and executed green for update calculation (TP-001…TP-007, TP-013); API-level authz/tenant/soft-delete scenarios not yet implemented. |
-| Payment history and salary slips | `frontend/src/pages/payroll`, `frontend/src/components/payroll/WorkerPayrollHistoryModal.jsx`, `frontend/src/utils/reportCalculator.js`, export components | `backend/src/routes/payroll.routes.js`, `payment.repository.js`, `export.repository.js`, `report.service.js`, PDF/export services | API/contract, data integrity/financial, manual | MISSING | Not executed. |
-| Dashboard totals and charts | `frontend/src/pages/dashboard`, `frontend/src/components/dashboard/*`, `frontend/src/services/dashboard.service.js` | `backend/src/routes/dashboard.routes.js`, `dashboard.service.js`, `dashboard.repository.js` | API/contract, component, E2E where possible | MISSING | Not executed. |
-| Reports and PDF/Excel exports | `frontend/src/pages/reports`, `frontend/src/components/report*`, `frontend/src/utils/reportCalculator.js` | `backend/src/routes/report.routes.js`, `report.service.js`, `export.service.js`, export repository | API/contract, data integrity/financial, manual | MISSING | Not executed. |
-| Notifications | `frontend/src/pages/notifications`, `frontend/src/context/NotificationContext.jsx`, `frontend/src/services/notification.service.js` | `backend/src/routes/notification.routes.js`, `notification.service.js`, `notification.repository.js`, `Notification.js` | API/contract, DB integration | MISSING | Not executed. |
-| Subscription plans, subscriptions, subscription payments | `frontend/src/pages/subscriptions`, `frontend/src/context/SubscriptionContext.jsx`, `frontend/src/services/subscription*.service.js` | `backend/src/routes/subscription*.routes.js`, `subscription*.controller.js`, `subscription*.service.js`, `Subscription*.js`, `subscription*.validator.js` | API/contract, DB integration, security | PARTIAL | Validator suite executed green; subscription behavior not fully covered. |
-| Platform and super-admin operations | `frontend/src/pages/platform`, `frontend/src/services/platform.service.js` | `backend/src/routes/platform.routes.js`, `platform.controller.js`, `platform.service.js`, `Tenant.js`, `superadmin.middleware.js` | API/contract, security | MISSING | Not executed. |
-| Shared middleware, validation, DB handling, API config, rate limiting, error handling | `backend/src/middlewares/*`, `backend/src/common/*` | `backend/src/app.js`, `backend/src/routes/index.js`, validators, error middleware | API/contract, security, unit | PARTIAL | Auth/tenant/middleware suites partially executed; shared coverage incomplete. |
+### Execution status (actual run outcome)
 
-## Per-module status summary
+- `PASSED` — relevant checks executed and passed.
+- `FAILED` — relevant checks executed and failed.
+- `BLOCKED` — could not execute due to environment/tooling.
+- `NOT RUN` — not executed in the current verification.
 
-- Covered (executed green in this session): payroll service regression + validator suites.
-- Partially covered: auth/tenant/worker/subscription areas (some executed, some failing/mocked).
-- Missing: dashboard, reports/exports, notifications, platform, several integration paths.
+## Module-by-testing-type matrix
+
+| Module | Static quality | Unit | Service | API / contract | Database integration | Component / UI | E2E | Acceptance | Regression | Smoke / sanity | Security | Data integrity / financial | Accessibility | Responsive / browser compatibility | Performance | Resilience / reliability | Property / fuzz / boundary / mutation | Manual exploratory | Coverage status | Execution status | Evidence / notes |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Authentication and session handling | PARTIAL | PARTIAL | PARTIAL | MISSING | PARTIAL | MISSING | MISSING | PARTIAL | PARTIAL | MISSING | PARTIAL | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | PARTIAL | FAILED | Auth service suites executed via mocks; 7 failures (duplicate-email false positives) caused by ineffective ESM mocks + fixed mock user. JWT mock now delegates to real verification. Real auth middleware/DB integration path not yet executed. |
+| Users, roles and permissions | PARTIAL | MISSING | PARTIAL | MISSING | PARTIAL | MISSING | MISSING | MISSING | MISSING | MISSING | PARTIAL | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | PARTIAL | NOT RUN | No dedicated automated coverage confirmed for full user/role/permission surface. |
+| Tenants and tenant isolation | PARTIAL | PARTIAL | PARTIAL | MISSING | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | MISSING | PARTIAL | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | PARTIAL | FAILED | Tenant service suite failing (12 failures) due to mock-state/leak and fixed mock-user behavior; tenant API-level authorization coverage missing. |
+| Workers | PARTIAL | PARTIAL | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | PARTIAL | MISSING | MISSING | PARTIAL | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | MISSING | NOT RUN | Worker salary/skill logic reviewed; dedicated automated coverage not confirmed. |
+| Sites and worker assignments | PARTIAL | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | MISSING | NOT RUN | No executed coverage found. |
+| Attendance | PARTIAL | PARTIAL | PARTIAL | MISSING | MISSING | MISSING | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | PARTIAL | NOT RUN | Payroll/attendance sync relationship only indirectly covered via payroll tests; attendance module itself not executed. |
+| Payroll | PARTIAL | COVERED | COVERED | MISSING | MISSING | MISSING | MISSING | PARTIAL | COVERED | MISSING | PARTIAL | COVERED | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | PARTIAL | PASSED | Service-level regression tests executed green (38/38 targeted incl. payroll+validator); API-level payroll security/authz/export scenarios TP-008/TP-011/TP-012 not implemented; DB integration via memory server not executed for payroll. |
+| Payment history and salary slips | PARTIAL | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | COVERED (financial calc evidence) | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | MISSING | NOT RUN | No automated coverage confirmed; PDF/Excel export financial path only partially evidenced. |
+| Dashboard | PARTIAL | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | MISSING | NOT RUN | No executed coverage found. |
+| Reports and exports | PARTIAL | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | MISSING | NOT RUN | PDF/Excel export financial coverage not executed. |
+| Notifications | PARTIAL | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | MISSING | NOT RUN | No executed coverage found. |
+| Subscription plans and subscriptions | PARTIAL | PARTIAL | PARTIAL | MISSING | MISSING | MISSING | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | PARTIAL | PASSED | Subscription plan validator suite executed green; service-level subscription behavior not fully covered. |
+| Subscription payments | PARTIAL | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | MISSING | NOT RUN | No executed coverage found. |
+| Platform and super-admin operations | PARTIAL | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | MISSING | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | MISSING | NOT RUN | No executed coverage found. |
+| Shared middleware, validation and error handling | PARTIAL | PARTIAL | MISSING | PARTIAL | MISSING | MISSING | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | PARTIAL | NOT RUN | Backend lint reported pre-existing no-undef errors in error middleware usage; global middleware mocked in setup; genuine error-handling integration not executed. |
+
+## Module inventory
+
+1. Authentication and session handling.
+2. Users, roles, permissions.
+3. Tenants, onboarding, tenant isolation.
+4. Worker profiles and validation.
+5. Site and worker assignments.
+6. Attendance, histories, summaries.
+7. Payroll generation, editing, recalculation, advances, salary payments.
+8. Payment history and salary slips.
+9. Dashboard totals/charts.
+10. Reports and PDF/Excel exports.
+11. Notifications.
+12. Subscription plans, subscriptions, subscription payments.
+13. Platform and super-admin operations.
+14. Shared middleware, validation, database handling, API config, rate limiting, error handling.
 
 ## Execution evidence summary
 
-- Targeted: `cd backend && NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand tests/payroll tests/validators` → 38/38 passed.
-- Full backend: `cd backend && NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand` → 2 suites failed (auth, tenant service), 4 passed; payroll suites green.
+- Targeted (this session): `cd backend && NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand tests/payroll tests/validators` → 3 suites, 38 tests, all passed.
+- Full backend: `cd backend && NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand` → 6 suites, 2 failed (auth, tenant.service), 4 passed; 19 failed / 50 passed / 69 total. Payroll-related suites green.
+- Backend lint: `npm run lint` (backend) → exit 1 (14 errors, 21 warnings; pre-existing).
+- Backend format check: `npm run format:check` (backend) → exit 1 (138 files with style issues; pre-existing).
+- Frontend build: `npm run build` (frontend) → exit 0 (chunk-size warning only).
+- Frontend lint: `npm run lint` (frontend) → exit 1 (133 errors, 32 warnings; pre-existing).
+- Frontend tests: not run (no standard frontend test script confirmed).
 
 ## Open questions
 
-- Whether remaining failing suites indicate product defects or test defects.
-- Whether frontend automation can be authorized to fill UI/E2E gaps.
+- Whether remaining auth/tenant failures indicate product defects or test defects, and the minimal mock-infra fix to reach green.
+- Whether MongoDB Memory Server can support the session/transaction flows required by the auth registration path.
 
 ## Next steps
 
 - Route full-suite failures to Test Writer for mock isolation.
 - Add API-level coverage for TP-008, TP-011, TP-012.
+- Implement frontend component/E2E automation within authorized scope.
+- Re-run Quality Reviewer after final remediation.

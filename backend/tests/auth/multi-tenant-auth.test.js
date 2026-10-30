@@ -143,6 +143,10 @@ beforeAll(async () => {
 });
 
 beforeEach(() => {
+  // Reset shared mock state between tests so scenarios stay isolated
+  // and tests do not depend on execution order.
+  mockTenantData.length = 0;
+  mockUserData.length = 0;
   mockIdCounter = 100;
 });
 

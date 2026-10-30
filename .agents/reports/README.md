@@ -22,6 +22,8 @@ role-specific Markdown report into a shared task directory under `.agents/report
 │   │   └── agent.md
 │   ├── qa-orchestrator/
 │   │   └── agent.md
+│   ├── security-reviewer/
+│   │   └── agent.md
 │   └── ... other existing agents
 │
 └── reports/
@@ -41,6 +43,7 @@ role-specific Markdown report into a shared task directory under `.agents/report
         ├── test-writer-report.md
         ├── test-runner-report.md
         ├── test-execution-report.md     (project-wide mode)
+        ├── security-reviewer-report.md  (when security scope applies)
         ├── quality-reviewer-report.md
         └── final-summary.md   (only when QA Orchestrator or coordinator exists)
 ```
@@ -119,6 +122,7 @@ Each agent writes to its own report file:
 - Test Planner writes `.agents/reports/<task-slug>/test-planner-report.md`
 - Test Writer writes `.agents/reports/<task-slug>/test-writer-report.md`
 - Test Runner writes `.agents/reports/<task-slug>/test-runner-report.md`
+- Security Reviewer writes `.agents/reports/<task-slug>/security-reviewer-report.md` (when security scope applies)
 - Quality Reviewer writes `.agents/reports/<task-slug>/quality-reviewer-report.md`
 
 The report must contain enough evidence and context for the next agent to continue
@@ -201,7 +205,14 @@ The shared coverage matrix uses these statuses for module/test-type coverage ent
 - `BLOCKED` — coverage cannot be established in the current environment.
 - `NOT APPLICABLE` — testing type not applicable to the module or scope, with reason.
 
-Project-wide reporting adds these task documents:
+### Execution status
+
+- `PASSED` — relevant checks executed and passed.
+- `FAILED` — relevant checks executed and failed.
+- `BLOCKED` — could not execute due to environment/tooling.
+- `NOT RUN` — not executed in the current verification.
+
+### Task documents for project-wide reporting
 
 - `task-context.md`
 - `test-coverage-matrix.md`

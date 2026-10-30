@@ -46,7 +46,7 @@ For each type, record status using: `COVERED`, `PARTIAL`, `MISSING`, `BLOCKED`, 
 8. **Acceptance testing** — Given/When/Then business scenarios mapped to acceptance criteria.
 9. **Regression testing** — previously working behavior affected by a change, neighboring features, repeated submissions, partial operations.
 10. **Smoke and sanity testing** — startup, health endpoint, login, critical navigation, essential workflows appropriate to environment.
-11. **Security testing** — auth, authorization, roles/permissions, tenant isolation, IDOR, validation, sensitive-data exposure, session/token behavior.
+11. **Security testing** — auth, authorization, roles/permissions, tenant isolation, IDOR, validation, sensitive-data exposure, session/token behavior. Security-sensitive flows (authN/authZ, tenant isolation, personal data, financial operations) must verify real paths: JWT verification with real signing using test-only secrets, authorization middleware, tenant-scoped queries, input validation; unit tests with mocks do not substitute for these checks.
 12. **Data integrity and financial testing** — salary calculations, rounding, partial/full payments, outstanding balances, duplicate operations, idempotency, relationships, PDF/Excel exports.
 13. **Accessibility testing** — keyboard, labels, focus, contrast, dialogs, form errors, WCAG-oriented checks.
 14. **Responsive and compatibility testing** — viewport sizes, browsers, keyboard/touch, layout.
@@ -98,6 +98,21 @@ For each application module, record relevant frontend and backend artifacts:
 
 - Feature / regression: targeted → related → regression → broader as risk dictates.
 - Project-wide: static checks → unit/service → API/DB → component where possible → E2E where possible → security → regression → smoke → reporting.
+
+## Final QA workflow
+
+Every QA workflow — feature or project-wide — follows these stages in order:
+
+1. **Investigation** — Code Auditor.
+2. **Planning** — Test Planner.
+3. **Implementation** — Test Writer.
+4. **Execution** — Test Runner.
+5. **Security review** — Security Reviewer (authentication, authorization, tenant isolation, personal data, financial operations; `NOT APPLICABLE` with reason for unrelated low-risk changes).
+6. **Independent review** — Quality Reviewer.
+7. **Consolidation** — QA Orchestrator.
+
+A feature must not be reported as fully verified while important tests are failing, missing,
+blocked, or not executed.
 
 ## Final instruction
 
