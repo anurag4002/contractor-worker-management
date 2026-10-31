@@ -1,24 +1,5 @@
 import { jest } from '@jest/globals';
 
-// Mock CJS packages that work with transform: {}
-jest.mock('jsonwebtoken', () => {
-  const actual = jest.requireActual('jsonwebtoken');
-  return {
-    ...actual,
-    verify: jest.fn((token, secret) => {
-      const parts = token.split('.');
-      if (parts.length !== 3) throw new Error('invalid token');
-      try {
-        return JSON.parse(Buffer.from(parts[1], 'base64url').toString());
-      } catch {
-        throw new Error('invalid token');
-      }
-    }),
-    sign: actual.sign,
-    decode: actual.decode,
-  };
-});
-
 jest.mock('mongoose', () => {
   const actual = jest.requireActual('mongoose');
 
@@ -133,12 +114,10 @@ let app;
 const mockOwnerId = '507f1f77bcf86cd799439001';
 const mockSuperAdminId = '507f1f77bcf86cd799439003';
 
-const createToken = (payload) => {
-  // Sign tokens with the real JWT implementation using the test-only secret
-  // so verification performs genuine signature validation.
-  return jwt.sign(payload, process.env.JWT_SECRET || 'test-secret-key', {
-    expiresIn: '1h',
-  });
+const createToken = (payload, options = { expiresIn: '1h' }) => {
+  // Sign tokens with the real JWT implementation using the configured
+  // JWT secret so verification performs genuine signature validation.
+  return jwt.sign(payload, process.env.JWT_SECRET, options);
 };
 
 describe('Tenant Module', () => {
@@ -280,5 +259,68 @@ describe('Tenant Module', () => {
 
       expect(response.status).toBe(403);
     });
+  });
+});
+
+describe('JWT Authentication', () => {
+  it('should accept a validly signed token', async () => {
+    const token = createToken({
+      userId: mockSuperAdminId,
+      email: 'superadmin@test.com',
+      role: 'SUPER_ADMIN',
+      permissions: ['TENANT_READ'],
+    });
+
+    const response = await request(app)
+      .get('/api/v1/tenants/someid')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).not.toBe(401);
+  });
+
+  it('should reject a token signed with an incorrect secret', async () => {
+    const token = jwt.sign(
+      {
+        userId: mockSuperAdminId,
+        email: 'superadmin@test.com',
+        role: 'SUPER_ADMIN',
+        permissions: ['TENANT_READ'],
+      },
+      'definitely-wrong-secret',
+      { expiresIn: '1h' }
+    );
+
+    const response = await request(app)
+      .get('/api/v1/tenants/someid')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(401);
+  });
+
+  it('should reject an expired token', async () => {
+    const token = jwt.sign(
+      {
+        userId: mockSuperAdminId,
+        email: 'superadmin@test.com',
+        role: 'SUPER_ADMIN',
+        permissions: ['TENANT_READ'],
+        exp: Math.floor(Date.now() / 1000) - 10,
+      },
+      process.env.JWT_SECRET
+    );
+
+    const response = await request(app)
+      .get('/api/v1/tenants/someid')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(401);
+  });
+
+  it('should reject a malformed token', async () => {
+    const response = await request(app)
+      .get('/api/v1/tenants/someid')
+      .set('Authorization', 'Bearer not-a-valid-jwt');
+
+    expect(response.status).toBe(401);
   });
 });

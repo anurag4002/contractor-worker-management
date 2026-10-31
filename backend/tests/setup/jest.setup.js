@@ -86,43 +86,6 @@ jest.mock('jsonwebtoken', () => {
   };
 });
 
-jest.mock('../../src/middlewares/auth.middleware.js', () => ({
-  __esModule: true,
-  default: function authMiddleware(req, res, next) {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      const error = new Error('Invalid token.');
-      error.statusCode = 401;
-      return next(error);
-    }
-
-    const token = authHeader.split(' ')[1];
-
-    try {
-      const parts = token.split('.');
-      if (parts.length !== 3) {
-        throw new Error('Invalid token format');
-      }
-      const base64Payload = parts[1];
-      const payload = JSON.parse(Buffer.from(base64Payload, 'base64url').toString());
-
-      req.user = {
-        userId: payload.userId,
-        email: payload.email || 'test@test.com',
-        role: payload.role || 'TENANT_ADMIN',
-        permissions: payload.permissions || [],
-      };
-
-      next();
-    } catch {
-      const error = new Error('Invalid token.');
-      error.statusCode = 401;
-      return next(error);
-    }
-  },
-}));
-
 jest.mock('../../src/middlewares/authorize.middleware.js', () => {
   return (...requiredPermissions) => {
     return (req, res, next) => {

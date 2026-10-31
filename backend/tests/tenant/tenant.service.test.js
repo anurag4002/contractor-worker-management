@@ -5,20 +5,21 @@ let tenantService;
 const mockTenantData = [];
 let mockIdCounter = 1;
 
-const generateMockId = () => {
+const mockGenerateId = () => {
   const hex = mockIdCounter.toString(16).padStart(24, '0');
   mockIdCounter++;
   return { toString: () => hex };
 };
 
-jest.mock('../../src/repositories/tenant.repository.js', () => {
+jest.unstable_mockModule('../../src/repositories/tenant.repository.js', () => {
   return {
     __esModule: true,
     default: {
       create: async (data) => {
         const tenant = {
-          _id: generateMockId(),
+          _id: mockGenerateId(),
           ...data,
+          owner: { _id: data.owner },
           status: data.status || 'ACTIVE',
           isDeleted: false,
           createdAt: new Date(),
@@ -38,9 +39,14 @@ jest.mock('../../src/repositories/tenant.repository.js', () => {
         ) || null;
       },
       findByOwner: async (ownerId) => {
-        return mockTenantData.find(
-          (t) => t.owner.toString() === ownerId.toString() && !t.isDeleted
-        ) || null;
+        const ownerKey = ownerId ? ownerId.toString() : ownerId;
+        return mockTenantData.find((t) => {
+          const tenantOwnerId =
+            t.owner && typeof t.owner === 'object'
+              ? t.owner._id?.toString()
+              : t.owner?.toString();
+          return tenantOwnerId === ownerKey && !t.isDeleted;
+        }) || null;
       },
       findAll: async (filter, _options) => {
         let results = mockTenantData.filter((t) => !t.isDeleted);
@@ -68,13 +74,17 @@ jest.mock('../../src/repositories/tenant.repository.js', () => {
   };
 });
 
-jest.mock('../../src/models/User.js', () => {
+jest.unstable_mockModule('../../src/models/User.js', () => {
   return {
     __esModule: true,
     default: {
       findOne: async (query) => {
         const { _id } = query;
-        if (_id && _id.toString() === '507f1f77bcf86cd799439001') {
+        const userId = _id && _id.toString ? _id.toString() : _id;
+        const isKnownOwner =
+          userId === '507f1f77bcf86cd799439001' ||
+          userId === '507f1f77bcf86cd799439002';
+        if (isKnownOwner) {
           return { _id, status: 'ACTIVE' };
         }
         return null;
@@ -83,7 +93,7 @@ jest.mock('../../src/models/User.js', () => {
   };
 });
 
-jest.mock('../../src/services/subscription.service.js', () => {
+jest.unstable_mockModule('../../src/services/subscription.service.js', () => {
   return {
     __esModule: true,
     default: {
