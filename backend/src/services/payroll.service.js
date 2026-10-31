@@ -203,6 +203,20 @@ class PayrollService {
      * ==========================================
      * Recalculate Payroll
      * ==========================================
+     * Recalculates the existing payroll record for a worker and month/year
+     * after an attendance mutation. Never auto-creates a payroll record.
+     *
+     * When the payroll for the worker/month is already PAID, recalculation is
+     * only allowed for genuinely new attendance records (source:
+     * 'NEW_ATTENDANCE'). The recalculation reopens the payroll for any newly
+     * accrued outstanding balance while preserving the cumulative paid amount.
+     * Historical modifications of already settled attendance keep the
+     * paid-payroll protection and are rejected instead.
+     *
+     * Throws when a fully paid payroll would be affected by a historical change
+     * so the caller can handle the error explicitly instead of silently leaving
+     * payroll inconsistent.
+     * ==========================================
      */
     async recalculatePayroll(
         attendanceMonth,
@@ -210,8 +224,19 @@ class PayrollService {
         workerId,
         tenantId,
         updatedBy,
-        session = null
+        session = null,
+        options = {}
     ) {
+        // Operation context lets the attendance workflow distinguish between:
+        // - NEW_ATTENDANCE: a genuinely new attendance record was added for the
+        //   worker/month. Such a record can create an additional payable balance
+        //   (extra days for DAILY workers, eligible overtime for MONTHLY workers)
+        //   even when the monthly payroll was already paid.
+        // - ATTENDANCE_MUTATION: an existing (already settled) attendance record
+        //   was edited / status changed / deleted. These must keep the paid-payroll
+        //   protection so historical settled amounts are never silently rewritten.
+        const source = options.source || 'ATTENDANCE_MUTATION';
+
         const payroll =
             await payrollRepository.findByWorkerAndMonth(
                 workerId,
@@ -227,8 +252,8 @@ class PayrollService {
             };
         }
 
-        // Never silently rewrite a fully paid payroll.
-        if (payroll.status === 'PAID') {
+        // Never silently rewrite a fully paid payroll for a historical change.
+        if (payroll.status === 'PAID' && source !== 'NEW_ATTENDANCE') {
             throw new ApiError(
                 StatusCodes.BAD_REQUEST,
                 PAYROLL_MESSAGES.PAYROLL_PAID_ADJUSTMENT_REQUIRED
@@ -270,12 +295,24 @@ class PayrollService {
 
         const paid = payroll.paid || 0;
 
-        if (calculations.netSalary - paid < 0) {
+        const outstandingBalance =
+            calculations.netSalary - paid;
+
+        if (outstandingBalance < 0) {
             throw new ApiError(
                 StatusCodes.BAD_REQUEST,
                 PAYROLL_MESSAGES.PAYMENT_RECONCILIATION_REQUIRED
             );
         }
+
+        // When genuinely new attendance is added to a previously paid
+        // payroll, the recalculation may reopen the payroll for the newly
+        // accrued additional balance. The cumulative `paid` amount is kept
+        // intact; only the outstanding balance is recalculated.
+        const nextStatus =
+            payroll.status === 'PAID'
+                ? (outstandingBalance > 0 ? 'GENERATED' : 'PAID')
+                : payroll.status;
 
         const updatedPayroll =
             await payrollRepository.update(
@@ -292,6 +329,7 @@ class PayrollService {
                     overtimeAmount: calculations.overtimeAmount,
                     grossSalary: calculations.grossSalary,
                     netSalary: calculations.netSalary,
+                    status: nextStatus,
                     updatedBy,
                 },
                 tenantId,
