@@ -995,54 +995,73 @@ class PayrollService {
             );
         }
 
-        const payroll =
-            await payrollRepository.findById(payrollId, tenantId);
-
-        if (!payroll) {
-            throw new ApiError(
-                StatusCodes.NOT_FOUND,
-                PAYROLL_MESSAGES.NOT_FOUND
-            );
-        }
-
-        if (payroll.status === 'PAID') {
-            throw new ApiError(
-                StatusCodes.BAD_REQUEST,
-                PAYROLL_MESSAGES.PAYROLL_ALREADY_PAID
-            );
-        }
-
-        if (payroll.status === 'CANCELLED') {
-            throw new ApiError(
-                StatusCodes.BAD_REQUEST,
-                PAYROLL_MESSAGES.PAYROLL_ALREADY_CANCELLED
-            );
-        }
-
-        const remainingBalance =
-            (payroll.grossSalary || 0) -
-            (payroll.deduction || 0) -
-            (payroll.advanceDeduction || 0) -
-            (payroll.paid || 0);
-
-        if (remainingBalance <= 0) {
-            throw new ApiError(
-                StatusCodes.BAD_REQUEST,
-                PAYROLL_MESSAGES.PAYMENT_ZERO_BALANCE
-            );
-        }
-
-        if (amount > remainingBalance) {
-            throw new ApiError(
-                StatusCodes.BAD_REQUEST,
-                PAYROLL_MESSAGES.PAYMENT_EXCEEDS_BALANCE
-            );
-        }
-
         const session = await mongoose.startSession();
 
         try {
             session.startTransaction();
+
+            const payroll =
+                await payrollRepository.findById(payrollId, tenantId);
+
+            if (!payroll) {
+                throw new ApiError(
+                    StatusCodes.NOT_FOUND,
+                    PAYROLL_MESSAGES.NOT_FOUND
+                );
+            }
+
+            if (payroll.status === 'PAID') {
+                throw new ApiError(
+                    StatusCodes.BAD_REQUEST,
+                    PAYROLL_MESSAGES.PAYROLL_ALREADY_PAID
+                );
+            }
+
+            if (payroll.status === 'CANCELLED') {
+                throw new ApiError(
+                    StatusCodes.BAD_REQUEST,
+                    PAYROLL_MESSAGES.PAYROLL_ALREADY_CANCELLED
+                );
+            }
+
+            const totalPayable =
+                (payroll.grossSalary || 0) -
+                (payroll.deduction || 0) -
+                (payroll.advanceDeduction || 0);
+
+            const remainingBalance =
+                totalPayable - (payroll.paid || 0);
+
+            const remainingBalanceInPaise = Math.round(remainingBalance * 100);
+            const amountInPaise = Math.round(amount * 100);
+
+            if (remainingBalanceInPaise <= 0) {
+                throw new ApiError(
+                    StatusCodes.BAD_REQUEST,
+                    PAYROLL_MESSAGES.PAYMENT_ZERO_BALANCE
+                );
+            }
+
+            if (amountInPaise > remainingBalanceInPaise) {
+                throw new ApiError(
+                    StatusCodes.BAD_REQUEST,
+                    PAYROLL_MESSAGES.PAYMENT_EXCEEDS_BALANCE
+                );
+            }
+
+            if (paymentType === 'FULL') {
+                if (amountInPaise !== remainingBalanceInPaise) {
+                    throw new ApiError(
+                        StatusCodes.BAD_REQUEST,
+                        PAYROLL_MESSAGES.PAYMENT_FULL_AMOUNT_MISMATCH
+                    );
+                }
+            } else if (amountInPaise >= remainingBalanceInPaise) {
+                throw new ApiError(
+                    StatusCodes.BAD_REQUEST,
+                    PAYROLL_MESSAGES.PAYMENT_PARTIAL_AMOUNT_INVALID
+                );
+            }
 
             const worker =
                 await workerRepository.findById(
@@ -1072,21 +1091,14 @@ class PayrollService {
                     session
                 );
 
-            const newPaid =
-                paymentType === 'FULL'
-                    ? (payroll.grossSalary || 0) -
-                      (payroll.deduction || 0) -
-                      (payroll.advanceDeduction || 0)
-                    : (payroll.paid || 0) + amount;
+            const newPaid = Math.round(((payroll.paid || 0) + amount) * 100) / 100;
 
-            const newNetSalary =
-                Math.max(
-                    0,
-                    (payroll.grossSalary || 0) -
-                    (payroll.deduction || 0) -
-                    (payroll.advanceDeduction || 0) -
-                    newPaid
-                );
+            const newRemainingBalance = Math.max(
+                0,
+                Math.round((totalPayable - newPaid) * 100) / 100
+            );
+
+            const newNetSalary = Math.max(0, newRemainingBalance);
 
             const updatedPayroll =
                 await payrollRepository.update(
@@ -1094,7 +1106,7 @@ class PayrollService {
                     {
                         paid: newPaid,
                         netSalary: newNetSalary,
-                        status: newNetSalary <= 0 ? 'PAID' : 'GENERATED',
+                        status: newRemainingBalance <= 0 ? 'PAID' : 'GENERATED',
                     },
                     tenantId,
                     session
