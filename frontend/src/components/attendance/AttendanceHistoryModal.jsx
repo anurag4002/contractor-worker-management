@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import useAttendance from "../../hooks/useAttendance";
+import { formatAttendanceDate } from "../../utils/attendanceDate";
 import { Overlay, Modal, Header, Title, CloseButton, Table, EmptyState } from "./AttendanceHistoryModal.style";
 
 const AttendanceHistoryModal = ({ open, workerId, onClose }) => {
@@ -45,7 +46,7 @@ const AttendanceHistoryModal = ({ open, workerId, onClose }) => {
             <tbody>
               {history.map((item, index) => (
                 <tr key={item._id || index}>
-                  <td>{item.attendanceDate ? new Date(item.attendanceDate).toLocaleDateString("en-IN") : "-"}</td>
+                  <td>{formatAttendanceDate(item.attendanceDate)}</td>
                   <td>{statusLabel(item.status)}</td>
                   <td>{item.regularHours ?? 0} hrs</td>
                   <td>{item.overtimeHours ?? 0} hrs</td>

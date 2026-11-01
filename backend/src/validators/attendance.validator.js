@@ -1,5 +1,30 @@
 import Joi from 'joi';
 
+import {
+  getCalendarDateKey,
+  isFutureDateKey,
+} from '../common/utils/attendanceDate.util.js';
+
+const FUTURE_ATTENDANCE_MESSAGE =
+  'Future attendance cannot be marked. Please select today or a past date.';
+
+const validateAttendanceDate = (value, helpers) => {
+  const dateKey = getCalendarDateKey(value);
+
+  if (isFutureDateKey(dateKey)) {
+    return helpers.error('any.custom', {
+      error: new Error(FUTURE_ATTENDANCE_MESSAGE),
+    });
+  }
+
+  return value;
+};
+
+const attendanceDateWithFutureCheck = (schema) =>
+  schema.custom(validateAttendanceDate).messages({
+    'any.custom': FUTURE_ATTENDANCE_MESSAGE,
+  });
+
 export const createAttendanceSchema = Joi.object({
   worker: Joi.string()
     .hex()
@@ -11,7 +36,7 @@ export const createAttendanceSchema = Joi.object({
     .length(24)
     .required(),
 
-  attendanceDate: Joi.date()
+  attendanceDate: attendanceDateWithFutureCheck(Joi.date())
     .required(),
 
   status: Joi.string()
@@ -53,7 +78,7 @@ export const updateAttendanceSchema =
       .hex()
       .length(24),
 
-    attendanceDate: Joi.date(),
+    attendanceDate: attendanceDateWithFutureCheck(Joi.date()),
 
     status: Joi.string().valid(
       'PRESENT',

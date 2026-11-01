@@ -23,12 +23,20 @@ import {
 } from "../ui/form";
 import useFormErrors from "../../hooks/useFormErrors";
 import FormError from "../../components/ui/FormError";
+import {
+  getCalendarDateKey,
+  getTodayDateKey,
+  isFutureAttendanceDate,
+} from "../../utils/attendanceDate";
+
+const FUTURE_ATTENDANCE_MESSAGE =
+  "Future attendance cannot be marked. Please select today or a past date.";
 
 const MarkAttendanceModal = ({ open, record, onClose }) => {
   const { addAttendance, updateAttendance, loading } = useAttendance();
   const { sites } = useSites();
   const { workers } = useWorkers();
-  const { errors: apiErrors, clearFieldError, handleError, clearAllErrors } = useFormErrors();
+  const { errors: apiErrors, setFieldError, clearFieldError, handleError, clearAllErrors } = useFormErrors();
   const workersData = Array.isArray(workers) ? workers : [];
 
   const isEdit = !!(record && record._id);
@@ -36,12 +44,14 @@ const MarkAttendanceModal = ({ open, record, onClose }) => {
   const [formData, setFormData] = useState({
     worker: "",
     site: "",
-    attendanceDate: new Date().toISOString().split("T")[0],
+    attendanceDate: getTodayDateKey(),
     status: "PRESENT",
     regularHours: 8,
     overtimeHours: 0,
     remarks: "",
   });
+
+  const todayDateKey = getTodayDateKey();
 
   useEffect(() => {
     if (open && record) {
@@ -50,8 +60,8 @@ const MarkAttendanceModal = ({ open, record, onClose }) => {
         worker: record.worker?._id || record.worker || "",
         site: record.site?._id || record.site || "",
         attendanceDate: record.attendanceDate
-          ? record.attendanceDate.split("T")[0]
-          : new Date().toISOString().split("T")[0],
+          ? getCalendarDateKey(record.attendanceDate)
+          : getTodayDateKey(),
         status: record.status || "PRESENT",
         regularHours: record.regularHours ?? 8,
         overtimeHours: record.overtimeHours ?? 0,
@@ -61,7 +71,7 @@ const MarkAttendanceModal = ({ open, record, onClose }) => {
       clearAllErrors();
       setFormData({
         worker: "", site: "",
-        attendanceDate: new Date().toISOString().split("T")[0],
+        attendanceDate: getTodayDateKey(),
         status: "PRESENT", regularHours: 8, overtimeHours: 0, remarks: "",
       });
     }
@@ -77,6 +87,21 @@ const MarkAttendanceModal = ({ open, record, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (
+      isFutureAttendanceDate(
+        formData.attendanceDate,
+        todayDateKey
+      )
+    ) {
+      clearAllErrors();
+      setFieldError(
+        "attendanceDate",
+        FUTURE_ATTENDANCE_MESSAGE
+      );
+      return;
+    }
+
     const payload = {
       ...formData,
       regularHours: Number(formData.regularHours),
@@ -162,6 +187,7 @@ const MarkAttendanceModal = ({ open, record, onClose }) => {
                     name="attendanceDate"
                     value={formData.attendanceDate}
                     onChange={handleChange}
+                    max={todayDateKey}
                     required
                   />
                   <FormError error={apiErrors.attendanceDate} />

@@ -11,6 +11,13 @@ import ApiError from '../common/errors/ApiError.js';
 
 import ATTENDANCE_MESSAGES from '../common/constants/attendance.messages.js';
 
+import {
+    getCalendarDateKey,
+    getTodayDateKey,
+    isFutureDateKey,
+    getAttendanceDayRange,
+} from '../common/utils/attendanceDate.util.js';
+
 class AttendanceService {
     /**
  * ==========================================
@@ -22,6 +29,32 @@ class AttendanceService {
         createdBy,
         tenantId
     ) {
+        // Validate Attendance Date (calendar day in business timezone).
+        // Attendance can only be marked for today or any past date.
+        const attendanceDateKey =
+            getCalendarDateKey(
+                attendanceData?.attendanceDate
+            );
+
+        if (!attendanceDateKey) {
+            throw new ApiError(
+                StatusCodes.BAD_REQUEST,
+                ATTENDANCE_MESSAGES.INVALID_ATTENDANCE_DATE
+            );
+        }
+
+        if (
+            isFutureDateKey(
+                attendanceDateKey,
+                getTodayDateKey()
+            )
+        ) {
+            throw new ApiError(
+                StatusCodes.BAD_REQUEST,
+                ATTENDANCE_MESSAGES.FUTURE_DATE_NOT_ALLOWED
+            );
+        }
+
         // Check Worker Exists
         const worker =
             await workerRepository.findById(
@@ -136,8 +169,16 @@ class AttendanceService {
         session,
         updatedBy
     ) {
-        const attendanceMonth = attendanceDate.getMonth() + 1;
-        const attendanceYear = attendanceDate.getFullYear();
+        const attendanceDateKey =
+            getCalendarDateKey(attendanceDate);
+
+        const attendanceMonth = attendanceDateKey
+            ? Number(attendanceDateKey.split('-')[1])
+            : new Date(attendanceDate).getMonth() + 1;
+
+        const attendanceYear = attendanceDateKey
+            ? Number(attendanceDateKey.split('-')[0])
+            : new Date(attendanceDate).getFullYear();
 
         return await payrollService.recalculatePayroll(
             attendanceMonth,
@@ -198,16 +239,16 @@ class AttendanceService {
 
         // Attendance Date Filter
         if (attendanceDate) {
-            const startDate = new Date(attendanceDate);
-            startDate.setHours(0, 0, 0, 0);
+            const { startDate, endDate } = getAttendanceDayRange(
+                attendanceDate
+            );
 
-            const endDate = new Date(attendanceDate);
-            endDate.setHours(23, 59, 59, 999);
-
-            filter.attendanceDate = {
-                $gte: startDate,
-                $lte: endDate,
-            };
+            if (startDate && endDate) {
+                filter.attendanceDate = {
+                    $gte: startDate,
+                    $lte: endDate,
+                };
+            }
         }
 
         // Status Filter
@@ -300,6 +341,38 @@ class AttendanceService {
         // Retain old worker and date for recalculation when they change
         const oldWorkerId = attendance.worker._id.toString();
         const oldAttendanceDate = new Date(attendance.attendanceDate);
+        const oldAttendanceDateKey = getCalendarDateKey(
+            oldAttendanceDate
+        );
+
+        // Validate Attendance Date (calendar day in business timezone).
+        // Attendance can only be marked for today or any past date.
+        const effectiveAttendanceDate =
+            updateData?.attendanceDate || attendance.attendanceDate;
+
+        const effectiveAttendanceDateKey =
+            getCalendarDateKey(
+                effectiveAttendanceDate
+            );
+
+        if (!effectiveAttendanceDateKey) {
+            throw new ApiError(
+                StatusCodes.BAD_REQUEST,
+                ATTENDANCE_MESSAGES.INVALID_ATTENDANCE_DATE
+            );
+        }
+
+        if (
+            isFutureDateKey(
+                effectiveAttendanceDateKey,
+                getTodayDateKey()
+            )
+        ) {
+            throw new ApiError(
+                StatusCodes.BAD_REQUEST,
+                ATTENDANCE_MESSAGES.FUTURE_DATE_NOT_ALLOWED
+            );
+        }
 
         // Validate Worker
         if (
@@ -410,10 +483,17 @@ class AttendanceService {
             const newWorkerId =
                 updateData.worker || oldWorkerId;
 
-            const newAttendanceDate =
-                updateData.attendanceDate
-                    ? new Date(updateData.attendanceDate)
-                    : oldAttendanceDate;
+            const newAttendanceDate = new Date(
+                `${effectiveAttendanceDateKey}T00:00:00+05:30`
+            );
+
+            const newAttendanceYear = Number(
+                effectiveAttendanceDateKey.split('-')[0]
+            );
+
+            const newAttendanceMonth = Number(
+                effectiveAttendanceDateKey.split('-')[1]
+            );
 
             // Recalculate the new worker/month payroll if it exists
             await this.recalcPayrollForWorkerMonth(
@@ -427,10 +507,12 @@ class AttendanceService {
             // Recalculate the previous worker/month payroll if worker or
             // month changed
             const monthChanged =
-                newAttendanceDate.getMonth() !==
-                    oldAttendanceDate.getMonth() ||
-                newAttendanceDate.getFullYear() !==
-                    oldAttendanceDate.getFullYear();
+                newAttendanceYear !== Number(
+                    oldAttendanceDateKey?.split('-')[0]
+                ) ||
+                newAttendanceMonth !== Number(
+                    oldAttendanceDateKey?.split('-')[1]
+                );
 
             if (
                 newWorkerId !== oldWorkerId ||
@@ -576,20 +658,16 @@ class AttendanceService {
         }
 
         if (query.attendanceDate) {
-            const startDate = new Date(
+            const { startDate, endDate } = getAttendanceDayRange(
                 query.attendanceDate
             );
-            startDate.setHours(0, 0, 0, 0);
 
-            const endDate = new Date(
-                query.attendanceDate
-            );
-            endDate.setHours(23, 59, 59, 999);
-
-            filter.attendanceDate = {
-                $gte: startDate,
-                $lte: endDate,
-            };
+            if (startDate && endDate) {
+                filter.attendanceDate = {
+                    $gte: startDate,
+                    $lte: endDate,
+                };
+            }
         }
 
         if (query.site) {

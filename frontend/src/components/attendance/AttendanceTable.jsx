@@ -1,5 +1,6 @@
 import React from "react";
 import { FiClock, FiEdit2, FiTrash2 } from "react-icons/fi";
+import { formatAttendanceDate } from "../../utils/attendanceDate";
 import { TableCard, Table, Status, ActionButtons, IconButton, AttendanceCardList, AttendanceCard, AttendanceCardHeader, AttendanceCardIdentity, AttendanceCardName, AttendanceCardMeta, AttendanceCardBody, AttendanceCardField, AttendanceCardLabel, AttendanceCardValue, AttendanceCardActions } from "./AttendanceTable.style";
 
 const AttendanceTable = ({ records = [], onHistory, onMark, onDelete, onChangeStatus }) => {
@@ -36,7 +37,7 @@ const AttendanceTable = ({ records = [], onHistory, onMark, onDelete, onChangeSt
         <AttendanceCardBody>
           <AttendanceCardField>
             <AttendanceCardLabel>Date</AttendanceCardLabel>
-            <AttendanceCardValue>{record.date ? new Date(record.date).toLocaleDateString("en-IN") : "-"}</AttendanceCardValue>
+            <AttendanceCardValue>{formatAttendanceDate(record.attendanceDate)}</AttendanceCardValue>
           </AttendanceCardField>
           <AttendanceCardField>
             <AttendanceCardLabel>Worker ID</AttendanceCardLabel>
@@ -108,7 +109,7 @@ const AttendanceTable = ({ records = [], onHistory, onMark, onDelete, onChangeSt
                   <td>{workerName}</td>
                   <td>{site.siteName || record.site || "-"}</td>
                   <td>
-                    {record.date ? new Date(record.date).toLocaleDateString("en-IN") : "-"}
+                    {formatAttendanceDate(record.attendanceDate)}
                   </td>
                   <td>
                     <Status
