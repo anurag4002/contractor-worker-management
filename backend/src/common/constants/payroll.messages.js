@@ -109,6 +109,12 @@ const PAYROLL_MESSAGES = {
   PAYMENT_ZERO_BALANCE:
     'Cannot record a payment because the remaining balance is ₹0.',
 
+  PAYMENT_FULL_AMOUNT_MISMATCH:
+    'Full payment amount must exactly match the outstanding salary balance.',
+
+  PAYMENT_PARTIAL_AMOUNT_INVALID:
+    'Partial payment amount must be less than the outstanding salary balance. Please record a full payment for the remaining amount.',
+
   PAYROLL_PAID_ADJUSTMENT_REQUIRED:
     'Payroll is already paid. Attendance changes cannot be recalculated automatically. Please raise an adjustment.',
 

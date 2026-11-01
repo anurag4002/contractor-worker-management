@@ -23,7 +23,7 @@ const SalaryPaymentModal = ({
   onClose,
   onSave,
 }) => {
-  const [paymentType, setPaymentType] = useState("FULL");
+  const [paymentType, setPaymentType] = useState("PARTIAL");
   const [amount, setAmount] = useState("");
   const [method, setMethod] = useState("Cash");
   const [transactionId, setTransactionId] = useState("");
@@ -33,7 +33,7 @@ const SalaryPaymentModal = ({
 
   useEffect(() => {
     if (open) {
-      setPaymentType("FULL");
+      setPaymentType("PARTIAL");
       setAmount("");
       setMethod("Cash");
       setTransactionId("");
@@ -60,7 +60,17 @@ const SalaryPaymentModal = ({
   const isAmountInvalid =
     !paymentAmount ||
     paymentAmount <= 0 ||
-    paymentAmount > remainingBalance;
+    paymentAmount > remainingBalance ||
+    (paymentType === "FULL" && paymentAmount !== remainingBalance);
+
+  const handlePaymentTypeChange = (e) => {
+    const selectedType = e.target.value;
+    setPaymentType(selectedType);
+
+    if (selectedType === "FULL") {
+      setAmount(remainingBalance > 0 ? remainingBalance.toFixed(2) : "");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -69,6 +79,16 @@ const SalaryPaymentModal = ({
 
     if (!paymentAmount || paymentAmount <= 0) {
       setError("Please enter a valid payment amount.");
+      return;
+    }
+
+    if (paymentType === "FULL" && paymentAmount !== remainingBalance) {
+      setError("Full payment amount must exactly match the outstanding balance.");
+      return;
+    }
+
+    if (paymentType === "PARTIAL" && paymentAmount >= remainingBalance) {
+      setError("Partial payment amount must be less than the outstanding balance. Please record a full payment for the remaining amount.");
       return;
     }
 
@@ -139,7 +159,7 @@ const SalaryPaymentModal = ({
 
           <FormGroup>
             <Label>Payment Type</Label>
-            <Select value={paymentType} onChange={(e) => setPaymentType(e.target.value)} disabled={saving}>
+            <Select value={paymentType} onChange={handlePaymentTypeChange} disabled={saving}>
               <option value="FULL">Full Payment</option>
               <option value="PARTIAL">Partial Payment</option>
             </Select>
