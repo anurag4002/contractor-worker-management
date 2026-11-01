@@ -27,6 +27,9 @@ const ATTENDANCE_MESSAGES = {
 
   INVALID_ATTENDANCE_DATE:
     'Attendance date is invalid.',
+
+  FUTURE_DATE_NOT_ALLOWED:
+    'Future attendance cannot be marked. Please select today or a past date.',
 };
 
 export default ATTENDANCE_MESSAGES;

@@ -1,4 +1,7 @@
 import Attendance from '../models/Attendance.js';
+import {
+  getAttendanceDayRange,
+} from '../common/utils/attendanceDate.util.js';
 
 class AttendanceRepository {
   /**
@@ -58,9 +61,19 @@ class AttendanceRepository {
     attendanceDate,
     tenantId = null
   ) {
+    const { startDate, endDate } =
+      getAttendanceDayRange(attendanceDate);
+
+    if (!startDate || !endDate) {
+      return null;
+    }
+
     const query = {
       worker,
-      attendanceDate,
+      attendanceDate: {
+        $gte: startDate,
+        $lte: endDate,
+      },
       isDeleted: false,
     };
 
