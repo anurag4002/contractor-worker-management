@@ -128,13 +128,16 @@ class AttendanceService {
                     session
                 );
 
-            // Recalculate the affected worker's payroll if one exists
+            // Recalculate the affected worker's payroll if one exists. A
+            // genuinely new attendance record may reopen a previously paid
+            // payroll to account for the newly accrued additional balance.
             await this.recalcPayrollForWorkerMonth(
                 attendanceData.worker,
                 attendance.attendanceDate,
                 tenantId,
                 session,
-                createdBy
+                createdBy,
+                { source: 'NEW_ATTENDANCE' }
             );
 
             await session.commitTransaction();
@@ -167,7 +170,8 @@ class AttendanceService {
         attendanceDate,
         tenantId,
         session,
-        updatedBy
+        updatedBy,
+        options = {}
     ) {
         const attendanceDateKey =
             getCalendarDateKey(attendanceDate);
@@ -186,7 +190,10 @@ class AttendanceService {
             workerId,
             tenantId,
             updatedBy,
-            session
+            session,
+            {
+                source: options.source || 'ATTENDANCE_MUTATION',
+            }
         );
     }
     /**
