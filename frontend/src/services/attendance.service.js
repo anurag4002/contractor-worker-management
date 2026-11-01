@@ -11,8 +11,8 @@ const attendanceService = {
         return data;
     },
 
-    getSummary: async () => {
-        const { data } = await axios.get("/attendance/summary");
+    getSummary: async (params = {}) => {
+        const { data } = await axios.get("/attendance/summary", { params });
         return data;
     },
 

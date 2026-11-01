@@ -27,13 +27,15 @@ export const AttendanceProvider = ({ children }) => {
         }
     }, []);
 
-    const fetchSummary = useCallback(async () => {
+    const fetchSummary = useCallback(async (params = {}) => {
         try {
             setLoading(true);
-            const data = await attendanceService.getSummary();
+            const data = await attendanceService.getSummary(params);
             setSummary(data?.data || data);
         } catch (error) {
             showError(error);
+        } finally {
+            setLoading(false);
         }
     }, []);
 
@@ -70,13 +72,14 @@ export const AttendanceProvider = ({ children }) => {
             await attendanceService.updateAttendance(id, payload);
             showSuccess("Attendance updated successfully.");
             await fetchAttendance();
+            await fetchSummary();
         } catch (error) {
             showError(error);
             throw error;
         } finally {
             setLoading(false);
         }
-    }, [fetchAttendance]);
+    }, [fetchAttendance, fetchSummary]);
 
     const changeStatus = useCallback(async (id, status) => {
         try {
@@ -84,13 +87,14 @@ export const AttendanceProvider = ({ children }) => {
             await attendanceService.changeAttendanceStatus(id, status);
             showSuccess("Attendance status updated");
             await fetchAttendance();
+            await fetchSummary();
         } catch (error) {
             showError(error);
             throw error;
         } finally {
             setLoading(false);
         }
-    }, [fetchAttendance]);
+    }, [fetchAttendance, fetchSummary]);
 
     const removeAttendance = useCallback(async (id) => {
         try {
@@ -98,13 +102,14 @@ export const AttendanceProvider = ({ children }) => {
             await attendanceService.deleteAttendance(id);
             showSuccess("Attendance deleted successfully.");
             await fetchAttendance();
+            await fetchSummary();
         } catch (error) {
             showError(error);
             throw error;
         } finally {
             setLoading(false);
         }
-    }, [fetchAttendance]);
+    }, [fetchAttendance, fetchSummary]);
 
     return (
         <AttendanceContext.Provider

@@ -657,17 +657,22 @@ class AttendanceService {
             filter.tenant = tenantId;
         }
 
-        if (query.attendanceDate) {
-            const { startDate, endDate } = getAttendanceDayRange(
-                query.attendanceDate
-            );
+        // Summary cards always represent today's attendance unless an
+        // explicit attendance date is supplied. Default to the current
+        // business date (Asia/Kolkata calendar day).
+        const summaryDateKey = query?.attendanceDate
+            ? getCalendarDateKey(query.attendanceDate)
+            : getTodayDateKey();
 
-            if (startDate && endDate) {
-                filter.attendanceDate = {
-                    $gte: startDate,
-                    $lte: endDate,
-                };
-            }
+        const { startDate, endDate } = getAttendanceDayRange(
+            summaryDateKey
+        );
+
+        if (startDate && endDate) {
+            filter.attendanceDate = {
+                $gte: startDate,
+                $lte: endDate,
+            };
         }
 
         if (query.site) {
