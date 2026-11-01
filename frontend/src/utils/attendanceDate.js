@@ -42,6 +42,18 @@ export const getCalendarDateKey = (value) => {
 export const getTodayDateKey = () =>
   getCalendarDateKey(new Date());
 
+export const getCurrentMonthKey = () => {
+  const todayKey = getTodayDateKey();
+
+  if (!todayKey) {
+    return "";
+  }
+
+  const [year, month] = todayKey.split("-");
+
+  return `${year}-${month}`;
+};
+
 export const isFutureAttendanceDate = (
   value,
   todayKey = getTodayDateKey()

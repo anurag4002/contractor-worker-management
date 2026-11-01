@@ -27,6 +27,50 @@ import {
 
 const formatINR = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
 
+const getWorkerIdDisplay = (worker) => {
+
+  const workerRef = worker?.worker;
+
+  const id = workerRef?.employeeCode || workerRef?._id || workerRef;
+
+  return id || "-";
+
+};
+
+const getPayrollPeriod = (worker) => {
+
+  const month = Number(worker?.attendanceMonth || 0);
+
+  const year = Number(worker?.attendanceYear || 0);
+
+  if (!month || !year) {
+
+    return "-";
+
+  }
+
+  return `${year}-${String(month).padStart(2, "0")}`;
+
+};
+
+const getRemainingBalance = (worker) => {
+
+  const grossSalary = Number(worker?.grossSalary || 0);
+
+  const deduction = Number(worker?.deduction || 0);
+
+  const advanceDeduction = Number(worker?.advanceDeduction || 0);
+
+  const paid = Number(worker?.paid || 0) + Number(advanceDeduction || 0);
+
+  const totalPayable = grossSalary - deduction;
+
+  const remainingBalance = totalPayable - paid;
+
+  return Math.max(0, remainingBalance);
+
+};
+
 const SalaryTable = ({
   workers = [],
   onView,
@@ -38,15 +82,27 @@ const SalaryTable = ({
 
   const getStatus = (worker) => {
 
-    if (worker.status === "PAID") {
+    if (worker?.status === "CANCELLED") {
+
+      return "Cancelled";
+
+    }
+
+    const remainingBalance = getRemainingBalance(worker);
+
+    if (worker?.status === "PAID" || remainingBalance <= 0) {
 
       return "Paid";
 
     }
 
-    if (worker.status === "GENERATED" || worker.status === "PENDING") {
+    const paid =
+      Number(worker?.paid || 0) +
+      Number(worker?.advanceDeduction || 0);
 
-      return "Pending";
+    if (paid > 0) {
+
+      return "Partially Paid";
 
     }
 
@@ -79,6 +135,10 @@ const SalaryTable = ({
             <CardValue>{worker.workingDays || 0}</CardValue>
           </CardField>
           <CardField>
+            <CardLabel>Period</CardLabel>
+            <CardValue>{getPayrollPeriod(worker)}</CardValue>
+          </CardField>
+          <CardField>
             <CardLabel>Gross</CardLabel>
             <CardValue>{formatINR(worker.grossSalary)}</CardValue>
           </CardField>
@@ -92,7 +152,7 @@ const SalaryTable = ({
           </CardField>
           <CardField>
             <CardLabel>Balance</CardLabel>
-            <CardValue>{formatINR(worker.status === "PAID" ? 0 : worker.netSalary)}</CardValue>
+            <CardValue>{formatINR(getRemainingBalance(worker))}</CardValue>
           </CardField>
         </CardBody>
         <CardActions>
@@ -127,9 +187,11 @@ const SalaryTable = ({
 
             <th>Photo</th>
 
-            <th>ID</th>
+            <th>Worker ID</th>
 
             <th>Worker</th>
+
+            <th>Payroll Month</th>
 
             <th>Site</th>
 
@@ -167,7 +229,7 @@ const SalaryTable = ({
 
                 <td
 
-                  colSpan="15"
+                  colSpan="16"
 
                   style={{
 
@@ -248,9 +310,11 @@ const SalaryTable = ({
 
                     </td>
 
-                    <td>{worker._id}</td>
+                    <td>{getWorkerIdDisplay(worker)}</td>
 
                     <td>{worker.worker?.fullName || "-"}</td>
+
+                    <td>{getPayrollPeriod(worker)}</td>
 
                     <td>{worker.site?.siteName || "-"}</td>
 
@@ -268,7 +332,7 @@ const SalaryTable = ({
 
                     <td>{formatINR((worker.paid || 0) + (worker.advanceDeduction || 0))}</td>
 
-                    <td>{formatINR(worker.status === "PAID" ? 0 : worker.netSalary)}</td>
+                    <td>{formatINR(getRemainingBalance(worker))}</td>
 
                     <td><Status $status={status}>{status}</Status></td>
 

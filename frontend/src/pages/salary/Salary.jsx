@@ -27,10 +27,12 @@ import {
   Button,
 } from "./Salary.style";
 
+import { getCurrentMonthKey } from "../../utils/attendanceDate";
+
 const DEFAULT_FILTERS = {
   search: "",
   site: "All",
-  month: "",
+  month: getCurrentMonthKey().slice(0, 7),
 };
 
 const Salary = () => {

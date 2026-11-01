@@ -91,11 +91,15 @@ export const Status = styled.span`
 
       ? "var(--badge-success-bg)"
 
-      : $status === "Partial"
+      : $status === "Partially Paid"
 
-      ? "#FEF3C7"
+      ? "var(--badge-warning-bg)"
 
-      : "var(--badge-danger-bg)"
+      : $status === "Cancelled"
+
+      ? "var(--badge-danger-bg)"
+
+      : "var(--danger)"
 
   };
 
@@ -103,11 +107,15 @@ export const Status = styled.span`
 
     $status === "Paid"
 
-      ? "#15803D"
+      ? "var(--badge-success-fg)"
 
-      : $status === "Partial"
+      : $status === "Partially Paid"
 
-      ? "#B45309"
+      ? "var(--badge-warning-fg)"
+
+      : $status === "Cancelled"
+
+      ? "var(--badge-danger-fg)"
 
       : "var(--danger)"
 

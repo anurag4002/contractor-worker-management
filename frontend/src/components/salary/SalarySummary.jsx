@@ -17,7 +17,42 @@ const SalarySummary = ({
   workers = [],
 }) => {
 
-  const summary = workers.reduce(
+  const uniqueWorkers = [];
+
+  const seenWorkerIds = new Set();
+
+  workers.forEach((worker, index) => {
+
+    const workerRef = worker?.worker;
+
+    let workerId = workerRef?._id;
+
+    if (!workerId) {
+
+      workerId =
+        workerRef && typeof workerRef === "object" && workerRef.employeeCode
+          ? workerRef.employeeCode
+          : workerRef;
+
+    }
+
+    const workerKey = String(
+      workerId || worker?._id || `payroll-${index}`
+    );
+
+    if (seenWorkerIds.has(workerKey)) {
+
+      return;
+
+    }
+
+    seenWorkerIds.add(workerKey);
+
+    uniqueWorkers.push(worker);
+
+  });
+
+  const summary = uniqueWorkers.reduce(
 
     (acc, worker) => {
 
@@ -29,7 +64,19 @@ const SalarySummary = ({
 
       acc.totalAdvance += Number(worker.advanceDeduction || 0);
 
-      acc.totalBalance += Number(worker.status === "PAID" ? 0 : worker.netSalary || 0);
+      const grossSalary = Number(worker.grossSalary || 0);
+
+      const deduction = Number(worker.deduction || 0);
+
+      const advanceDeduction = Number(worker.advanceDeduction || 0);
+
+      const paid = Number(worker.paid || 0) + Number(advanceDeduction || 0);
+
+      const totalPayable = grossSalary - deduction;
+
+      const remainingBalance = Math.max(0, totalPayable - paid);
+
+      acc.totalBalance += remainingBalance;
 
       return acc;
 
@@ -53,9 +100,9 @@ const SalarySummary = ({
 
   const uniqueWorkerIds = new Set();
 
-  workers.forEach((worker) => {
+  uniqueWorkers.forEach((worker) => {
 
-    const id = worker?._id || worker?.worker?._id;
+    const id = worker?.worker?._id || worker?.worker?.employeeCode || worker?.worker;
 
     if (id) {
 
