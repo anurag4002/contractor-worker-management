@@ -5,6 +5,7 @@ import {
   MonthInput,
   ResetButton,
 } from "./SalaryFilter.style";
+import { getCurrentMonthKey } from "../../utils/attendanceDate";
 
 const SalaryFilter = ({
   search,
@@ -22,7 +23,7 @@ const SalaryFilter = ({
     setSearch("");
     setSite("All");
     setWageType("All");
-    setMonth("");
+    setMonth(getCurrentMonthKey().slice(0, 7));
     if (onReset) onReset();
   };
 

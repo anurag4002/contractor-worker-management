@@ -55,6 +55,16 @@ const SalaryPaymentModal = ({
     0
   );
 
+  const actualWorkerId =
+    worker?.worker?.employeeCode ||
+    worker?.worker?._id ||
+    worker?.worker ||
+    "-";
+
+  const isCancelled = worker?.status === "CANCELLED";
+  const isFullySettled =
+    worker?.status === "PAID" || remainingBalance <= 0;
+
   const paymentAmount = Number(amount);
 
   const isAmountInvalid =
@@ -76,6 +86,11 @@ const SalaryPaymentModal = ({
     e.preventDefault();
 
     setError("");
+
+    if (isCancelled) {
+      setError("Cancelled salary cannot be paid.");
+      return;
+    }
 
     if (!paymentAmount || paymentAmount <= 0) {
       setError("Please enter a valid payment amount.");
@@ -144,7 +159,7 @@ const SalaryPaymentModal = ({
 
           <FormGroup>
             <Label>Worker ID</Label>
-            <Input value={worker._id} disabled />
+            <Input value={actualWorkerId} disabled />
           </FormGroup>
 
           <FormGroup>
@@ -215,7 +230,7 @@ const SalaryPaymentModal = ({
             <CancelButton type="button" onClick={onClose} disabled={saving}>
               Cancel
             </CancelButton>
-            <SaveButton type="submit" disabled={saving || isAmountInvalid}>
+            <SaveButton type="submit" disabled={saving || isAmountInvalid || isCancelled || isFullySettled}>
               {saving ? "Saving Payment..." : "Save Payment"}
             </SaveButton>
           </Footer>
