@@ -12,6 +12,7 @@ import AttendanceHistoryModal from "../../components/attendance/AttendanceHistor
 import MarkAttendanceModal from "../../components/attendance/MarkAttendanceModal";
 
 import { AttendanceContainer, Header, TitleSection, ActionSection, Button } from "./Attendance.style";
+import { getTodayDateKey } from "../../utils/attendanceDate";
 
 const Attendance = () => {
   const {
@@ -28,13 +29,33 @@ const Attendance = () => {
   const [date, setDate] = useState("");
   const [page, setPage] = useState(1);
   const limit = 10;
+  const [todayDateKey, setTodayDateKey] = useState(getTodayDateKey());
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTodayDateKey(getTodayDateKey());
+    }, 60 * 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
     if (!sites || sites.length === 0) {
       fetchSites({ limit: 100 });
     }
-    fetchSummary();
   }, []);
+
+  const summaryParams = useMemo(() => {
+    const params = { attendanceDate: todayDateKey };
+    if (siteId && siteId !== "All") {
+      params.site = siteId;
+    }
+    return params;
+  }, [todayDateKey, siteId]);
+
+  useEffect(() => {
+    fetchSummary(summaryParams);
+  }, [summaryParams, fetchSummary]);
 
   useEffect(() => {
     const params = { page, limit };

@@ -332,15 +332,29 @@ class AttendanceRepository {
     async getSummary(filter, tenantId = null) {
       const query = tenantId ? { ...filter, tenant: tenantId } : filter;
 
+      // Group first by status + worker so each worker is counted at most
+      // once per status for the matched (business day) attendance records,
+      // then roll the counts up by status.
       return await Attendance.aggregate([
         {
           $match: query,
         },
         {
           $group: {
-            _id: '$status',
+            _id: {
+              status: '$status',
+              worker: '$worker',
+            },
             count: {
               $sum: 1,
+            },
+          },
+        },
+        {
+          $group: {
+            _id: '$_id.status',
+            count: {
+              $sum: '$count',
             },
           },
         },
