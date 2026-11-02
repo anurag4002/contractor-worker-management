@@ -225,6 +225,23 @@ export const SecondaryButton = styled.button`
 export const HeroSection = styled.section`
   padding: 56px 0 40px;
   text-align: center;
+  background:
+    linear-gradient(
+      rgba(15, 23, 42, 0.68),
+      rgba(15, 23, 42, 0.78)
+    ),
+    url("/images/landing-construction-team.jpg")
+      center 42% / cover no-repeat;
+
+  @media (max-width: 768px) {
+    background:
+      linear-gradient(
+        rgba(15, 23, 42, 0.72),
+        rgba(15, 23, 42, 0.82)
+      ),
+      url("/images/landing-construction-team.jpg")
+        center 30% / cover no-repeat;
+  }
 `;
 
 export const Badge = styled.div`
@@ -244,7 +261,7 @@ export const Badge = styled.div`
 export const HeroTitle = styled.h1`
   font-size: clamp(1.8rem, 5.5vw, 3.25rem);
   font-weight: 800;
-  color: var(--text);
+  color: #ffffff;
   letter-spacing: -0.03em;
   line-height: 1.2;
   max-width: 960px;
@@ -255,7 +272,7 @@ export const HeroTitle = styled.h1`
 
 export const HeroDescription = styled.p`
   font-size: clamp(1rem, 1.4vw, 1.15rem);
-  color: var(--text-secondary);
+  color: #cbd5e1;
   max-width: 720px;
   margin: 0 auto 28px;
   line-height: 1.6;
