@@ -385,12 +385,13 @@ const TravelingLight = ({ step, containerRef }) => {
   const [position, setPosition] = useState({ top: 0 });
 
   useEffect(() => {
-    if (!containerRef.current || reducedMotion) return;
+    if (!containerRef.current || reducedMotion || step < 0) return;
 
     const measure = () => {
       const stepEls = containerRef.current.querySelectorAll("[data-step]");
-      if (stepEls[step]) {
-        const rect = stepEls[step].getBoundingClientRect();
+      const stepEl = stepEls[step];
+      if (stepEl) {
+        const rect = stepEl.getBoundingClientRect();
         const containerRect = containerRef.current.getBoundingClientRect();
         setPosition({
           top: rect.top - containerRect.top + rect.height * 0.15,
@@ -409,7 +410,7 @@ const TravelingLight = ({ step, containerRef }) => {
     <motion.div
       initial={{ opacity: 0, scale: 0.5 }}
       animate={
-        step === 0
+        step < 0
           ? { opacity: 0, scale: 0.5 }
           : { opacity: 1, scale: 1, top: position.top }
       }
@@ -568,11 +569,36 @@ const AnimatedSteps = ({ visibleCount }) => {
   const reducedMotion = useReducedMotion();
   const containerRef = useRef(null);
   const width = useWindowWidth();
+  const connectorProgress =
+    visibleCount >= ONBOARDING_STEPS.length
+      ? 1
+      : visibleCount > 0
+        ? visibleCount / ONBOARDING_STEPS.length
+        : 0;
+
+  const connector = (
+    <StepsConnector $progress={connectorProgress}>
+      <motion.div
+        initial={false}
+        animate={{ scaleY: connectorProgress }}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "100%",
+          background: "var(--primary)",
+          borderRadius: "2px",
+          transformOrigin: "top",
+        }}
+      />
+    </StepsConnector>
+  );
 
   if (reducedMotion) {
     return (
       <StepsSection ref={containerRef} aria-label="Registration overview">
-        <StepsConnector />
+        {connector}
         {ONBOARDING_STEPS.map((step, i) => (
           <AnimatedStep key={i} stepData={step} index={i} animate="visible" width={width} />
         ))}
@@ -582,8 +608,8 @@ const AnimatedSteps = ({ visibleCount }) => {
 
   return (
     <StepsSection ref={containerRef} aria-label="Registration overview">
-      <StepsConnector />
-      <TravelingLight step={visibleCount} containerRef={containerRef} />
+      {connector}
+      <TravelingLight step={visibleCount > 0 ? visibleCount - 1 : -1} containerRef={containerRef} />
       {ONBOARDING_STEPS.map((step, i) => (
         <AnimatedStep
           key={i}
