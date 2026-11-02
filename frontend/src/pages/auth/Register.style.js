@@ -553,6 +553,20 @@ export const InputGroup = styled.div`
   gap: 0.45rem;
 `;
 
+export const AddressFieldsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+
+  & > *:last-child {
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+`;
+
 export const FieldLabel = styled.label`
   font-size: 0.85rem;
   font-weight: 600;
@@ -611,6 +625,10 @@ export const FormInput = styled.input`
 
 export const PasswordField = styled(FormInput)`
   padding-right: 2.9rem;
+`;
+
+export const AddressFieldInput = styled(FormInput)`
+  padding: 0.9rem 1rem;
 `;
 
 export const PasswordToggle = styled.button`
