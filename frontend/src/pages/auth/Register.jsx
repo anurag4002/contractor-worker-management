@@ -40,6 +40,8 @@ import {
   InputIcon,
   FormInput,
   PasswordField,
+  AddressFieldInput,
+  AddressFieldsGrid,
   PasswordToggle,
   RegisterButton,
   LoginLinkRow,
@@ -447,10 +449,10 @@ const Register = () => {
                 </InputWrapper>
               </InputGroup>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem" }}>
+              <AddressFieldsGrid>
                 <InputGroup>
                   <FieldLabel htmlFor="register-city">City</FieldLabel>
-                  <FormInput
+                  <AddressFieldInput
                     id="register-city"
                     type="text"
                     name="city"
@@ -463,7 +465,7 @@ const Register = () => {
 
                 <InputGroup>
                   <FieldLabel htmlFor="register-state">State</FieldLabel>
-                  <FormInput
+                  <AddressFieldInput
                     id="register-state"
                     type="text"
                     name="state"
@@ -476,7 +478,7 @@ const Register = () => {
 
                 <InputGroup>
                   <FieldLabel htmlFor="register-pincode">Pincode</FieldLabel>
-                  <FormInput
+                  <AddressFieldInput
                     id="register-pincode"
                     type="text"
                     name="pincode"
@@ -489,7 +491,7 @@ const Register = () => {
                     <FormError error={fieldErrors.pincode} />
                   )}
                 </InputGroup>
-              </div>
+              </AddressFieldsGrid>
 
               <RegisterButton type="submit" disabled={loading}>
                 {loading ? "Starting Free Trial..." : "Start Free Trial"}
