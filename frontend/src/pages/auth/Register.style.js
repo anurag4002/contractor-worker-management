@@ -327,10 +327,8 @@ export const StepsConnector = styled.div`
   top: 0;
   bottom: 0;
   width: 2px;
-  background: var(--primary);
+  background: ${({ $progress = 1 }) => ($progress > 0 ? "var(--border)" : "transparent")};
   transform-origin: top;
-  animation: ${keyframes.lineGrow} 1.7s ease-out both;
-  animation-delay: 1500ms;
   ${reducedMotionReset}
 
   @media (max-width: 768px) {
