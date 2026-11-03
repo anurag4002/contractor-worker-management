@@ -143,6 +143,17 @@ export const UserCard = styled.div`
   text-decoration: none;
   color: inherit;
 
+  ${({ $sidebarOpen }) =>
+    !$sidebarOpen &&
+    `
+      width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+      justify-content: center;
+      padding: 0.8rem 0;
+      gap: 0;
+    `}
+
   &:hover {
     background: rgba(255,255,255,.12);
     transform: translateX(4px);
@@ -158,6 +169,16 @@ export const UserCard = styled.div`
     outline: 2px solid var(--primary);
     outline-offset: 2px;
   }
+
+  ${({ $sidebarOpen }) =>
+    !$sidebarOpen &&
+    `
+      &:hover {
+        background: rgba(255,255,255,.12);
+        transform: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      }
+    `}
 `;
 
 export const Avatar = styled.div`
