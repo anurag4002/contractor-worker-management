@@ -76,11 +76,33 @@ const dashboardPreviewVariants = {
    HELPERS
    ============================================================ */
 
-const splitIntoChars = (text) =>
-  text.split("").map((char, i) => ({
-    id: i,
-    char: char === " " ? "\u00A0" : char,
+const splitIntoWords = (text, lineIndex) => {
+  const words = [];
+  let currentWord = "";
+
+  for (const char of text) {
+    if (char === " ") {
+      if (currentWord) words.push(currentWord);
+      currentWord = "";
+    } else {
+      currentWord += char;
+    }
+  }
+  if (currentWord) words.push(currentWord);
+
+  return words.map((word, wordIndex) => ({
+    id: `heading-line-${lineIndex}-word-${wordIndex}`,
+    chars: [
+      ...word.split("").map((char, charIndex) => ({
+        id: `heading-line-${lineIndex}-word-${wordIndex}-char-${charIndex}`,
+        char,
+      })),
+      ...(wordIndex < words.length - 1
+        ? [{ id: `heading-line-${lineIndex}-word-${wordIndex}-space`, char: "\u00A0" }]
+        : []),
+    ],
   }));
+};
 
 const HEADING_LINES = ["Manage Your", "Workforce With Confidence"];
 
@@ -148,7 +170,10 @@ const AnimatedLogo = ({ animate }) => {
 
 const AnimatedHeading = () => {
   const controls = useAnimation();
-  const charLines = useMemo(() => HEADING_LINES.map(splitIntoChars), []);
+  const headingLines = useMemo(
+    () => HEADING_LINES.map((line, lineIdx) => splitIntoWords(line, lineIdx)),
+    []
+  );
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
@@ -183,7 +208,7 @@ const AnimatedHeading = () => {
   if (reducedMotion) {
     return (
       <div style={{ display: "block", maxWidth: "100%" }}>
-        {charLines.map((chars, lineIdx) => (
+        {headingLines.map((words, lineIdx) => (
           <div
             key={lineIdx}
             style={{
@@ -191,16 +216,23 @@ const AnimatedHeading = () => {
               whiteSpace: "normal",
               overflowWrap: "break-word",
               wordBreak: "normal",
+              textAlign: "left",
               font: "inherit",
               fontWeight: 800,
-              fontSize: "clamp(1.5rem, 5.5vw, 2.8rem)",
+              fontSize: "clamp(1.5rem, 4.5vw, 2.1rem)",
               lineHeight: 1.18,
               color: "var(--text)",
               maxWidth: "100%",
             }}
           >
-            {chars.map(({ id, char }) => (
-              <span key={id} style={{ display: "inline-block", whiteSpace: "pre" }}>{char}</span>
+            {words.map((word) => (
+              <span key={word.id} style={{ display: "inline-block", whiteSpace: "nowrap" }}>
+                {word.chars.map(({ id, char }) => (
+                  <span key={id} style={{ display: "inline-block", whiteSpace: "pre" }}>
+                    {char}
+                  </span>
+                ))}
+              </span>
             ))}
           </div>
         ))}
@@ -215,7 +247,7 @@ const AnimatedHeading = () => {
       animate={controls}
       style={{ display: "block", maxWidth: "100%" }}
     >
-      {charLines.map((chars, lineIdx) => (
+      {headingLines.map((words, lineIdx) => (
         <div
           key={lineIdx}
           style={{
@@ -223,22 +255,27 @@ const AnimatedHeading = () => {
             whiteSpace: "normal",
             overflowWrap: "break-word",
             wordBreak: "normal",
+            textAlign: "left",
             font: "inherit",
             fontWeight: 800,
-            fontSize: "clamp(1.5rem, 5.5vw, 2.8rem)",
+            fontSize: "clamp(1.5rem, 4.5vw, 2.1rem)",
             lineHeight: 1.18,
             color: "var(--text)",
             maxWidth: "100%",
           }}
         >
-          {chars.map(({ id, char }) => (
-            <motion.span
-              key={id}
-              variants={headingCharVariants}
-              style={{ display: "inline-block", whiteSpace: "pre" }}
-            >
-              {char}
-            </motion.span>
+          {words.map((word) => (
+            <span key={word.id} style={{ display: "inline-block", whiteSpace: "nowrap" }}>
+              {word.chars.map(({ id, char }) => (
+                <motion.span
+                  key={id}
+                  variants={headingCharVariants}
+                  style={{ display: "inline-block", whiteSpace: "pre" }}
+                >
+                  {char}
+                </motion.span>
+              ))}
+            </span>
           ))}
         </div>
       ))}
