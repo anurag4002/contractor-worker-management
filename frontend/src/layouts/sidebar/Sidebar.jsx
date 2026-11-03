@@ -65,7 +65,10 @@ const Sidebar = ({ sidebarOpen, onClose }) => {
 
   const avatarInitial = displayName.trim().charAt(0).toUpperCase();
 
-  const userRole = user?.role || "Administrator";
+  const rawRole = user?.role;
+  const userRole =
+    (typeof rawRole === "object" ? rawRole?.name || rawRole?.code : rawRole) ||
+    "Administrator";
 
   const handleLogoutClick = () => {
     setShowLogoutConfirm(true);
