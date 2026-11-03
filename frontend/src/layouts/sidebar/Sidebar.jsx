@@ -54,8 +54,18 @@ const iconMap = {
 
 const Sidebar = ({ sidebarOpen, onClose }) => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const displayName =
+    user?.fullName ||
+    user?.name ||
+    user?.email ||
+    "User";
+
+  const avatarInitial = displayName.trim().charAt(0).toUpperCase();
+
+  const userRole = user?.role || "Administrator";
 
   const handleLogoutClick = () => {
     setShowLogoutConfirm(true);
@@ -147,6 +157,7 @@ const Sidebar = ({ sidebarOpen, onClose }) => {
           <UserCard
             as={NavLink}
             to="/profile"
+            $sidebarOpen={sidebarOpen}
             onClick={() => {
               if (!sidebarOpen) {
                 /* allow navigation when sidebar is collapsed */
@@ -154,13 +165,18 @@ const Sidebar = ({ sidebarOpen, onClose }) => {
             }}
           >
 
-            <Avatar>A</Avatar>
+            <Avatar
+              aria-label={`${displayName} profile`}
+              title={displayName}
+            >
+              {avatarInitial}
+            </Avatar>
 
             <UserInfo $sidebarOpen={sidebarOpen}>
 
-              <h4>Admin User</h4>
+              <h4>{displayName}</h4>
 
-              <p>Administrator</p>
+              <p>{userRole}</p>
 
             </UserInfo>
 
