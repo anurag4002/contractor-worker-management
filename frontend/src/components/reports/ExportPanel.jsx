@@ -11,7 +11,7 @@ const spin = keyframes`from { transform: rotate(0deg); } to { transform: rotate(
 /* ─── Styled Components ─────────────────────────────────────────── */
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   gap: 1rem;
 `;
 
@@ -21,13 +21,21 @@ const Card = styled.div`
   border-radius: 1rem;
   padding: 1.4rem 1.5rem;
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
   box-shadow: 0 4px 12px var(--shadow);
   transition: box-shadow 0.2s;
   min-height: 100px;
+  min-width: 0;
   &:hover { box-shadow: 0 8px 24px var(--shadow-lg); }
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
 `;
 
 const CardLeft = styled.div`
@@ -52,8 +60,9 @@ const IconBox = styled.div`
 `;
 
 const Meta = styled.div`
+  min-width: 0;
   p { margin: 0; font-size: 0.78rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
-  h4 { margin: 0.2rem 0 0; font-size: 0.95rem; font-weight: 600; color: var(--text); }
+  h4 { margin: 0.2rem 0 0; font-size: 0.95rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   span { display: block; margin-top: 0.15rem; font-size: 0.78rem; color: var(--text-secondary); }
 `;
 
@@ -77,6 +86,10 @@ const Btn = styled.button`
   flex-shrink: 0;
   &:hover:not(:disabled) { background: var(--primary-hover); }
   svg.spin { animation: ${spin} 1s linear infinite; }
+
+  @media (max-width: 640px) {
+    width: 100%;
+  }
 `;
 
 const SectionTitle = styled.h3`
