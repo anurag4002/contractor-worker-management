@@ -1,7 +1,80 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 import ExcelJS from 'exceljs';
 import PDFDocument from 'pdfkit';
 
+import Tenant from '../models/Tenant.js';
 import exportRepository from '../repositories/export.repository.js';
+
+const PDF_FONT_DIR = path.resolve(
+    path.dirname(fileURLToPath(import.meta.url)),
+    '../utils/pdf/fonts'
+);
+
+export const formatCurrency = (value) =>
+    `₹${Number(value || 0).toLocaleString('en-IN', {
+        maximumFractionDigits: 2,
+    })}`;
+
+export const registerPayrollPdfFonts = (doc) => {
+    doc.registerFont(
+        'NotoSans',
+        path.join(PDF_FONT_DIR, 'NotoSans-Regular.ttf'),
+        undefined
+    );
+
+    doc.registerFont(
+        'NotoSans-Bold',
+        path.join(PDF_FONT_DIR, 'NotoSans-Bold.ttf'),
+        undefined
+    );
+
+    return doc;
+};
+
+export const calculatePayrollFinancials = (payroll = {}) => {
+    const grossSalary = Number(payroll?.grossSalary || 0);
+
+    const deduction = Number(payroll?.deduction || 0);
+
+    const advanceDeduction = Number(payroll?.advanceDeduction || 0);
+
+    const paid = Number(payroll?.paid || 0);
+
+    const netPayable = Math.max(
+        0,
+        grossSalary - deduction - advanceDeduction
+    );
+
+    const balance = Math.max(0, netPayable - paid);
+
+    return {
+        basic: Number(payroll?.basicSalary || 0),
+        gross: grossSalary,
+        netPayable,
+        paid,
+        balance,
+    };
+};
+
+export const derivePayrollStatus = (payroll = {}) => {
+    if (payroll?.status === 'CANCELLED') {
+        return 'CANCELLED';
+    }
+
+    const { paid, balance } = calculatePayrollFinancials(payroll);
+
+    if (balance <= 0) {
+        return 'PAID';
+    }
+
+    if (paid > 0) {
+        return 'PARTIALLY PAID';
+    }
+
+    return payroll?.status || 'PENDING';
+};
 
 class ExportService {
     /**
@@ -960,374 +1033,402 @@ async exportAttendancePdf(res, tenantId) {
  * Export Payroll PDF
  * ==========================================
  */
-async exportPayrollPdf(res, query = {}, tenantId) {
-   /**
-    * ------------------------------------------
-    * Fetch Payroll
-    * ------------------------------------------
-    */
-   const payrolls =
-     await exportRepository.getPayroll(query, tenantId);
+    async exportPayrollPdf(res, query = {}, tenantId) {
+        const payrolls =
+            await exportRepository.getPayroll(query, tenantId);
 
-  /**
-   * ------------------------------------------
-   * Create PDF
-   * ------------------------------------------
-   */
-  const doc = new PDFDocument({
-    size: 'A4',
-    margin: 40,
-  });
+        const tenant = await Tenant.findOne({
+            _id: tenantId,
+            isDeleted: false,
+        }).select(
+            'companyName address city district state pincode email mobileNumber'
+        );
 
-  const fileName = `payroll-report-${Date.now()}.pdf`;
+        const companyName =
+            tenant?.companyName ||
+            'Company name not configured';
 
-  res.setHeader(
-    'Content-Type',
-    'application/pdf'
-  );
+        const doc = new PDFDocument({
+            size: 'A4',
+            layout: 'landscape',
+            margin: 40,
+        });
 
-  res.setHeader(
-    'Content-Disposition',
-    `attachment; filename="${fileName}"`
-  );
+        const fileName = `payroll-report-${Date.now()}.pdf`;
 
-  doc.pipe(res);
+        res.setHeader(
+            'Content-Type',
+            'application/pdf'
+        );
 
-  /**
-   * ------------------------------------------
-   * PDF Metadata
-   * ------------------------------------------
-   */
-  doc.info.Title =
-    'Payroll Report';
+        res.setHeader(
+            'Content-Disposition',
+            `attachment; filename="${fileName}"`
+        );
 
-  doc.info.Author =
-    'Contractor Worker Management';
+        doc.pipe(res);
 
-  doc.info.Subject =
-    'Payroll Report';
+        doc.info.Title = 'Payroll Report';
+        doc.info.Author = companyName;
+        doc.info.Subject = 'Payroll Report';
+        doc.info.Creator = companyName;
 
-  doc.info.Creator =
-    'Contractor Worker Management';
+        let docPageNumber = 1;
 
-  /**
-   * ------------------------------------------
-   * Report Title
-   * ------------------------------------------
-   */
-  doc
-    .font('Helvetica-Bold')
-    .fontSize(18)
-    .text(
-      'Payroll Report',
-      {
-        align: 'center',
-      }
-    );
+        registerPayrollPdfFonts(doc);
 
-  doc.moveDown();
+        const generatedOn = new Date().toLocaleString();
 
-  doc
-    .font('Helvetica')
-    .fontSize(10)
-    .text(
-      `Generated On : ${new Date().toLocaleString()}`
-    );
+        const formatPeriod = (month, year) => {
+            const monthNumber = Number(month);
+            const yearNumber = Number(year);
 
-  doc.moveDown(1.5);
-
-  /**
-   * ------------------------------------------
-   * Table Header
-   * ------------------------------------------
-   */
-
-  const startX = 15;
-  let startY = doc.y;
-
-  const columns = [
-    {
-      label: 'Emp',
-      x: startX,
-      width: 50,
-    },
-    {
-      label: 'Worker',
-      x: 70,
-      width: 95,
-    },
-    {
-      label: 'Month',
-      x: 170,
-      width: 45,
-    },
-    {
-      label: 'Year',
-      x: 220,
-      width: 45,
-    },
-    {
-      label: 'Basic',
-      x: 270,
-      width: 60,
-    },
-    {
-      label: 'Gross',
-      x: 335,
-      width: 60,
-    },
-    {
-      label: 'Net',
-      x: 400,
-      width: 60,
-    },
-    {
-      label: 'Status',
-      x: 465,
-      width: 70,
-    },
-  ];
-
-  doc
-    .rect(
-      startX - 5,
-      startY - 5,
-      530,
-      22
-    )
-    .fill('#1F4E78');
-
-  doc.fillColor('white');
-
-  columns.forEach((column) => {
-    doc
-      .font('Helvetica-Bold')
-      .fontSize(8)
-      .text(
-        column.label,
-        column.x,
-        startY,
-        {
-          width: column.width,
-        }
-      );
-  });
-
-  doc.fillColor('black');
-
-  startY += 28;
-    /**
-   * ------------------------------------------
-   * Render Payroll Rows
-   * ------------------------------------------
-   */
-
-  const rowHeight = 22;
-
-  payrolls.forEach((payroll) => {
-    /**
-     * Page Break
-     */
-    if (
-      startY >
-      doc.page.height - 60
-    ) {
-      doc.addPage();
-
-      startY = 50;
-
-      doc
-        .rect(
-          startX - 5,
-          startY - 5,
-          530,
-          22
-        )
-        .fill('#1F4E78');
-
-      doc.fillColor('white');
-
-      columns.forEach((column) => {
-        doc
-          .font('Helvetica-Bold')
-          .fontSize(8)
-          .text(
-            column.label,
-            column.x,
-            startY,
-            {
-              width: column.width,
+            if (
+                !Number.isFinite(monthNumber) ||
+                !Number.isFinite(yearNumber)
+            ) {
+                return '-';
             }
-          );
-      });
 
-      doc.fillColor('black');
+            return new Date(
+                yearNumber,
+                monthNumber - 1,
+                1
+            ).toLocaleString(
+                'en-US',
+                {
+                    month: 'long',
+                    year: 'numeric',
+                }
+            );
+        };
 
-      startY += 28;
+        const periodLabel =
+            query.attendanceMonth && query.attendanceYear
+                ? formatPeriod(
+                    query.attendanceMonth,
+                    query.attendanceYear
+                )
+                : payrolls.length > 0
+                    ? formatPeriod(
+                        payrolls[0].attendanceMonth,
+                        payrolls[0].attendanceYear
+                    )
+                    : 'All Periods';
+
+        doc.font('NotoSans-Bold').fontSize(20).fillColor('#1F4E78');
+        doc.text(companyName, { align: 'center' });
+
+        doc.font('NotoSans').fontSize(9).fillColor('#444444');
+
+        if (tenant?.address) {
+            doc.text(tenant.address, { align: 'center' });
+        }
+
+        const locationLine = [
+            tenant?.city,
+            tenant?.district,
+            tenant?.state,
+            tenant?.pincode,
+        ]
+            .filter(Boolean)
+            .join(', ');
+
+        if (locationLine) {
+            doc.text(locationLine, { align: 'center' });
+        }
+
+        if (tenant?.email) {
+            doc.text(tenant.email, { align: 'center' });
+        }
+
+        if (tenant?.mobileNumber) {
+            doc.text(`Mobile : ${tenant.mobileNumber}`, { align: 'center' });
+        }
+
+        doc.moveDown(1.25);
+
+        doc.font('NotoSans-Bold').fontSize(16).fillColor('#1F4E78');
+        doc.text('PAYROLL REPORT', { align: 'center' });
+
+        doc.font('NotoSans').fontSize(9).fillColor('#666666');
+        doc.text(`Generated On : ${generatedOn}`, { align: 'center' });
+        doc.text(`Period : ${periodLabel}`, { align: 'center' });
+
+        doc.moveDown(1.5);
+
+        const financials = payrolls.map((payroll) =>
+            calculatePayrollFinancials(payroll)
+        );
+
+        const totalGrossSalary = financials.reduce(
+            (sum, item) => sum + item.gross,
+            0
+        );
+
+        const totalNetPayable = financials.reduce(
+            (sum, item) => sum + item.netPayable,
+            0
+        );
+
+        const totalPaid = financials.reduce(
+            (sum, item) => sum + item.paid,
+            0
+        );
+
+        const outstandingBalance = financials.reduce(
+            (sum, item) => sum + item.balance,
+            0
+        );
+
+        doc.font('NotoSans-Bold').fontSize(12).fillColor('#1F4E78');
+        doc.text('FINANCIAL SUMMARY', { align: 'center' });
+
+        const summaryRows = [
+            ['Total Payroll Records', String(payrolls.length), false],
+            ['Total Gross Salary', formatCurrency(totalGrossSalary), false],
+            ['Total Net Payable', formatCurrency(totalNetPayable), false],
+            ['Total Paid', formatCurrency(totalPaid), false],
+            ['Outstanding Balance', formatCurrency(outstandingBalance), true],
+        ];
+
+        summaryRows.forEach(([label, value, isTotal]) => {
+            const rowY = doc.y;
+
+            doc.font('NotoSans').fontSize(9).fillColor('#333333');
+            doc.text(label, 40, rowY, { width: 300 });
+
+            doc.font('NotoSans-Bold').fontSize(9);
+            doc.fillColor(isTotal ? '#B91C1C' : '#1F4E78');
+            doc.text(value, 40, rowY, {
+                align: 'right',
+                width: doc.page.width - 80,
+            });
+
+            doc.moveDown(0.85);
+        });
+
+        doc.moveDown(1);
+
+        if (payrolls.length === 0) {
+            doc.font('NotoSans').fontSize(12).fillColor('#666666');
+            doc.text(
+                'No payroll records found for the selected filters',
+                { align: 'center' }
+            );
+        } else {
+            const startX = 40;
+            let startY = doc.y;
+
+            const columns = [
+                { label: '#', x: 40, width: 28, align: 'left' },
+                { label: 'Employee ID', x: 68, width: 55, align: 'left' },
+                { label: 'Worker', x: 123, width: 105, align: 'left' },
+                { label: 'Site', x: 228, width: 80, align: 'left' },
+                { label: 'Period', x: 308, width: 52, align: 'left' },
+                { label: 'Basic', x: 360, width: 60, align: 'right' },
+                { label: 'Gross', x: 420, width: 60, align: 'right' },
+                { label: 'Net Payable', x: 480, width: 70, align: 'right' },
+                { label: 'Paid', x: 550, width: 60, align: 'right' },
+                { label: 'Balance', x: 610, width: 70, align: 'right' },
+                { label: 'Status', x: 680, width: 60, align: 'left' },
+            ];
+
+            const rowHeight = 18;
+
+            const drawPayrollHeader = () => {
+                doc.rect(
+                    startX,
+                    startY - 5,
+                    doc.page.width - startX * 2,
+                    18
+                ).fill('#1F4E78');
+
+                columns.forEach((column) => {
+                    doc.font('NotoSans-Bold').fontSize(7);
+                    doc.fillColor('white');
+                    doc.text(column.label, column.x, startY, {
+                        width: column.width,
+                    });
+                });
+
+                doc.fillColor('black');
+                startY += 18;
+            };
+
+            drawPayrollHeader();
+
+            payrolls.forEach((payroll, index) => {
+                const itemFinancials = calculatePayrollFinancials(payroll);
+
+                if (startY > doc.page.height - 70) {
+                    doc.addPage();
+                    docPageNumber += 1;
+                    startY = 50;
+                    drawPayrollHeader();
+                }
+
+                const rowFill =
+                    index % 2 === 0 ? '#FFFFFF' : '#F4F7FA';
+
+                doc.rect(
+                    startX,
+                    startY - 4,
+                    doc.page.width - startX * 2,
+                    rowHeight
+                ).fill(rowFill);
+
+                doc.rect(
+                    startX,
+                    startY - 4,
+                    doc.page.width - startX * 2,
+                    rowHeight
+                ).stroke('#D9D9D9');
+
+                const status = derivePayrollStatus(payroll);
+
+                const statusColors = {
+                    PAID: '#15803D',
+                    PARTIALLY_PAID: '#B45309',
+                    GENERATED: '#1D4ED8',
+                    PENDING: '#1D4ED8',
+                    CANCELLED: '#B91C1C',
+                };
+
+                const cells = [
+                    {
+                        text: String(index + 1),
+                        column: columns[0],
+                        align: 'left',
+                    },
+                    {
+                        text: payroll.worker?.employeeCode || '-',
+                        column: columns[1],
+                        align: 'left',
+                    },
+                    {
+                        text: payroll.worker?.fullName || '-',
+                        column: columns[2],
+                        align: 'left',
+                    },
+                    {
+                        text: payroll.site?.siteName || '-',
+                        column: columns[3],
+                        align: 'left',
+                    },
+                    {
+                        text: formatPeriod(
+                            payroll.attendanceMonth,
+                            payroll.attendanceYear
+                        ),
+                        column: columns[4],
+                        align: 'left',
+                    },
+                    {
+                        text: formatCurrency(itemFinancials.basic),
+                        column: columns[5],
+                        align: 'right',
+                    },
+                    {
+                        text: formatCurrency(itemFinancials.gross),
+                        column: columns[6],
+                        align: 'right',
+                    },
+                    {
+                        text: formatCurrency(itemFinancials.netPayable),
+                        column: columns[7],
+                        align: 'right',
+                    },
+                    {
+                        text: formatCurrency(itemFinancials.paid),
+                        column: columns[8],
+                        align: 'right',
+                    },
+                    {
+                        text: formatCurrency(itemFinancials.balance),
+                        column: columns[9],
+                        align: 'right',
+                    },
+                    {
+                        text: status,
+                        column: columns[10],
+                        align: columns[10].align,
+                        color: statusColors[status] || '#333333',
+                    },
+                ];
+
+                cells.forEach((cell) => {
+                    const { column } = cell;
+
+                    doc.font('NotoSans').fontSize(8);
+
+                    doc.fillColor(
+                        cell.color || 'black'
+                    );
+
+                    doc.text(cell.text, column.x, startY, {
+                        width: column.width,
+                        align: cell.align,
+                    });
+                });
+
+                startY += rowHeight;
+            });
+
+            doc.font('NotoSans-Bold').fontSize(9).fillColor('#1F4E78');
+            doc.text('TOTAL', columns[0].x, startY, {
+                width: columns[0].width,
+            });
+
+            doc.font('NotoSans-Bold').fontSize(9).fillColor('#B91C1C');
+            doc.text(
+                formatCurrency(totalNetPayable),
+                columns[7].x,
+                startY,
+                {
+                    width: columns[7].width,
+                    align: 'right',
+                }
+            );
+
+            doc.font('NotoSans-Bold').fontSize(9).fillColor('#B91C1C');
+            doc.text(
+                formatCurrency(totalPaid),
+                columns[8].x,
+                startY,
+                {
+                    width: columns[8].width,
+                    align: 'right',
+                }
+            );
+
+            doc.font('NotoSans-Bold').fontSize(9).fillColor('#B91C1C');
+            doc.text(
+                formatCurrency(outstandingBalance),
+                columns[9].x,
+                startY,
+                {
+                    width: columns[9].width,
+                    align: 'right',
+                }
+            );
+
+            startY += 18;
+        }
+
+        doc.moveDown(2);
+
+        doc.font('NotoSans').fontSize(8).fillColor('#888888');
+        doc.text(`Generated by ${companyName}`, { align: 'center' });
+
+        doc.moveDown(1);
+
+        doc.font('NotoSans').fontSize(8).fillColor('#888888');
+        doc.text(`Page ${docPageNumber}`, { align: 'center' });
+
+        doc.end();
     }
 
-    /**
-     * Row Border
-     */
-    doc
-      .rect(
-        startX - 5,
-        startY - 4,
-        530,
-        rowHeight
-      )
-      .stroke('#D9D9D9');
-
-    /**
-     * Employee Code
-     */
-    doc
-      .font('Helvetica')
-      .fontSize(8)
-      .text(
-        payroll.worker?.employeeCode || '-',
-        columns[0].x,
-        startY,
-        {
-          width: columns[0].width,
-        }
-      );
-
-    /**
-     * Worker Name
-     */
-    doc.text(
-      payroll.worker?.fullName || '-',
-      columns[1].x,
-      startY,
-      {
-        width: columns[1].width,
-      }
-    );
-
-    /**
-     * Attendance Month
-     */
-    doc.text(
-      String(
-        payroll.attendanceMonth ?? '-'
-      ),
-      columns[2].x,
-      startY,
-      {
-        width: columns[2].width,
-      }
-    );
-
-    /**
-     * Attendance Year
-     */
-    doc.text(
-      String(
-        payroll.attendanceYear ?? '-'
-      ),
-      columns[3].x,
-      startY,
-      {
-        width: columns[3].width,
-      }
-    );
-
-    /**
-     * Basic Salary
-     */
-    doc.text(
-      `₹${(
-        payroll.basicSalary ?? 0
-      ).toLocaleString()}`,
-      columns[4].x,
-      startY,
-      {
-        width: columns[4].width,
-      }
-    );
-
-    /**
-     * Gross Salary
-     */
-    doc.text(
-      `₹${(
-        payroll.grossSalary ?? 0
-      ).toLocaleString()}`,
-      columns[5].x,
-      startY,
-      {
-        width: columns[5].width,
-      }
-    );
-
-    /**
-     * Net Salary
-     */
-    doc.text(
-      `₹${(
-        payroll.netSalary ?? 0
-      ).toLocaleString()}`,
-      columns[6].x,
-      startY,
-      {
-        width: columns[6].width,
-      }
-    );
-
-    /**
-     * Payroll Status
-     */
-    doc.text(
-      payroll.status || '-',
-      columns[7].x,
-      startY,
-      {
-        width: columns[7].width,
-      }
-    );
-
-    startY += rowHeight;
-  });
-    /**
-   * ------------------------------------------
-   * Footer
-   * ------------------------------------------
-   */
-
-  doc.moveDown(2);
-
-  doc
-    .font('Helvetica-Bold')
-    .fontSize(10)
-    .fillColor('black')
-    .text(
-      `Total Payroll Records : ${payrolls.length}`,
-      {
-        align: 'right',
-      }
-    );
-
-  doc.moveDown();
-
-  doc
-    .font('Helvetica')
-    .fontSize(8)
-    .fillColor('gray')
-    .text(
-      'Generated by Contractor Worker Management System',
-      {
-        align: 'center',
-      }
-    );
-
-  /**
-   * ------------------------------------------
-   * Stream PDF Response
-   * ------------------------------------------
-   */
-  doc.end();
-}
 /**
  * ==========================================
  * Export Sites PDF
