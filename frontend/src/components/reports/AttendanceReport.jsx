@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import useReport from "../../hooks/useReport";
-import { exportToExcel, exportToPDF } from "../../utils/export.utils";
+import { exportToExcel } from "../../utils/export.utils";
+import useExport from "../../hooks/useExport";
 import { FiDownload, FiFileText } from "react-icons/fi";
 import { TableCard, Table, ReportContainer, FilterControls, FilterLabel } from "./ReportTable.style";
 import FilterBar from "../ui/FilterBar";
@@ -17,6 +18,7 @@ const STATUSES = ["PRESENT", "ABSENT", "HALF_DAY", "LEAVE", "HOLIDAY"];
 
 const AttendanceReport = ({ sites = [] }) => {
     const { attendanceReport, pagination, loading, fetchAttendanceReport } = useReport();
+    const { downloading, exportAttendancePdf } = useExport();
     const [filters, setFilters] = useState({ status: "", site: "", fromDate: "", toDate: "" });
     const [page, setPage] = useState(1);
 
@@ -53,22 +55,18 @@ const AttendanceReport = ({ sites = [] }) => {
         }
     };
 
-    const handlePDF = () => {
+    const handlePDF = async () => {
         try {
-            exportToPDF(
-                "Attendance Report",
-                ["Worker", "Site", "Date", "Status", "Reg Hrs", "OT Hrs"],
-                data.map((r) => [
-                    r.worker?.fullName, r.site?.siteName,
-                    r.attendanceDate?.slice(0, 10), r.status,
-                    r.regularHours, r.overtimeHours,
-                ]),
-                "Attendance_Report"
-            );
-            showSuccess("Attendance Report exported to PDF.");
+            const params = {};
+            if (filters.status) params.status = filters.status;
+            if (filters.site) params.site = filters.site;
+            if (filters.fromDate) params.fromDate = filters.fromDate;
+            if (filters.toDate) params.toDate = filters.toDate;
+
+            await exportAttendancePdf(params);
         } catch (err) {
             console.error(err);
-            showError("Failed to export Attendance Report.");
+            showError("Failed to export Attendance Report to PDF.");
         }
     };
 
@@ -92,7 +90,7 @@ const AttendanceReport = ({ sites = [] }) => {
                 </Button>
                 <FilterControls>
                     <Button variant="primary" onClick={handleExcel}><FiDownload /> Excel</Button>
-                    <Button variant="ghost" onClick={handlePDF}><FiFileText /> PDF</Button>
+                    <Button variant="ghost" onClick={handlePDF} disabled={downloading.attendancePdf}><FiFileText /> PDF</Button>
                 </FilterControls>
             </FilterBar>
 

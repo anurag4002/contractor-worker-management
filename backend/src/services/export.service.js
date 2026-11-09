@@ -1,37 +1,28 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
-
 import ExcelJS from 'exceljs';
 import PDFDocument from 'pdfkit';
 
-import Tenant from '../models/Tenant.js';
 import exportRepository from '../repositories/export.repository.js';
 
-const PDF_FONT_DIR = path.resolve(
-    path.dirname(fileURLToPath(import.meta.url)),
-    '../utils/pdf/fonts'
-);
+import {
+    addPdfPage,
+    formatCurrency,
+    formatDateTime,
+    getTenantBranding,
+    PDF_BRANDING_COLOR,
+    PDF_FONT_FAMILY,
+    PDF_FONT_FAMILY_BOLD,
+    PDF_REPORT_META_SIZE,
+    PDF_SECTION_TITLE_SIZE,
+    PDF_TABLE_HEADER_SIZE,
+    PDF_TABLE_ROW_SIZE,
+    renderPdfFooter,
+    renderPdfHeader,
+    registerPdfFonts,
+} from '../utils/pdf/pdf.utils.js';
 
-export const formatCurrency = (value) =>
-    `₹${Number(value || 0).toLocaleString('en-IN', {
-        maximumFractionDigits: 2,
-    })}`;
+export { formatCurrency } from '../utils/pdf/pdf.utils.js';
 
-export const registerPayrollPdfFonts = (doc) => {
-    doc.registerFont(
-        'NotoSans',
-        path.join(PDF_FONT_DIR, 'NotoSans-Regular.ttf'),
-        undefined
-    );
-
-    doc.registerFont(
-        'NotoSans-Bold',
-        path.join(PDF_FONT_DIR, 'NotoSans-Bold.ttf'),
-        undefined
-    );
-
-    return doc;
-};
+export const registerPayrollPdfFonts = (doc) => registerPdfFonts(doc);
 
 export const calculatePayrollFinancials = (payroll = {}) => {
     const grossSalary = Number(payroll?.grossSalary || 0);
@@ -354,20 +345,13 @@ class ExportService {
  * Export Workers PDF
  * ==========================================
  */
-async exportWorkersPdf(res, tenantId) {
-  /**
-   * ------------------------------------------
-   * Fetch Workers
-   * ------------------------------------------
-   */
-  const workers =
-    await exportRepository.getWorkers({}, tenantId);
+async exportWorkersPdf(res, query = {}, tenantId = null) {
+  const workers = await exportRepository.getWorkers(query, tenantId);
 
-  /**
-   * ------------------------------------------
-   * Create PDF
-   * ------------------------------------------
-   */
+  const tenant = await getTenantBranding(tenantId);
+
+  const companyName = tenant?.companyName || 'Company name not configured';
+
   const doc = new PDFDocument({
     size: 'A4',
     margin: 40,
@@ -375,678 +359,274 @@ async exportWorkersPdf(res, tenantId) {
 
   const fileName = `workers-report-${Date.now()}.pdf`;
 
-  res.setHeader(
-    'Content-Type',
-    'application/pdf'
-  );
-
-  res.setHeader(
-    'Content-Disposition',
-    `attachment; filename="${fileName}"`
-  );
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
 
   doc.pipe(res);
 
-  /**
-   * ------------------------------------------
-   * PDF Metadata
-   * ------------------------------------------
-   */
-  doc.info.Title =
-    'Workers Report';
+  doc.info.Title = 'Workers Report';
+  doc.info.Author = companyName;
+  doc.info.Subject = 'Workers Report';
+  doc.info.Creator = companyName;
 
-  doc.info.Author =
-    'Contractor Worker Management';
+  registerPdfFonts(doc);
 
-  doc.info.Subject =
-    'Workers Report';
+  const pageContext = { pageNumber: 1 };
 
-  doc.info.Creator =
-    'Contractor Worker Management';
-
-  /**
-   * ------------------------------------------
-   * Report Title
-   * ------------------------------------------
-   */
-  doc
-    .fontSize(18)
-    .font('Helvetica-Bold')
-    .text('Workers Report', {
-      align: 'center',
-    });
-
-  doc.moveDown();
-
-  doc
-    .fontSize(10)
-    .font('Helvetica')
-    .text(
-      `Generated On : ${new Date().toLocaleString()}`
-    );
+  renderPdfHeader(doc, {
+    tenant,
+    title: 'Workers Report',
+    generatedOn: formatDateTime(),
+  });
 
   doc.moveDown(1.5);
 
-  /**
-   * ------------------------------------------
-   * Table Header
-   * ------------------------------------------
-   */
+  doc.font(PDF_FONT_FAMILY_BOLD).fontSize(PDF_SECTION_TITLE_SIZE).fillColor(PDF_BRANDING_COLOR);
+  doc.text('WORKER SUMMARY', { align: 'center' });
+
+  doc.font(PDF_FONT_FAMILY).fontSize(PDF_REPORT_META_SIZE).fillColor('#333333');
+  doc.text(`Total Workers : ${workers.length}`, { align: 'right' });
+
+  doc.moveDown(1);
+
+  if (workers.length === 0) {
+    doc.font(PDF_FONT_FAMILY).fontSize(12).fillColor('#666666');
+    doc.text('No worker records found for the selected filters', { align: 'center' });
+    renderPdfFooter(doc, companyName, pageContext);
+    doc.end();
+    return;
+  }
 
   const startX = 40;
   let startY = doc.y;
 
   const columns = [
-    {
-      label: 'Emp Code',
-      x: startX,
-      width: 70,
-    },
-    {
-      label: 'Worker Name',
-      x: 110,
-      width: 120,
-    },
-    {
-      label: 'Trade',
-      x: 235,
-      width: 90,
-    },
-    {
-      label: 'Site',
-      x: 330,
-      width: 120,
-    },
-    {
-      label: 'Status',
-      x: 455,
-      width: 70,
-    },
+    { label: 'Emp Code', x: startX, width: 60, align: 'left' },
+    { label: 'Worker Name', x: 100, width: 110, align: 'left' },
+    { label: 'Trade', x: 210, width: 90, align: 'left' },
+    { label: 'Site', x: 300, width: 110, align: 'left' },
+    { label: 'Mobile', x: 410, width: 60, align: 'right' },
+    { label: 'Status', x: 470, width: 85, align: 'left' },
   ];
-
-  doc
-    .rect(
-      startX - 5,
-      startY - 5,
-      500,
-      22
-    )
-    .fill('#1F4E78');
-
-  doc.fillColor('white');
-
-  columns.forEach((column) => {
-    doc
-      .font('Helvetica-Bold')
-      .fontSize(10)
-      .text(
-        column.label,
-        column.x,
-        startY,
-        {
-          width: column.width,
-        }
-      );
-  });
-
-  doc.fillColor('black');
-
-  startY += 28;
-  /**
-   * ------------------------------------------
-   * Render Worker Rows
-   * ------------------------------------------
-   */
 
   const rowHeight = 22;
 
-  workers.forEach((worker) => {
-    /**
-     * Page Break
-     */
-    if (
-      startY >
-      doc.page.height - 60
-    ) {
-      doc.addPage();
+  const drawTableHeader = () => {
+    doc.rect(startX, startY - 5, doc.page.width - startX * 2, 18).fill('#1F4E78');
+    doc.fillColor('white');
+    columns.forEach((column) => {
+      doc.font(PDF_FONT_FAMILY_BOLD).fontSize(PDF_TABLE_HEADER_SIZE).text(column.label, column.x, startY, { width: column.width, align: column.align || 'left' });
+    });
+    doc.fillColor('black');
+    startY += 18;
+  };
 
-      startY = 50;
+  drawTableHeader();
 
-      doc
-        .rect(
-          startX - 5,
-          startY - 5,
-          500,
-          22
-        )
-        .fill('#1F4E78');
+  const statusColors = {
+    ACTIVE: '#15803D',
+    INACTIVE: '#6B7280',
+  };
 
-      doc.fillColor('white');
-
-      columns.forEach((column) => {
-        doc
-          .font('Helvetica-Bold')
-          .fontSize(10)
-          .text(
-            column.label,
-            column.x,
-            startY,
-            {
-              width: column.width,
-            }
-          );
+  workers.forEach((worker, index) => {
+    if (startY > doc.page.height - 70) {
+      addPdfPage(doc, pageContext, () => {
+        startY = 50;
+        drawTableHeader();
       });
-
-      doc.fillColor('black');
-
-      startY += 28;
+      renderPdfFooter(doc, companyName, pageContext);
     }
 
-    /**
-     * Row Border
-     */
-    doc
-      .rect(
-        startX - 5,
-        startY - 4,
-        500,
-        rowHeight
-      )
-      .stroke('#D9D9D9');
+    const rowFill = index % 2 === 0 ? '#FFFFFF' : '#F4F7FA';
 
-    /**
-     * Employee Code
-     */
-    doc
-      .font('Helvetica')
-      .fontSize(9)
-      .text(
-        worker.employeeCode || '-',
-        columns[0].x,
-        startY,
-        {
-          width: columns[0].width,
-        }
-      );
+    doc.rect(startX, startY - 4, doc.page.width - startX * 2, rowHeight).fill(rowFill);
+    doc.rect(startX, startY - 4, doc.page.width - startX * 2, rowHeight).stroke('#D9D9D9');
 
-    /**
-     * Worker Name
-     */
-    doc.text(
-      worker.fullName || '-',
-      columns[1].x,
-      startY,
-      {
-        width: columns[1].width,
-      }
-    );
+    const renderRow = (cells) => {
+      cells.forEach(({ text, column, color }) => {
+        doc.font(PDF_FONT_FAMILY).fontSize(PDF_TABLE_ROW_SIZE);
+        doc.fillColor(color || 'black');
+        doc.text(String(text ?? '-'), column.x, startY, { width: column.width, align: column.align || 'left' });
+      });
+    };
 
-    /**
-     * Trade
-     */
-    doc.text(
-      worker.trade || '-',
-      columns[2].x,
-      startY,
-      {
-        width: columns[2].width,
-      }
-    );
-
-    /**
-     * Site
-     */
-    doc.text(
-      worker.site?.siteName || '-',
-      columns[3].x,
-      startY,
-      {
-        width: columns[3].width,
-      }
-    );
-
-    /**
-     * Status
-     */
-    doc.text(
-      worker.status || '-',
-      columns[4].x,
-      startY,
-      {
-        width: columns[4].width,
-      }
-    );
+    renderRow([
+      { text: worker.employeeCode || '-', column: columns[0] },
+      { text: worker.fullName || '-', column: columns[1] },
+      { text: worker.trade || '-', column: columns[2] },
+      { text: worker.site?.siteName || '-', column: columns[3] },
+      { text: worker.mobileNumber || '-', column: columns[4] },
+      { text: worker.status || '-', column: columns[5], color: statusColors[worker.status] || 'black' },
+    ]);
 
     startY += rowHeight;
   });
-    /**
-   * ------------------------------------------
-   * Footer
-   * ------------------------------------------
-   */
 
   doc.moveDown(2);
 
-  doc
-    .font('Helvetica-Bold')
-    .fontSize(10)
-    .text(
-      `Total Workers : ${workers.length}`,
-      {
-        align: 'right',
-      }
-    );
+  doc.font(PDF_FONT_FAMILY_BOLD).fontSize(PDF_REPORT_META_SIZE).fillColor('#333333');
+  doc.text(`Total Workers : ${workers.length}`, { align: 'right' });
 
-  doc.moveDown();
+  doc.moveDown(1.2);
 
-  doc
-    .font('Helvetica')
-    .fontSize(8)
-    .fillColor('gray')
-    .text(
-      `Generated by Contractor Worker Management System`,
-      {
-        align: 'center',
-      }
-    );
+  renderPdfFooter(doc, companyName, pageContext);
 
-  /**
-   * ------------------------------------------
-   * Stream PDF Response
-   * ------------------------------------------
-   */
   doc.end();
 }
+
 /**
  * ==========================================
  * Export Attendance PDF
  * ==========================================
  */
-async exportAttendancePdf(res, tenantId) {
-  /**
-   * ------------------------------------------
-   * Fetch Attendance
-   * ------------------------------------------
-   */
-  const attendance =
-    await exportRepository.getAttendance({}, tenantId);
+async exportAttendancePdf(res, query = {}, tenantId = null) {
+  const attendance = await exportRepository.getAttendance(query, tenantId);
 
-  /**
-   * ------------------------------------------
-   * Create PDF
-   * ------------------------------------------
-   */
+  const tenant = await getTenantBranding(tenantId);
+
+  const companyName = tenant?.companyName || 'Company name not configured';
+
   const doc = new PDFDocument({
     size: 'A4',
+    layout: 'landscape',
     margin: 40,
   });
 
   const fileName = `attendance-report-${Date.now()}.pdf`;
 
-  res.setHeader(
-    'Content-Type',
-    'application/pdf'
-  );
-
-  res.setHeader(
-    'Content-Disposition',
-    `attachment; filename="${fileName}"`
-  );
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
 
   doc.pipe(res);
 
-  /**
-   * ------------------------------------------
-   * PDF Metadata
-   * ------------------------------------------
-   */
-  doc.info.Title =
-    'Attendance Report';
+  doc.info.Title = 'Attendance Report';
+  doc.info.Author = companyName;
+  doc.info.Subject = 'Attendance Report';
+  doc.info.Creator = companyName;
 
-  doc.info.Author =
-    'Contractor Worker Management';
+  registerPdfFonts(doc);
 
-  doc.info.Subject =
-    'Attendance Report';
+  const pageContext = { pageNumber: 1 };
 
-  doc.info.Creator =
-    'Contractor Worker Management';
+  const statusCounts = {};
+  attendance.forEach((record) => {
+    const status = record.status || 'UNKNOWN';
+    statusCounts[status] = (statusCounts[status] || 0) + 1;
+  });
 
-  /**
-   * ------------------------------------------
-   * Report Title
-   * ------------------------------------------
-   */
-  doc
-    .font('Helvetica-Bold')
-    .fontSize(18)
-    .text(
-      'Attendance Report',
-      {
-        align: 'center',
-      }
-    );
-
-  doc.moveDown();
-
-  doc
-    .font('Helvetica')
-    .fontSize(10)
-    .text(
-      `Generated On : ${new Date().toLocaleString()}`
-    );
+  renderPdfHeader(doc, {
+    tenant,
+    title: 'Attendance Report',
+    generatedOn: formatDateTime(),
+  });
 
   doc.moveDown(1.5);
 
-  /**
-   * ------------------------------------------
-   * Table Header
-   * ------------------------------------------
-   */
+  doc.font(PDF_FONT_FAMILY_BOLD).fontSize(PDF_SECTION_TITLE_SIZE).fillColor(PDF_BRANDING_COLOR);
+  doc.text('ATTENDANCE SUMMARY', { align: 'center' });
 
-  const startX = 20;
+  doc.font(PDF_FONT_FAMILY).fontSize(PDF_REPORT_META_SIZE).fillColor('#333333');
+  doc.text(`Total Attendance Records : ${attendance.length}`, { align: 'right' });
+  doc.text(`Present : ${statusCounts['PRESENT'] || 0}`, { align: 'right' });
+  doc.text(`Absent : ${statusCounts['ABSENT'] || 0}`, { align: 'right' });
+  doc.text(`Leave : ${statusCounts['LEAVE'] || 0}`, { align: 'right' });
+  doc.text(`Half Day : ${statusCounts['HALF_DAY'] || 0}`, { align: 'right' });
+
+  doc.moveDown(1);
+
+  if (attendance.length === 0) {
+    doc.font(PDF_FONT_FAMILY).fontSize(12).fillColor('#666666');
+    doc.text('No attendance records found for the selected filters', { align: 'center' });
+    renderPdfFooter(doc, companyName, pageContext);
+    doc.end();
+    return;
+  }
+
+  const startX = 40;
   let startY = doc.y;
 
   const columns = [
-    {
-      label: 'Emp Code',
-      x: startX,
-      width: 60,
-    },
-    {
-      label: 'Worker',
-      x: 85,
-      width: 95,
-    },
-    {
-      label: 'Site',
-      x: 185,
-      width: 90,
-    },
-    {
-      label: 'Date',
-      x: 280,
-      width: 70,
-    },
-    {
-      label: 'Status',
-      x: 355,
-      width: 60,
-    },
-    {
-      label: 'Hours',
-      x: 420,
-      width: 45,
-    },
-    {
-      label: 'OT',
-      x: 470,
-      width: 35,
-    },
-    {
-      label: 'Remark',
-      x: 510,
-      width: 70,
-    },
+    { label: 'Worker', x: startX, width: 120, align: 'left' },
+    { label: 'Site', x: 160, width: 110, align: 'left' },
+    { label: 'Date', x: 270, width: 70, align: 'left' },
+    { label: 'Status', x: 340, width: 70, align: 'left' },
+    { label: 'Reg Hrs', x: 410, width: 50, align: 'right' },
+    { label: 'OT Hrs', x: 460, width: 50, align: 'right' },
+    { label: 'Remarks', x: 510, width: 95, align: 'left' },
   ];
-
-  doc
-    .rect(
-      startX - 5,
-      startY - 5,
-      560,
-      22
-    )
-    .fill('#1F4E78');
-
-  doc.fillColor('white');
-
-  columns.forEach((column) => {
-    doc
-      .font('Helvetica-Bold')
-      .fontSize(8)
-      .text(
-        column.label,
-        column.x,
-        startY,
-        {
-          width: column.width,
-        }
-      );
-  });
-
-  doc.fillColor('black');
-
-  startY += 28;
-    /**
-   * ------------------------------------------
-   * Render Attendance Rows
-   * ------------------------------------------
-   */
 
   const rowHeight = 22;
 
-  attendance.forEach((record) => {
-    /**
-     * Page Break
-     */
-    if (
-      startY >
-      doc.page.height - 60
-    ) {
-      doc.addPage();
+  const drawTableHeader = () => {
+    doc.rect(startX, startY - 5, doc.page.width - startX * 2, 18).fill('#1F4E78');
+    doc.fillColor('white');
+    columns.forEach((column) => {
+      doc.font(PDF_FONT_FAMILY_BOLD).fontSize(PDF_TABLE_HEADER_SIZE).text(column.label, column.x, startY, { width: column.width, align: column.align || 'left' });
+    });
+    doc.fillColor('black');
+    startY += 18;
+  };
 
-      startY = 50;
+  drawTableHeader();
 
-      doc
-        .rect(
-          startX - 5,
-          startY - 5,
-          560,
-          22
-        )
-        .fill('#1F4E78');
-
-      doc.fillColor('white');
-
-      columns.forEach((column) => {
-        doc
-          .font('Helvetica-Bold')
-          .fontSize(8)
-          .text(
-            column.label,
-            column.x,
-            startY,
-            {
-              width: column.width,
-            }
-          );
+  attendance.forEach((record, index) => {
+    if (startY > doc.page.height - 70) {
+      addPdfPage(doc, pageContext, () => {
+        startY = 50;
+        drawTableHeader();
       });
-
-      doc.fillColor('black');
-
-      startY += 28;
+      renderPdfFooter(doc, companyName, pageContext);
     }
 
-    /**
-     * Row Border
-     */
-    doc
-      .rect(
-        startX - 5,
-        startY - 4,
-        560,
-        rowHeight
-      )
-      .stroke('#D9D9D9');
+    const rowFill = index % 2 === 0 ? '#FFFFFF' : '#F4F7FA';
 
-    /**
-     * Employee Code
-     */
-    doc
-      .font('Helvetica')
-      .fontSize(8)
-      .text(
-        record.worker?.employeeCode || '-',
-        columns[0].x,
-        startY,
-        {
-          width: columns[0].width,
-        }
-      );
+    doc.rect(startX, startY - 4, doc.page.width - startX * 2, rowHeight).fill(rowFill);
+    doc.rect(startX, startY - 4, doc.page.width - startX * 2, rowHeight).stroke('#D9D9D9');
 
-    /**
-     * Worker Name
-     */
-    doc.text(
-      record.worker?.fullName || '-',
-      columns[1].x,
-      startY,
-      {
-        width: columns[1].width,
-      }
-    );
+    const renderRow = (cells) => {
+      cells.forEach(({ text, column, color }) => {
+        doc.font(PDF_FONT_FAMILY).fontSize(PDF_TABLE_ROW_SIZE);
+        doc.fillColor(color || 'black');
+        doc.text(String(text ?? '-'), column.x, startY, { width: column.width, align: column.align || 'left' });
+      });
+    };
 
-    /**
-     * Site
-     */
-    doc.text(
-      record.site?.siteName || '-',
-      columns[2].x,
-      startY,
-      {
-        width: columns[2].width,
-      }
-    );
-
-    /**
-     * Attendance Date
-     */
-    doc.text(
-      record.attendanceDate
-        ? new Date(
-            record.attendanceDate
-          ).toLocaleDateString()
-        : '-',
-      columns[3].x,
-      startY,
-      {
-        width: columns[3].width,
-      }
-    );
-
-    /**
-     * Status
-     */
-    doc.text(
-      record.status || '-',
-      columns[4].x,
-      startY,
-      {
-        width: columns[4].width,
-      }
-    );
-
-    /**
-     * Regular Hours
-     */
-    doc.text(
-      String(
-        record.regularHours ?? 0
-      ),
-      columns[5].x,
-      startY,
-      {
-        width: columns[5].width,
-      }
-    );
-
-    /**
-     * Overtime Hours
-     */
-    doc.text(
-      String(
-        record.overtimeHours ?? 0
-      ),
-      columns[6].x,
-      startY,
-      {
-        width: columns[6].width,
-      }
-    );
-
-    /**
-     * Remarks
-     */
-    doc.text(
-      record.remarks || '-',
-      columns[7].x,
-      startY,
-      {
-        width: columns[7].width,
-      }
-    );
+    renderRow([
+      { text: record.worker?.fullName || '-', column: columns[0] },
+      { text: record.site?.siteName || '-', column: columns[1] },
+      { text: record.attendanceDate ? new Date(record.attendanceDate).toLocaleDateString() : '-', column: columns[2] },
+      { text: record.status || '-', column: columns[3] },
+      { text: String(record.regularHours ?? 0), column: columns[4] },
+      { text: String(record.overtimeHours ?? 0), column: columns[5] },
+      { text: record.remarks || '-', column: columns[6] },
+    ]);
 
     startY += rowHeight;
   });
-    /**
-   * ------------------------------------------
-   * Footer
-   * ------------------------------------------
-   */
 
   doc.moveDown(2);
 
-  doc
-    .font('Helvetica-Bold')
-    .fontSize(10)
-    .fillColor('black')
-    .text(
-      `Total Attendance Records : ${attendance.length}`,
-      {
-        align: 'right',
-      }
-    );
+  doc.font(PDF_FONT_FAMILY_BOLD).fontSize(PDF_REPORT_META_SIZE).fillColor('#333333');
+  doc.text(`Total Attendance Records : ${attendance.length}`, { align: 'right' });
 
-  doc.moveDown();
+  doc.moveDown(1.2);
 
-  doc
-    .font('Helvetica')
-    .fontSize(8)
-    .fillColor('gray')
-    .text(
-      'Generated by Contractor Worker Management System',
-      {
-        align: 'center',
-      }
-    );
+  renderPdfFooter(doc, companyName, pageContext);
 
-  /**
-   * ------------------------------------------
-   * Stream PDF Response
-   * ------------------------------------------
-   */
   doc.end();
 }
+
 /**
  * ==========================================
  * Export Payroll PDF
  * ==========================================
  */
-    async exportPayrollPdf(res, query = {}, tenantId) {
-        const payrolls =
-            await exportRepository.getPayroll(query, tenantId);
+    async exportPayrollPdf(res, query = {}, tenantId = null) {
+        const payrolls = await exportRepository.getPayroll(query, tenantId);
 
-        const tenant = await Tenant.findOne({
-            _id: tenantId,
-            isDeleted: false,
-        }).select(
-            'companyName address city district state pincode email mobileNumber'
-        );
+        const tenant = await getTenantBranding(tenantId);
 
-        const companyName =
-            tenant?.companyName ||
-            'Company name not configured';
+        const companyName = tenant?.companyName || 'Company name not configured';
 
         const doc = new PDFDocument({
             size: 'A4',
@@ -1056,15 +636,8 @@ async exportAttendancePdf(res, tenantId) {
 
         const fileName = `payroll-report-${Date.now()}.pdf`;
 
-        res.setHeader(
-            'Content-Type',
-            'application/pdf'
-        );
-
-        res.setHeader(
-            'Content-Disposition',
-            `attachment; filename="${fileName}"`
-        );
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
 
         doc.pipe(res);
 
@@ -1073,9 +646,9 @@ async exportAttendancePdf(res, tenantId) {
         doc.info.Subject = 'Payroll Report';
         doc.info.Creator = companyName;
 
-        let docPageNumber = 1;
+        registerPdfFonts(doc);
 
-        registerPayrollPdfFonts(doc);
+        const pageContext = { pageNumber: 1 };
 
         const generatedOn = new Date().toLocaleString();
 
@@ -1083,105 +656,42 @@ async exportAttendancePdf(res, tenantId) {
             const monthNumber = Number(month);
             const yearNumber = Number(year);
 
-            if (
-                !Number.isFinite(monthNumber) ||
-                !Number.isFinite(yearNumber)
-            ) {
+            if (!Number.isFinite(monthNumber) || !Number.isFinite(yearNumber)) {
                 return '-';
             }
 
-            return new Date(
-                yearNumber,
-                monthNumber - 1,
-                1
-            ).toLocaleString(
-                'en-US',
-                {
-                    month: 'long',
-                    year: 'numeric',
-                }
-            );
+            return new Date(yearNumber, monthNumber - 1, 1).toLocaleString('en-US', {
+                month: 'long',
+                year: 'numeric',
+            });
         };
 
-        const periodLabel =
-            query.attendanceMonth && query.attendanceYear
-                ? formatPeriod(
-                    query.attendanceMonth,
-                    query.attendanceYear
-                )
-                : payrolls.length > 0
-                    ? formatPeriod(
-                        payrolls[0].attendanceMonth,
-                        payrolls[0].attendanceYear
-                    )
-                    : 'All Periods';
+        const periodLabel = query.attendanceMonth && query.attendanceYear
+            ? formatPeriod(query.attendanceMonth, query.attendanceYear)
+            : payrolls.length > 0
+                ? formatPeriod(payrolls[0].attendanceMonth, payrolls[0].attendanceYear)
+                : 'All Periods';
 
-        doc.font('NotoSans-Bold').fontSize(20).fillColor('#1F4E78');
-        doc.text(companyName, { align: 'center' });
+        renderPdfHeader(doc, {
+            tenant,
+            title: 'PAYROLL REPORT',
+            generatedOn,
+            periodLabel,
+        });
 
-        doc.font('NotoSans').fontSize(9).fillColor('#444444');
+        const financials = payrolls.map((payroll) => calculatePayrollFinancials(payroll));
 
-        if (tenant?.address) {
-            doc.text(tenant.address, { align: 'center' });
-        }
+        const totalGrossSalary = financials.reduce((sum, item) => sum + item.gross, 0);
 
-        const locationLine = [
-            tenant?.city,
-            tenant?.district,
-            tenant?.state,
-            tenant?.pincode,
-        ]
-            .filter(Boolean)
-            .join(', ');
+        const totalNetPayable = financials.reduce((sum, item) => sum + item.netPayable, 0);
 
-        if (locationLine) {
-            doc.text(locationLine, { align: 'center' });
-        }
+        const totalPaid = financials.reduce((sum, item) => sum + item.paid, 0);
 
-        if (tenant?.email) {
-            doc.text(tenant.email, { align: 'center' });
-        }
-
-        if (tenant?.mobileNumber) {
-            doc.text(`Mobile : ${tenant.mobileNumber}`, { align: 'center' });
-        }
-
-        doc.moveDown(1.25);
-
-        doc.font('NotoSans-Bold').fontSize(16).fillColor('#1F4E78');
-        doc.text('PAYROLL REPORT', { align: 'center' });
-
-        doc.font('NotoSans').fontSize(9).fillColor('#666666');
-        doc.text(`Generated On : ${generatedOn}`, { align: 'center' });
-        doc.text(`Period : ${periodLabel}`, { align: 'center' });
+        const outstandingBalance = financials.reduce((sum, item) => sum + item.balance, 0);
 
         doc.moveDown(1.5);
 
-        const financials = payrolls.map((payroll) =>
-            calculatePayrollFinancials(payroll)
-        );
-
-        const totalGrossSalary = financials.reduce(
-            (sum, item) => sum + item.gross,
-            0
-        );
-
-        const totalNetPayable = financials.reduce(
-            (sum, item) => sum + item.netPayable,
-            0
-        );
-
-        const totalPaid = financials.reduce(
-            (sum, item) => sum + item.paid,
-            0
-        );
-
-        const outstandingBalance = financials.reduce(
-            (sum, item) => sum + item.balance,
-            0
-        );
-
-        doc.font('NotoSans-Bold').fontSize(12).fillColor('#1F4E78');
+        doc.font(PDF_FONT_FAMILY_BOLD).fontSize(PDF_SECTION_TITLE_SIZE).fillColor(PDF_BRANDING_COLOR);
         doc.text('FINANCIAL SUMMARY', { align: 'center' });
 
         const summaryRows = [
@@ -1195,11 +705,11 @@ async exportAttendancePdf(res, tenantId) {
         summaryRows.forEach(([label, value, isTotal]) => {
             const rowY = doc.y;
 
-            doc.font('NotoSans').fontSize(9).fillColor('#333333');
+            doc.font(PDF_FONT_FAMILY).fontSize(PDF_REPORT_META_SIZE).fillColor('#333333');
             doc.text(label, 40, rowY, { width: 300 });
 
-            doc.font('NotoSans-Bold').fontSize(9);
-            doc.fillColor(isTotal ? '#B91C1C' : '#1F4E78');
+            doc.font(PDF_FONT_FAMILY_BOLD).fontSize(PDF_REPORT_META_SIZE);
+            doc.fillColor(isTotal ? '#B91C1C' : PDF_BRANDING_COLOR);
             doc.text(value, 40, rowY, {
                 align: 'right',
                 width: doc.page.width - 80,
@@ -1211,220 +721,110 @@ async exportAttendancePdf(res, tenantId) {
         doc.moveDown(1);
 
         if (payrolls.length === 0) {
-            doc.font('NotoSans').fontSize(12).fillColor('#666666');
-            doc.text(
-                'No payroll records found for the selected filters',
-                { align: 'center' }
-            );
-        } else {
-            const startX = 40;
-            let startY = doc.y;
+            doc.font(PDF_FONT_FAMILY).fontSize(12).fillColor('#666666');
+            doc.text('No payroll records found for the selected filters', { align: 'center' });
+            renderPdfFooter(doc, companyName, pageContext);
+            doc.end();
+            return;
+        }
 
-            const columns = [
-                { label: '#', x: 40, width: 28, align: 'left' },
-                { label: 'Employee ID', x: 68, width: 55, align: 'left' },
-                { label: 'Worker', x: 123, width: 105, align: 'left' },
-                { label: 'Site', x: 228, width: 80, align: 'left' },
-                { label: 'Period', x: 308, width: 52, align: 'left' },
-                { label: 'Basic', x: 360, width: 60, align: 'right' },
-                { label: 'Gross', x: 420, width: 60, align: 'right' },
-                { label: 'Net Payable', x: 480, width: 70, align: 'right' },
-                { label: 'Paid', x: 550, width: 60, align: 'right' },
-                { label: 'Balance', x: 610, width: 70, align: 'right' },
-                { label: 'Status', x: 680, width: 60, align: 'left' },
-            ];
+        const startX = 40;
+        let startY = doc.y;
 
-            const rowHeight = 18;
+        const columns = [
+            { label: '#', x: 40, width: 28, align: 'left' },
+            { label: 'Employee ID', x: 68, width: 55, align: 'left' },
+            { label: 'Worker', x: 123, width: 105, align: 'left' },
+            { label: 'Site', x: 228, width: 80, align: 'left' },
+            { label: 'Period', x: 308, width: 52, align: 'left' },
+            { label: 'Basic', x: 360, width: 60, align: 'right' },
+            { label: 'Gross', x: 420, width: 60, align: 'right' },
+            { label: 'Net Payable', x: 480, width: 70, align: 'right' },
+            { label: 'Paid', x: 550, width: 60, align: 'right' },
+            { label: 'Balance', x: 610, width: 70, align: 'right' },
+            { label: 'Status', x: 680, width: 60, align: 'left' },
+        ];
 
-            const drawPayrollHeader = () => {
-                doc.rect(
-                    startX,
-                    startY - 5,
-                    doc.page.width - startX * 2,
-                    18
-                ).fill('#1F4E78');
+        const rowHeight = 18;
 
-                columns.forEach((column) => {
-                    doc.font('NotoSans-Bold').fontSize(7);
-                    doc.fillColor('white');
-                    doc.text(column.label, column.x, startY, {
-                        width: column.width,
-                    });
-                });
+        const drawPayrollHeader = () => {
+            doc.rect(startX, startY - 5, doc.page.width - startX * 2, 18).fill('#1F4E78');
+            columns.forEach((column) => {
+                doc.font(PDF_FONT_FAMILY_BOLD).fontSize(7);
+                doc.fillColor('white');
+                doc.text(column.label, column.x, startY, { width: column.width });
+            });
+            doc.fillColor('black');
+            startY += 18;
+        };
 
-                doc.fillColor('black');
-                startY += 18;
-            };
+        drawPayrollHeader();
 
-            drawPayrollHeader();
+        const statusColors = {
+            PAID: '#15803D',
+            PARTIALLY_PAID: '#B45309',
+            GENERATED: '#1D4ED8',
+            PENDING: '#1D4ED8',
+            CANCELLED: '#B91C1C',
+        };
 
-            payrolls.forEach((payroll, index) => {
-                const itemFinancials = calculatePayrollFinancials(payroll);
+        payrolls.forEach((payroll, index) => {
+            const itemFinancials = calculatePayrollFinancials(payroll);
 
-                if (startY > doc.page.height - 70) {
-                    doc.addPage();
-                    docPageNumber += 1;
+            if (startY > doc.page.height - 70) {
+                addPdfPage(doc, pageContext, () => {
                     startY = 50;
                     drawPayrollHeader();
-                }
-
-                const rowFill =
-                    index % 2 === 0 ? '#FFFFFF' : '#F4F7FA';
-
-                doc.rect(
-                    startX,
-                    startY - 4,
-                    doc.page.width - startX * 2,
-                    rowHeight
-                ).fill(rowFill);
-
-                doc.rect(
-                    startX,
-                    startY - 4,
-                    doc.page.width - startX * 2,
-                    rowHeight
-                ).stroke('#D9D9D9');
-
-                const status = derivePayrollStatus(payroll);
-
-                const statusColors = {
-                    PAID: '#15803D',
-                    PARTIALLY_PAID: '#B45309',
-                    GENERATED: '#1D4ED8',
-                    PENDING: '#1D4ED8',
-                    CANCELLED: '#B91C1C',
-                };
-
-                const cells = [
-                    {
-                        text: String(index + 1),
-                        column: columns[0],
-                        align: 'left',
-                    },
-                    {
-                        text: payroll.worker?.employeeCode || '-',
-                        column: columns[1],
-                        align: 'left',
-                    },
-                    {
-                        text: payroll.worker?.fullName || '-',
-                        column: columns[2],
-                        align: 'left',
-                    },
-                    {
-                        text: payroll.site?.siteName || '-',
-                        column: columns[3],
-                        align: 'left',
-                    },
-                    {
-                        text: formatPeriod(
-                            payroll.attendanceMonth,
-                            payroll.attendanceYear
-                        ),
-                        column: columns[4],
-                        align: 'left',
-                    },
-                    {
-                        text: formatCurrency(itemFinancials.basic),
-                        column: columns[5],
-                        align: 'right',
-                    },
-                    {
-                        text: formatCurrency(itemFinancials.gross),
-                        column: columns[6],
-                        align: 'right',
-                    },
-                    {
-                        text: formatCurrency(itemFinancials.netPayable),
-                        column: columns[7],
-                        align: 'right',
-                    },
-                    {
-                        text: formatCurrency(itemFinancials.paid),
-                        column: columns[8],
-                        align: 'right',
-                    },
-                    {
-                        text: formatCurrency(itemFinancials.balance),
-                        column: columns[9],
-                        align: 'right',
-                    },
-                    {
-                        text: status,
-                        column: columns[10],
-                        align: columns[10].align,
-                        color: statusColors[status] || '#333333',
-                    },
-                ];
-
-                cells.forEach((cell) => {
-                    const { column } = cell;
-
-                    doc.font('NotoSans').fontSize(8);
-
-                    doc.fillColor(
-                        cell.color || 'black'
-                    );
-
-                    doc.text(cell.text, column.x, startY, {
-                        width: column.width,
-                        align: cell.align,
-                    });
                 });
+                renderPdfFooter(doc, companyName, pageContext);
+            }
 
-                startY += rowHeight;
+            const rowFill = index % 2 === 0 ? '#FFFFFF' : '#F4F7FA';
+
+            doc.rect(startX, startY - 4, doc.page.width - startX * 2, rowHeight).fill(rowFill);
+            doc.rect(startX, startY - 4, doc.page.width - startX * 2, rowHeight).stroke('#D9D9D9');
+
+            const status = derivePayrollStatus(payroll);
+
+            const cells = [
+                { text: String(index + 1), column: columns[0], align: columns[0].align },
+                { text: payroll.worker?.employeeCode || '-', column: columns[1], align: columns[1].align },
+                { text: payroll.worker?.fullName || '-', column: columns[2], align: columns[2].align },
+                { text: payroll.site?.siteName || '-', column: columns[3], align: columns[3].align },
+                { text: formatPeriod(payroll.attendanceMonth, payroll.attendanceYear), column: columns[4], align: columns[4].align },
+                { text: formatCurrency(itemFinancials.basic), column: columns[5], align: columns[5].align },
+                { text: formatCurrency(itemFinancials.gross), column: columns[6], align: columns[6].align },
+                { text: formatCurrency(itemFinancials.netPayable), column: columns[7], align: columns[7].align },
+                { text: formatCurrency(itemFinancials.paid), column: columns[8], align: columns[8].align },
+                { text: formatCurrency(itemFinancials.balance), column: columns[9], align: columns[9].align },
+                { text: status, column: columns[10], align: columns[10].align, color: statusColors[status] || '#333333' },
+            ];
+
+            cells.forEach((cell) => {
+                doc.font(PDF_FONT_FAMILY).fontSize(PDF_TABLE_ROW_SIZE);
+                doc.fillColor(cell.color || 'black');
+                doc.text(cell.text, cell.column.x, startY, {
+                    width: cell.column.width,
+                    align: cell.align,
+                });
             });
 
-            doc.font('NotoSans-Bold').fontSize(9).fillColor('#1F4E78');
-            doc.text('TOTAL', columns[0].x, startY, {
-                width: columns[0].width,
-            });
+            startY += rowHeight;
+        });
 
-            doc.font('NotoSans-Bold').fontSize(9).fillColor('#B91C1C');
-            doc.text(
-                formatCurrency(totalNetPayable),
-                columns[7].x,
-                startY,
-                {
-                    width: columns[7].width,
-                    align: 'right',
-                }
-            );
+        doc.font(PDF_FONT_FAMILY_BOLD).fontSize(PDF_REPORT_META_SIZE).fillColor('#1F4E78');
+        doc.text('TOTAL', columns[0].x, startY, { width: columns[0].width });
 
-            doc.font('NotoSans-Bold').fontSize(9).fillColor('#B91C1C');
-            doc.text(
-                formatCurrency(totalPaid),
-                columns[8].x,
-                startY,
-                {
-                    width: columns[8].width,
-                    align: 'right',
-                }
-            );
+        doc.font(PDF_FONT_FAMILY_BOLD).fontSize(PDF_REPORT_META_SIZE).fillColor('#B91C1C');
+        doc.text(formatCurrency(totalNetPayable), columns[7].x, startY, { width: columns[7].width, align: 'right' });
+        doc.text(formatCurrency(totalPaid), columns[8].x, startY, { width: columns[8].width, align: 'right' });
+        doc.text(formatCurrency(outstandingBalance), columns[9].x, startY, { width: columns[9].width, align: 'right' });
 
-            doc.font('NotoSans-Bold').fontSize(9).fillColor('#B91C1C');
-            doc.text(
-                formatCurrency(outstandingBalance),
-                columns[9].x,
-                startY,
-                {
-                    width: columns[9].width,
-                    align: 'right',
-                }
-            );
-
-            startY += 18;
-        }
+        startY += 18;
 
         doc.moveDown(2);
 
-        doc.font('NotoSans').fontSize(8).fillColor('#888888');
-        doc.text(`Generated by ${companyName}`, { align: 'center' });
-
-        doc.moveDown(1);
-
-        doc.font('NotoSans').fontSize(8).fillColor('#888888');
-        doc.text(`Page ${docPageNumber}`, { align: 'center' });
+        renderPdfFooter(doc, companyName, pageContext);
 
         doc.end();
     }
@@ -1434,367 +834,148 @@ async exportAttendancePdf(res, tenantId) {
  * Export Sites PDF
  * ==========================================
  */
-async exportSitesPdf(res, tenantId) {
-  /**
-   * ------------------------------------------
-   * Fetch Sites
-   * ------------------------------------------
-   */
-  const sites =
-    await exportRepository.getSites({}, tenantId);
+async exportSitesPdf(res, query = {}, tenantId = null) {
+  const sites = await exportRepository.getSites(query, tenantId);
 
-  /**
-   * ------------------------------------------
-   * Create PDF
-   * ------------------------------------------
-   */
+  const tenant = await getTenantBranding(tenantId);
+
+  const companyName = tenant?.companyName || 'Company name not configured';
+
   const doc = new PDFDocument({
     size: 'A4',
+    layout: 'landscape',
     margin: 40,
   });
 
   const fileName = `sites-report-${Date.now()}.pdf`;
 
-  res.setHeader(
-    'Content-Type',
-    'application/pdf'
-  );
-
-  res.setHeader(
-    'Content-Disposition',
-    `attachment; filename="${fileName}"`
-  );
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
 
   doc.pipe(res);
 
-  /**
-   * ------------------------------------------
-   * PDF Metadata
-   * ------------------------------------------
-   */
-  doc.info.Title =
-    'Sites Report';
+  doc.info.Title = 'Sites Report';
+  doc.info.Author = companyName;
+  doc.info.Subject = 'Sites Report';
+  doc.info.Creator = companyName;
 
-  doc.info.Author =
-    'Contractor Worker Management';
+  registerPdfFonts(doc);
 
-  doc.info.Subject =
-    'Sites Report';
+  const pageContext = { pageNumber: 1 };
 
-  doc.info.Creator =
-    'Contractor Worker Management';
-
-  /**
-   * ------------------------------------------
-   * Report Title
-   * ------------------------------------------
-   */
-  doc
-    .font('Helvetica-Bold')
-    .fontSize(18)
-    .text(
-      'Sites Report',
-      {
-        align: 'center',
-      }
-    );
-
-  doc.moveDown();
-
-  doc
-    .font('Helvetica')
-    .fontSize(10)
-    .text(
-      `Generated On : ${new Date().toLocaleString()}`
-    );
+  renderPdfHeader(doc, {
+    tenant,
+    title: 'Sites Report',
+    generatedOn: formatDateTime(),
+  });
 
   doc.moveDown(1.5);
 
-  /**
-   * ------------------------------------------
-   * Table Header
-   * ------------------------------------------
-   */
+  const activeSites = sites.filter((site) => site.status === 'ACTIVE').length;
 
-  const startX = 15;
+  doc.font(PDF_FONT_FAMILY_BOLD).fontSize(PDF_SECTION_TITLE_SIZE).fillColor(PDF_BRANDING_COLOR);
+  doc.text('SITE SUMMARY', { align: 'center' });
+
+  doc.font(PDF_FONT_FAMILY).fontSize(PDF_REPORT_META_SIZE).fillColor('#333333');
+  doc.text(`Total Sites : ${sites.length}`, { align: 'right' });
+  doc.text(`Active Sites : ${activeSites}`, { align: 'right' });
+
+  doc.moveDown(1);
+
+  if (sites.length === 0) {
+    doc.font(PDF_FONT_FAMILY).fontSize(12).fillColor('#666666');
+    doc.text('No site records found for the selected filters', { align: 'center' });
+    renderPdfFooter(doc, companyName, pageContext);
+    doc.end();
+    return;
+  }
+
+  const startX = 40;
   let startY = doc.y;
 
   const columns = [
-    {
-      label: 'Site Code',
-      x: startX,
-      width: 60,
-    },
-    {
-      label: 'Site Name',
-      x: 80,
-      width: 110,
-    },
-    {
-      label: 'Client',
-      x: 195,
-      width: 100,
-    },
-    {
-      label: 'Project',
-      x: 300,
-      width: 100,
-    },
-    {
-      label: 'City',
-      x: 405,
-      width: 60,
-    },
-    {
-      label: 'State',
-      x: 470,
-      width: 60,
-    },
-    {
-      label: 'Status',
-      x: 535,
-      width: 45,
-    },
+    { label: 'Site Code', x: startX, width: 60, align: 'left' },
+    { label: 'Site Name', x: 100, width: 110, align: 'left' },
+    { label: 'Client', x: 210, width: 100, align: 'left' },
+    { label: 'Project', x: 310, width: 110, align: 'left' },
+    { label: 'City', x: 420, width: 60, align: 'left' },
+    { label: 'State', x: 480, width: 60, align: 'left' },
+    { label: 'Status', x: 540, width: 45, align: 'left' },
   ];
-
-  doc
-    .rect(
-      startX - 5,
-      startY - 5,
-      570,
-      22
-    )
-    .fill('#1F4E78');
-
-  doc.fillColor('white');
-
-  columns.forEach((column) => {
-    doc
-      .font('Helvetica-Bold')
-      .fontSize(8)
-      .text(
-        column.label,
-        column.x,
-        startY,
-        {
-          width: column.width,
-        }
-      );
-  });
-
-  doc.fillColor('black');
-
-  startY += 28;
-    /**
-   * ------------------------------------------
-   * Render Site Rows
-   * ------------------------------------------
-   */
 
   const rowHeight = 22;
 
-  sites.forEach((site) => {
-    /**
-     * Page Break
-     */
-    if (
-      startY >
-      doc.page.height - 60
-    ) {
-      doc.addPage();
+  const drawTableHeader = () => {
+    doc.rect(startX, startY - 5, doc.page.width - startX * 2, 18).fill('#1F4E78');
+    doc.fillColor('white');
+    columns.forEach((column) => {
+      doc.font(PDF_FONT_FAMILY_BOLD).fontSize(PDF_TABLE_HEADER_SIZE).text(column.label, column.x, startY, { width: column.width, align: column.align || 'left' });
+    });
+    doc.fillColor('black');
+    startY += 18;
+  };
 
-      startY = 50;
+  drawTableHeader();
 
-      doc
-        .rect(
-          startX - 5,
-          startY - 5,
-          570,
-          22
-        )
-        .fill('#1F4E78');
-
-      doc.fillColor('white');
-
-      columns.forEach((column) => {
-        doc
-          .font('Helvetica-Bold')
-          .fontSize(8)
-          .text(
-            column.label,
-            column.x,
-            startY,
-            {
-              width: column.width,
-            }
-          );
+  sites.forEach((site, index) => {
+    if (startY > doc.page.height - 70) {
+      addPdfPage(doc, pageContext, () => {
+        startY = 50;
+        drawTableHeader();
       });
-
-      doc.fillColor('black');
-
-      startY += 28;
+      renderPdfFooter(doc, companyName, pageContext);
     }
 
-    /**
-     * Row Border
-     */
-    doc
-      .rect(
-        startX - 5,
-        startY - 4,
-        570,
-        rowHeight
-      )
-      .stroke('#D9D9D9');
+    const rowFill = index % 2 === 0 ? '#FFFFFF' : '#F4F7FA';
 
-    /**
-     * Site Code
-     */
-    doc
-      .font('Helvetica')
-      .fontSize(8)
-      .text(
-        site.siteCode || '-',
-        columns[0].x,
-        startY,
-        {
-          width: columns[0].width,
-        }
-      );
+    doc.rect(startX, startY - 4, doc.page.width - startX * 2, rowHeight).fill(rowFill);
+    doc.rect(startX, startY - 4, doc.page.width - startX * 2, rowHeight).stroke('#D9D9D9');
 
-    /**
-     * Site Name
-     */
-    doc.text(
-      site.siteName || '-',
-      columns[1].x,
-      startY,
-      {
-        width: columns[1].width,
-      }
-    );
+    const renderRow = (cells) => {
+      cells.forEach(({ text, column, color }) => {
+        doc.font(PDF_FONT_FAMILY).fontSize(PDF_TABLE_ROW_SIZE);
+        doc.fillColor(color || 'black');
+        doc.text(String(text ?? '-'), column.x, startY, { width: column.width, align: column.align || 'left' });
+      });
+    };
 
-    /**
-     * Client Name
-     */
-    doc.text(
-      site.clientName || '-',
-      columns[2].x,
-      startY,
-      {
-        width: columns[2].width,
-      }
-    );
-
-    /**
-     * Project Name
-     */
-    doc.text(
-      site.projectName || '-',
-      columns[3].x,
-      startY,
-      {
-        width: columns[3].width,
-      }
-    );
-
-    /**
-     * City
-     */
-    doc.text(
-      site.city || '-',
-      columns[4].x,
-      startY,
-      {
-        width: columns[4].width,
-      }
-    );
-
-    /**
-     * State
-     */
-    doc.text(
-      site.state || '-',
-      columns[5].x,
-      startY,
-      {
-        width: columns[5].width,
-      }
-    );
-
-    /**
-     * Status
-     */
-    doc.text(
-      site.status || '-',
-      columns[6].x,
-      startY,
-      {
-        width: columns[6].width,
-      }
-    );
+    renderRow([
+      { text: site.siteCode || '-', column: columns[0] },
+      { text: site.siteName || '-', column: columns[1] },
+      { text: site.clientName || '-', column: columns[2] },
+      { text: site.projectName || '-', column: columns[3] },
+      { text: site.city || '-', column: columns[4] },
+      { text: site.state || '-', column: columns[5] },
+      { text: site.status || '-', column: columns[6] },
+    ]);
 
     startY += rowHeight;
   });
 
-  /**
-   * ------------------------------------------
-   * Footer
-   * ------------------------------------------
-   */
-
   doc.moveDown(2);
 
-  doc
-    .font('Helvetica-Bold')
-    .fontSize(10)
-    .fillColor('black')
-    .text(
-      `Total Sites : ${sites.length}`,
-      {
-        align: 'right',
-      }
-    );
+  doc.font(PDF_FONT_FAMILY_BOLD).fontSize(PDF_REPORT_META_SIZE).fillColor('#333333');
+  doc.text(`Total Sites : ${sites.length}`, { align: 'right' });
 
-  doc.moveDown();
+  doc.moveDown(1.2);
 
-  doc
-    .font('Helvetica')
-    .fontSize(8)
-    .fillColor('gray')
-    .text(
-      'Generated by Contractor Worker Management System',
-      {
-        align: 'center',
-      }
-    );
+  renderPdfFooter(doc, companyName, pageContext);
 
-  /**
-   * ------------------------------------------
-   * Stream PDF Response
-   * ------------------------------------------
-   */
   doc.end();
 }
+
 /**
  * ==========================================
  * Export Dashboard PDF
  * ==========================================
  */
-async exportDashboardPdf(res, tenantId) {
-  /**
-   * ------------------------------------------
-   * Fetch Dashboard Data
-   * ------------------------------------------
-   */
-  const dashboard =
-    await exportRepository.getDashboardData(tenantId);
+async exportDashboardPdf(res, tenantId = null) {
+  const dashboard = await exportRepository.getDashboardData(tenantId);
 
-  /**
-   * ------------------------------------------
-   * Create PDF
-   * ------------------------------------------
-   */
+  const tenant = await getTenantBranding(tenantId);
+
+  const companyName = tenant?.companyName || 'Company name not configured';
+
   const doc = new PDFDocument({
     size: 'A4',
     margin: 40,
@@ -1802,100 +983,59 @@ async exportDashboardPdf(res, tenantId) {
 
   const fileName = `dashboard-report-${Date.now()}.pdf`;
 
-  res.setHeader(
-    'Content-Type',
-    'application/pdf'
-  );
-
-  res.setHeader(
-    'Content-Disposition',
-    `attachment; filename="${fileName}"`
-  );
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
 
   doc.pipe(res);
 
-  /**
-   * ------------------------------------------
-   * PDF Metadata
-   * ------------------------------------------
-   */
-  doc.info.Title =
-    'Dashboard Report';
+  doc.info.Title = 'Dashboard Report';
+  doc.info.Author = companyName;
+  doc.info.Subject = 'Dashboard Report';
+  doc.info.Creator = companyName;
 
-  doc.info.Author =
-    'Contractor Worker Management';
+  registerPdfFonts(doc);
 
-  doc.info.Subject =
-    'Dashboard Report';
+  const pageContext = { pageNumber: 1 };
 
-  doc.info.Creator =
-    'Contractor Worker Management';
-
-  /**
-   * ------------------------------------------
-   * Report Title
-   * ------------------------------------------
-   */
-
-  doc
-    .font('Helvetica-Bold')
-    .fontSize(20)
-    .text(
-      'Dashboard Summary Report',
-      {
-        align: 'center',
-      }
-    );
-
-  doc.moveDown();
-
-  doc
-    .font('Helvetica')
-    .fontSize(10)
-    .text(
-      `Generated On : ${new Date().toLocaleString()}`
-    );
+  renderPdfHeader(doc, {
+    tenant,
+    title: 'Dashboard Summary Report',
+    generatedOn: formatDateTime(),
+  });
 
   doc.moveDown(2);
-    /**
-   * ------------------------------------------
-   * Render Dashboard Summary
-   * ------------------------------------------
-   */
 
   const summary = [
     {
       title: 'Workers',
       values: [
-        ['Total Workers', dashboard.workers.total],
-        ['Active Workers', dashboard.workers.active],
+        ['Total Workers', String(dashboard.workers.total)],
+        ['Active Workers', String(dashboard.workers.active)],
       ],
     },
     {
       title: 'Sites',
       values: [
-        ['Total Sites', dashboard.sites.total],
-        ['Active Sites', dashboard.sites.active],
+        ['Total Sites', String(dashboard.sites.total)],
+        ['Active Sites', String(dashboard.sites.active)],
       ],
     },
     {
       title: 'Attendance',
       values: [
-        ['Total Attendance', dashboard.attendance.total],
-        ['Present', dashboard.attendance.present],
-        ['Absent', dashboard.attendance.absent],
-        ['Leave', dashboard.attendance.leave],
-        ['Half Day', dashboard.attendance.halfDay],
+        ['Total Attendance', String(dashboard.attendance.total)],
+        ['Present', String(dashboard.attendance.present)],
+        ['Absent', String(dashboard.attendance.absent)],
+        ['Leave', String(dashboard.attendance.leave)],
+        ['Half Day', String(dashboard.attendance.halfDay)],
       ],
     },
     {
       title: 'Payroll',
       values: [
-        ['Total Payroll', dashboard.payroll.total],
-        [
-          'Total Net Salary',
-          `₹${dashboard.payroll.totalNetSalary.toLocaleString()}`,
-        ],
+        ['Total Payroll', String(dashboard.payroll.total)],
+        ['Total Net Salary', formatCurrency(dashboard.payroll.totalNetSalary)],
+        ['Pending Salary', formatCurrency(dashboard.payroll.pendingSalary)],
       ],
     },
   ];
@@ -1903,120 +1043,36 @@ async exportDashboardPdf(res, tenantId) {
   let startY = doc.y;
 
   summary.forEach((section) => {
-    /**
-     * Page Break
-     */
     if (startY > doc.page.height - 150) {
       doc.addPage();
+      pageContext.pageNumber += 1;
       startY = 50;
     }
 
-    /**
-     * Section Header
-     */
-    doc
-      .roundedRect(
-        40,
-        startY,
-        515,
-        24,
-        4
-      )
-      .fill('#1F4E78');
-
-    doc
-      .fillColor('white')
-      .font('Helvetica-Bold')
-      .fontSize(12)
-      .text(
-        section.title,
-        50,
-        startY + 7
-      );
-
+    doc.font(PDF_FONT_FAMILY_BOLD).fontSize(12).fillColor(PDF_BRANDING_COLOR);
+    doc.rect(40, startY, 515, 24, 4).fill('#1F4E78');
+    doc.fillColor('white').font(PDF_FONT_FAMILY_BOLD).fontSize(12);
+    doc.text(section.title, 50, startY + 7);
     startY += 35;
 
-    /**
-     * Section Rows
-     */
-    section.values.forEach(
-      ([label, value]) => {
-        doc
-          .fillColor('black')
-          .font('Helvetica')
-          .fontSize(10)
-          .text(
-            label,
-            55,
-            startY
-          );
+    section.values.forEach(([label, value]) => {
+      doc.fillColor('black').font(PDF_FONT_FAMILY).fontSize(10);
+      doc.text(label, 55, startY);
 
-        doc
-          .font('Helvetica-Bold')
-          .text(
-            String(value),
-            350,
-            startY,
-            {
-              width: 150,
-              align: 'right',
-            }
-          );
+      doc.font(PDF_FONT_FAMILY_BOLD).text(String(value), 350, startY, { width: 150, align: 'right' });
 
-        doc
-          .moveTo(
-            50,
-            startY + 16
-          )
-          .lineTo(
-            550,
-            startY + 16
-          )
-          .stroke('#DDDDDD');
+      doc.moveTo(50, startY + 16).lineTo(550, startY + 16).stroke('#DDDDDD');
 
-        startY += 24;
-      }
-    );
+      startY += 24;
+    });
 
     startY += 20;
   });
-    /**
-   * ------------------------------------------
-   * Footer
-   * ------------------------------------------
-   */
 
   doc.moveDown(2);
 
-  doc
-    .font('Helvetica-Bold')
-    .fontSize(10)
-    .fillColor('black')
-    .text(
-      'Dashboard Summary Generated Successfully',
-      {
-        align: 'right',
-      }
-    );
+  renderPdfFooter(doc, companyName, pageContext);
 
-  doc.moveDown();
-
-  doc
-    .font('Helvetica')
-    .fontSize(8)
-    .fillColor('gray')
-    .text(
-      'Generated by Contractor Worker Management System',
-      {
-        align: 'center',
-      }
-    );
-
-  /**
-   * ------------------------------------------
-   * Stream PDF Response
-   * ------------------------------------------
-   */
   doc.end();
 }
 

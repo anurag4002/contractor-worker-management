@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import useReport from "../../hooks/useReport";
-import { exportToExcel, exportToPDF } from "../../utils/export.utils";
+import { exportToExcel } from "../../utils/export.utils";
+import useExport from "../../hooks/useExport";
 import { FiDownload, FiFileText } from "react-icons/fi";
 import { TableCard, Table, ReportContainer, FilterControls } from "./ReportTable.style";
 import FilterBar from "../ui/FilterBar";
@@ -18,6 +19,7 @@ const YEARS = Array.from({ length: 5 }, (_, i) => currentYear - i);
 
 const PayrollReport = ({ sites = [] }) => {
     const { payrollReport, pagination, loading, fetchPayrollReport } = useReport();
+    const { downloading, exportPayrollPdf } = useExport();
     const [filters, setFilters] = useState({ status: "", site: "", attendanceMonth: "", attendanceYear: "" });
     const [page, setPage] = useState(1);
 
@@ -54,24 +56,18 @@ const PayrollReport = ({ sites = [] }) => {
         }
     };
 
-    const handlePDF = () => {
+    const handlePDF = async () => {
         try {
-            exportToPDF(
-                "Payroll Report",
-                ["Worker", "Month/Year", "Daily Wage", "Net Payable", "Status"],
-                data.map((p) => [
-                    p.worker?.fullName,
-                    `${MONTHS[p.attendanceMonth]} ${p.attendanceYear}`,
-                    `₹${p.dailyWage}`,
-                    `₹${p.netPayable}`,
-                    p.status,
-                ]),
-                "Payroll_Report"
-            );
-            showSuccess("Payroll Report exported to PDF.");
+            const params = {};
+            if (filters.status) params.status = filters.status;
+            if (filters.site) params.site = filters.site;
+            if (filters.attendanceMonth) params.attendanceMonth = filters.attendanceMonth;
+            if (filters.attendanceYear) params.attendanceYear = filters.attendanceYear;
+
+            await exportPayrollPdf(params);
         } catch (err) {
             console.error(err);
-            showError("Failed to export Payroll Report.");
+            showError("Failed to export Payroll Report to PDF.");
         }
     };
 
@@ -102,7 +98,7 @@ const PayrollReport = ({ sites = [] }) => {
                 </Button>
                 <FilterControls>
                     <Button variant="primary" onClick={handleExcel}><FiDownload /> Excel</Button>
-                    <Button variant="ghost" onClick={handlePDF}><FiFileText /> PDF</Button>
+                    <Button variant="ghost" onClick={handlePDF} disabled={downloading.payrollPdf}><FiFileText /> PDF</Button>
                 </FilterControls>
             </FilterBar>
 

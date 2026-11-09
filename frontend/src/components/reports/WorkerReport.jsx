@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import useReport from "../../hooks/useReport";
-import { exportToExcel, exportToPDF } from "../../utils/export.utils";
+import { exportToExcel } from "../../utils/export.utils";
+import useExport from "../../hooks/useExport";
 import { FiDownload, FiFileText } from "react-icons/fi";
 import { TableCard, Table, ReportContainer, FilterControls } from "./ReportTable.style";
 import FilterBar from "../ui/FilterBar";
@@ -15,6 +16,7 @@ import { showSuccess, showError } from "../../components/common/toast";
 
 const WorkerReport = ({ sites = [] }) => {
     const { workerReport, pagination, loading, fetchWorkerReport } = useReport();
+    const { downloading, exportWorkersPdf } = useExport();
     const [filters, setFilters] = useState({ search: "", status: "", site: "", trade: "" });
     const [page, setPage] = useState(1);
 
@@ -47,18 +49,18 @@ const WorkerReport = ({ sites = [] }) => {
         }
     };
 
-    const handlePDF = () => {
+    const handlePDF = async () => {
         try {
-            exportToPDF(
-                "Worker Report",
-                ["Name", "Code", "Trade", "Site", "Status"],
-                data.map((w) => [w.fullName, w.employeeCode, w.trade, w.site?.siteName, w.status]),
-                "Worker_Report"
-            );
-            showSuccess("Worker Report exported to PDF.");
+            const params = {};
+            if (filters.search) params.search = filters.search;
+            if (filters.status) params.status = filters.status;
+            if (filters.site) params.site = filters.site;
+            if (filters.trade) params.trade = filters.trade;
+
+            await exportWorkersPdf(params);
         } catch (err) {
             console.error(err);
-            showError("Failed to export Worker Report.");
+            showError("Failed to export Worker Report to PDF.");
         }
     };
 
@@ -84,7 +86,7 @@ const WorkerReport = ({ sites = [] }) => {
                 </Button>
                 <FilterControls>
                     <Button variant="primary" onClick={handleExcel}><FiDownload /> Excel</Button>
-                    <Button variant="ghost" onClick={handlePDF}><FiFileText /> PDF</Button>
+                    <Button variant="ghost" onClick={handlePDF} disabled={downloading.workersPdf}><FiFileText /> PDF</Button>
                 </FilterControls>
             </FilterBar>
 

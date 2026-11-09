@@ -5,9 +5,9 @@ import { showError } from "../../components/common/toast";
 
 import dashboardService from "../../services/dashboard.service";
 import useAttendance from "../../hooks/useAttendance";
+import useExport from "../../hooks/useExport";
 import DashboardCharts from "../../components/dashboardcharts/DashboardCharts";
 import StatCard from "../../components/statcard/StatCard";
-import exportDashboardPDFFn from "../../utils/exportDashboardPDF";
 import { useSearch } from "../../context/SearchContext";
 import { useAuth } from "../../context/AuthContext";
 
@@ -41,6 +41,10 @@ const Dashboard = () => {
   const { attendanceRecords } = useAttendance();
   const { searchQuery, searchResults, isLoading } = useSearch();
   const { logout } = useAuth();
+  const {
+    downloading,
+    exportDashboardPdf,
+  } = useExport();
 
   const [dashboard, setDashboard] = useState(null);
   const [recentWorkers, setRecentWorkers] = useState([]);
@@ -231,9 +235,9 @@ const Dashboard = () => {
   const halfDayCount = dashboard.attendance?.halfDay || 0;
   const holidayCount = dashboard.attendance?.holiday || 0;
 
-  const handleExport = () => {
+  const handleExport = async () => {
     if (!dashboard) return;
-    exportDashboardPDFFn(dashboard);
+    await exportDashboardPdf();
   };
 
   const stats = [
@@ -290,7 +294,7 @@ const Dashboard = () => {
           <FiCalendar />
           <span>{today}</span>
 
-          <ExportButton onClick={handleExport}>
+          <ExportButton onClick={handleExport} disabled={downloading.dashboardPdf}>
             <FiDownload />
             Export Report
           </ExportButton>

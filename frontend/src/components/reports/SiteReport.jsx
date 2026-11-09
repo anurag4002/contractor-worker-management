@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import useReport from "../../hooks/useReport";
-import { exportToExcel, exportToPDF } from "../../utils/export.utils";
+import { exportToExcel } from "../../utils/export.utils";
+import useExport from "../../hooks/useExport";
 import { FiDownload, FiFileText } from "react-icons/fi";
 import styled from "styled-components";
 import { TableCard, Table, ReportContainer, FilterControls } from "./ReportTable.style";
@@ -21,6 +22,7 @@ const SmallInput = styled(Input)`
 
 const SiteReport = () => {
     const { siteReport, pagination, loading, fetchSiteReport } = useReport();
+    const { downloading, exportSitesPdf } = useExport();
     const [filters, setFilters] = useState({ search: "", status: "", city: "", state: "" });
     const [page, setPage] = useState(1);
 
@@ -56,18 +58,18 @@ const SiteReport = () => {
         }
     };
 
-    const handlePDF = () => {
+    const handlePDF = async () => {
         try {
-            exportToPDF(
-                "Site Report",
-                ["Name", "Code", "Client", "City", "Status"],
-                data.map((s) => [s.siteName, s.siteCode, s.clientName, s.city, s.status]),
-                "Site_Report"
-            );
-            showSuccess("Site Report exported to PDF.");
+            const params = {};
+            if (filters.search) params.search = filters.search;
+            if (filters.status) params.status = filters.status;
+            if (filters.city) params.city = filters.city;
+            if (filters.state) params.state = filters.state;
+
+            await exportSitesPdf(params);
         } catch (err) {
             console.error(err);
-            showError("Failed to export Site Report.");
+            showError("Failed to export Site Report to PDF.");
         }
     };
 
@@ -100,7 +102,7 @@ const SiteReport = () => {
                 </Button>
                 <FilterControls>
                     <Button variant="primary" onClick={handleExcel}><FiDownload /> Excel</Button>
-                    <Button variant="ghost" onClick={handlePDF}><FiFileText /> PDF</Button>
+                    <Button variant="ghost" onClick={handlePDF} disabled={downloading.sitesPdf}><FiFileText /> PDF</Button>
                 </FilterControls>
             </FilterBar>
 
