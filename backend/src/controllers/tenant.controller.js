@@ -17,6 +17,18 @@ const getTenantById = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, tenant, 'Tenant fetched successfully.');
 });
 
+const getMyTenant = asyncHandler(async (req, res) => {
+  const tenantId = req.user?.tenantId || (req.user?.tenant?._id) || null;
+
+  if (!tenantId) {
+    return ApiResponse.success(res, null, 'Tenant not found.');
+  }
+
+  const tenant = await tenantService.getTenantById(tenantId, req.user);
+
+  return ApiResponse.success(res, tenant, 'Tenant fetched successfully.');
+});
+
 const updateTenant = asyncHandler(async (req, res) => {
   const tenant = await tenantService.updateTenant(req.params.id, req.body, req.user);
   return ApiResponse.success(res, tenant, 'Tenant updated successfully.');
@@ -26,5 +38,6 @@ export default {
   createTenant,
   getTenants,
   getTenantById,
+  getMyTenant,
   updateTenant,
 };

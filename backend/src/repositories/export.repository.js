@@ -90,6 +90,20 @@ class ExportRepository {
             totalNetSalary: {
               $sum: '$netSalary',
             },
+            pendingSalary: {
+              $sum: {
+                $cond: [
+                  {
+                    $eq: [
+                      '$status',
+                      'GENERATED',
+                    ],
+                  },
+                  '$netSalary',
+                  0,
+                ],
+              },
+            },
           },
         },
       ]),
@@ -120,6 +134,11 @@ class ExportRepository {
           totalNetSalary.length > 0
             ? totalNetSalary[0]
                 .totalNetSalary
+            : 0,
+        pendingSalary:
+          totalNetSalary.length > 0
+            ? totalNetSalary[0]
+                .pendingSalary
             : 0,
       },
     };
@@ -165,6 +184,20 @@ class ExportRepository {
 
     if (tenantId) {
       query.tenant = tenantId;
+    }
+
+    if (query.fromDate || query.toDate) {
+      query.attendanceDate = {};
+
+      if (query.fromDate) {
+        query.attendanceDate.$gte = new Date(query.fromDate);
+      }
+
+      if (query.toDate) {
+        const endDate = new Date(query.toDate);
+        endDate.setHours(23, 59, 59, 999);
+        query.attendanceDate.$lte = endDate;
+      }
     }
 
     return await Attendance.find(query)

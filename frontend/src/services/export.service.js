@@ -49,22 +49,25 @@ const exportService = {
 
     /**
      * GET /export/workers  → PDF
+     * Supports filters: search, status, site, trade
      */
-    exportWorkersPdf: async () => {
-        const res = await axios.get(`${BASE}/workers`, { responseType: "blob" });
+    exportWorkersPdf: async (params = {}) => {
+        const res = await axios.get(`${BASE}/workers`, { responseType: "blob", params });
         triggerDownload(res.data, "workers.pdf");
     },
 
     /**
      * GET /export/attendance  → PDF
+     * Supports filters: status, site, fromDate, toDate
      */
-    exportAttendancePdf: async () => {
-        const res = await axios.get(`${BASE}/attendance`, { responseType: "blob" });
+    exportAttendancePdf: async (params = {}) => {
+        const res = await axios.get(`${BASE}/attendance`, { responseType: "blob", params });
         triggerDownload(res.data, "attendance.pdf");
     },
 
     /**
      * GET /export/payroll  → PDF
+     * Supports filters: status, site, attendanceMonth, attendanceYear, search
      */
     exportPayrollPdf: async (params = {}) => {
         const res = await axios.get(`${BASE}/payroll`, {
@@ -76,9 +79,10 @@ const exportService = {
 
     /**
      * GET /export/sites  → PDF
+     * Supports filters: search, status, city, state
      */
-    exportSitesPdf: async () => {
-        const res = await axios.get(`${BASE}/sites`, { responseType: "blob" });
+    exportSitesPdf: async (params = {}) => {
+        const res = await axios.get(`${BASE}/sites`, { responseType: "blob", params });
         triggerDownload(res.data, "sites.pdf");
     },
 };

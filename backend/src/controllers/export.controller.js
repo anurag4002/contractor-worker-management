@@ -24,6 +24,7 @@ const exportWorkersPdf =
   asyncHandler(async (req, res) => {
     await exportService.exportWorkersPdf(
       res,
+      req.query,
       req.user.tenantId
     );
   });
@@ -37,6 +38,7 @@ const exportAttendancePdf =
   asyncHandler(async (req, res) => {
     await exportService.exportAttendancePdf(
       res,
+      req.query,
       req.user.tenantId
     );
   });
@@ -64,6 +66,7 @@ const exportSitesPdf =
   asyncHandler(async (req, res) => {
     await exportService.exportSitesPdf(
       res,
+      req.query,
       req.user.tenantId
     );
   });

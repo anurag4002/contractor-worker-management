@@ -2,10 +2,6 @@ import * as XLSX from "xlsx";
 
 import { saveAs } from "file-saver";
 
-import jsPDF from "jspdf";
-
-import autoTable from "jspdf-autotable";
-
 export const exportToExcel = (
   data,
   fileName = "Report"
@@ -62,49 +58,5 @@ export const exportToExcel = (
     `${fileName}.xlsx`
 
   );
-
-};
-
-export const exportToPDF = (
-
-  title,
-
-  columns,
-
-  rows,
-
-  fileName = "Report"
-
-) => {
-
-  const doc = new jsPDF();
-
-  doc.setFontSize(18);
-
-  doc.text(title, 14, 20);
-
-  autoTable(doc, {
-
-    head: [columns],
-
-    body: rows,
-
-    startY: 30,
-
-    styles: {
-
-      fontSize: 9,
-
-    },
-
-    headStyles: {
-
-      fillColor: [37, 99, 235],
-
-    },
-
-  });
-
-  doc.save(`${fileName}.pdf`);
 
 };

@@ -132,6 +132,14 @@ const authService = {
     return data;
   },
 
+  getMyTenant: async () => {
+    const { data } = await axios.get(
+      "/tenants/me"
+    );
+
+    return data.data;
+  },
+
   updateProfile: async (payload) => {
     const { data } = await axios.put(
       "/auth/profile",
