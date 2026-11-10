@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { motion, useReducedMotion, useAnimation } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ScrollReveal } from "./ScrollReveal";
 import { AnimatedStat } from "../../components/countup/AnimatedStat";
 import { AnimatedNumber } from "../../components/countup/AnimatedNumber";
@@ -201,37 +200,7 @@ const HERO_WORDS_LINE_1 = ["Manage", "Workers,", "Attendance,", "Sites", "&"];
 const HERO_WORDS_LINE_2 = ["Payroll", "from", "One", "Dashboard"];
 
 const AnimatedHeroHeading = () => {
-  const controls = useAnimation();
   const reducedMotion = useReducedMotion();
-
-  useEffect(() => {
-    if (reducedMotion) return;
-
-    let mounted = true;
-
-    const runLoop = async () => {
-      while (mounted) {
-        await controls.start("visible");
-        if (!mounted) return;
-
-        await new Promise((r) => setTimeout(r, 1500));
-        if (!mounted) return;
-
-        await controls.start("hidden");
-        if (!mounted) return;
-
-        await new Promise((r) => setTimeout(r, 300));
-        if (!mounted) return;
-      }
-    };
-
-    runLoop();
-
-    return () => {
-      mounted = false;
-      controls.stop();
-    };
-  }, [controls, reducedMotion]);
 
   if (reducedMotion) {
     return (
@@ -245,13 +214,11 @@ const AnimatedHeroHeading = () => {
     hidden: {
       opacity: 0,
       y: 12,
-      filter: "blur(4px)",
       transition: { duration: 0.25, ease: "easeIn" },
     },
     visible: {
       opacity: 1,
       y: 0,
-      filter: "blur(0px)",
       transition: { duration: 0.38, ease: "easeOut" },
     },
   };
@@ -281,7 +248,7 @@ const AnimatedHeroHeading = () => {
       <motion.span
         variants={line1Variants}
         initial="hidden"
-        animate={controls}
+        animate="visible"
         style={{ display: "block" }}
       >
         {HERO_WORDS_LINE_1.map((word, i) => (
@@ -293,7 +260,7 @@ const AnimatedHeroHeading = () => {
       <motion.span
         variants={line2Variants}
         initial="hidden"
-        animate={controls}
+        animate="visible"
         style={{ display: "block" }}
       >
         {HERO_WORDS_LINE_2.map((word, i) => (
@@ -498,17 +465,9 @@ const LandingPage = () => {
             initial="hidden"
             animate="visible"
             transition={{ delay: 0.7 }}
+            whileHover={shouldReduceMotion ? undefined : { y: -4 }}
           >
-            <motion.div
-              animate={shouldReduceMotion ? { y: 0 } : { y: [0, -8, 0] }}
-              transition={{
-                duration: 4,
-                delay: 1.5,
-                repeat: shouldReduceMotion ? 0 : Infinity,
-                ease: "easeInOut",
-              }}
-            >
-              <DashboardMockWrapper>
+            <DashboardMockWrapper>
               <MockHeader>
                 <motion.div variants={dashboardHeaderVariants} initial="hidden" animate="visible">
                   <MockDots>
@@ -612,7 +571,6 @@ const LandingPage = () => {
                 </motion.div>
               </MockBody>
             </DashboardMockWrapper>
-            </motion.div>
           </motion.div>
         </Container>
       </HeroSection>
@@ -660,23 +618,13 @@ const LandingPage = () => {
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.55, ease: "easeOut", delay: idx * 0.08 }}
-                  whileHover={{ y: -4, scale: 1.01 }}
+                  whileHover={shouldReduceMotion ? undefined : { y: -4, scale: 1.01 }}
                 >
-                  <motion.div
-                    animate={shouldReduceMotion ? { y: 0 } : { y: [0, -6, 0] }}
-                    transition={{
-                      duration: 4.5,
-                      delay: 1.2 + idx * 0.15,
-                      repeat: shouldReduceMotion ? 0 : Infinity,
-                      ease: "easeInOut",
-                    }}
-                  >
-                    <FeatureCard>
-                      <FeatureIconBox>{item.icon}</FeatureIconBox>
-                      <FeatureCardTitle>{item.title}</FeatureCardTitle>
-                      <FeatureCardDesc>{item.desc}</FeatureCardDesc>
-                    </FeatureCard>
-                  </motion.div>
+                  <FeatureCard>
+                    <FeatureIconBox>{item.icon}</FeatureIconBox>
+                    <FeatureCardTitle>{item.title}</FeatureCardTitle>
+                    <FeatureCardDesc>{item.desc}</FeatureCardDesc>
+                  </FeatureCard>
                 </motion.div>
               ))}
             </FeaturesGrid>
@@ -701,26 +649,16 @@ const LandingPage = () => {
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.55, ease: "easeOut", delay: idx * 0.08 }}
-                  whileHover={{ y: -4, scale: 1.01 }}
+                  whileHover={shouldReduceMotion ? undefined : { y: -4, scale: 1.01 }}
                 >
-                  <motion.div
-                    animate={shouldReduceMotion ? { y: 0 } : { y: [0, -7, 0] }}
-                    transition={{
-                      duration: 5,
-                      delay: 1.2 + idx * 0.12,
-                      repeat: shouldReduceMotion ? 0 : Infinity,
-                      ease: "easeInOut",
-                    }}
-                  >
-                    <ModuleCard>
-                      <div className="top">
-                        <div className="module-icon">{item.icon}</div>
-                        <span className="tag">{item.tag}</span>
-                      </div>
-                      <h4>{item.title}</h4>
-                      <p>{item.desc}</p>
-                    </ModuleCard>
-                  </motion.div>
+                  <ModuleCard>
+                    <div className="top">
+                      <div className="module-icon">{item.icon}</div>
+                      <span className="tag">{item.tag}</span>
+                    </div>
+                    <h4>{item.title}</h4>
+                    <p>{item.desc}</p>
+                  </ModuleCard>
                 </motion.div>
               ))}
             </ModulesGrid>
@@ -745,22 +683,13 @@ const LandingPage = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.55, ease: "easeOut", delay: idx * 0.12 }}
+                  whileHover={shouldReduceMotion ? undefined : { y: -4 }}
                 >
-                  <motion.div
-                    animate={shouldReduceMotion ? { y: 0 } : { y: [0, -5, 0] }}
-                    transition={{
-                      duration: 4.5,
-                      delay: 1.2 + idx * 0.15,
-                      repeat: shouldReduceMotion ? 0 : Infinity,
-                      ease: "easeInOut",
-                    }}
-                  >
-                    <WorkflowStepCard>
-                      <div className="step-num">{item.step}</div>
-                      <h4>{item.title}</h4>
-                      <p>{item.desc}</p>
-                    </WorkflowStepCard>
-                  </motion.div>
+                  <WorkflowStepCard>
+                    <div className="step-num">{item.step}</div>
+                    <h4>{item.title}</h4>
+                    <p>{item.desc}</p>
+                  </WorkflowStepCard>
                 </motion.div>
               ))}
             </WorkflowGrid>

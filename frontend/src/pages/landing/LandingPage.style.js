@@ -7,8 +7,13 @@ export const PageWrapper = styled.div`
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   overflow-x: hidden;
+  overflow-y: visible;
   width: 100%;
   max-width: 100%;
+
+  @supports (overflow: clip) {
+    overflow-x: clip;
+  }
 `;
 
 export const Container = styled.div`
@@ -225,22 +230,25 @@ export const SecondaryButton = styled.button`
 export const HeroSection = styled.section`
   padding: 56px 0 40px;
   text-align: center;
-  background:
+  background-color: #0f172a;
+  background-image:
     linear-gradient(
       rgba(15, 23, 42, 0.68),
       rgba(15, 23, 42, 0.78)
     ),
-    url("/images/landing-construction-team.jpg")
-      center 42% / cover no-repeat;
+    url("/images/landing-construction-team.webp");
+  background-size: cover;
+  background-position: center 42%;
+  background-repeat: no-repeat;
 
   @media (max-width: 768px) {
-    background:
+    background-image:
       linear-gradient(
         rgba(15, 23, 42, 0.72),
         rgba(15, 23, 42, 0.82)
       ),
-      url("/images/landing-construction-team.jpg")
-        center 30% / cover no-repeat;
+      url("/images/landing-construction-team-mobile.webp");
+    background-position: center 30%;
   }
 `;
 
